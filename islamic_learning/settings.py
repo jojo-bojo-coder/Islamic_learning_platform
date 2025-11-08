@@ -103,14 +103,6 @@ if DATABASE_URL:
     except Exception as e:
         print(f"ERROR: Database configuration failed: {e}")
         raise
-else:
-    print("DEBUG: No DATABASE_URL found, using SQLite")
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
 
 
 # Password validation
