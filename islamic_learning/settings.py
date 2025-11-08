@@ -87,22 +87,23 @@ WSGI_APPLICATION = 'islamic_learning.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Database Configuration
+import dj_database_url
+
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
-    print(f"DEBUG: DATABASE_URL found: {DATABASE_URL[:50]}...")
-    try:
-        DATABASES = {
-            'default': dj_database_url.config(
-                default=DATABASE_URL,
-                conn_max_age=600,
-                conn_health_checks=True,
-            )
-        }
-        print(f"DEBUG: Database config: {DATABASES['default']}")
-    except Exception as e:
-        print(f"ERROR: Database configuration failed: {e}")
-        raise
+if not DATABASE_URL:
+    raise ValueError("❌ DATABASE_URL is not set! Make sure it's added in Railway Variables.")
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+
+# Print for debugging
+print("✅ Connected to PostgreSQL via DATABASE_URL")
 
 
 # Password validation
