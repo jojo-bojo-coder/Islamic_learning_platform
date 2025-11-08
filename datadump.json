@@ -1,0 +1,4681 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "6dlm5ei9s9p18tsn5nittejv3l1oscuc",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGln-4Q8lPWew1rs2DiBbipMKcXcSKQW0b2bem0VYlxrXkec4Ebsww06_WwJ85rYDekC7d469LfOU-K7wgw5-65Rf18P9O6gw6lZbtIZE8dlICmjPpGVJwmPwpgDlILQSiDqB83pj1inrdJbJqhQIlGOfL-tnN9Y:1vHUeI:M_ibIAWFLvoFztsfbR6lUeN26D-t4jLkapBtW_FvqvE",
+    "expire_date": "2025-11-21T22:09:38.438Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "9l5vycbdoanrrz6jfb7s19jif0okomeh",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGln-4Q8lPWew1rs2DiBbipMKcXcSKQW0b2bem0VYlxrXkec4Ebsww06_WwJ85rYDekC7d469LfOU-K7wgw5-65Rf18P9O6gw6lZbtIZE8dlICmjPpGVJwmPwpgDlILQSiDqB83pj1inrdJbJqhQIlGOfL-tnN9Y:1v8k0L:pfVqs4vG28N71Blj4F_lloBMNU_OOj6OVMySxH072uI",
+    "expire_date": "2025-10-28T18:44:13.976Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "fijaeh1jnlzq3ii0clqtvlyjzh0nivf9",
+  "fields": {
+    "session_data": ".eJxVjEsOwiAYBu_C2hDeRZfuPQP54AepGpqUdmW8uyHpQrczk3mzgH2rYe95DTOxC_Ps9Msi0jO3IeiBdl94Wtq2zpGPhB-289tC-XU92r9BRa9ja87QPovoYZWTUhTyyZgsoG1ScCQhPGkN5chY5IgCZYWZDMpEwrHPF93-N-c:1v6RCr:8KrKdI1NH4OfnDToUKxqmrlmXZoQ8XWUlkCdLBFg_7U",
+    "expire_date": "2025-10-22T10:15:37.169Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "rg0ju353f0a3u0ewj4exu7w0dac9eitz",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSHT4SG4dN9vIAMDUjU0Ke3K-O_apAvd3nPOfYlA21rD1vMSJhYXMaA4_Y6R0iO3nfCd2m2WaW7rMkW5K_KgXY4z5-f1cP8OKvX6rSMUIFRYXDoPzNGSAoXa-YRWk9HeZWsNQY7eABatgIsvjCWD0Soq8f4A_VA3xg:1vAyH0:nsQXZVMqfIxYCeA-aSkNXXnhmSC2dwHAoof0wbfgQCE",
+    "expire_date": "2025-11-03T22:22:38.144Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "thokkzzydbkvi15h9izsa8eu5vffptc5",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGln-W6ak5wzW7nqNA8iR8qki7k4ipYB2Zt7bRIZ1aXmdecpDEVcRxOWXIdCL-yHKE_pjlDT2ZRpQHok87SzvY-H37Wz_DhrMbV8jeguefQAVUrKIylnipDUWU5ENkDZFKSIbMGpP2gETpujiDmuN4vMF91I4cg:1v67Ug:xOMV30C_7e1xd9d8FaN2ok52ia5cJFyjISjrvoPwdGQ",
+    "expire_date": "2025-10-21T13:12:42.733Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "tl185fs78e4d3oxhfhkrxw9xfxogs7na",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hCkdKa4dN8zNDMDSNVAUtqV8e7apAvd_vfef6mJtjVPW4vLNAd1UWd1-t2Y5BHLDsKdyq1qqWVdZta7og_a9FhDfF4P9-8gU8vfOvXk0LoQOjAmsRVnEnpvGPoUIXpg6kQieoY0kPhkmWlA8Q4BnTXq_QHz7DhH:1v8kjt:BsyFdlDVxNpyB17r9fTIW2HivwozbV7XCOl8m5MGOuE",
+    "expire_date": "2025-10-28T19:31:17.788Z"
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$sdy6CO8OzDvLlZ01B0JgiV$4odGe2r4rZWRIqOVFUGc28rjeCPUamZoU2350Wh1lzU=",
+    "last_login": "2025-11-07T22:04:13.066Z",
+    "is_superuser": false,
+    "username": "nagham243",
+    "first_name": "Nagham",
+    "last_name": "Zanaty",
+    "email": "naghamzanaty7@gmail.com",
+    "is_staff": false,
+    "role": "director",
+    "supervisor_type": "",
+    "phone": "01090871358",
+    "address": "",
+    "date_joined": "2025-09-30T16:40:19.215Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CciUPKxlNbrGGQhQl2WhvI$9SfL4wqz6dgAdu6PwNla/uIIjI3xvqRz3N1XX3kK+Ms=",
+    "last_login": "2025-11-07T22:05:40.403Z",
+    "is_superuser": false,
+    "username": "Nouran556",
+    "first_name": "Nouran",
+    "last_name": "Elshazly",
+    "email": "zanatynadine0@gmail.com",
+    "is_staff": false,
+    "role": "program_manager",
+    "supervisor_type": "",
+    "phone": "9660501268495",
+    "address": "",
+    "date_joined": "2025-10-01T22:05:10.521Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$cOVZ7QumyRaEt3KIR04i1B$YgZjZjGcth/WK5pAEtbi5UiNLiSCcaO80FRo5RhRhho=",
+    "last_login": "2025-11-07T22:09:38.422Z",
+    "is_superuser": false,
+    "username": "Hams669",
+    "first_name": "Hams",
+    "last_name": "El Dakrory",
+    "email": "studenttest253@gmail.com",
+    "is_staff": false,
+    "role": "committee_supervisor",
+    "supervisor_type": "cultural",
+    "phone": "01062403480",
+    "address": "",
+    "date_joined": "2025-10-05T12:11:16.098Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$9AExvuf53vbeY8ujxX9mwo$NdD8IAHtpI0n3ZdF81WDgpbE6geL4bmfY9vr6MeCEqA=",
+    "last_login": "2025-11-07T13:11:38.216Z",
+    "is_superuser": false,
+    "username": "Mai763",
+    "first_name": "Mai",
+    "last_name": "Abu-Elkheir",
+    "email": "naghammohamed287@gmail.com",
+    "is_staff": false,
+    "role": "student",
+    "supervisor_type": "",
+    "phone": "0512345675",
+    "address": "",
+    "date_joined": "2025-10-06T11:04:16.016Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$bs9VzkbBbmi3EA9rbgNiJY$aaac013D01sMPhHW6ARnWlGbthapXv0IjaaNuMubn+o=",
+    "last_login": "2025-11-07T22:06:30.907Z",
+    "is_superuser": false,
+    "username": "Mohamed199",
+    "first_name": "Mohamed",
+    "last_name": "Zanaty",
+    "email": "nagham31010193@f-eng.tanta.edu.eg",
+    "is_staff": false,
+    "role": "committee_supervisor",
+    "supervisor_type": "sports",
+    "phone": "01062403480",
+    "address": "",
+    "date_joined": "2025-10-06T20:58:51.908Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rddb8x9qtOfpg7hB7xO2aK$S6UYFA3Bwyw7xZzIZe4mCCck9hsk3/D/xpUgwOjgJVQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "Ahmed778",
+    "first_name": "Ahmed",
+    "last_name": "Mazen",
+    "email": "janazanaty123@gmail.com",
+    "is_staff": false,
+    "role": "student",
+    "supervisor_type": "",
+    "phone": "01062403480",
+    "address": "",
+    "date_joined": "2025-10-07T13:12:35.005Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$klZn2hOhonh9nALrjUehzg$+ZkumRmxFJs3pS16MSViEcfC5kZN31ZD8rb/U91dvog=",
+    "last_login": "2025-11-07T22:07:29.911Z",
+    "is_superuser": false,
+    "username": "Nada884",
+    "first_name": "Nada",
+    "last_name": "Ayman",
+    "email": "m.zanaty40@gmail.com",
+    "is_staff": false,
+    "role": "committee_supervisor",
+    "supervisor_type": "sharia",
+    "phone": "01013340690",
+    "address": "",
+    "date_joined": "2025-10-08T10:00:53.900Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$lA0XCsvvDY44kJpmuwfim2$0d7+Ks8nhAbG1LuzbcNSU4Tp9qc9TnjxeJ8f0l7p6no=",
+    "last_login": "2025-11-07T22:08:06.872Z",
+    "is_superuser": false,
+    "username": "Tayem152",
+    "first_name": "Tayem",
+    "last_name": "ElGendy",
+    "email": "nagham31010193@f-eng.tanta.edu.eg",
+    "is_staff": false,
+    "role": "committee_supervisor",
+    "supervisor_type": "scientific",
+    "phone": "01062403480",
+    "address": "",
+    "date_joined": "2025-10-13T11:44:37.394Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$BTzK5ko4q14o48mtdsMMS4$NPKju90u/iT7mSsRhjEe08CBpQfKgZ+7lxIMe9+hplI=",
+    "last_login": "2025-11-07T22:08:43.365Z",
+    "is_superuser": false,
+    "username": "jana215",
+    "first_name": "Jana",
+    "last_name": "Zanaty",
+    "email": "janazanaty123@gmail.com",
+    "is_staff": false,
+    "role": "committee_supervisor",
+    "supervisor_type": "operations",
+    "phone": "0512345675",
+    "address": "",
+    "date_joined": "2025-10-20T22:17:24.242Z",
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "action": "إنشاء حساب جديد",
+    "timestamp": "2025-09-30T16:40:19.230Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-09-30T16:40:31.764Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-09-30T16:40:54.494Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-09-30T16:41:31.269Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-09-30T17:02:04.210Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 6,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-09-30T18:34:22.678Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-09-30T18:34:25.155Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 8,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-09-30T20:04:44.537Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 9,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-09-30T20:13:06.511Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 10,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-09-30T20:13:19.568Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-09-30T21:31:03.969Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 12,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T20:26:44.707Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 13,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T21:08:46.547Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 14,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:04:15.399Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 15,
+  "fields": {
+    "user": 1,
+    "action": "إضافة مستخدم جديد: Nouran556",
+    "timestamp": "2025-10-01T22:05:10.545Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 16,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:05:21.850Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 17,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:05:30.475Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 18,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:06:34.540Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 19,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:07:03.223Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 20,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:09:15.322Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 21,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:09:24.352Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 22,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:09:31.566Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 23,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:09:54.143Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 24,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:10:03.902Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 25,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:10:17.330Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 26,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:10:22.769Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 27,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:16:58.946Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 28,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:17:03.815Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 29,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:17:30.796Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 30,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:17:50.326Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 31,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:17:56.778Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 32,
+  "fields": {
+    "user": 1,
+    "action": "إضافة برنامج جديد: برنامج حفظ القرآن الكريم المتكامل",
+    "timestamp": "2025-10-01T22:20:23.554Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 33,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:20:43.174Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 34,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:20:49.378Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 35,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:29:14.343Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 36,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:33:10.721Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 37,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:33:29.506Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 38,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:33:58.454Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 39,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-01T22:34:28.598Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 40,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-01T22:34:34.867Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 41,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T10:23:10.933Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 42,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-02T10:40:27.973Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 43,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Hams Elseba3y",
+    "timestamp": "2025-10-02T10:44:19.783Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 44,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T10:44:33.184Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 45,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-02T10:44:38.350Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 46,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T10:44:53.599Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 47,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-02T10:45:03.247Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 48,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T10:56:29.402Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 49,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-02T11:16:26.077Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 50,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T11:16:27.818Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 51,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-02T11:23:06.555Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 52,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T11:32:00.916Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 53,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-02T11:32:13.469Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 54,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-02T11:32:34.723Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 55,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T12:02:07.050Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 56,
+  "fields": {
+    "user": 2,
+    "action": "إزالة المشرف: Hams Elseba3y من البرنامج",
+    "timestamp": "2025-10-05T12:02:16.064Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 57,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-05T12:09:06.065Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 58,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T12:09:14.247Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 59,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-05T12:10:33.736Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 60,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T12:10:41.398Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 61,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Hams El Dakrory",
+    "timestamp": "2025-10-05T12:11:16.918Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 62,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-05T12:11:33.733Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 63,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T12:11:40.619Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 64,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T12:16:17.242Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 65,
+  "fields": {
+    "user": 2,
+    "action": "إضافة لجنة جديدة: اللجنة الثقافية",
+    "timestamp": "2025-10-05T12:17:25.011Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 66,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-05T12:17:33.482Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 67,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T12:17:49.507Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 68,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-05T16:55:57.948Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 69,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-05T16:56:04.978Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 70,
+  "fields": {
+    "user": 1,
+    "action": "إضافة مستخدم جديد: Mai763",
+    "timestamp": "2025-10-06T11:04:16.036Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 71,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T11:04:19.045Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 72,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T11:04:28.434Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 73,
+  "fields": {
+    "user": 4,
+    "action": "إضافة مهمة ثقافية: ✨ المسابقة الثقافية لبرنامج حفظ القرآن الكريم المتكامل ✨",
+    "timestamp": "2025-10-06T11:08:07.858Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 74,
+  "fields": {
+    "user": 4,
+    "action": "تعديل مهمة ثقافية: ✨ المسابقة الثقافية لبرنامج حفظ القرآن الكريم المتكامل ✨",
+    "timestamp": "2025-10-06T11:08:49.011Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 75,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T11:29:53.583Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 76,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T11:30:04.045Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 77,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T11:30:05.957Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 78,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T11:30:12.085Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 79,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T12:02:23.563Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 80,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T12:02:53.238Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 81,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T12:05:43.217Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 82,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T12:05:52.056Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 83,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T12:30:04.734Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 84,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T12:30:13.917Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 85,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T12:39:49.806Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 86,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T12:41:43.101Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 87,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T13:08:07.654Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 88,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T13:08:28.324Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 89,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T13:09:54.602Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 90,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T13:10:01.141Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 91,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T14:03:49.829Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 92,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T14:03:59.444Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 93,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T14:04:11.245Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 94,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T14:04:20.014Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 95,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T14:04:26.084Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 96,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T14:10:37.290Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 97,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T14:18:05.857Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 98,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T14:19:32.918Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 99,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T14:33:23.165Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 100,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T20:55:42.321Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 101,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T20:56:10.409Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 102,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T20:56:18.512Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 103,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Mohamed Zanaty",
+    "timestamp": "2025-10-06T20:58:52.620Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 104,
+  "fields": {
+    "user": 2,
+    "action": "إضافة لجنة جديدة: اللجنة الرياضية",
+    "timestamp": "2025-10-06T21:00:21.992Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 105,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T21:00:30.216Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 106,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T21:00:52.089Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 107,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T22:22:52.840Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 108,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T22:22:58.586Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 109,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T22:23:00.083Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 110,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T22:23:07.431Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 111,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-06T22:23:19.746Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 112,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-06T22:23:24.853Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 113,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-07T13:11:34.622Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 114,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-07T13:11:41.105Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 115,
+  "fields": {
+    "user": 1,
+    "action": "إضافة مستخدم جديد: Ahmed778",
+    "timestamp": "2025-10-07T13:12:35.019Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 116,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-07T13:12:37.937Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 117,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-07T13:12:42.727Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 118,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-08T09:56:42.873Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 119,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-08T09:56:49.733Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 120,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-08T09:57:12.876Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 121,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Nada Ayman",
+    "timestamp": "2025-10-08T10:00:54.898Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 122,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-08T10:03:55.592Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 123,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-08T10:04:09.156Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 124,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-08T10:05:29.440Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 125,
+  "fields": {
+    "user": 2,
+    "action": "إضافة لجنة جديدة: اللجنة الشرعية",
+    "timestamp": "2025-10-08T10:07:11.021Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 126,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-08T10:07:13.540Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 127,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-08T10:07:25.456Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 128,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-08T10:09:26.622Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 129,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-08T10:15:37.163Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 130,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T10:14:03.313Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 131,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T10:14:40.538Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 132,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T11:35:48.333Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 133,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Tayem ElGendy",
+    "timestamp": "2025-10-13T11:39:28.013Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 134,
+  "fields": {
+    "user": 2,
+    "action": "إزالة المشرف: Tayem ElGendy من البرنامج",
+    "timestamp": "2025-10-13T11:39:38.978Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 135,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T11:40:19.287Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 136,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T11:40:32.230Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 137,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T11:42:15.046Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 138,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T11:42:21.956Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 139,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Tayem ElGendy",
+    "timestamp": "2025-10-13T11:44:37.984Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 140,
+  "fields": {
+    "user": 2,
+    "action": "إضافة لجنة جديدة: اللجنة العلمية للقرآن الكريم",
+    "timestamp": "2025-10-13T11:46:42.843Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 141,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T11:46:51.587Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 142,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T11:47:06.922Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 143,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T11:47:11.506Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 144,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T11:47:17.218Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 145,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T11:49:08.827Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 146,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T12:37:22.177Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 147,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T12:37:29.087Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 148,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T13:55:36.375Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 149,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T14:05:38.308Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 150,
+  "fields": {
+    "user": 1,
+    "action": "إضافة ألبوم: Islam",
+    "timestamp": "2025-10-13T14:07:10.652Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 151,
+  "fields": {
+    "user": 1,
+    "action": "إضافة صورة للألبوم: Islam",
+    "timestamp": "2025-10-13T14:10:02.999Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 152,
+  "fields": {
+    "user": 1,
+    "action": "إضافة صورة للألبوم: Islam",
+    "timestamp": "2025-10-13T14:10:24.242Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 153,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T14:10:26.132Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 154,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T14:10:56.749Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 155,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T14:11:35.208Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 156,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T14:11:52.901Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 157,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T14:12:01.245Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 158,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-13T14:12:06.513Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 159,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-13T17:48:30.389Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 160,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T17:12:44.782Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 161,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-14T17:37:11.323Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 162,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T17:37:17.288Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 163,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: rfr efrf",
+    "timestamp": "2025-10-14T18:05:36.310Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 164,
+  "fields": {
+    "user": 2,
+    "action": "حذف المشرف: rfr efrf",
+    "timestamp": "2025-10-14T18:05:46.657Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 165,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-14T18:05:48.783Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 166,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T18:05:54.078Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 167,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-14T18:05:59.540Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 168,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T18:09:18.252Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 169,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-14T18:43:46.380Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 170,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T18:43:55.101Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 171,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-14T18:44:06.949Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 172,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T18:44:13.968Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 173,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-14T19:31:17.782Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 174,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T16:39:54.814Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 175,
+  "fields": {
+    "user": 1,
+    "action": "رفع ملف: dscfd",
+    "timestamp": "2025-10-15T16:48:18.522Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 176,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:01:38.974Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 177,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T17:01:46.787Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 178,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:01:50.083Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 179,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T17:01:56.168Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 180,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:05:18.981Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 181,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T17:05:26.834Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 182,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مهمة علمية: مهمة علمية",
+    "timestamp": "2025-10-15T17:13:46.571Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 183,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:13:58.216Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 184,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T17:14:12.334Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 185,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:14:20.345Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 186,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T17:14:25.362Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 187,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:14:29.562Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 188,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-15T17:14:34.207Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 189,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-15T17:19:26.130Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 190,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-20T21:38:08.025Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 191,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-20T21:38:10.837Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 192,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-20T21:38:18.292Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 193,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-20T21:38:34.861Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 194,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-20T21:38:41.838Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 195,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مشرف جديد: Jana Zanaty",
+    "timestamp": "2025-10-20T22:17:24.935Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 196,
+  "fields": {
+    "user": 2,
+    "action": "إضافة لجنة جديدة: اللجنة التشغيلية لبرنامج حفظ القرآن الكريم المتكامل",
+    "timestamp": "2025-10-20T22:18:59.395Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 197,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-10-20T22:19:07.074Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 198,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-20T22:19:14.311Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 199,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-10-20T22:22:38.137Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 200,
+  "fields": {
+    "user": 5,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T13:11:38.223Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 201,
+  "fields": {
+    "user": 5,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T13:11:43.487Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 202,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T13:12:01.477Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 203,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T13:25:45.594Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 204,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T13:25:53.727Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 205,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T13:48:32.040Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 206,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T13:48:37.798Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 207,
+  "fields": {
+    "user": 1,
+    "action": "إضافة حدث جدولة: test sports event",
+    "timestamp": "2025-11-07T14:38:58.300Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 208,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T14:39:43.253Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 209,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T14:39:55.493Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 210,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T14:39:57.927Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 211,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T14:40:04.186Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 212,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T14:40:09.112Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 213,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T14:40:18.018Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 214,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T14:42:09.392Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 215,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:04:48.152Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 216,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:05:11.629Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 217,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:05:29.741Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 218,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:05:34.172Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 219,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:05:45.912Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 220,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:05:54.098Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 221,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:06:05.196Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 222,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:09:51.878Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 223,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:09:58.249Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 224,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:12:13.406Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 225,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:12:26.543Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 226,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مهمة رياضية: test sports task from pm",
+    "timestamp": "2025-11-07T15:19:51.201Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 227,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:19:57.835Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 228,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:20:03.236Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 229,
+  "fields": {
+    "user": 6,
+    "action": "حذف مهمة رياضية: test sports task from pm",
+    "timestamp": "2025-11-07T15:22:55.584Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 230,
+  "fields": {
+    "user": 6,
+    "action": "حذف مهمة رياضية: مهمة من المدير: test sports event",
+    "timestamp": "2025-11-07T15:22:58.100Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 231,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:23:13.245Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 232,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:23:35.661Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 233,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:23:41.821Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 234,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:23:49.832Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 235,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:24:03.746Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 236,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:24:08.122Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 237,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:33:58.125Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 238,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:34:12.071Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 239,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مهمة شرعية: test sharia task from pm",
+    "timestamp": "2025-11-07T15:34:39.257Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 240,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:34:42.415Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 241,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:34:48.930Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 242,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:35:34.769Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 243,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:35:41.332Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 244,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:35:42.742Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 245,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:35:48.138Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 246,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:35:55.317Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 247,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:36:01.146Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 248,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:36:49.919Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 249,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:37:01.920Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 250,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:37:07.751Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 251,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:37:13.581Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 252,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:42:39.308Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 253,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:42:44.497Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 254,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مهمة ثقافية: test cultural task from pm",
+    "timestamp": "2025-11-07T15:43:14.646Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 255,
+  "fields": {
+    "user": 2,
+    "action": "إضافة مهمة جديدة: test cultural task from pm",
+    "timestamp": "2025-11-07T15:43:14.672Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 256,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:43:16.708Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 257,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:43:21.222Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 258,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:43:53.019Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 259,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:43:59.553Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 260,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:44:11.088Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 261,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:44:16.433Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 262,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:44:17.739Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 263,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:50:38.816Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 264,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:50:59.014Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 265,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T15:51:05.354Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 266,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T15:51:06.771Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 267,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:34:29.487Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 268,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T20:34:51.653Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 269,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:36:23.528Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 270,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T20:36:39.821Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 271,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:36:49.090Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 272,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T20:43:42.828Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 273,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:43:52.796Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 274,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T20:43:57.889Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 275,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:44:07.508Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 276,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T20:52:57.564Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 277,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:53:08.297Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 278,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T20:53:12.870Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 279,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T20:53:17.869Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 280,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:05:17.043Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 281,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:05:22.587Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 282,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:10:32.117Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 283,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:10:42.442Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 284,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:10:54.707Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 285,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:10:59.699Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 286,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:11:07.021Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 287,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:11:40.787Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 288,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:26:41.344Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 289,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:26:47.853Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 290,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:27:39.635Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 291,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:27:50.849Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 292,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:28:00.138Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 293,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:28:05.070Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 294,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T21:28:08.166Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 295,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T21:28:17.209Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 296,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:01:09.899Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 297,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:01:14.450Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 298,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:02:01.932Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 299,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:02:09.150Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 300,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:04:04.108Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 301,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:04:13.072Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 302,
+  "fields": {
+    "user": 1,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:05:11.403Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 303,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:05:40.410Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 304,
+  "fields": {
+    "user": 2,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:06:12.076Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 305,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:06:30.913Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 306,
+  "fields": {
+    "user": 6,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:07:07.280Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 307,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:07:29.918Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 308,
+  "fields": {
+    "user": 8,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:07:56.265Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 309,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:08:06.880Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 310,
+  "fields": {
+    "user": 10,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:08:36.229Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 311,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:08:43.373Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 312,
+  "fields": {
+    "user": 12,
+    "action": "تسجيل الخروج",
+    "timestamp": "2025-11-07T22:09:30.904Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.useractivity",
+  "pk": 313,
+  "fields": {
+    "user": 4,
+    "action": "تسجيل الدخول",
+    "timestamp": "2025-11-07T22:09:38.430Z",
+    "ip_address": "127.0.0.1"
+  }
+},
+{
+  "model": "accounts.programsupervisor",
+  "pk": 2,
+  "fields": {
+    "program": 1,
+    "supervisor": 4,
+    "created_by": 2,
+    "created_at": "2025-10-05T12:11:16.911Z"
+  }
+},
+{
+  "model": "accounts.programsupervisor",
+  "pk": 3,
+  "fields": {
+    "program": 1,
+    "supervisor": 6,
+    "created_by": 2,
+    "created_at": "2025-10-06T20:58:52.611Z"
+  }
+},
+{
+  "model": "accounts.programsupervisor",
+  "pk": 4,
+  "fields": {
+    "program": 1,
+    "supervisor": 8,
+    "created_by": 2,
+    "created_at": "2025-10-08T10:00:54.891Z"
+  }
+},
+{
+  "model": "accounts.programsupervisor",
+  "pk": 6,
+  "fields": {
+    "program": 1,
+    "supervisor": 10,
+    "created_by": 2,
+    "created_at": "2025-10-13T11:44:37.978Z"
+  }
+},
+{
+  "model": "accounts.programsupervisor",
+  "pk": 8,
+  "fields": {
+    "program": 1,
+    "supervisor": 12,
+    "created_by": 2,
+    "created_at": "2025-10-20T22:17:24.927Z"
+  }
+},
+{
+  "model": "accounts.passwordresettoken",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "token": "74yBET4uo8PaifPNCr04H6lm3Z9T2OKGnMGyV6YsN6CWv0wDL5",
+    "created_at": "2025-10-02T11:15:08.174Z",
+    "expires_at": "2025-10-03T11:15:08.171Z",
+    "is_used": false
+  }
+},
+{
+  "model": "main.scheduleevent",
+  "pk": 1,
+  "fields": {
+    "title": "test sports event",
+    "description": "testtttttttttttttttttttttttttttttttttttttt",
+    "event_type": "activity",
+    "program": 1,
+    "committee": 2,
+    "start_date": "2025-11-07",
+    "end_date": "2025-11-09",
+    "start_time": "09:00:00",
+    "end_time": "22:00:00",
+    "status": "pending",
+    "priority": "medium",
+    "location": "testtttttttttt",
+    "assigned_to": 6,
+    "created_by": 1,
+    "created_at": "2025-11-07T14:38:58.266Z",
+    "updated_at": "2025-11-07T14:38:58.266Z",
+    "color": "#fc82bb",
+    "participants": []
+  }
+},
+{
+  "model": "director_dashboard.program",
+  "pk": 1,
+  "fields": {
+    "name": "برنامج حفظ القرآن الكريم المتكامل",
+    "description": "برنامج متكامل ومتخصص لحفظ القرآن الكريم كاملاً مع مراعاة أحكام التجويد والتلاوة. يشمل البرنامج متابعة فردية لكل طالب، تقييم مستمر، وخطط مراجعة مخصصة لضمان إتقان الحفظ.",
+    "manager": 2,
+    "start_date": "2025-10-20",
+    "end_date": "2026-10-20",
+    "target_students": 100,
+    "created_at": "2025-10-01T22:20:23.545Z",
+    "is_active": true
+  }
+},
+{
+  "model": "director_dashboard.committee",
+  "pk": 1,
+  "fields": {
+    "name": "اللجنة الثقافية",
+    "program": 1,
+    "supervisor": 4,
+    "description": "وصف لاللجنة الثقافية",
+    "created_at": "2025-10-05T12:17:24.995Z"
+  }
+},
+{
+  "model": "director_dashboard.committee",
+  "pk": 2,
+  "fields": {
+    "name": "اللجنة الرياضية",
+    "program": 1,
+    "supervisor": 6,
+    "description": "تسعى اللجنة الرياضية إلى تعزيز صحة الطلاب وبناء أجسامهم جنبًا إلى جنب مع بناء أرواحهم بحفظ كتاب الله. من خلال الأنشطة الرياضية المتنوعة، تهدف اللجنة إلى غرس قيم التعاون، والانضباط، والروح الجماعية، لتكون الرياضة وسيلة مساندة لمسيرة الطلاب في تعلم القرآن الكريم والعمل به.",
+    "created_at": "2025-10-06T21:00:21.983Z"
+  }
+},
+{
+  "model": "director_dashboard.committee",
+  "pk": 3,
+  "fields": {
+    "name": "اللجنة الشرعية",
+    "program": 1,
+    "supervisor": 8,
+    "description": "اللجنة الشرعية هي الجهة المسؤولة عن المتابعة العلمية والرقابة الشرعية في برنامج حفظ القرآن الكريم المتكامل، حيث تتولى الإشراف على صحة الحفظ والتلاوة، وضبط الأداء وفق أحكام التجويد، والتأكد من التزام المشاركين بالمنهج الشرعي الصحيح، بما يحقق الهدف الأسمى للبرنامج في ترسيخ كتاب الله حفظًا وتدبرًا وعملاً.",
+    "created_at": "2025-10-08T10:07:11.011Z"
+  }
+},
+{
+  "model": "director_dashboard.committee",
+  "pk": 4,
+  "fields": {
+    "name": "اللجنة العلمية للقرآن الكريم",
+    "program": 1,
+    "supervisor": 10,
+    "description": "تُعنى اللجنة العلمية بدراسة علوم القرآن الكريم وتفسيره، وتقديم البحوث والمراجع التي تُعين الحفظة على فهم معاني كتاب الله وتدبره. كما تُشرف على إعداد المواد العلمية والدورات التي تُثري الجانب المعرفي للمشاركين في البرنامج، وتربط بين الحفظ والفهم والعمل.",
+    "created_at": "2025-10-13T11:46:42.835Z"
+  }
+},
+{
+  "model": "director_dashboard.committee",
+  "pk": 5,
+  "fields": {
+    "name": "اللجنة التشغيلية لبرنامج حفظ القرآن الكريم المتكامل",
+    "program": 1,
+    "supervisor": 12,
+    "description": "اللجنة التشغيلية هي الجهة المسؤولة عن الإشراف على تنفيذ برنامج حفظ القرآن الكريم المتكامل ومتابعة سير عملياته اليومية، بما يضمن تحقيق أهداف البرنامج بكفاءة وجودة عالية. تتولى اللجنة تنسيق الجهود بين الفرق الإدارية والتعليمية، ومتابعة الأداء، وتقديم التقارير الدورية، واقتراح سبل التطوير والتحسين لضمان استمرارية التميز في خدمة كتاب الله حفظًا وتدبّرًا.",
+    "created_at": "2025-10-20T22:18:59.385Z"
+  }
+},
+{
+  "model": "director_dashboard.directoralbum",
+  "pk": 1,
+  "fields": {
+    "title": "Islam",
+    "description": "Quran photos",
+    "cover_image": "albums/covers/2025/10/pexels-tayebmezahdia-318451.jpg",
+    "is_active": true,
+    "created_by": 1,
+    "created_at": "2025-10-13T14:07:10.643Z",
+    "updated_at": "2025-10-13T14:07:10.643Z"
+  }
+},
+{
+  "model": "director_dashboard.albumphoto",
+  "pk": 1,
+  "fields": {
+    "album": 1,
+    "title": "Quran 1",
+    "image": "albums/photos/2025/10/pexels-tayebmezahdia-318451.jpg",
+    "description": "",
+    "order": 1,
+    "created_at": "2025-10-13T14:10:02.992Z"
+  }
+},
+{
+  "model": "director_dashboard.albumphoto",
+  "pk": 2,
+  "fields": {
+    "album": 1,
+    "title": "Quran 2",
+    "image": "albums/photos/2025/10/pexels-mloky96-36704.jpg",
+    "description": "",
+    "order": 2,
+    "created_at": "2025-10-13T14:10:24.234Z"
+  }
+},
+{
+  "model": "director_dashboard.directorfilelibrary",
+  "pk": 1,
+  "fields": {
+    "title": "dscfd",
+    "description": "dsffdsf",
+    "file_type": "document",
+    "file": "director_files/2025/10/Resume-1.pdf",
+    "thumbnail": "",
+    "is_public": true,
+    "download_count": 0,
+    "uploaded_by": 1,
+    "uploaded_at": "2025-10-15T16:48:18.515Z"
+  }
+},
+{
+  "model": "director_dashboard.directoralert",
+  "pk": 1,
+  "fields": {
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد في اللجنة الثقافية: TEST CONVERSATION",
+    "alert_type": "system_alert",
+    "priority": "medium",
+    "is_read": false,
+    "related_user": 4,
+    "related_program": null,
+    "related_committee": 1,
+    "created_at": "2025-11-07T22:03:05.863Z",
+    "action_url": "/cultural/discussions/4/",
+    "related_discussion": 4
+  }
+},
+{
+  "model": "director_dashboard.directoralert",
+  "pk": 2,
+  "fields": {
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد في اللجنة الثقافية: TEST CONVERSATION",
+    "alert_type": "system_alert",
+    "priority": "medium",
+    "is_read": false,
+    "related_user": 4,
+    "related_program": null,
+    "related_committee": 1,
+    "created_at": "2025-11-07T22:03:05.920Z",
+    "action_url": "/cultural/discussions/4/",
+    "related_discussion": 4
+  }
+},
+{
+  "model": "director_dashboard.directoralert",
+  "pk": 3,
+  "fields": {
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد في اللجنة الثقافية: TEST CONVERSATION",
+    "alert_type": "system_alert",
+    "priority": "medium",
+    "is_read": false,
+    "related_user": 4,
+    "related_program": null,
+    "related_committee": 1,
+    "created_at": "2025-11-07T22:03:05.975Z",
+    "action_url": "/cultural/discussions/4/",
+    "related_discussion": 4
+  }
+},
+{
+  "model": "director_dashboard.directoralert",
+  "pk": 4,
+  "fields": {
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد في اللجنة الثقافية: TEST CONVERSATION",
+    "alert_type": "system_alert",
+    "priority": "medium",
+    "is_read": false,
+    "related_user": 4,
+    "related_program": null,
+    "related_committee": 1,
+    "created_at": "2025-11-07T22:03:06.042Z",
+    "action_url": "/cultural/discussions/4/",
+    "related_discussion": 4
+  }
+},
+{
+  "model": "director_dashboard.directoralert",
+  "pk": 5,
+  "fields": {
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد في اللجنة الثقافية: TEST CONVERSATION",
+    "alert_type": "system_alert",
+    "priority": "medium",
+    "is_read": false,
+    "related_user": 4,
+    "related_program": null,
+    "related_committee": 1,
+    "created_at": "2025-11-07T22:03:06.098Z",
+    "action_url": "/cultural/discussions/4/",
+    "related_discussion": 4
+  }
+},
+{
+  "model": "director_dashboard.directoralert",
+  "pk": 6,
+  "fields": {
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد في اللجنة الثقافية: TEST CONVERSATION",
+    "alert_type": "system_alert",
+    "priority": "medium",
+    "is_read": false,
+    "related_user": 4,
+    "related_program": null,
+    "related_committee": 1,
+    "created_at": "2025-11-07T22:03:06.159Z",
+    "action_url": "/cultural/discussions/4/",
+    "related_discussion": 4
+  }
+},
+{
+  "model": "pm_dashboard.task",
+  "pk": 1,
+  "fields": {
+    "title": "test sports task from pm",
+    "description": "testttttttttttttttttt",
+    "program": 1,
+    "committee": 2,
+    "assigned_to": 6,
+    "status": "pending",
+    "priority": "medium",
+    "due_date": "2025-11-20",
+    "created_at": "2025-11-07T15:19:51.192Z",
+    "updated_at": "2025-11-07T15:19:51.192Z",
+    "created_by": 2,
+    "is_scientific_task": false,
+    "scientific_task_ref": null,
+    "is_sports_task": true,
+    "sports_task_ref": null,
+    "is_sharia_task": false,
+    "sharia_task_ref": null,
+    "is_cultural_task": false,
+    "cultural_task_ref": null,
+    "is_operations_task": false,
+    "operations_task_ref": null
+  }
+},
+{
+  "model": "pm_dashboard.task",
+  "pk": 2,
+  "fields": {
+    "title": "test sharia task from pm",
+    "description": "testtttttttttttttttt",
+    "program": 1,
+    "committee": 3,
+    "assigned_to": 8,
+    "status": "pending",
+    "priority": "medium",
+    "due_date": "2025-12-11",
+    "created_at": "2025-11-07T15:34:39.249Z",
+    "updated_at": "2025-11-07T15:34:39.249Z",
+    "created_by": 2,
+    "is_scientific_task": false,
+    "scientific_task_ref": null,
+    "is_sports_task": false,
+    "sports_task_ref": null,
+    "is_sharia_task": true,
+    "sharia_task_ref": 1,
+    "is_cultural_task": false,
+    "cultural_task_ref": null,
+    "is_operations_task": false,
+    "operations_task_ref": null
+  }
+},
+{
+  "model": "pm_dashboard.task",
+  "pk": 3,
+  "fields": {
+    "title": "test cultural task from pm",
+    "description": "tttttttttttttttttttttttttttttttttt",
+    "program": 1,
+    "committee": 1,
+    "assigned_to": 4,
+    "status": "pending",
+    "priority": "medium",
+    "due_date": "2025-12-11",
+    "created_at": "2025-11-07T15:43:14.637Z",
+    "updated_at": "2025-11-07T15:43:14.654Z",
+    "created_by": 2,
+    "is_scientific_task": false,
+    "scientific_task_ref": null,
+    "is_sports_task": false,
+    "sports_task_ref": null,
+    "is_sharia_task": false,
+    "sharia_task_ref": null,
+    "is_cultural_task": true,
+    "cultural_task_ref": 2,
+    "is_operations_task": false,
+    "operations_task_ref": null
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 1,
+  "fields": {
+    "user": 4,
+    "notification_type": "task_added",
+    "title": "مهمة جديدة",
+    "message": "تم تعيين مهمة جديدة لك: test cultural task from pm",
+    "is_read": false,
+    "created_at": "2025-11-07T15:43:14.664Z",
+    "related_task": 3,
+    "related_committee": null,
+    "related_discussion": null
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.854Z",
+    "related_task": null,
+    "related_committee": 1,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 3,
+  "fields": {
+    "user": 2,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.912Z",
+    "related_task": null,
+    "related_committee": 1,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 4,
+  "fields": {
+    "user": 6,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.967Z",
+    "related_task": null,
+    "related_committee": 1,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 5,
+  "fields": {
+    "user": 8,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.034Z",
+    "related_task": null,
+    "related_committee": 1,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 6,
+  "fields": {
+    "user": 10,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.091Z",
+    "related_task": null,
+    "related_committee": 1,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "pm_dashboard.notification",
+  "pk": 7,
+  "fields": {
+    "user": 12,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.148Z",
+    "related_task": null,
+    "related_committee": 1,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturaltask",
+  "pk": 1,
+  "fields": {
+    "committee": 1,
+    "task_type": "cultural_data",
+    "title": "✨ المسابقة الثقافية لبرنامج حفظ القرآن الكريم المتكامل ✨",
+    "description": "في إطار برنامج حفظ القرآن الكريم المتكامل، تُنظم مسابقة ثقافية مميزة تهدف إلى إثراء المعرفة وتنمية المهارات الفكرية للمشاركين. تجمع المسابقة بين المتعة والفائدة من خلال أسئلة متنوعة في مجالات: العلوم الشرعية، السيرة النبوية، الثقافة العامة، والمهارات الذهنية.\r\nانضموا إلينا لتكونوا جزءًا من أجواء تنافسية هادفة، تجمع بين نور القرآن الكريم ومتعة التعلم. 🌿📖",
+    "status": "pending",
+    "assigned_to_name": "",
+    "due_date": "2025-12-30",
+    "completion_percentage": 15,
+    "created_at": "2025-10-06T11:08:07.836Z",
+    "updated_at": "2025-10-06T11:08:48.982Z",
+    "created_by": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturaltask",
+  "pk": 2,
+  "fields": {
+    "committee": 1,
+    "task_type": "other",
+    "title": "مهمة من مدير البرنامج: test cultural task from pm",
+    "description": "tttttttttttttttttttttttttttttttttt",
+    "status": "pending",
+    "assigned_to_name": "",
+    "due_date": "2025-12-11",
+    "completion_percentage": 0,
+    "created_at": "2025-11-07T15:43:14.619Z",
+    "updated_at": "2025-11-07T15:43:14.619Z",
+    "created_by": 2
+  }
+},
+{
+  "model": "cultural_committee_dashboard.committeemember",
+  "pk": 1,
+  "fields": {
+    "committee": 1,
+    "user": 5,
+    "role": "منسق المسابقات",
+    "joined_date": "2025-10-06",
+    "is_active": true,
+    "participation_score": 0
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussion",
+  "pk": 3,
+  "fields": {
+    "committee": 1,
+    "title": "TEST CONVERSATION",
+    "content": "testtttttttttttttt",
+    "created_by": 4,
+    "created_at": "2025-11-07T22:02:25.458Z",
+    "updated_at": "2025-11-07T22:02:25.458Z",
+    "is_pinned": false,
+    "is_public_to_all_supervisors": true
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussion",
+  "pk": 4,
+  "fields": {
+    "committee": 1,
+    "title": "TEST CONVERSATION",
+    "content": "testtttttttttttttt",
+    "created_by": 4,
+    "created_at": "2025-11-07T22:03:05.798Z",
+    "updated_at": "2025-11-07T22:03:05.798Z",
+    "is_pinned": false,
+    "is_public_to_all_supervisors": true
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 2,
+  "fields": {
+    "discussion": 4,
+    "content": "ثقافيىة",
+    "created_by": 4,
+    "created_at": "2025-11-07T22:04:01.763Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 3,
+  "fields": {
+    "discussion": 4,
+    "content": "مدير منصة",
+    "created_by": 1,
+    "created_at": "2025-11-07T22:05:02.429Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 4,
+  "fields": {
+    "discussion": 4,
+    "content": "مدير برنامج",
+    "created_by": 2,
+    "created_at": "2025-11-07T22:06:07.927Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 5,
+  "fields": {
+    "discussion": 4,
+    "content": "رياضية",
+    "created_by": 6,
+    "created_at": "2025-11-07T22:06:59.980Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 6,
+  "fields": {
+    "discussion": 4,
+    "content": "شرعية",
+    "created_by": 8,
+    "created_at": "2025-11-07T22:07:52.955Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 7,
+  "fields": {
+    "discussion": 4,
+    "content": "علمية",
+    "created_by": 10,
+    "created_at": "2025-11-07T22:08:26.401Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.discussioncomment",
+  "pk": 8,
+  "fields": {
+    "discussion": 4,
+    "content": "تشغيلية",
+    "created_by": 12,
+    "created_at": "2025-11-07T22:09:29.876Z"
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 11,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:02:25.470Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 3
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 12,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.819Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 13,
+  "fields": {
+    "user": 2,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.880Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 14,
+  "fields": {
+    "user": 6,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.935Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 15,
+  "fields": {
+    "user": 8,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.991Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 16,
+  "fields": {
+    "user": 10,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.058Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "cultural_committee_dashboard.culturalnotification",
+  "pk": 17,
+  "fields": {
+    "user": 12,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.115Z",
+    "related_task": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 1,
+  "fields": {
+    "user": 6,
+    "committee": 2,
+    "notification_type": "task_added",
+    "title": "مهمة جديدة من المدير",
+    "message": "تم إضافة مهمة جديدة من المدير: test sports event",
+    "is_read": true,
+    "created_at": "2025-11-07T14:38:58.288Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": null
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:02:25.479Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 3
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.828Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 5,
+  "fields": {
+    "user": 2,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.888Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 6,
+  "fields": {
+    "user": 6,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.943Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 7,
+  "fields": {
+    "user": 8,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.999Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 8,
+  "fields": {
+    "user": 10,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.066Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sports_committee_dashboard.sportsnotification",
+  "pk": 9,
+  "fields": {
+    "user": 12,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.123Z",
+    "related_task": null,
+    "related_match": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sharia_committee_dashboard.shariatask",
+  "pk": 1,
+  "fields": {
+    "committee": 3,
+    "task_type": "other",
+    "title": "مهمة من مدير البرنامج: test sharia task from pm",
+    "description": "testtttttttttttttttt",
+    "status": "pending",
+    "assigned_to_name": "",
+    "due_date": "2025-12-11",
+    "completion_percentage": 0,
+    "created_at": "2025-11-07T15:34:39.230Z",
+    "updated_at": "2025-11-07T15:34:39.230Z",
+    "created_by": 2
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 1,
+  "fields": {
+    "user": 8,
+    "committee": 3,
+    "notification_type": "task_added",
+    "title": "مهمة جديدة من مدير البرنامج",
+    "message": "تم تعيين مهمة جديدة لك من مدير البرنامج: test sharia task from pm",
+    "is_read": false,
+    "created_at": "2025-11-07T15:34:39.239Z",
+    "related_task": 1,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": null
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:02:25.501Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 3
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.846Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 4,
+  "fields": {
+    "user": 2,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.904Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 5,
+  "fields": {
+    "user": 6,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.960Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 6,
+  "fields": {
+    "user": 8,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.024Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 7,
+  "fields": {
+    "user": 10,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.083Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "sharia_committee_dashboard.sharianotification",
+  "pk": 8,
+  "fields": {
+    "user": 12,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.140Z",
+    "related_task": null,
+    "related_competition": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientifictask",
+  "pk": 1,
+  "fields": {
+    "committee": 4,
+    "task_type": "other",
+    "title": "مهمة علمية",
+    "description": "وصف ل مهمة علمية",
+    "status": "pending",
+    "assigned_to_name": "",
+    "due_date": "2025-10-31",
+    "completion_percentage": 0,
+    "created_at": "2025-10-15T17:13:46.554Z",
+    "updated_at": "2025-10-15T17:13:46.554Z",
+    "created_by": 2
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 1,
+  "fields": {
+    "user": 10,
+    "committee": 4,
+    "notification_type": "task_added",
+    "title": "مهمة جديدة من مدير البرنامج",
+    "message": "تم تعيين مهمة جديدة لك من مدير البرنامج: مهمة علمية",
+    "is_read": false,
+    "created_at": "2025-10-15T17:13:46.561Z",
+    "related_task": 1,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": null
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:02:25.488Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 3
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.837Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 4,
+  "fields": {
+    "user": 2,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.896Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 5,
+  "fields": {
+    "user": 6,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.951Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 6,
+  "fields": {
+    "user": 8,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.010Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 7,
+  "fields": {
+    "user": 10,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.074Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "scientific_committee_dashboard.scientificnotification",
+  "pk": 8,
+  "fields": {
+    "user": 12,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.131Z",
+    "related_task": null,
+    "related_lecture": null,
+    "related_file": null,
+    "related_report": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "operations_committee_dashboard.operationsnotification",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.871Z",
+    "related_task": null,
+    "related_resource": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "operations_committee_dashboard.operationsnotification",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.928Z",
+    "related_task": null,
+    "related_resource": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "operations_committee_dashboard.operationsnotification",
+  "pk": 3,
+  "fields": {
+    "user": 6,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:05.983Z",
+    "related_task": null,
+    "related_resource": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "operations_committee_dashboard.operationsnotification",
+  "pk": 4,
+  "fields": {
+    "user": 8,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.050Z",
+    "related_task": null,
+    "related_resource": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "operations_committee_dashboard.operationsnotification",
+  "pk": 5,
+  "fields": {
+    "user": 10,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.107Z",
+    "related_task": null,
+    "related_resource": null,
+    "related_discussion": 4
+  }
+},
+{
+  "model": "operations_committee_dashboard.operationsnotification",
+  "pk": 6,
+  "fields": {
+    "user": 12,
+    "committee": 1,
+    "notification_type": "discussion_created",
+    "title": "نقاش جديد",
+    "message": "تم إنشاء نقاش جديد: TEST CONVERSATION",
+    "is_read": false,
+    "created_at": "2025-11-07T22:03:06.167Z",
+    "related_task": null,
+    "related_resource": null,
+    "related_discussion": 4
+  }
+}
+]
