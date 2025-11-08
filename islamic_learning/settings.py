@@ -90,15 +90,21 @@ WSGI_APPLICATION = 'islamic_learning.wsgi.application'
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
+    print(f"DEBUG: DATABASE_URL found: {DATABASE_URL[:50]}...")
+    try:
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=DATABASE_URL,
+                conn_max_age=600,
+                conn_health_checks=True,
+            )
+        }
+        print(f"DEBUG: Database config: {DATABASES['default']}")
+    except Exception as e:
+        print(f"ERROR: Database configuration failed: {e}")
+        raise
 else:
-    # Fallback to SQLite for local development
+    print("DEBUG: No DATABASE_URL found, using SQLite")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
