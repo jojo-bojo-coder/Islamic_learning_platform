@@ -1,0 +1,142 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}{{ title }} - اللجنة العلمية{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.task_type.id_for_label }}" class="form-label">نوع المهمة</label>
+                        {{ form.task_type }}
+                        {% if form.task_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.task_type.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">الحالة</label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.status.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">عنوان المهمة</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.title.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">الوصف</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.description.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.assigned_to_name.id_for_label }}" class="form-label">المسؤول</label>
+                        {{ form.assigned_to_name }}
+                        {% if form.assigned_to_name.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.assigned_to_name.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.due_date.id_for_label }}" class="form-label">تاريخ الاستحقاق</label>
+                        {{ form.due_date }}
+                        {% if form.due_date.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.due_date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">نسبة الإنجاز</label>
+                    {{ form.completion_percentage }}
+                    {% if form.completion_percentage.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.completion_percentage.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'scientific_task_management' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right ms-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save ms-1"></i>
+                        حفظ المهمة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add Bootstrap classes to form elements
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+
+        // Make sure select elements have the correct class
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.classList.add('form-select');
+        });
+    });
+</script>
+{% endblock %}

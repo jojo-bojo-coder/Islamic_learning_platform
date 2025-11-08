@@ -1,0 +1,213 @@
+{% extends 'sports_committee/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--sports-orange);
+    }
+
+    .form-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control, .form-select, .form-textarea {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .form-control:focus, .form-select:focus, .form-textarea:focus {
+        border-color: var(--sports-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .priority-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-left: 0.5rem;
+    }
+
+    .priority-high { background: #dc3545; }
+    .priority-medium { background: #ffc107; }
+    .priority-low { background: #28a745; }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-top: 0.3rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-tasks ms-2"></i>
+            {{ title }}
+        </h3>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">{{ form.title.label }}</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.title.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.description.label }}</label>
+            {{ form.description }}
+            <div class="help-text">وصف تفصيلي للمهمة والمطلوب تنفيذه</div>
+            {% if form.description.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.description.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">{{ form.assigned_to_name.label }}</label>
+                {{ form.assigned_to_name }}
+                {% if form.assigned_to_name.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in form.assigned_to_name.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.priority.label }}</label>
+                {{ form.priority }}
+                {% if form.priority.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in form.priority.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">{{ form.due_date.label }}</label>
+                {{ form.due_date }}
+                {% if form.due_date.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in form.due_date.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ form.status.label }}</label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in form.status.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{ form.related_match.label }}</label>
+            {{ form.related_match }}
+            <div class="help-text">اختياري - ربط المهمة بمباراة معينة</div>
+            {% if form.related_match.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.related_match.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'sports_task_management' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right ms-2"></i>
+                رجوع
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save ms-2"></i>
+                حفظ المهمة
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,770 @@
+{% extends 'director_base.html' %}
+
+{% block title %}التقارير والإحصائيات - منصة التحفيظ{% endblock %}
+
+{% block page_title %}التقارير والإحصائيات{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--primary-green);
+        margin-left: 12px;
+    }
+
+    /* Export Buttons */
+    .btn-export {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-export-primary {
+        color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+
+    .btn-export-primary:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-export-success {
+        color: var(--dark-green);
+        border-color: var(--dark-green);
+    }
+
+    .btn-export-success:hover {
+        background: var(--dark-green);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(11, 59, 36, 0.3);
+    }
+
+    /* Summary Cards */
+    .stats-row {
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-light);
+        height: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .feature-card h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-card h4 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    /* Table Styling */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+        font-size: 0.95rem;
+    }
+
+    .table thead {
+        background: rgba(134, 184, 23, 0.1);
+    }
+
+    .table thead th {
+        color: var(--text-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(134, 184, 23, 0.05);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        vertical-align: middle;
+        border: none;
+    }
+
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .bg-success {
+        background: var(--primary-green) !important;
+    }
+
+    .bg-primary {
+        background: var(--dark-green) !important;
+    }
+
+    .bg-warning {
+        background: #c9a961 !important;
+    }
+
+    .bg-info {
+        background: #2d5016 !important;
+    }
+
+    .bg-secondary {
+        background: var(--text-gray) !important;
+    }
+
+    .bg-danger {
+        background: #dc3545 !important;
+    }
+
+    /* Progress Bars */
+    .progress {
+        background-color: var(--border-light);
+        border-radius: 10px;
+        height: 8px;
+    }
+
+    .progress-bar {
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+
+    .bg-success {
+        background-color: var(--primary-green) !important;
+    }
+
+    .bg-warning {
+        background-color: #c9a961 !important;
+    }
+
+    .bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    /* Overview Cards */
+    .overview-card {
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .overview-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .overview-card i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .overview-card h5 {
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .overview-card h3 {
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .text-primary { color: var(--primary-green) !important; }
+    .text-success { color: var(--primary-green) !important; }
+    .text-warning { color: #c9a961 !important; }
+    .text-danger { color: #dc3545 !important; }
+
+    /* Empty States */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .table {
+            font-size: 0.9rem;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 0.8rem;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .overview-card {
+            padding: 1rem;
+        }
+
+        .overview-card i {
+            font-size: 1.5rem;
+        }
+
+        .overview-card h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h4 {
+            font-size: 1.2rem;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem 1rem;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+        }
+
+        /* Hide less important columns on small screens */
+        .table thead th:nth-child(2), /* Program Manager */
+        .table thead th:nth-child(5), /* Start Date */
+        .table thead th:nth-child(6), /* End Date */
+        .table tbody td:nth-child(2),
+        .table tbody td:nth-child(5),
+        .table tbody td:nth-child(6) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .btn-export {
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .export-buttons {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .overview-card {
+            margin-bottom: 1rem;
+        }
+
+        .overview-card h3 {
+            font-size: 1.3rem;
+        }
+
+        /* Hide more columns on very small screens */
+        .table thead th:nth-child(4), /* Average Progress */
+        .table thead th:nth-child(7), /* Status */
+        .table tbody td:nth-child(4),
+        .table tbody td:nth-child(7) {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .stats-row .col-md-3 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h4 {
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .feature-card h4 i {
+            display: block;
+            margin: 0 0 0.5rem 0;
+        }
+
+        /* Stack progress bars vertically on very small screens */
+        .table tbody td .d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .table tbody td .progress {
+            margin: 0;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-chart-bar"></i>
+        التقارير والإحصائيات
+    </h2>
+    <div class="export-buttons">
+        <a href="#" class="btn-export btn-export-primary">
+            <i class="fas fa-download"></i>
+            <span>تصدير PDF</span>
+        </a>
+        <a href="#" class="btn-export btn-export-success">
+            <i class="fas fa-file-excel"></i>
+            <span>تصدير Excel</span>
+        </a>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row stats-row">
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ programs.count }}</div>
+            <div class="stat-label">إجمالي البرامج</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.2s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ active_committees.count }}</div>
+            <div class="stat-label">اللجان النشطة</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ best_students.count }}</div>
+            <div class="stat-label">الطلاب المتميزين</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="stat-card">
+            <div class="stat-number">
+                {% with total=programs.count %}
+                    {% if total > 0 %}
+                        {% widthratio programs.count programs.count 100 %}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div class="stat-label">متوسط الإنجاز</div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Program Achievement -->
+<div class="row">
+    <div class="col-12 fade-in-up mb-4" style="animation-delay: 0.5s;">
+        <div class="feature-card">
+            <h4>
+                <i class="fas fa-chart-bar"></i>
+                تقرير شهري عن إنجاز البرامج
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>اسم البرنامج</th>
+                            <th class="d-none d-lg-table-cell">مدير البرنامج</th>
+                            <th>عدد الطلاب</th>
+                            <th class="d-none d-md-table-cell">متوسط التقدم</th>
+                            <th class="d-none d-xl-table-cell">تاريخ البدء</th>
+                            <th class="d-none d-xl-table-cell">تاريخ الانتهاء</th>
+                            <th class="d-none d-sm-table-cell">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for program in programs %}
+                        <tr>
+                            <td>
+                                <strong>{{ program.name }}</strong>
+                            </td>
+                            <td class="d-none d-lg-table-cell">
+                                {% if program.manager %}
+                                    {{ program.manager.get_full_name|default:program.manager.username }}
+                                {% else %}
+                                    <span class="text-muted">غير معين</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ program.student_count }}</span>
+                            </td>
+                            <td class="d-none d-md-table-cell">
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2">
+                                        <div class="progress-bar
+                                            {% if program.avg_progress >= 80 %}bg-success
+                                            {% elif program.avg_progress >= 50 %}bg-warning
+                                            {% else %}bg-danger{% endif %}"
+                                            style="width: {{ program.avg_progress|default:0 }}%">
+                                        </div>
+                                    </div>
+                                    <span class="text-nowrap">{{ program.avg_progress|default:0|floatformat:1 }}%</span>
+                                </div>
+                            </td>
+                            <td class="d-none d-xl-table-cell">{{ program.start_date }}</td>
+                            <td class="d-none d-xl-table-cell">{{ program.end_date }}</td>
+                            <td class="d-none d-sm-table-cell">
+                                {% if program.is_active %}
+                                    <span class="badge bg-success">نشط</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">منتهي</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div class="empty-state">
+                                    <i class="fas fa-chart-bar"></i>
+                                    <p>لا توجد برامج مضافة حتى الآن</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Most Active Committees & Best Students -->
+<div class="row">
+    <!-- Most Active Committees -->
+    <div class="col-lg-6 fade-in-up mb-4" style="animation-delay: 0.6s;">
+        <div class="feature-card">
+            <h4>
+                <i class="fas fa-trophy"></i>
+                أكثر اللجان نشاطاً
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>اسم اللجنة</th>
+                            <th class="d-none d-md-table-cell">البرنامج</th>
+                            <th>عدد الأعضاء</th>
+                            <th class="d-none d-sm-table-cell">متوسط التقدم</th>
+                            <th>النشاط</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for committee in active_committees %}
+                        <tr>
+                            <td>
+                                <strong>{{ committee.name }}</strong>
+                            </td>
+                            <td class="d-none d-md-table-cell">{{ committee.program.name }}</td>
+                            <td>
+                                <span class="badge bg-primary">{{ committee.student_count }}</span>
+                            </td>
+                            <td class="d-none d-sm-table-cell">
+                                <span class="badge
+                                    {% if committee.avg_progress >= 80 %}bg-success
+                                    {% elif committee.avg_progress >= 50 %}bg-warning
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ committee.avg_progress|default:0|floatformat:1 }}%
+                                </span>
+                            </td>
+                            <td>
+                                {% if committee.student_count > 10 %}
+                                    <span class="badge bg-success">عالٍ</span>
+                                {% elif committee.student_count > 5 %}
+                                    <span class="badge bg-warning">متوسط</span>
+                                {% else %}
+                                    <span class="badge bg-info">منخفض</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">
+                                <div class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <p>لا توجد لجان نشطة حتى الآن</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Students -->
+    <div class="col-lg-6 fade-in-up mb-4" style="animation-delay: 0.7s;">
+        <div class="feature-card">
+            <h4>
+                <i class="fas fa-star"></i>
+                أفضل الطلاب أداءً
+            </h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>اسم الطالب</th>
+                            <th class="d-none d-lg-table-cell">البرنامج</th>
+                            <th class="d-none d-xl-table-cell">اللجنة</th>
+                            <th class="d-none d-md-table-cell">مستوى الحفظ</th>
+                            <th>نسبة التقدم</th>
+                            <th class="d-none d-sm-table-cell">التقييم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in best_students %}
+                        <tr>
+                            <td>
+                                <strong>{{ student.user.get_full_name|default:student.user.username }}</strong>
+                            </td>
+                            <td class="d-none d-lg-table-cell">{{ student.program.name }}</td>
+                            <td class="d-none d-xl-table-cell">
+                                {% if student.committee %}
+                                    {{ student.committee.name }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="d-none d-md-table-cell">{{ student.memorization_level|default:"غير محدد" }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress flex-grow-1 me-2">
+                                        <div class="progress-bar
+                                            {% if student.progress >= 80 %}bg-success
+                                            {% elif student.progress >= 50 %}bg-warning
+                                            {% else %}bg-danger{% endif %}"
+                                            style="width: {{ student.progress }}%">
+                                        </div>
+                                    </div>
+                                    <span class="text-nowrap">{{ student.progress }}%</span>
+                                </div>
+                            </td>
+                            <td class="d-none d-sm-table-cell">
+                                {% if student.progress >= 90 %}
+                                    <span class="badge bg-success">متميز</span>
+                                {% elif student.progress >= 70 %}
+                                    <span class="badge bg-warning">جيد جداً</span>
+                                {% elif student.progress >= 50 %}
+                                    <span class="badge bg-info">جيد</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">مقبول</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                <div class="empty-state">
+                                    <i class="fas fa-user-graduate"></i>
+                                    <p>لا توجد بيانات للطلاب حتى الآن</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overview Cards -->
+<div class="row fade-in-up" style="animation-delay: 0.8s;">
+    <div class="col-12">
+        <div class="feature-card">
+            <h4>
+                <i class="fas fa-chart-pie"></i>
+                نظرة عامة على الإنجازات
+            </h4>
+
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="overview-card">
+                        <i class="fas fa-running text-primary"></i>
+                        <h5>في التقدم</h5>
+                        <h3 class="text-primary">65%</h3>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="overview-card">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <h5>مكتمل</h5>
+                        <h3 class="text-success">25%</h3>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="overview-card">
+                        <i class="fas fa-clock text-warning"></i>
+                        <h5>متأخر</h5>
+                        <h3 class="text-warning">8%</h3>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6 mb-3">
+                    <div class="overview-card">
+                        <i class="fas fa-times-circle text-danger"></i>
+                        <h5>غير مكتمل</h5>
+                        <h3 class="text-danger">2%</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

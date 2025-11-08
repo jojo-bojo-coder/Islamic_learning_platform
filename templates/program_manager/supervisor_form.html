@@ -1,0 +1,286 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}{{ title }} - {{ program.name }}{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .form-header h3 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .form-header h3 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    .form-header p {
+        color: var(--text-gray);
+        margin: 0.5rem 0 0 0;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+    }
+
+    .btn-primary {
+        background: var(--primary-green);
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-size: 1rem;
+    }
+
+    .btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-secondary {
+        background: var(--text-gray);
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-size: 1rem;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .alert-info {
+        background: rgba(23, 162, 184, 0.1);
+        border: 1px solid rgba(23, 162, 184, 0.2);
+        color: #0c5460;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-info i {
+        color: #17a2b8;
+        margin-left: 8px;
+    }
+
+    .supervisor-type-selector {
+        background: rgba(134, 184, 23, 0.05);
+        border: 2px solid var(--primary-green);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .supervisor-type-selector label {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .supervisor-type-selector label i {
+        color: var(--primary-green);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-user-plus"></i>
+            {{ title }}
+        </h3>
+        <p>أدخل بيانات المشرف الجديد للبرنامج: {{ program.name }}</p>
+    </div>
+
+    <div class="alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>ملاحظة:</strong> سيتم إنشاء حساب للمشرف بكلمة مرور افتراضية: <strong>123456</strong>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+            {{ error }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Supervisor Type Selector - HIGHLIGHTED -->
+        <div class="supervisor-type-selector">
+            <label for="{{ form.supervisor_type.id_for_label }}">
+                <i class="fas fa-user-tag"></i>
+                {{ form.supervisor_type.label }}
+            </label>
+            {{ form.supervisor_type }}
+            {% if form.supervisor_type.errors %}
+            <div class="text-danger mt-2">
+                {% for error in form.supervisor_type.errors %}
+                <small><i class="fas fa-exclamation-triangle ms-1"></i> {{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.username.id_for_label }}">
+                        {{ form.username.label }}
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.username.errors %}
+                        <small><i class="fas fa-exclamation-triangle ms-1"></i> {{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.email.id_for_label }}">
+                        {{ form.email.label }}
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.email.errors %}
+                        <small><i class="fas fa-exclamation-triangle ms-1"></i> {{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                        {{ form.first_name.label }}
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.first_name.errors %}
+                        <small><i class="fas fa-exclamation-triangle ms-1"></i> {{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                        {{ form.last_name.label }}
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.last_name.errors %}
+                        <small><i class="fas fa-exclamation-triangle ms-1"></i> {{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.phone.id_for_label }}">
+                        {{ form.phone.label }}
+                    </label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.phone.errors %}
+                        <small><i class="fas fa-exclamation-triangle ms-1"></i> {{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save ms-2"></i>
+                حفظ المشرف
+            </button>
+            <a href="{% url 'pm_supervisor_management' %}" class="btn btn-secondary">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

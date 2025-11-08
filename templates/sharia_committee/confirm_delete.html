@@ -1,0 +1,39 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}تأكيد الحذف - {{ committee.name }}{% endblock %}
+{% block page_title %}تأكيد الحذف{% endblock %}
+
+{% block content %}
+<div class="confirm-delete-card" style="background: var(--white); border-radius: 15px; padding: 3rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 600px; margin: 0 auto; text-align: center;">
+    <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(220, 53, 69, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; font-size: 2.5rem; color: #dc3545;">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+
+    <h3 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1rem;">
+        هل أنت متأكد من حذف هذا {{ type }}؟
+    </h3>
+
+    <p style="color: var(--text-gray); font-size: 1.1rem; margin-bottom: 2rem;">
+        <strong>{{ object }}</strong>
+    </p>
+
+    <div class="alert alert-danger" role="alert">
+        <i class="fas fa-info-circle ms-2"></i>
+        هذا الإجراء لا يمكن التراجع عنه!
+    </div>
+
+    <form method="post" style="display: inline;">
+        {% csrf_token %}
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <button type="submit" class="btn btn-danger" style="padding: 0.8rem 2rem;">
+                <i class="fas fa-trash ms-2"></i>
+                نعم، احذف
+            </button>
+            <a href="javascript:history.back()" class="btn btn-secondary" style="padding: 0.8rem 2rem;">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

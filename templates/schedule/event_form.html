@@ -1,0 +1,398 @@
+{% extends 'director_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .form-header h3 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-header h3 i {
+        color: var(--primary-green);
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(134, 184, 23, 0.1);
+    }
+
+    .form-section-title i {
+        color: var(--primary-green);
+        font-size: 1.2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        color: var(--primary-green);
+        font-size: 0.9rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.15);
+        outline: none;
+    }
+
+    .form-text {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .btn-submit {
+        background: var(--primary-green);
+        border: none;
+        color: var(--white);
+        padding: 0.9rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-submit:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-cancel {
+        background: var(--light-bg);
+        border: 2px solid var(--border-light);
+        color: var(--text-dark);
+        padding: 0.9rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-cancel:hover {
+        background: var(--border-light);
+        transform: translateY(-2px);
+        color: var(--text-dark);
+    }
+
+    .required-field::after {
+        content: "*";
+        color: #dc3545;
+        margin-right: 0.3rem;
+    }
+
+    @media (max-width: 767px) {
+        .form-wrapper {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-submit, .btn-cancel {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-wrapper fade-in-up">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-calendar-plus"></i>
+            {{ title }}
+        </h3>
+    </div>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        <!-- Basic Information Section -->
+        <div class="form-section">
+            <h4 class="form-section-title">
+                <i class="fas fa-info-circle"></i>
+                المعلومات الأساسية
+            </h4>
+
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label required-field">
+                    <i class="fas fa-heading"></i>
+                    {{ form.title.label }}
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}" class="form-label required-field">
+                    <i class="fas fa-align-right"></i>
+                    {{ form.description.label }}
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.event_type.id_for_label }}" class="form-label required-field">
+                            <i class="fas fa-tag"></i>
+                            {{ form.event_type.label }}
+                        </label>
+                        {{ form.event_type }}
+                        {% if form.event_type.errors %}
+                            <div class="text-danger mt-1">{{ form.event_type.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.committee.id_for_label }}" class="form-label">
+                            <i class="fas fa-users"></i>
+                            {{ form.committee.label }}
+                        </label>
+                        {{ form.committee }}
+                        <small class="form-text">اختياري - اترك فارغاً للحدث العام</small>
+                        {% if form.committee.errors %}
+                            <div class="text-danger mt-1">{{ form.committee.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date and Time Section -->
+        <div class="form-section">
+            <h4 class="form-section-title">
+                <i class="far fa-calendar-alt"></i>
+                التاريخ والوقت
+            </h4>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.start_date.id_for_label }}" class="form-label required-field">
+                            <i class="far fa-calendar"></i>
+                            {{ form.start_date.label }}
+                        </label>
+                        {{ form.start_date }}
+                        {% if form.start_date.errors %}
+                            <div class="text-danger mt-1">{{ form.start_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.end_date.id_for_label }}" class="form-label">
+                            <i class="far fa-calendar-check"></i>
+                            {{ form.end_date.label }}
+                        </label>
+                        {{ form.end_date }}
+                        <small class="form-text">اختياري - للأحداث متعددة الأيام</small>
+                        {% if form.end_date.errors %}
+                            <div class="text-danger mt-1">{{ form.end_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.start_time.id_for_label }}" class="form-label">
+                            <i class="far fa-clock"></i>
+                            {{ form.start_time.label }}
+                        </label>
+                        {{ form.start_time }}
+                        {% if form.start_time.errors %}
+                            <div class="text-danger mt-1">{{ form.start_time.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.end_time.id_for_label }}" class="form-label">
+                            <i class="far fa-clock"></i>
+                            {{ form.end_time.label }}
+                        </label>
+                        {{ form.end_time }}
+                        {% if form.end_time.errors %}
+                            <div class="text-danger mt-1">{{ form.end_time.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Details Section -->
+        <div class="form-section">
+            <h4 class="form-section-title">
+                <i class="fas fa-sliders-h"></i>
+                التفاصيل الإضافية
+            </h4>
+
+            <div class="form-group">
+                <label for="{{ form.location.id_for_label }}" class="form-label">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ form.location.label }}
+                </label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                    <div class="text-danger mt-1">{{ form.location.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.assigned_to.id_for_label }}" class="form-label">
+                            <i class="fas fa-user-check"></i>
+                            {{ form.assigned_to.label }}
+                        </label>
+                        {{ form.assigned_to }}
+                        {% if form.assigned_to.errors %}
+                            <div class="text-danger mt-1">{{ form.assigned_to.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}" class="form-label required-field">
+                            <i class="fas fa-circle"></i>
+                            {{ form.status.label }}
+                        </label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.priority.id_for_label }}" class="form-label required-field">
+                            <i class="fas fa-flag"></i>
+                            {{ form.priority.label }}
+                        </label>
+                        {{ form.priority }}
+                        {% if form.priority.errors %}
+                            <div class="text-danger mt-1">{{ form.priority.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.color.id_for_label }}" class="form-label">
+                    <i class="fas fa-palette"></i>
+                    {{ form.color.label }}
+                </label>
+                {{ form.color }}
+                <small class="form-text">اختر لوناً لعرض الحدث في التقويم</small>
+                {% if form.color.errors %}
+                    <div class="text-danger mt-1">{{ form.color.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-check"></i>
+                حفظ الحدث
+            </button>
+            <a href="{% url 'schedule_calendar' program.id %}" class="btn-cancel">
+                <i class="fas fa-times"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

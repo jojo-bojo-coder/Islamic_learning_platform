@@ -1,0 +1,164 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}إدارة المهام - اللجنة العلمية{% endblock %}
+
+{% block page_title %}إدارة المهام العلمية{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 style="color: var(--primary-blue);">
+                    <i class="fas fa-tasks ms-2"></i>
+                    المهام العلمية
+                </h4>
+                <a href="{% url 'scientific_add_task' %}" class="btn btn-primary">
+                    <i class="fas fa-plus ms-1"></i>
+                    إضافة مهمة جديدة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="type" class="form-label">نوع المهمة</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">جميع الأنواع</option>
+                        {% for task_type in task_types %}
+                        <option value="{{ task_type.0 }}" {% if task_type_filter == task_type.0 %}selected{% endif %}>
+                            {{ task_type.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">الحالة</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">جميع الحالات</option>
+                        {% for status in status_choices %}
+                        <option value="{{ status.0 }}" {% if status_filter == status.0 %}selected{% endif %}>
+                            {{ status.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter ms-1"></i>
+                        تصفية
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tasks Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-card">
+            {% if tasks %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>نوع المهمة</th>
+                            <th>المسؤول</th>
+                            <th>تاريخ الاستحقاق</th>
+                            <th>الحالة</th>
+                            <th>نسبة الإنجاز</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td>
+                                <strong>{{ task.title }}</strong>
+                                {% if task.description %}
+                                <br>
+                                <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ task.get_task_type_display }}</td>
+                            <td>
+                                {% if task.assigned_to %}
+                                {{ task.assigned_to.get_full_name }}
+                                {% else %}
+                                <span class="text-muted">غير معين</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ task.due_date }}</td>
+                            <td>
+                                <span class="status-badge status-{{ task.status }}">
+                                    {{ task.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="progress ms-2" style="width: 80px; height: 8px;">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%"></div>
+                                    </div>
+                                    <span>{{ task.completion_percentage }}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'scientific_edit_task' task.id %}" class="btn btn-outline-primary" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">تأكيد الحذف</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>هل أنت متأكد من حذف المهمة "{{ task.title }}"؟</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="post" action="{% url 'scientific_delete_task' task.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                    <button type="submit" class="btn btn-danger">حذف</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">لا توجد مهام</h5>
+                <p class="text-muted">لم يتم إضافة أي مهام بعد</p>
+                <a href="{% url 'scientific_add_task' %}" class="btn btn-primary">
+                    <i class="fas fa-plus ms-1"></i>
+                    إضافة أول مهمة
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}بيانات اللجنة - {{ committee.name }}{% endblock %}
+
+{% block page_title %}بيانات اللجنة{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+            <div class="card-header bg-white" style="border-bottom: 2px solid var(--primary-green); border-radius: 15px 15px 0 0;">
+                <h3 class="mb-0" style="color: var(--text-dark); font-weight: 700;">
+                    <i class="fas fa-info-circle ms-2" style="color: var(--primary-green);"></i>
+                    معلومات اللجنة الثقافية
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">اسم اللجنة</label>
+                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
+                                <i class="fas fa-users ms-2" style="color: var(--primary-green);"></i>
+                                {{ committee.name }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">المشرف</label>
+                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
+                                <i class="fas fa-user-tie ms-2" style="color: var(--primary-green);"></i>
+                                {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">البرنامج</label>
+                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
+                                <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+                                {{ committee.program.name }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="info-item">
+                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">تاريخ الإنشاء</label>
+                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
+                                <i class="far fa-calendar ms-2" style="color: var(--primary-green);"></i>
+                                {{ committee.created_at|date:"Y/m/d" }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">الوصف</label>
+                    <p style="font-size: 1rem; color: var(--text-dark); line-height: 1.8; margin-top: 0.5rem;">
+                        {{ committee.description }}
+                    </p>
+                </div>
+
+                <hr style="border-color: var(--border-light); margin: 2rem 0;">
+
+                <h5 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1.5rem;">
+                    <i class="fas fa-chart-line ms-2" style="color: var(--primary-green);"></i>
+                    إحصائيات اللجنة
+                </h5>
+
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <div style="background: rgba(134, 184, 23, 0.1); padding: 1.5rem; border-radius: 10px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-green);">{{ total_members }}</div>
+                            <div style="color: var(--text-gray); font-weight: 600; margin-top: 0.5rem;">إجمالي الأعضاء</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="background: rgba(134, 184, 23, 0.1); padding: 1.5rem; border-radius: 10px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-green);">{{ active_members }}</div>
+                            <div style="color: var(--text-gray); font-weight: 600; margin-top: 0.5rem;">الأعضاء النشطون</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="background: rgba(134, 184, 23, 0.1); padding: 1.5rem; border-radius: 10px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-green);">{{ avg_participation }}</div>
+                            <div style="color: var(--text-gray); font-weight: 600; margin-top: 0.5rem;">متوسط المشاركة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

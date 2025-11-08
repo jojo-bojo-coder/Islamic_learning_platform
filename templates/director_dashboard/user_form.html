@@ -1,0 +1,583 @@
+{% extends 'director_base.html' %}
+
+{% block title %}{{ title }} - منصة التحفيظ{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Form Container */
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    /* Form Header */
+    .form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .form-header h2 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .form-header h2 i {
+        color: var(--primary-green);
+        margin-left: 12px;
+    }
+
+    /* Form Elements */
+    .form-label {
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 3px rgba(134, 184, 23, 0.1);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: var(--text-gray);
+        opacity: 0.7;
+    }
+
+    /* Form Text */
+    .form-text {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-top: 0.25rem;
+    }
+
+    /* Error Styling */
+    .text-danger {
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Form Switch */
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        border: 2px solid var(--border-light);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-green);
+        border-color: var(--primary-green);
+    }
+
+    .form-check-label {
+        color: var(--text-dark);
+        font-weight: 500;
+        margin-right: 0.5rem;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border: none;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-right: 4px solid;
+    }
+
+    .alert-info {
+        background: rgba(134, 184, 23, 0.1);
+        border-right-color: var(--primary-green);
+        color: var(--text-dark);
+    }
+
+    .alert-success {
+        background: rgba(134, 184, 23, 0.1);
+        border-right-color: var(--primary-green);
+        color: var(--text-dark);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        border-right-color: #dc3545;
+        color: #721c24;
+    }
+
+    .alert-heading {
+        color: var(--primary-green);
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .alert ul {
+        margin-bottom: 0;
+        padding-right: 1rem;
+    }
+
+    .alert li {
+        margin-bottom: 0.25rem;
+        color: var(--text-dark);
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        color: var(--white);
+    }
+
+    .btn-secondary {
+        background: var(--text-gray);
+        color: var(--white);
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+        color: var(--white);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--border-light);
+        color: var(--text-dark);
+        background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--border-light);
+        border-color: var(--text-gray);
+        transform: translateY(-2px);
+        color: var(--text-dark);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    /* Required Field Indicator */
+    .required::after {
+        content: " *";
+        color: #dc3545;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .form-container {
+            max-width: 100%;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .form-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column-reverse;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 1.25rem;
+            margin: 0 0.5rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+        }
+
+        .alert-heading {
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.25rem;
+            font-size: 0.9rem;
+        }
+
+        /* Stack form columns on mobile */
+        .row .col-md-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .form-card {
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .form-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.2rem;
+        }
+
+        .form-control, .form-select {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .alert ul {
+            padding-right: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .form-actions {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .form-header {
+            text-align: center;
+        }
+
+        .form-header h2 i {
+            display: block;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .alert-heading {
+            text-align: center;
+        }
+
+        .form-check {
+            text-align: center;
+        }
+
+        .form-text {
+            text-align: center;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Loading State */
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    /* Success State */
+    .is-valid {
+        border-color: var(--primary-green) !important;
+    }
+
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container fade-in-up">
+    <div class="form-card">
+        <!-- Form Header -->
+        <div class="form-header">
+            <h2>
+                <i class="fas fa-user-edit"></i>
+                {{ title }}
+            </h2>
+            <a href="{% url 'user_management' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                <span class="d-none d-md-inline">العودة للقائمة</span>
+            </a>
+        </div>
+
+        <!-- Alert Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Form -->
+        <form method="post" id="userForm">
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- Username & Email -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_username" class="form-label required">اسم المستخدم</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="text-danger">{{ form.username.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">اسم المستخدم يجب أن يكون فريداً</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="id_email" class="form-label">البريد الإلكتروني</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- First Name & Last Name -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_first_name" class="form-label">الاسم الأول</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="text-danger">{{ form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="id_last_name" class="form-label">اسم العائلة</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="text-danger">{{ form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Phone & Role -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_phone" class="form-label">رقم الهاتف</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="text-danger">{{ form.phone.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="id_role" class="form-label required">الدور</label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                        <div class="text-danger">{{ form.role.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Password & Confirm Password -->
+                <div class="col-md-6 mb-3">
+                    <label for="id_password" class="form-label required">كلمة المرور</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="text-danger">{{ form.password.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">كلمة المرور يجب أن تكون قوية</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="id_confirm_password" class="form-label required">تأكيد كلمة المرور</label>
+                    <input type="password"
+                           class="form-control"
+                           id="id_confirm_password"
+                           name="confirm_password"
+                           placeholder="أعد إدخال كلمة المرور"
+                           required>
+                    <div class="form-text">يجب أن تطابق كلمة المرور</div>
+                </div>
+            </div>
+
+            <!-- Active Status -->
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="id_is_active" checked>
+                        <label class="form-check-label" for="id_is_active">الحساب نشط</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Role Descriptions -->
+            <div class="alert alert-info">
+                <h6 class="alert-heading">
+                    <i class="fas fa-info-circle me-2"></i>
+                    شرح الأدوار:
+                </h6>
+                <ul class="mb-0">
+                    <li><strong>مدير برنامج:</strong> إدارة برنامج محدد ومتابعة الطلاب</li>
+                    <li><strong>مشرف لجنة:</strong> الإشراف على لجنة ومتابعة أعضائها</li>
+                    <li><strong>طالب/عضو:</strong> المشاركة في البرامج والأنشطة</li>
+                </ul>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'user_management' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    <span>إلغاء</span>
+                </a>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i>
+                    <span>حفظ المستخدم</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('userForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const password = document.getElementById('id_password');
+        const confirmPassword = document.getElementById('id_confirm_password');
+
+        // Password confirmation validation
+        function validatePassword() {
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.classList.add('is-invalid');
+                confirmPassword.classList.remove('is-valid');
+                return false;
+            } else {
+                confirmPassword.classList.remove('is-invalid');
+                confirmPassword.classList.add('is-valid');
+                return true;
+            }
+        }
+
+        // Real-time password validation
+        if (password && confirmPassword) {
+            confirmPassword.addEventListener('input', validatePassword);
+            password.addEventListener('input', validatePassword);
+        }
+
+        // Form submission handler
+        form.addEventListener('submit', function(e) {
+            if (!validatePassword()) {
+                e.preventDefault();
+                alert('يجب أن تتطابق كلمة المرور مع التأكيد');
+                return false;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span> جاري الحفظ...</span>';
+        });
+
+        // Add required indicator to labels
+        const requiredFields = document.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            const label = document.querySelector(`label[for="${field.id}"]`);
+            if (label && !label.classList.contains('required')) {
+                label.classList.add('required');
+            }
+        });
+
+        // Enhance form controls with icons
+        const formControls = document.querySelectorAll('.form-control, .form-select');
+        formControls.forEach(control => {
+            control.classList.add('fade-in-up');
+            control.style.animationDelay = '0.2s';
+        });
+    });
+</script>
+{% endblock %}

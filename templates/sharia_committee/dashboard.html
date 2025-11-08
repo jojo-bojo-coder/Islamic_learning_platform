@@ -1,0 +1,398 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}لوحة تحكم اللجنة الشرعية - {{ committee.name }}{% endblock %}
+
+{% block page_title %}لوحة تحكم اللجنة الشرعية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        color: var(--white);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(134, 184, 23, 0.3);
+    }
+
+    .welcome-banner h2 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-banner p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .welcome-banner i {
+        position: absolute;
+        left: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 4rem;
+        opacity: 0.1;
+    }
+
+    .quick-actions-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .quick-actions-wrapper h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-actions-wrapper h4 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+    }
+
+    .action-btn-primary {
+        background: var(--primary-green);
+    }
+
+    .action-btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .action-btn-success {
+        background: var(--dark-green);
+    }
+
+    .action-btn-success:hover {
+        background: #0a2f1c;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(11, 59, 36, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-info {
+        background: #2d5016;
+    }
+
+    .action-btn-info:hover {
+        background: #1e3410;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(45, 80, 22, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-warning {
+        background: #c9a961;
+    }
+
+    .action-btn-warning:hover {
+        background: #b59852;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(201, 169, 97, 0.3);
+        color: var(--white);
+    }
+
+    .content-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+    }
+
+    .content-card h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .content-card h4 i {
+        color: var(--primary-green);
+        margin-left: 8px;
+    }
+
+    .list-group-item {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-light);
+        padding: 1rem 0;
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-group-item:hover {
+        color: var(--primary-green);
+    }
+
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .badge-warning {
+        background: #ffc107;
+        color: var(--text-dark);
+    }
+
+    .badge-danger {
+        background: #dc3545;
+        color: var(--white);
+    }
+
+    .badge-info {
+        background: #17a2b8;
+        color: var(--white);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner fade-in-up">
+    <i class="fas fa-book-quran"></i>
+    <h2>مرحباً بك في لوحة تحكم {{ committee.name }}</h2>
+    <p>إدارة الأنشطة الشرعية والتوعوية والمسابقات والكتب الشبابية</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_tasks }}</div>
+            <div class="stat-label">إجمالي المهام</div>
+            <i class="fas fa-tasks mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ pending_tasks }}</div>
+            <div class="stat-label">المهام قيد التنفيذ</div>
+            <i class="fas fa-hourglass-half mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ active_competitions }}</div>
+            <div class="stat-label">المسابقات النشطة</div>
+            <i class="fas fa-trophy mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ books_in_progress }}</div>
+            <div class="stat-label">الكتب قيد القراءة</div>
+            <i class="fas fa-book-reader mt-3"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions-wrapper">
+    <h4>
+        <i class="fas fa-bolt"></i>
+        إجراءات سريعة
+    </h4>
+    <div class="row g-3">
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'sharia_add_task' %}" class="action-btn action-btn-primary">
+                <i class="fas fa-plus"></i>
+                <span>إضافة مهمة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'sharia_add_message' %}" class="action-btn action-btn-success">
+                <i class="fas fa-envelope"></i>
+                <span>إضافة رسالة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'sharia_add_competition' %}" class="action-btn action-btn-info">
+                <i class="fas fa-trophy"></i>
+                <span>إضافة مسابقة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'sharia_add_book' %}" class="action-btn action-btn-warning">
+                <i class="fas fa-book"></i>
+                <span>إضافة كتاب</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row">
+    <!-- Recent Tasks -->
+    <div class="col-lg-6 mb-4">
+        <div class="content-card">
+            <h4>
+                <i class="fas fa-tasks"></i>
+                المهام الأخيرة
+            </h4>
+            <div class="list-group">
+                {% for task in recent_tasks %}
+                <div class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <i class="fas fa-check-circle ms-2" style="color: var(--primary-green);"></i>
+                        <strong>{{ task.get_task_type_display }}</strong>
+                        <div style="font-size: 0.9rem; color: var(--text-gray); margin-top: 0.3rem;">
+                            {{ task.title }}
+                        </div>
+                    </div>
+                    <span class="badge {% if task.status == 'completed' %}badge-success{% elif task.status == 'in_progress' %}badge-info{% else %}badge-warning{% endif %}">
+                        {{ task.get_status_display }}
+                    </span>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-tasks"></i>
+                    <p>لا توجد مهام بعد</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Messages -->
+    <div class="col-lg-6 mb-4">
+        <div class="content-card">
+            <h4>
+                <i class="fas fa-envelope"></i>
+                الرسائل القادمة
+            </h4>
+            <div class="list-group">
+                {% for message in upcoming_messages %}
+                <div class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <i class="fas fa-calendar ms-2" style="color: var(--primary-green);"></i>
+                        <strong>{{ message.title }}</strong>
+                        <div style="font-size: 0.9rem; color: var(--text-gray); margin-top: 0.3rem;">
+                            <i class="far fa-clock ms-1"></i>
+                            {{ message.scheduled_date }}
+                        </div>
+                    </div>
+                    <span class="badge badge-info">{{ message.get_message_type_display }}</span>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-envelope-open"></i>
+                    <p>لا توجد رسائل مجدولة</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Competitions -->
+    <div class="col-lg-6 mb-4">
+        <div class="content-card">
+            <h4>
+                <i class="fas fa-trophy"></i>
+                المسابقات النشطة
+            </h4>
+            <div class="list-group">
+                {% for competition in current_competitions %}
+                <div class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <i class="fas fa-award ms-2" style="color: var(--primary-green);"></i>
+                        <strong>{{ competition.title }}</strong>
+                        <div style="font-size: 0.9rem; color: var(--text-gray); margin-top: 0.3rem;">
+                            <i class="fas fa-users ms-1"></i>
+                            {{ competition.participants_count }} مشارك
+                        </div>
+                    </div>
+                    <span class="badge badge-success">{{ competition.get_status_display }}</span>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>لا توجد مسابقات نشطة</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Members -->
+    <div class="col-lg-6 mb-4">
+        <div class="content-card">
+            <h4>
+                <i class="fas fa-star"></i>
+                الأعضاء المتميزون
+            </h4>
+            <div class="list-group">
+                {% for member in top_members %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-user ms-2" style="color: var(--primary-green);"></i>
+                        <strong>{{ member.user.get_full_name|default:member.user.username }}</strong>
+                        <div style="font-size: 0.9rem; color: var(--text-gray); margin-top: 0.3rem;">
+                            {{ member.role }}
+                        </div>
+                    </div>
+                    <span class="badge badge-success">{{ member.participation_score }} نقطة</span>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-users-slash"></i>
+                    <p>لا يوجد أعضاء بعد</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

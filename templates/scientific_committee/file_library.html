@@ -1,0 +1,128 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}المكتبة العلمية - اللجنة العلمية{% endblock %}
+
+{% block page_title %}المكتبة العلمية{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 style="color: var(--primary-blue);">
+                    <i class="fas fa-file-alt ms-2"></i>
+                    المكتبة العلمية
+                </h4>
+                <a href="{% url 'scientific_upload_file' %}" class="btn btn-primary">
+                    <i class="fas fa-upload ms-1"></i>
+                    رفع ملف جديد
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label for="type" class="form-label">نوع الملف</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">جميع الأنواع</option>
+                        {% for file_type in file_types %}
+                        <option value="{{ file_type.0 }}" {% if file_type_filter == file_type.0 %}selected{% endif %}>
+                            {{ file_type.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter ms-1"></i>
+                        تصفية
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Files Grid -->
+<div class="row">
+    {% for file in files %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="dashboard-card h-100">
+            <div class="file-icon text-center mb-3">
+                <i class="fas fa-file-pdf fa-3x text-danger"></i>
+            </div>
+            <h5 class="mb-2">{{ file.title }}</h5>
+            <p class="text-muted mb-2">{{ file.get_file_type_display }}</p>
+            {% if file.description %}
+            <p class="text-muted small mb-3">{{ file.description|truncatewords:15 }}</p>
+            {% endif %}
+            {% if file.author %}
+            <p class="text-muted small mb-2">
+                <i class="fas fa-user ms-1"></i>
+                {{ file.author }}
+            </p>
+            {% endif %}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <small class="text-muted">
+                    <i class="fas fa-calendar ms-1"></i>
+                    {{ file.uploaded_at|date:"Y-m-d" }}
+                </small>
+                <small class="text-muted">
+                    <i class="fas fa-user ms-1"></i>
+                    {{ file.uploaded_by.get_full_name }}
+                </small>
+            </div>
+            <div class="btn-group w-100">
+                <a href="{{ file.file.url }}" class="btn btn-outline-primary" target="_blank">
+                    <i class="fas fa-download ms-1"></i>
+                    تحميل
+                </a>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ file.id }}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal{{ file.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">تأكيد الحذف</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>هل أنت متأكد من حذف الملف "{{ file.title }}"؟</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form method="post" action="{% url 'scientific_delete_file' file.id %}">
+                                {% csrf_token %}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                <button type="submit" class="btn btn-danger">حذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="dashboard-card text-center py-5">
+            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">لا توجد ملفات</h5>
+            <p class="text-muted">لم يتم رفع أي ملفات بعد</p>
+            <a href="{% url 'scientific_upload_file' %}" class="btn btn-primary">
+                <i class="fas fa-upload ms-1"></i>
+                رفع أول ملف
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

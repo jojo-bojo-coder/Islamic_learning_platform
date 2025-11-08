@@ -1,0 +1,131 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}حذف {{ type }} - {{ program.name }}{% endblock %}
+
+{% block page_title %}تأكيد الحذف{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-confirmation {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 3rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .warning-icon {
+        font-size: 4rem;
+        color: #dc3545;
+        margin-bottom: 1.5rem;
+    }
+
+    .delete-confirmation h3 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .delete-confirmation p {
+        color: var(--text-gray);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .object-details {
+        background: rgba(220, 53, 69, 0.05);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .object-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #dc3545;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: var(--light-bg);
+        border: 2px solid var(--border-light);
+        color: var(--text-dark);
+        border-radius: 8px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: var(--border-light);
+        color: var(--text-dark);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-confirmation">
+    <div class="warning-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+
+    <h3>تأكيد حذف {{ type }}</h3>
+
+    <p>هل أنت متأكد من أنك تريد حذف هذا {{ type }}؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+
+    <div class="object-details">
+        <div class="object-name">
+            {% if type == 'لجنة' %}
+                <i class="fas fa-users ms-2"></i>
+            {% elif type == 'مهمة' %}
+                <i class="fas fa-tasks ms-2"></i>
+            {% endif %}
+            {{ object.name }}
+        </div>
+        {% if object.description %}
+        <div style="color: var(--text-gray); margin-top: 0.5rem;">
+            {{ object.description|truncatewords:20 }}
+        </div>
+        {% endif %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group-actions">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash ms-2"></i>
+                نعم، احذف
+            </button>
+            <a href="{% if type == 'لجنة' %}{% url 'pm_committee_management' %}{% else %}{% url 'pm_task_management' %}{% endif %}" class="btn btn-secondary">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

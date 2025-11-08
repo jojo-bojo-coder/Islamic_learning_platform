@@ -1,0 +1,244 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}معلومات البرنامج - {{ program.name }}{% endblock %}
+
+{% block page_title %}معلومات البرنامج{% endblock %}
+
+{% block extra_css %}
+<style>
+    .program-info-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+
+    .program-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .program-header h3 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .program-header h3 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    .program-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+        border-color: var(--primary-green);
+        transform: translateY(-2px);
+    }
+
+    .stat-number {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .info-section {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .info-section h5 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-green);
+    }
+
+    .info-section h5 i {
+        color: var(--primary-green);
+        margin-left: 8px;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .info-value {
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .program-description {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .program-description h5 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .description-text {
+        color: var(--text-gray);
+        line-height: 1.8;
+        text-align: justify;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="program-info-card">
+    <div class="program-header">
+        <h3>
+            <i class="fas fa-info-circle"></i>
+            {{ program.name }}
+        </h3>
+        <p style="color: var(--text-gray); margin: 0; font-size: 1.1rem;">معلومات تفصيلية عن البرنامج وإحصائياته</p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="program-stats">
+        <div class="stat-item">
+            <div class="stat-number">{{ total_committees }}</div>
+            <div class="stat-label">عدد اللجان</div>
+            <i class="fas fa-users mt-3" style="color: var(--primary-green); opacity: 0.3; font-size: 2rem;"></i>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ total_students }}</div>
+            <div class="stat-label">عدد الطلاب</div>
+            <i class="fas fa-user-graduate mt-3" style="color: var(--primary-green); opacity: 0.3; font-size: 2rem;"></i>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ avg_progress }}%</div>
+            <div class="stat-label">متوسط الإنجاز</div>
+            <i class="fas fa-chart-line mt-3" style="color: var(--primary-green); opacity: 0.3; font-size: 2rem;"></i>
+        </div>
+    </div>
+
+    <!-- Program Information -->
+    <div class="info-grid">
+        <div class="info-section">
+            <h5>
+                <i class="fas fa-cog"></i>
+                المعلومات الأساسية
+            </h5>
+            <div class="info-item">
+                <span class="info-label">اسم البرنامج:</span>
+                <span class="info-value">{{ program.name }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">رمز البرنامج:</span>
+                <span class="info-value">{{ program.code|default:"غير محدد" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">مدير البرنامج:</span>
+                <span class="info-value">{{ program.manager.get_full_name|default:program.manager.username }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">حالة البرنامج:</span>
+                <span class="info-value">
+                    {% if program.is_active %}
+                        <span style="color: var(--primary-green); font-weight: 600;">نشط</span>
+                    {% else %}
+                        <span style="color: #dc3545; font-weight: 600;">غير نشط</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h5>
+                <i class="fas fa-calendar-alt"></i>
+                المعلومات الزمنية
+            </h5>
+            <div class="info-item">
+                <span class="info-label">تاريخ البدء:</span>
+                <span class="info-value">{{ program.start_date|date:"Y-m-d" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">تاريخ الانتهاء:</span>
+                <span class="info-value">{{ program.end_date|date:"Y-m-d" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">مدة البرنامج:</span>
+                <span class="info-value">
+                    {% with duration=program.end_date|timeuntil:program.start_date %}
+                        {{ duration }}
+                    {% endwith %}
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">تاريخ الإنشاء:</span>
+                <span class="info-value">{{ program.created_at|date:"Y-m-d" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program Description -->
+    {% if program.description %}
+    <div class="program-description">
+        <h5>
+            <i class="fas fa-file-alt"></i>
+            وصف البرنامج
+        </h5>
+        <div class="description-text">
+            {{ program.description|linebreaks }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

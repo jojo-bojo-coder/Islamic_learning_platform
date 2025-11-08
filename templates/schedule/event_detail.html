@@ -1,0 +1,478 @@
+{% extends 'director_base.html' %}
+
+{% block title %}تفاصيل الحدث - {{ event.title }}{% endblock %}
+
+{% block page_title %}تفاصيل الحدث{% endblock %}
+
+{% block extra_css %}
+<style>
+    .event-detail-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+
+    .event-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .event-title-section h2 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .event-meta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .event-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .event-badge.type-task {
+        background: rgba(45, 80, 22, 0.1);
+        color: #2d5016;
+    }
+
+    .event-badge.type-activity {
+        background: rgba(134, 184, 23, 0.1);
+        color: var(--primary-green);
+    }
+
+    .event-badge.type-meeting {
+        background: rgba(201, 169, 97, 0.1);
+        color: #c9a961;
+    }
+
+    .event-badge.type-exam {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .event-badge.type-other {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .status-pending {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .status-in_progress {
+        background: rgba(13, 202, 240, 0.1);
+        color: #0dcaf0;
+    }
+
+    .status-completed {
+        background: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+    .status-cancelled {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .priority-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .priority-low {
+        background: rgba(13, 202, 240, 0.1);
+        color: #0dcaf0;
+    }
+
+    .priority-medium {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .priority-high {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-action {
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+    }
+
+    .btn-edit {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .btn-edit:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        color: var(--white);
+    }
+
+    .btn-delete {
+        background: #dc3545;
+        color: var(--white);
+    }
+
+    .btn-delete:hover {
+        background: #bb2d3b;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        color: var(--white);
+    }
+
+    .btn-back {
+        background: var(--light-bg);
+        color: var(--text-dark);
+    }
+
+    .btn-back:hover {
+        background: var(--border-light);
+        transform: translateY(-2px);
+        color: var(--text-dark);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-item {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border-left: 4px solid var(--primary-green);
+    }
+
+    .info-label {
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+
+    .description-section {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .description-section h4 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .description-content {
+        color: var(--text-dark);
+        line-height: 1.8;
+        font-size: 1rem;
+    }
+
+    .participants-section {
+        background: var(--white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+    }
+
+    .participants-section h4 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .participant-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .participant-item:hover {
+        background: rgba(134, 184, 23, 0.1);
+    }
+
+    .participant-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--primary-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .participant-info {
+        flex: 1;
+    }
+
+    .participant-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.2rem;
+    }
+
+    .participant-role {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 767px) {
+        .event-header {
+            flex-direction: column;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .event-actions {
+            width: 100%;
+        }
+
+        .btn-action {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="event-detail-wrapper fade-in-up">
+    <div class="event-header">
+        <div class="event-title-section">
+            <h2>{{ event.title }}</h2>
+            <div class="event-meta">
+                <span class="event-badge type-{{ event.event_type }}">
+                    <i class="fas fa-tag"></i>
+                    {{ event.get_event_type_display }}
+                </span>
+                <span class="status-badge status-{{ event.status }}">
+                    <i class="fas fa-circle"></i>
+                    {{ event.get_status_display }}
+                </span>
+                <span class="priority-badge priority-{{ event.priority }}">
+                    <i class="fas fa-flag"></i>
+                    {{ event.get_priority_display }}
+                </span>
+            </div>
+        </div>
+        <div class="event-actions">
+            {% if user.role == 'director' or user.role == 'program_manager' or user.role == 'committee_supervisor' %}
+            <a href="{% url 'edit_event' event.id %}" class="btn-action btn-edit">
+                <i class="fas fa-edit"></i>
+                تعديل
+            </a>
+            {% endif %}
+            {% if user.role == 'director' or user.role == 'program_manager' %}
+            <a href="{% url 'delete_event' event.id %}" class="btn-action btn-delete">
+                <i class="fas fa-trash-alt"></i>
+                حذف
+            </a>
+            {% endif %}
+            <a href="{% url 'schedule_calendar' event.program.id %}" class="btn-action btn-back">
+                <i class="fas fa-arrow-right"></i>
+                العودة
+            </a>
+        </div>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <div class="info-label">
+                <i class="far fa-calendar" style="color: var(--primary-green);"></i>
+                تاريخ البداية
+            </div>
+            <div class="info-value">{{ event.start_date|date:"Y/m/d" }}</div>
+        </div>
+
+        {% if event.end_date %}
+        <div class="info-item">
+            <div class="info-label">
+                <i class="far fa-calendar-check" style="color: var(--primary-green);"></i>
+                تاريخ النهاية
+            </div>
+            <div class="info-value">{{ event.end_date|date:"Y/m/d" }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.start_time %}
+        <div class="info-item">
+            <div class="info-label">
+                <i class="far fa-clock" style="color: var(--primary-green);"></i>
+                وقت البداية
+            </div>
+            <div class="info-value">{{ event.start_time|time:"H:i" }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.end_time %}
+        <div class="info-item">
+            <div class="info-label">
+                <i class="far fa-clock" style="color: var(--primary-green);"></i>
+                وقت النهاية
+            </div>
+            <div class="info-value">{{ event.end_time|time:"H:i" }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.location %}
+        <div class="info-item">
+            <div class="info-label">
+                <i class="fas fa-map-marker-alt" style="color: var(--primary-green);"></i>
+                المكان
+            </div>
+            <div class="info-value">{{ event.location }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.committee %}
+        <div class="info-item">
+            <div class="info-label">
+                <i class="fas fa-users" style="color: var(--primary-green);"></i>
+                اللجنة
+            </div>
+            <div class="info-value">{{ event.committee.name }}</div>
+        </div>
+        {% endif %}
+
+        {% if event.assigned_to %}
+        <div class="info-item">
+            <div class="info-label">
+                <i class="fas fa-user-check" style="color: var(--primary-green);"></i>
+                المسؤول
+            </div>
+            <div class="info-value">{{ event.assigned_to.get_full_name|default:event.assigned_to.username }}</div>
+        </div>
+        {% endif %}
+
+        <div class="info-item">
+            <div class="info-label">
+                <i class="fas fa-user" style="color: var(--primary-green);"></i>
+                أنشئ بواسطة
+            </div>
+            <div class="info-value">{{ event.created_by.get_full_name|default:event.created_by.username }}</div>
+        </div>
+    </div>
+
+    <div class="description-section">
+        <h4>
+            <i class="fas fa-align-right" style="color: var(--primary-green);"></i>
+            الوصف
+        </h4>
+        <div class="description-content">
+            {{ event.description|linebreaks }}
+        </div>
+    </div>
+
+    {% if event.participants.exists %}
+    <div class="participants-section">
+        <h4>
+            <i class="fas fa-users" style="color: var(--primary-green);"></i>
+            المشاركون ({{ event.participants.count }})
+        </h4>
+        {% for participant in event.participants.all %}
+        <div class="participant-item">
+            <div class="participant-avatar">
+                {{ participant.first_name.0|default:participant.username.0 }}
+            </div>
+            <div class="participant-info">
+                <div class="participant-name">{{ participant.get_full_name|default:participant.username }}</div>
+                <div class="participant-role">{{ participant.get_role_display }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

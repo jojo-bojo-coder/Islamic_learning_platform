@@ -1,0 +1,437 @@
+{% extends 'director_base.html' %}
+
+{% block title %}{{ album.title }} - منصة التحفيظ{% endblock %}
+
+{% block page_title %}{{ album.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .album-header {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: var(--white);
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .album-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('{{ album.cover_image.url }}') center/cover;
+        opacity: 0.2;
+    }
+
+    .album-header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .album-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .album-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+
+    .album-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stat-item i {
+        font-size: 1.2rem;
+    }
+
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .photo-card {
+        background: var(--white);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .photo-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .photo-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .photo-info {
+        padding: 1.5rem;
+    }
+
+    .photo-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .photo-description {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .photo-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+    }
+
+    .photo-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-gray);
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .album-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .modal-header {
+        background: var(--primary-green);
+        color: var(--white);
+        border-radius: 15px 15px 0 0;
+        border: none;
+    }
+
+    .modal-body img {
+        width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+
+    .photo-details {
+        margin-top: 1rem;
+    }
+
+    .photo-details h5 {
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .photo-details p {
+        color: var(--text-gray);
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+        .photo-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .album-stats {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .album-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Album Header -->
+<div class="album-header fade-in-up">
+    <div class="album-header-content">
+        <h1 class="album-title">{{ album.title }}</h1>
+        <p class="album-description">{{ album.description|default:"لا يوجد وصف" }}</p>
+
+        <div class="album-stats">
+            <div class="stat-item">
+                <i class="fas fa-images"></i>
+                <span>{{ photos.count }} صورة</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-calendar"></i>
+                <span>أنشئ في {{ album.created_at|date:"Y-m-d" }}</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-user"></i>
+                <span>بواسطة {{ album.created_by.get_full_name }}</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-toggle-{{ album.is_active|yesno:'on,off' }}"></i>
+                <span>الحالة: {{ album.is_active|yesno:'نشط,غير نشط' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Album Actions -->
+<div class="album-actions fade-in-up" style="animation-delay: 0.1s;">
+    <a href="{% url 'add_photo' album.id %}" class="btn btn-primary">
+        <i class="fas fa-plus ms-2"></i>
+        إضافة صورة جديدة
+    </a>
+    <a href="{% url 'edit_album' album.id %}" class="btn btn-outline-primary">
+        <i class="fas fa-edit ms-2"></i>
+        تعديل الألبوم
+    </a>
+    <a href="{% url 'album_management' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-right ms-2"></i>
+        العودة للألبومات
+    </a>
+    <a href="{% url 'delete_album' album.id %}" class="btn btn-outline-danger">
+        <i class="fas fa-trash ms-2"></i>
+        حذف الألبوم
+    </a>
+</div>
+
+<!-- Photos Grid -->
+<div class="fade-in-up" style="animation-delay: 0.2s;">
+    {% if photos %}
+    <div class="photo-grid">
+        {% for photo in photos %}
+        <div class="photo-card">
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="photo-image"
+                 data-bs-toggle="modal" data-bs-target="#photoModal{{ photo.id }}">
+
+            <div class="photo-info">
+                <h4 class="photo-title">{{ photo.title }}</h4>
+                <p class="photo-description">{{ photo.description|default:"لا يوجد وصف" }}</p>
+
+                <div class="photo-meta">
+                    <span>
+                        <i class="fas fa-sort-numeric-down ms-2"></i>
+                        الترتيب: {{ photo.order }}
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar ms-2"></i>
+                        {{ photo.created_at|date:"Y-m-d" }}
+                    </span>
+                </div>
+
+                <div class="photo-actions">
+                    <button type="button" class="btn btn-primary btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#photoModal{{ photo.id }}">
+                        <i class="fas fa-eye ms-2"></i>
+                        عرض
+                    </button>
+                    <a href="{% url 'delete_photo' photo.id %}" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash ms-2"></i>
+                        حذف
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Modal -->
+        <div class="modal fade" id="photoModal{{ photo.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ photo.title }}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="img-fluid">
+
+                        <div class="photo-details">
+                            <h5>الوصف:</h5>
+                            <p>{{ photo.description|default:"لا يوجد وصف" }}</p>
+
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-sort-numeric-down ms-2"></i> الترتيب:</strong>
+                                    {{ photo.order }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong><i class="fas fa-calendar ms-2"></i> تاريخ الإضافة:</strong>
+                                    {{ photo.created_at|date:"Y-m-d" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ photo.image.url }}" download class="btn btn-primary">
+                            <i class="fas fa-download ms-2"></i>
+                            تحميل الصورة
+                        </a>
+                        <a href="{% url 'delete_photo' photo.id %}" class="btn btn-outline-danger">
+                            <i class="fas fa-trash ms-2"></i>
+                            حذف الصورة
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times ms-2"></i>
+                            إغلاق
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-images"></i>
+        <h4>لا توجد صور في هذا الألبوم</h4>
+        <p>ابدأ بإضافة الصور الأولى لهذا الألبوم</p>
+        <a href="{% url 'add_photo' album.id %}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة صورة جديدة
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Pagination (if needed in the future) -->
+{% if photos.has_other_pages %}
+<div class="row fade-in-up" style="animation-delay: 0.3s;">
+    <div class="col-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if photos.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ photos.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in photos.paginator.page_range %}
+                <li class="page-item {% if photos.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+
+                {% if photos.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ photos.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize modals
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-focus search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.focus();
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Image loading error handling
+        document.querySelectorAll('.photo-image').forEach(img => {
+            img.addEventListener('error', function() {
+                this.src = '/static/images/placeholder.jpg';
+                this.alt = 'الصورة غير متوفرة';
+            });
+        });
+    });
+
+    // Search functionality (if implemented in the future)
+    function searchPhotos() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const photoCards = document.querySelectorAll('.photo-card');
+
+        photoCards.forEach(card => {
+            const title = card.querySelector('.photo-title').textContent.toLowerCase();
+            const description = card.querySelector('.photo-description').textContent.toLowerCase();
+
+            if (title.includes(filter) || description.includes(filter)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,613 @@
+{% extends 'director_base.html' %}
+
+{% block title %}إدارة التنبيهات - منصة التحفيظ{% endblock %}
+
+{% block page_title %}إدارة التنبيهات{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--primary-green);
+        margin-left: 12px;
+    }
+
+    /* Alert Messages */
+    .alert {
+        border: none;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-right: 4px solid;
+    }
+
+    .alert-success {
+        background: rgba(134, 184, 23, 0.1);
+        border-right-color: var(--primary-green);
+        color: var(--text-dark);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        border-right-color: #dc3545;
+        color: #721c24;
+    }
+
+    /* Quick Actions Styling */
+    .quick-actions-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .quick-actions-wrapper h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-actions-wrapper h4 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+    }
+
+    .action-btn-primary {
+        background: var(--primary-green);
+    }
+
+    .action-btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .action-btn-success {
+        background: var(--dark-green);
+    }
+
+    .action-btn-success:hover {
+        background: #0a2f1c;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(11, 59, 36, 0.3);
+    }
+
+    /* Statistics Cards */
+    .stats-row {
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-light);
+        height: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .stat-card i {
+        color: var(--primary-green);
+        font-size: 2.5rem;
+        margin-top: 1rem;
+        opacity: 0.2;
+    }
+
+    /* Alert Cards */
+    .alert-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border-right: 4px solid var(--primary-green);
+    }
+
+    .alert-card.unread {
+        border-right-color: #dc3545;
+        background: rgba(220, 53, 69, 0.02);
+    }
+
+    .alert-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .alert-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .alert-message {
+        color: var(--text-gray);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .alert-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-bottom: 1rem;
+    }
+
+    .alert-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    .alert-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    /* Priority Colors */
+    .priority-high {
+        border-right-color: #dc3545 !important;
+    }
+
+    .priority-medium {
+        border-right-color: #fd7e14 !important;
+    }
+
+    .priority-low {
+        border-right-color: #0dcaf0 !important;
+    }
+
+    /* Filter Buttons */
+    .filter-section {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+
+    .filter-section h5 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        border: 1px solid var(--border-light);
+        background: var(--white);
+        color: var(--text-gray);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+        transform: translateY(-2px);
+    }
+
+    .filter-label {
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-left: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 0.85rem;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-primary {
+        background: var(--primary-green);
+    }
+
+    .btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-success {
+        background: var(--dark-green);
+    }
+
+    .btn-success:hover {
+        background: #0a2f1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(11, 59, 36, 0.3);
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border: 1px solid var(--border-light);
+        background: transparent;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .unread-indicator {
+        width: 8px;
+        height: 8px;
+        background: #dc3545;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .alert-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .filter-buttons {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .alert-actions {
+            flex-direction: column;
+        }
+
+        .alert-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .alert-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-section {
+            padding: 1rem;
+        }
+
+        .filter-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .filter-label {
+            margin-left: 0;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .alert-card {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-bell"></i>
+        إدارة التنبيهات
+    </h2>
+</div>
+
+<!-- Alert Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show fade-in-up" role="alert" style="animation-delay: 0.1s;">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="quick-actions-wrapper fade-in-up" style="animation-delay: 0.2s;">
+    <h4>
+        <i class="fas fa-bolt"></i>
+        إجراءات سريعة
+    </h4>
+    <div class="row g-3">
+        {% if unread_count > 0 %}
+        <div class="col-lg-3 col-md-6">
+            <form method="post" action="{% url 'mark_all_alerts_read' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="action-btn action-btn-success">
+                    <i class="fas fa-check-double"></i>
+                    <span>تحديد الكل كمقروء</span>
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row stats-row fade-in-up" style="animation-delay: 0.3s;">
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ alerts.count }}</div>
+            <div class="stat-label">إجمالي التنبيهات</div>
+            <i class="fas fa-bell mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ unread_count }}</div>
+            <div class="stat-label">تنبيهات غير مقروءة</div>
+            <i class="fas fa-envelope mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-4 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ read_count }}</div>
+            <div class="stat-label">تنبيهات مقروءة</div>
+            <i class="fas fa-check-circle mt-3"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-section fade-in-up" style="animation-delay: 0.4s;">
+    <h5>تصفية التنبيهات:</h5>
+    <div class="filter-buttons">
+        <span class="filter-label">الحالة:</span>
+        <a href="{% url 'alerts_management' %}" class="filter-btn {% if not alert_type_filter and not priority_filter %}active{% endif %}">
+            الكل
+        </a>
+
+        <span class="filter-label">النوع:</span>
+        <a href="{% url 'alerts_management' %}?type=supervisor_added" class="filter-btn {% if alert_type_filter == 'supervisor_added' %}active{% endif %}">
+            إضافة مشرف
+        </a>
+        <a href="{% url 'alerts_management' %}?type=task_added" class="filter-btn {% if alert_type_filter == 'task_added' %}active{% endif %}">
+            إضافة مهمة
+        </a>
+        <a href="{% url 'alerts_management' %}?type=program_created" class="filter-btn {% if alert_type_filter == 'program_created' %}active{% endif %}">
+            إنشاء برنامج
+        </a>
+
+        <span class="filter-label">الأولوية:</span>
+        <a href="{% url 'alerts_management' %}?priority=high" class="filter-btn {% if priority_filter == 'high' %}active{% endif %}">
+            عالية
+        </a>
+        <a href="{% url 'alerts_management' %}?priority=medium" class="filter-btn {% if priority_filter == 'medium' %}active{% endif %}">
+            متوسطة
+        </a>
+        <a href="{% url 'alerts_management' %}?priority=low" class="filter-btn {% if priority_filter == 'low' %}active{% endif %}">
+            منخفضة
+        </a>
+    </div>
+</div>
+
+<!-- Alerts List -->
+<div class="fade-in-up" style="animation-delay: 0.5s;">
+    {% for alert in alerts %}
+    <div class="alert-card {% if not alert.is_read %}unread{% endif %} priority-{{ alert.priority }}">
+        <div class="alert-header">
+            <div class="flex-grow-1">
+                <h4 class="alert-title">
+                    {% if not alert.is_read %}<span class="unread-indicator"></span>{% endif %}
+                    {{ alert.title }}
+                </h4>
+                {% if alert.related_discussion %}
+                   <a href="{% url 'cultural_discussion_detail' alert.related_discussion.id %}" class="notification-link mb-2">
+                      {{ alert.message }}
+                   </a>
+                {% else %}
+                   <p class="mb-2  alert-message">{{ alert.message }}</p>
+                {% endif %}
+            </div>
+            <div class="text-start">
+                <span class="badge bg-secondary alert-badge">
+                    {{ alert.get_alert_type_display }}
+                </span>
+                <span class="badge {% if alert.priority == 'high' %}bg-danger{% elif alert.priority == 'medium' %}bg-warning{% else %}bg-info{% endif %} alert-badge">
+                    {{ alert.get_priority_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="alert-meta">
+            <span>
+                <i class="fas fa-calendar ms-2"></i>
+                {{ alert.created_at|date:"Y-m-d H:i" }}
+            </span>
+            {% if alert.related_user %}
+            <span>
+                <i class="fas fa-user ms-2"></i>
+                {{ alert.related_user.get_full_name }}
+            </span>
+            {% endif %}
+        </div>
+
+        <div class="alert-actions">
+            {% if not alert.is_read %}
+            <a href="{% url 'mark_alert_read' alert.id %}" class="btn btn-success btn-sm">
+                <i class="fas fa-check ms-2"></i>
+                تحديد كمقروء
+            </a>
+            {% endif %}
+
+            {% if alert.action_url %}
+            <a href="{{ alert.action_url }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-external-link-alt ms-2"></i>
+                عرض التفاصيل
+            </a>
+            {% endif %}
+
+            <a href="{% url 'delete_alert' alert.id %}" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-trash ms-2"></i>
+                حذف
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <h4>لا توجد تنبيهات</h4>
+        <p>سيظهر هنا جميع التنبيهات والإشعارات من النظام</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

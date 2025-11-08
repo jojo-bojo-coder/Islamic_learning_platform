@@ -1,0 +1,84 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}{{ title }} - {{ committee.name }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="background: var(--white); border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 900px; margin: 0 auto;">
+    <div class="form-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-light);">
+        <h3 style="color: var(--text-dark); font-weight: 700;">
+            <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+            {{ title }}
+        </h3>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.title.label }} <span style="color: #dc3545;">*</span></label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="text-danger mt-1">{{ form.title.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.author.label }} <span style="color: #dc3545;">*</span></label>
+                {{ form.author }}
+                {% if form.author.errors %}<div class="text-danger mt-1">{{ form.author.errors }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" style="font-weight: 600;">{{ form.description.label }}</label>
+            {{ form.description }}
+            {% if form.description.errors %}<div class="text-danger mt-1">{{ form.description.errors }}</div>{% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.assigned_to.label }}</label>
+                {{ form.assigned_to }}
+                {% if form.assigned_to.errors %}<div class="text-danger mt-1">{{ form.assigned_to.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.status.label }} <span style="color: #dc3545;">*</span></label>
+                {{ form.status }}
+                {% if form.status.errors %}<div class="text-danger mt-1">{{ form.status.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.progress_percentage.label }}</label>
+                {{ form.progress_percentage }}
+                {% if form.progress_percentage.errors %}<div class="text-danger mt-1">{{ form.progress_percentage.errors }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.start_date.label }}</label>
+                {{ form.start_date }}
+                {% if form.start_date.errors %}<div class="text-danger mt-1">{{ form.start_date.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.completion_date.label }}</label>
+                {{ form.completion_date }}
+                {% if form.completion_date.errors %}<div class="text-danger mt-1">{{ form.completion_date.errors }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="btn-group-actions" style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+            <button type="submit" class="btn btn-primary flex-fill">
+                <i class="fas fa-save ms-2"></i>
+                حفظ الكتاب
+            </button>
+            <a href="{% url 'sharia_book_management' %}" class="btn btn-cancel flex-fill" style="background: var(--border-light); color: var(--text-dark);">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

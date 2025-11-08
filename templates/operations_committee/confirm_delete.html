@@ -1,0 +1,101 @@
+{% extends 'operations_committee/base.html' %}
+
+{% block title %}تأكيد الحذف - اللجنة التشغيلية{% endblock %}
+
+{% block page_title %}تأكيد الحذف{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirm-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 3rem;
+        max-width: 600px;
+        margin: 3rem auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid var(--border-light);
+        text-align: center;
+    }
+
+    .confirm-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(220, 53, 69, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+
+    .confirm-icon i {
+        font-size: 2.5rem;
+        color: #dc3545;
+    }
+
+    .confirm-title {
+        color: var(--text-dark);
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .confirm-message {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .object-info {
+        background: var(--light-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .object-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1.1rem;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirm-card">
+    <div class="confirm-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+    </div>
+
+    <div class="confirm-title">هل أنت متأكد من الحذف؟</div>
+
+    <div class="confirm-message">
+        هذا الإجراء لا يمكن التراجع عنه. سيتم حذف {{ type }} بشكل نهائي.
+    </div>
+
+    <div class="object-info">
+        <div class="object-name">{{ object }}</div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group-actions">
+            <a href="javascript:history.back()" class="btn btn-secondary">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-trash ms-2"></i>
+                تأكيد الحذف
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

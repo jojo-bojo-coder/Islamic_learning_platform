@@ -1,0 +1,96 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}{{ title }} - {{ committee.name }}{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-sm border-0" style="border-radius: 15px;">
+            <div class="card-header bg-white" style="border-bottom: 2px solid var(--primary-green); border-radius: 15px 15px 0 0; padding: 1.5rem;">
+                <h3 class="mb-0" style="color: var(--text-dark); font-weight: 700;">
+                    <i class="fas fa-tasks ms-2" style="color: var(--primary-green);"></i>
+                    {{ title }}
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.task_type.label }}</label>
+                            {{ form.task_type }}
+                            {% if form.task_type.errors %}
+                                <div class="text-danger mt-1">{{ form.task_type.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.status.label }}</label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.title.label }}</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.assigned_to_name.label }}</label>
+                            {{ form.assigned_to_name }}
+                            {% if form.assigned_to_name.errors %}
+                                <div class="text-danger mt-1">{{ form.assigned_to_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.due_date.label }}</label>
+                            {{ form.due_date }}
+                            {% if form.due_date.errors %}
+                                <div class="text-danger mt-1">{{ form.due_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" style="font-weight: 600; color: var(--text-dark);">{{ form.completion_percentage.label }}</label>
+                        {{ form.completion_percentage }}
+                        {% if form.completion_percentage.errors %}
+                            <div class="text-danger mt-1">{{ form.completion_percentage.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a href="{% url 'cultural_task_management' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times ms-2"></i>
+                            إلغاء
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save ms-2"></i>
+                            حفظ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

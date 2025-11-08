@@ -1,0 +1,309 @@
+{% extends 'director_base.html' %}
+
+{% block title %}{{ title }} - منصة التحفيظ{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--primary-green);
+        margin-left: 12px;
+    }
+
+    /* Alert Messages */
+    .alert {
+        border: none;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-right: 4px solid;
+    }
+
+    .alert-success {
+        background: rgba(134, 184, 23, 0.1);
+        border-right-color: var(--primary-green);
+        color: var(--text-dark);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        border-right-color: #dc3545;
+        color: #721c24;
+    }
+
+    /* Form Card */
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .form-card-header {
+        background: var(--primary-green);
+        color: var(--white);
+        padding: 1.5rem 2rem;
+        border-bottom: none;
+    }
+
+    .form-card-header h4 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-card-header h4 i {
+        margin-left: 10px;
+    }
+
+    .form-card-body {
+        padding: 2rem;
+    }
+
+    /* Form Styling */
+    .form-label {
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+    }
+
+    .form-text {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-primary {
+        background: var(--primary-green);
+    }
+
+    .btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-outline-secondary {
+        color: var(--text-gray);
+        border: 1px solid var(--border-light);
+        background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--text-gray);
+        border-color: var(--text-gray);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    /* File Input Styling */
+    .form-control[type="file"] {
+        padding: 0.5rem;
+    }
+
+    .form-control[type="file"]:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .form-card-body {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .form-card-header {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .form-card-header h4 {
+            font-size: 1.1rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .form-card-body {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-images"></i>
+        {{ title }}
+    </h2>
+    <a href="{% url 'album_management' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-right me-2"></i>
+        العودة إلى الألبومات
+    </a>
+</div>
+
+<!-- Alert Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show fade-in-up" role="alert" style="animation-delay: 0.1s;">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Form Card -->
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.2s;">
+    <div class="col-lg-8">
+        <div class="form-card">
+            <div class="form-card-header">
+                <h4>
+                    <i class="fas fa-images me-2"></i>
+                    {{ title }}
+                </h4>
+            </div>
+            <div class="form-card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            حفظ الألبوم
+                        </button>
+                        <a href="{% url 'album_management' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,231 @@
+{% extends base_template %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .detail-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .detail-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .info-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .info-card h5 {
+        color: var(--primary-green);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table-responsive {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: var(--primary-green);
+        color: var(--white);
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        border: none;
+    }
+
+    .table tbody td {
+        padding: 0.8rem;
+        vertical-align: middle;
+        border-color: var(--border-light);
+    }
+
+    .badge-status {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .btn-action {
+        background: var(--primary-green);
+        border: none;
+        color: var(--white);
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-action:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        color: var(--white);
+    }
+
+    .btn-warning {
+        background: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    .btn-info {
+        background: #17a2b8;
+    }
+
+    .btn-info:hover {
+        background: #138496;
+        box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+    }
+
+    @media (max-width: 767px) {
+        .detail-wrapper {
+            padding: 1rem;
+        }
+
+        .detail-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="detail-wrapper fade-in-up">
+                <div class="detail-header">
+                    <h2 class="detail-title">
+                        <i class="fas fa-running" style="color: var(--primary-green);"></i>
+                        تفاصيل النشاط
+                    </h2>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="info-card">
+                            <h3>{{ object.name }}</h3>
+                            <p class="text-muted">{{ object.description }}</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h5>معلومات النشاط</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>البرنامج:</strong> {{ object.program.name }}</p>
+                                    <p><strong>اللجنة:</strong> {{ object.committee.name|default:"-" }}</p>
+                                    <p><strong>التاريخ:</strong> {{ object.date }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>الوقت:</strong> {{ object.time|default:"-" }}</p>
+                                    <p><strong>المكان:</strong> {{ object.location|default:"-" }}</p>
+                                    <p><strong>تم الإنشاء:</strong> {{ object.created_at|date:"Y-m-d" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if attendances %}
+                        <div class="info-card">
+                            <h5>الحضور ({{ attended_count }}/{{ total_participants }})</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>الطالب</th>
+                                            <th>الحضور</th>
+                                            <th>ملاحظات</th>
+                                            <th>مسجل بواسطة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for attendance in attendances %}
+                                        <tr>
+                                            <td>{{ attendance.student.user.get_full_name }}</td>
+                                            <td>
+                                                <span class="badge bg-{% if attendance.attended %}success{% else %}danger{% endif %}">
+                                                    {{ attendance.attended|yesno:"حضر,لم يحضر" }}
+                                                </span>
+                                            </td>
+                                            <td>{{ attendance.notes|default:"-" }}</td>
+                                            <td>{{ attendance.recorded_by.get_full_name }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <h5>الإجراءات</h5>
+                            {% if perms.director_dashboard.change_activity %}
+                            <a href="#" class="btn-action btn-warning">
+                                <i class="fas fa-edit"></i>
+                                تعديل النشاط
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'schedule_calendar' object.program.id %}" class="btn-action btn-info">
+                                <i class="fas fa-arrow-right"></i>
+                                العودة للجدول
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

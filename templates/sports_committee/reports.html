@@ -1,0 +1,311 @@
+{% extends 'sports_committee/base.html' %}
+
+{% block title %}التقارير الرياضية{% endblock %}
+{% block page_title %}التقارير والإحصائيات{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-row {
+        margin-bottom: 2rem;
+    }
+
+    .report-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .report-card h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--sports-orange);
+    }
+
+    .report-card h4 i {
+        color: var(--sports-orange);
+        margin-left: 10px;
+    }
+
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-item:hover {
+        background: var(--light-bg);
+        padding-right: 1.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .stat-value {
+        color: var(--sports-orange);
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-top: 1.5rem;
+    }
+
+    .member-rank {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .member-rank:hover {
+        background: rgba(255, 107, 53, 0.1);
+        transform: translateX(-5px);
+    }
+
+    .rank-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--sports-orange);
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-left: 1rem;
+    }
+
+    .rank-number.gold {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    }
+
+    .rank-number.silver {
+        background: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+    }
+
+    .rank-number.bronze {
+        background: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+    }
+
+    .member-info {
+        flex: 1;
+    }
+
+    .member-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.2rem;
+    }
+
+    .member-role {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+    }
+
+    .member-score {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--sports-orange);
+    }
+
+    .recent-report-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .recent-report-item:last-child {
+        border-bottom: none;
+    }
+
+    .recent-report-item:hover {
+        background: var(--light-bg);
+    }
+
+    .report-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.3rem;
+    }
+
+    .report-meta {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+    }
+
+    .report-meta i {
+        color: var(--sports-orange);
+        margin-left: 0.3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 style="color: var(--text-dark); font-weight: 700;">
+        <i class="fas fa-chart-bar" style="color: var(--sports-orange); margin-left: 10px;"></i>
+        التقارير والإحصائيات
+    </h3>
+    <a href="{% url 'sports_add_report' %}" class="btn btn-primary">
+        <i class="fas fa-plus ms-2"></i>
+        إضافة تقرير أسبوعي
+    </a>
+</div>
+
+<!-- Overview Statistics -->
+<div class="stats-row row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_tasks }}</div>
+            <div class="stat-label">إجمالي المهام</div>
+            <i class="fas fa-tasks mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ completed_tasks }}</div>
+            <div class="stat-label">المهام المكتملة</div>
+            <i class="fas fa-check-circle mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_matches }}</div>
+            <div class="stat-label">إجمالي المباريات</div>
+            <i class="fas fa-calendar-check mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stat-card">
+            <div class="stat-number">{{ completion_rate }}%</div>
+            <div class="stat-label">نسبة الإنجاز</div>
+            <i class="fas fa-chart-pie mt-3"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Task Statistics -->
+    <div class="col-lg-6 mb-4">
+        <div class="report-card">
+            <h4>
+                <i class="fas fa-tasks"></i>
+                إحصائيات المهام حسب النوع
+            </h4>
+            {% for stat in task_stats %}
+            <div class="stat-item">
+                <span class="stat-label">
+                    {% if stat.task_type == 'football_volleyball' %}دوري القدم والطائرة
+                    {% elif stat.task_type == 'sports_programs' %}البرامج الرياضية
+                    {% elif stat.task_type == 'hall_meetings' %}لقاءات الصالة
+                    {% elif stat.task_type == 'table_tennis' %}تنس الطاولة
+                    {% elif stat.task_type == 'playstation' %}البلايستيشن
+                    {% elif stat.task_type == 'intelligence_games' %}ألعاب الذكاء
+                    {% endif %}
+                </span>
+                <span class="stat-value">{{ stat.completed }} / {{ stat.total }}</span>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: var(--text-gray); padding: 2rem;">لا توجد إحصائيات</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Match Statistics -->
+    <div class="col-lg-6 mb-4">
+        <div class="report-card">
+            <h4>
+                <i class="fas fa-futbol"></i>
+                إحصائيات المباريات حسب النوع
+            </h4>
+            {% for stat in match_stats %}
+            <div class="stat-item">
+                <span class="stat-label">
+                    {% if stat.match_type == 'football' %}كرة قدم
+                    {% elif stat.match_type == 'volleyball' %}كرة طائرة
+                    {% elif stat.match_type == 'table_tennis' %}تنس طاولة
+                    {% elif stat.match_type == 'playstation' %}بلايستيشن
+                    {% elif stat.match_type == 'intelligence_game' %}لعبة ذكاء
+                    {% else %}أخرى
+                    {% endif %}
+                </span>
+                <span class="stat-value">{{ stat.completed }} / {{ stat.total }}</span>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: var(--text-gray); padding: 2rem;">لا توجد إحصائيات</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Top Members -->
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="report-card">
+            <h4>
+                <i class="fas fa-trophy"></i>
+                أكثر الأعضاء مشاركة
+            </h4>
+            {% for member in top_members %}
+            <div class="member-rank">
+                <div class="rank-number {% if forloop.counter == 1 %}gold{% elif forloop.counter == 2 %}silver{% elif forloop.counter == 3 %}bronze{% endif %}">
+                    {{ forloop.counter }}
+                </div>
+                <div class="member-info">
+                    <div class="member-name">{{ member.user.get_full_name|default:member.user.username }}</div>
+                    <div class="member-role">{{ member.get_role_display }}</div>
+                </div>
+                <div class="member-score">{{ member.participation_score }} نقطة</div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: var(--text-gray); padding: 2rem;">لا يوجد أعضاء</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Reports -->
+    <div class="col-lg-4 mb-4">
+        <div class="report-card">
+            <h4>
+                <i class="fas fa-file-alt"></i>
+                التقارير الأخيرة
+            </h4>
+            {% for report in recent_reports %}
+            <div class="recent-report-item">
+                <div class="report-title">{{ report.title }}</div>
+                <div class="report-meta">
+                    <i class="far fa-calendar"></i>
+                    {{ report.week_start }} - {{ report.week_end }}
+                </div>
+                <div class="report-meta" style="margin-top: 0.3rem;">
+                    <i class="fas fa-percentage"></i>
+                    نسبة المشاركة: {{ report.participation_rate }}%
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: var(--text-gray); padding: 2rem;">لا توجد تقارير</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

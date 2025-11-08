@@ -1,0 +1,236 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}مكتبة الملفات - {{ committee.name }}{% endblock %}
+
+{% block page_title %}مكتبة الملفات الشرعية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .file-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .file-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background: rgba(134, 184, 23, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--primary-green);
+        flex-shrink: 0;
+    }
+
+    .file-icon-lesson {
+        background: rgba(134, 184, 23, 0.1);
+        color: var(--primary-green);
+    }
+
+    .file-icon-article {
+        background: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+    }
+
+    .file-icon-brochure {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .file-icon-competition {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .file-icon-book {
+        background: rgba(111, 66, 193, 0.1);
+        color: #6f42c1;
+    }
+
+    .file-content {
+        flex: 1;
+    }
+
+    .file-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.3rem;
+    }
+
+    .file-meta {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .file-meta i {
+        margin-left: 5px;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .file-type-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab {
+        padding: 0.8rem 1.5rem;
+        border: 2px solid var(--border-light);
+        border-radius: 25px;
+        background: var(--white);
+        color: var(--text-dark);
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .filter-tab:hover {
+        border-color: var(--primary-green);
+        color: var(--primary-green);
+    }
+
+    .filter-tab.active {
+        background: var(--primary-green);
+        border-color: var(--primary-green);
+        color: var(--white);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 style="color: var(--text-dark); font-weight: 700;">
+        <i class="fas fa-folder-open ms-2" style="color: var(--primary-green);"></i>
+        مكتبة الملفات
+    </h3>
+    <a href="{% url 'sharia_upload_file' %}" class="btn btn-primary">
+        <i class="fas fa-upload ms-2"></i>
+        رفع ملف جديد
+    </a>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+    <a href="{% url 'sharia_file_library' %}" class="filter-tab {% if not file_type_filter %}active{% endif %}">
+        <i class="fas fa-th ms-1"></i>
+        الكل
+    </a>
+    <a href="?type=lesson" class="filter-tab {% if file_type_filter == 'lesson' %}active{% endif %}">
+        <i class="fas fa-chalkboard-teacher ms-1"></i>
+        دروس
+    </a>
+    <a href="?type=article" class="filter-tab {% if file_type_filter == 'article' %}active{% endif %}">
+        <i class="fas fa-newspaper ms-1"></i>
+        مقالات
+    </a>
+    <a href="?type=brochure" class="filter-tab {% if file_type_filter == 'brochure' %}active{% endif %}">
+        <i class="fas fa-file-alt ms-1"></i>
+        مطويات
+    </a>
+    <a href="?type=competition" class="filter-tab {% if file_type_filter == 'competition' %}active{% endif %}">
+        <i class="fas fa-trophy ms-1"></i>
+        مسابقات
+    </a>
+    <a href="?type=book" class="filter-tab {% if file_type_filter == 'book' %}active{% endif %}">
+        <i class="fas fa-book ms-1"></i>
+        كتب
+    </a>
+</div>
+
+<!-- Files List -->
+{% if files %}
+    {% for file in files %}
+    <div class="file-card">
+        <div class="file-icon file-icon-{{ file.file_type }}">
+            {% if file.file_type == 'lesson' %}
+                <i class="fas fa-chalkboard-teacher"></i>
+            {% elif file.file_type == 'article' %}
+                <i class="fas fa-newspaper"></i>
+            {% elif file.file_type == 'brochure' %}
+                <i class="fas fa-file-alt"></i>
+            {% elif file.file_type == 'competition' %}
+                <i class="fas fa-trophy"></i>
+            {% elif file.file_type == 'book' %}
+                <i class="fas fa-book"></i>
+            {% else %}
+                <i class="fas fa-file"></i>
+            {% endif %}
+        </div>
+
+        <div class="file-content">
+            <span class="file-type-badge" style="background: rgba(134, 184, 23, 0.1); color: var(--primary-green);">
+                {{ file.get_file_type_display }}
+            </span>
+            <h5 class="file-title">{{ file.title }}</h5>
+            {% if file.description %}
+                <p style="color: var(--text-gray); margin: 0.5rem 0; font-size: 0.9rem;">{{ file.description|truncatewords:15 }}</p>
+            {% endif %}
+            <div class="file-meta">
+                <span>
+                    <i class="fas fa-user"></i>
+                    {{ file.uploaded_by.get_full_name|default:file.uploaded_by.username }}
+                </span>
+                <span>
+                    <i class="fas fa-calendar"></i>
+                    {{ file.uploaded_at|date:"Y-m-d" }}
+                </span>
+            </div>
+        </div>
+
+        <div class="file-actions">
+            <a href="{{ file.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm" title="تحميل">
+                <i class="fas fa-download"></i>
+            </a>
+            <form method="post" action="{% url 'sharia_delete_file' file.id %}" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذا الملف؟')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger btn-sm" title="حذف">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state" style="background: var(--white); border-radius: 15px; padding: 4rem 2rem; text-align: center; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);">
+        <i class="fas fa-folder-open" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+        <h4 style="color: var(--text-dark);">لا توجد ملفات</h4>
+        <p style="color: var(--text-gray);">لم يتم رفع أي ملفات بعد. ابدأ برفع ملف جديد.</p>
+        <a href="{% url 'sharia_upload_file' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-upload ms-2"></i>
+            رفع ملف جديد
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

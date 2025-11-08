@@ -1,0 +1,98 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}{{ discussion.title }} - {{ committee.name }}{% endblock %}
+
+{% block page_title %}النقاش: {{ discussion.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Discussion Header -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h4 class="mb-2">
+                            {% if discussion.is_pinned %}
+                            <i class="fas fa-thumbtack text-warning ms-2"></i>
+                            {% endif %}
+                            {{ discussion.title }}
+                        </h4>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-user ms-2"></i>
+                            بواسطة {{ discussion.created_by.get_full_name|default:discussion.created_by.username }}
+                            |
+                            <i class="far fa-calendar ms-2"></i>
+                            {{ discussion.created_at|date:"Y/m/d" }}
+                        </p>
+                    </div>
+                    <span class="badge bg-primary">{{ discussion.comments.count }} تعليق</span>
+                </div>
+
+                <div class="discussion-content mb-4">
+                    <p class="mb-0">{{ discussion.content|linebreaks }}</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        آخر تحديث: {{ discussion.updated_at|date:"Y/m/d" }}
+                    </small>
+                    <a href="{% url 'cultural_discussions' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-right ms-2"></i>
+                        رجوع للنقاشات
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments ms-2"></i>
+                    التعليقات ({{ comments.count }})
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Comments List -->
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="comment-item mb-4 pb-4 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong class="d-block">{{ comment.created_by.get_full_name|default:comment.created_by.username }}</strong>
+                                <small class="text-muted">{{ comment.created_at|date:"Y/m/d H:i" }}</small>
+                            </div>
+                        </div>
+                        <p class="mb-0">{{ comment.content|linebreaks }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-comment-slash fa-2x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">لا توجد تعليقات بعد</p>
+                </div>
+                {% endif %}
+
+                <!-- Add Comment Form -->
+                <div class="add-comment mt-4">
+                    <h6 class="mb-3">أضف تعليقاً</h6>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.content }}
+                            {% for error in form.content.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane ms-2"></i>
+                            إرسال التعليق
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

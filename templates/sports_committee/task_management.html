@@ -1,0 +1,248 @@
+{% extends 'sports_committee/base.html' %}
+
+{% block title %}إدارة المهام الرياضية{% endblock %}
+{% block page_title %}إدارة المهام الرياضية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 1rem;
+        align-items: end;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .task-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .task-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .task-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .task-type {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: rgba(255, 107, 53, 0.1);
+        color: var(--sports-orange);
+        margin-bottom: 0.5rem;
+    }
+
+    .task-description {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .task-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .task-meta i {
+        color: var(--sports-orange);
+        margin-left: 0.3rem;
+    }
+
+    .progress-section {
+        margin-bottom: 1rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--sports-orange);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 style="color: var(--text-dark); font-weight: 700;">
+        <i class="fas fa-tasks" style="color: var(--sports-orange); margin-left: 10px;"></i>
+        المهام الرياضية
+    </h3>
+    <a href="{% url 'sports_add_task' %}" class="btn btn-primary">
+        <i class="fas fa-plus ms-2"></i>
+        إضافة مهمة جديدة
+    </a>
+</div>
+
+<!-- Filters -->
+<div class="filter-card">
+    <form method="get" class="filter-form">
+        <div class="filter-group">
+            <label class="form-label">نوع المهمة</label>
+            <select name="type" class="form-select" onchange="this.form.submit()">
+                <option value="">الكل</option>
+                <option value="football_volleyball" {% if task_type_filter == 'football_volleyball' %}selected{% endif %}>دوري القدم والطائرة</option>
+                <option value="sports_programs" {% if task_type_filter == 'sports_programs' %}selected{% endif %}>البرامج الرياضية</option>
+                <option value="hall_meetings" {% if task_type_filter == 'hall_meetings' %}selected{% endif %}>لقاءات الصالة</option>
+                <option value="table_tennis" {% if task_type_filter == 'table_tennis' %}selected{% endif %}>تنس الطاولة</option>
+                <option value="playstation" {% if task_type_filter == 'playstation' %}selected{% endif %}>البلايستيشن</option>
+                <option value="intelligence_games" {% if task_type_filter == 'intelligence_games' %}selected{% endif %}>ألعاب الذكاء</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label class="form-label">الحالة</label>
+            <select name="status" class="form-select" onchange="this.form.submit()">
+                <option value="">الكل</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>قيد التنفيذ</option>
+                <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>جاري العمل</option>
+                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>مكتملة</option>
+                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>ملغاة</option>
+            </select>
+        </div>
+
+        {% if task_type_filter or status_filter %}
+        <div class="filter-group">
+            <a href="{% url 'sports_task_management' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-times ms-2"></i>
+                مسح الفلاتر
+            </a>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Tasks List -->
+<div class="tasks-list">
+    {% for task in tasks %}
+    <div class="task-card">
+        <div class="task-header">
+            <div>
+                <div class="task-type">{{ task.get_task_type_display }}</div>
+                <h5 class="task-title">{{ task.title }}</h5>
+            </div>
+            <span class="badge badge-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% elif task.status == 'cancelled' %}danger{% else %}warning{% endif %}">
+                {{ task.get_status_display }}
+            </span>
+        </div>
+
+        <p class="task-description">{{ task.description|truncatewords:30 }}</p>
+
+        <div class="task-meta">
+            <div>
+                <i class="far fa-calendar"></i>
+                تاريخ الاستحقاق: {{ task.due_date }}
+            </div>
+            {% if task.assigned_to %}
+            <div>
+                <i class="fas fa-user"></i>
+                المسؤول: {{ task.assigned_to.get_full_name|default:task.assigned_to.username }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-label">
+                <span>نسبة الإنجاز</span>
+                <span>{{ task.completion_percentage }}%</span>
+            </div>
+            <div class="progress-bar-custom">
+                <div class="progress-bar-fill" style="width: {{ task.completion_percentage }}%"></div>
+            </div>
+        </div>
+
+        <div class="task-actions">
+            <a href="{% url 'sports_edit_task' task.id %}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-edit"></i>
+                تعديل
+            </a>
+            <a href="{% url 'sports_delete_task' task.id %}" class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+                حذف
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-tasks"></i>
+        <h4>لا توجد مهام</h4>
+        <p>ابدأ بإضافة مهمة رياضية جديدة</p>
+        <a href="{% url 'sports_add_task' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة مهمة
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

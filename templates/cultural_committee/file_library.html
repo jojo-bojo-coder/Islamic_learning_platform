@@ -1,0 +1,83 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}مكتبة الملفات - {{ committee.name }}{% endblock %}
+
+{% block page_title %}مكتبة الملفات{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-0 mb-4" style="border-radius: 15px;">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center" style="border-bottom: 2px solid var(--primary-green); border-radius: 15px 15px 0 0; padding: 1.5rem;">
+        <h3 class="mb-0" style="color: var(--text-dark); font-weight: 700;">
+            <i class="fas fa-folder-open ms-2" style="color: var(--primary-green);"></i>
+            مكتبة الملفات الثقافية
+        </h3>
+        <a href="{% url 'cultural_upload_file' %}" class="btn btn-primary">
+            <i class="fas fa-cloud-upload-alt ms-2"></i>
+            رفع ملف جديد
+        </a>
+    </div>
+    <div class="card-body p-4">
+        <!-- Filter -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem;">
+                    <i class="fas fa-filter ms-2" style="color: var(--primary-green);"></i>
+                    تصفية حسب النوع
+                </label>
+                <select class="form-select" onchange="window.location.href='?type=' + this.value">
+                    <option value="">جميع الأنواع</option>
+                    <option value="cultural_plan" {% if file_type_filter == 'cultural_plan' %}selected{% endif %}>خطة ثقافية</option>
+                    <option value="competition" {% if file_type_filter == 'competition' %}selected{% endif %}>مسابقة</option>
+                    <option value="book_summary" {% if file_type_filter == 'book_summary' %}selected{% endif %}>ملخص كتاب</option>
+                    <option value="other" {% if file_type_filter == 'other' %}selected{% endif %}>أخرى</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Files Grid -->
+        <div class="row">
+            {% for file in files %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm" style="border: 1px solid var(--border-light); border-radius: 10px; transition: all 0.3s ease;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div style="width: 60px; height: 60px; background: rgba(134, 184, 23, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-file-alt" style="font-size: 1.8rem; color: var(--primary-green);"></i>
+                            </div>
+                            <span class="badge" style="background: rgba(134, 184, 23, 0.2); color: var(--text-dark);">
+                                {{ file.get_file_type_display }}
+                            </span>
+                        </div>
+                        <h5 style="color: var(--text-dark); font-weight: 700; margin-bottom: 0.5rem;">{{ file.title }}</h5>
+                        <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 1rem;">{{ file.description|truncatewords:15 }}</p>
+                        <div style="font-size: 0.85rem; color: var(--text-gray); margin-bottom: 1rem;">
+                            <i class="fas fa-user ms-2"></i>
+                            {{ file.uploaded_by.get_full_name|default:file.uploaded_by.username }}
+                            <br>
+                            <i class="far fa-calendar ms-2"></i>
+                            {{ file.uploaded_at|date:"Y/m/d" }}
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ file.file.url }}" class="btn btn-sm btn-primary flex-grow-1" download>
+                                <i class="fas fa-download ms-2"></i>
+                                تحميل
+                            </a>
+                            <a href="{% url 'cultural_delete_file' file.id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center" style="padding: 3rem;">
+                    <i class="fas fa-folder-open" style="font-size: 4rem; color: var(--text-gray); opacity: 0.3;"></i>
+                    <p style="color: var(--text-gray); margin-top: 1rem; font-size: 1.1rem;">لا توجد ملفات بعد</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

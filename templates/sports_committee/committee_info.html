@@ -1,0 +1,357 @@
+{% extends 'sports_committee/base.html' %}
+
+{% block title %}بيانات اللجنة الرياضية{% endblock %}
+{% block page_title %}بيانات اللجنة الرياضية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .info-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .info-card h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-green);
+    }
+
+    .info-card h4 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1.2rem 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        color: var(--text-gray);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-label i {
+        color: var(--primary-green);
+        width: 20px;
+    }
+
+    .info-value {
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .role-chart {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .role-item {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .role-item:hover {
+        border-color: var(--primary-green);
+        transform: translateY(-5px);
+    }
+
+    .role-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        color: var(--white);
+        font-size: 1.5rem;
+    }
+
+    .role-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .role-count {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-green);
+    }
+
+    .committee-header {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        border-radius: 15px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        color: var(--white);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(134, 184, 23, 0.3);
+    }
+
+    .committee-header h2 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .committee-header p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin: 0;
+    }
+
+    .supervisor-card {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .supervisor-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    .supervisor-info h5 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+
+    .supervisor-info p {
+        color: var(--primary-green);
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--primary-green);
+        color: var(--primary-green);
+        background: transparent;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Committee Header -->
+<div class="committee-header">
+    <h2>{{ committee.name }}</h2>
+    <p>{{ committee.description }}</p>
+</div>
+
+<div class="row">
+    <!-- Basic Information -->
+    <div class="col-lg-6 mb-4">
+        <div class="info-card">
+            <h4>
+                <i class="fas fa-info-circle"></i>
+                المعلومات الأساسية
+            </h4>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-users"></i>
+                    <span>إجمالي الأعضاء</span>
+                </div>
+                <div class="info-value">{{ total_members }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-user-check"></i>
+                    <span>الأعضاء النشطون</span>
+                </div>
+                <div class="info-value">{{ active_members }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-chart-line"></i>
+                    <span>متوسط درجة المشاركة</span>
+                </div>
+                <div class="info-value">{{ avg_participation }} نقطة</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>البرنامج</span>
+                </div>
+                <div class="info-value">{{ committee.program.name }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supervisor Information -->
+    <div class="col-lg-6 mb-4">
+        <div class="info-card">
+            <h4>
+                <i class="fas fa-user-tie"></i>
+                معلومات المشرف
+            </h4>
+
+            <div class="supervisor-card">
+                <div class="supervisor-avatar">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="supervisor-info">
+                    <h5>{{ committee.supervisor.get_full_name|default:committee.supervisor.username }}</h5>
+                    <p>مشرف اللجنة الرياضية</p>
+                    {% if committee.supervisor.email %}
+                    <div style="color: var(--text-gray); font-size: 0.9rem; margin-top: 0.5rem;">
+                        <i class="fas fa-envelope ms-1"></i>
+                        {{ committee.supervisor.email }}
+                    </div>
+                    {% endif %}
+                    {% if committee.supervisor.phone %}
+                    <div style="color: var(--text-gray); font-size: 0.9rem; margin-top: 0.3rem;">
+                        <i class="fas fa-phone ms-1"></i>
+                        {{ committee.supervisor.phone }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Program Information -->
+        <div class="info-card">
+            <h4>
+                <i class="fas fa-clipboard-list"></i>
+                معلومات البرنامج
+            </h4>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>تاريخ البدء</span>
+                </div>
+                <div class="info-value">{{ committee.program.start_date }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>تاريخ الانتهاء</span>
+                </div>
+                <div class="info-value">{{ committee.program.end_date }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Role Distribution -->
+<div class="info-card">
+    <h4>
+        <i class="fas fa-users-cog"></i>
+        توزيع الأدوار
+    </h4>
+
+    <div class="role-chart">
+        {% for role in role_distribution %}
+        <div class="role-item">
+            <div class="role-icon">
+                {% if role.role == 'referee' %}
+                    <i class="fas fa-whistle"></i>
+                {% elif role.role == 'coordinator' %}
+                    <i class="fas fa-tasks"></i>
+                {% elif role.role == 'responsible_player' %}
+                    <i class="fas fa-star"></i>
+                {% else %}
+                    <i class="fas fa-running"></i>
+                {% endif %}
+            </div>
+            <div class="role-name">
+                {% if role.role == 'referee' %}حكم
+                {% elif role.role == 'coordinator' %}منسق
+                {% elif role.role == 'responsible_player' %}لاعب مسؤول
+                {% else %}لاعب
+                {% endif %}
+            </div>
+            <div class="role-count">{{ role.count }}</div>
+        </div>
+        {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center; color: var(--text-gray); padding: 2rem;">
+            لا توجد بيانات عن توزيع الأدوار
+        </p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="info-card">
+    <h4>
+        <i class="fas fa-bolt"></i>
+        إجراءات سريعة
+    </h4>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <a href="{% url 'sports_member_management' %}" class="btn btn-primary w-100">
+                <i class="fas fa-users ms-2"></i>
+                إدارة الأعضاء
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'sports_task_management' %}" class="btn btn-outline-primary w-100">
+                <i class="fas fa-tasks ms-2"></i>
+                المهام
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'sports_match_management' %}" class="btn btn-outline-primary w-100">
+                <i class="fas fa-calendar-check ms-2"></i>
+                المباريات
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

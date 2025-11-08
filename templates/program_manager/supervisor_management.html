@@ -1,0 +1,276 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}إدارة المشرفين - {{ program.name }}{% endblock %}
+
+{% block page_title %}إدارة المشرفين{% endblock %}
+
+{% block extra_css %}
+<style>
+    .badge-scientific {
+        background: linear-gradient(135deg, #1E90FF 0%, #00BFFF 100%); /* ألوان زرقاء */
+        color: var(--white);
+    }
+    .table-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .table-header h3 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .table-header h3 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background: rgba(134, 184, 23, 0.1);
+    }
+
+    .table thead th {
+        color: var(--text-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-align: right;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(134, 184, 23, 0.05);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        border: none;
+        vertical-align: middle;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+
+    .btn-success {
+        background: var(--primary-green);
+        border: none;
+        color: var(--white);
+    }
+
+    .btn-success:hover {
+        background: #75a015;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        border: none;
+        color: var(--white);
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .badge-cultural {
+        background: linear-gradient(135deg, #86B817 0%, #75a015 100%);
+        color: var(--white);
+    }
+
+    .badge-sports {
+        background: linear-gradient(135deg, #0B3B24 0%, #2d5016 100%);
+        color: var(--white);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h5 {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .user-avatar-sm {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 1rem;
+    }
+
+    .badge-sharia {
+        background: linear-gradient(135deg, #4B0082 0%, #6A0DAD 100%); /* purple tones */
+        color: var(--white);
+    }
+    .badge-operations {
+        background: linear-gradient(135deg, #FF8C00 0%, #FFA500 100%); /* ألوان برتقالية */
+        color: var(--white);
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="table-wrapper">
+    <div class="table-header">
+        <h3>
+            <i class="fas fa-user-tie"></i>
+            قائمة المشرفين
+        </h3>
+        <a href="{% url 'pm_add_supervisor' %}" class="btn btn-primary">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة مشرف جديد
+        </a>
+    </div>
+
+    {% if supervisors %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>المشرف</th>
+                    <th>النوع</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>رقم الهاتف</th>
+                    <th>تاريخ الإضافة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for supervisor in supervisors %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar-sm me-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <strong>{{ supervisor.get_full_name|default:supervisor.username }}</strong>
+                                <div style="font-size: 0.9rem; color: var(--text-gray);">
+                                    @{{ supervisor.username }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if supervisor.supervisor_type == 'cultural' %}
+                        <span class="badge badge-cultural">
+                            <i class="fas fa-book-reader ms-1"></i>
+                            مشرف ثقافي
+                        </span>
+                        {% elif supervisor.supervisor_type == 'sports' %}
+                        <span class="badge badge-sports">
+                            <i class="fas fa-running ms-1"></i>
+                            مشرف رياضي
+                        </span>
+                        {% elif supervisor.supervisor_type == 'sharia' %}
+                        <span class="badge badge-sharia">
+                            <i class="fas fa-quran ms-1"></i>
+                            مشرف اللجنة الشرعية
+                        </span>
+                        {% elif supervisor.supervisor_type == 'scientific' %}
+                        <span class="badge badge-scientific">
+                            <i class="fas fa-flask ms-1"></i>
+                            مشرف اللجنة العلمية
+                        </span>
+                        {% elif supervisor.supervisor_type == 'operations' %}
+                        <span class="badge badge-operations">
+                            <i class="fas fa-cogs ms-1"></i>
+                            مشرف اللجنة التشغيلية
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-question ms-1"></i>
+                            غير محدد
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <i class="fas fa-envelope ms-2" style="color: var(--text-gray);"></i>
+                        {{ supervisor.email|default:"-" }}
+                    </td>
+                    <td>
+                        <i class="fas fa-phone ms-2" style="color: var(--text-gray);"></i>
+                        {{ supervisor.phone|default:"-" }}
+                    </td>
+                    <td>
+                        <i class="far fa-calendar ms-2" style="color: var(--text-gray);"></i>
+                        {{ supervisor.date_joined|date:"Y/m/d" }}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'pm_delete_supervisor' supervisor.id %}" class="btn btn-sm btn-danger"
+                               title="حذف نهائي" onclick="return confirm('هل أنت متأكد من حذف المشرف نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-user-tie"></i>
+        <h5>لا توجد مشرفين بعد</h5>
+        <p>ابدأ بإضافة مشرفين جديدين لإدارة لجان البرنامج</p>
+        <a href="{% url 'pm_add_supervisor' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة مشرف الآن
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

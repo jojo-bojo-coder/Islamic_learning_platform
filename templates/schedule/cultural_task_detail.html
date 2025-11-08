@@ -1,0 +1,246 @@
+{% extends base_template %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .detail-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .detail-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .info-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .info-card h5 {
+        color: var(--primary-green);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .progress-container {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .progress {
+        height: 20px;
+        border-radius: 10px;
+        background-color: #e9ecef;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: var(--primary-green);
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+
+    .member-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem;
+        border-radius: 8px;
+        margin-bottom: 0.8rem;
+        background: #f8f9fa;
+        transition: all 0.2s ease;
+    }
+
+    .member-item:hover {
+        background: #e9ecef;
+        transform: translateX(-3px);
+    }
+
+    .badge-status {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .btn-action {
+        background: var(--primary-green);
+        border: none;
+        color: var(--white);
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-action:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        color: var(--white);
+    }
+
+    .btn-warning {
+        background: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    .btn-info {
+        background: #17a2b8;
+    }
+
+    .btn-info:hover {
+        background: #138496;
+        box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+    }
+
+    .alert-overdue {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        border: 1px solid #f5c6cb;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 767px) {
+        .detail-wrapper {
+            padding: 1rem;
+        }
+
+        .detail-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="detail-wrapper fade-in-up">
+                <div class="detail-header">
+                    <h2 class="detail-title">
+                        <i class="fas fa-tasks" style="color: var(--primary-green);"></i>
+                        تفاصيل المهمة الثقافية
+                    </h2>
+                    <span class="badge-status bg-{% if object.status == 'completed' %}success{% elif object.status == 'in_progress' %}primary{% else %}warning{% endif %}">
+                        {{ object.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="info-card">
+                            <h3>{{ object.title }}</h3>
+                            <p class="text-muted">{{ object.description }}</p>
+                        </div>
+
+                        <div class="progress-container">
+                            <h5>مستوى الإنجاز</h5>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {{ object.completion_percentage }}%;"
+                                     aria-valuenow="{{ object.completion_percentage }}"
+                                     aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <p class="text-center mb-0"><strong>{{ object.completion_percentage }}%</strong> من المهمة مكتملة</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h5>معلومات المهمة</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>نوع المهمة:</strong> {{ object.get_task_type_display }}</p>
+                                    <p><strong>اللجنة:</strong> {{ object.committee.name }}</p>
+                                    <p><strong>المسؤول:</strong> {{ object.assigned_to.get_full_name|default:"-" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>تاريخ الاستحقاق:</strong> {{ object.due_date }}</p>
+                                    <p><strong>نسبة الإنجاز:</strong> {{ object.completion_percentage }}%</p>
+                                    <p><strong>تم الإنشاء:</strong> {{ object.created_at|date:"Y-m-d" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <h5>أعضاء اللجنة</h5>
+                            {% for member in committee_members %}
+                            <div class="member-item">
+                                <div>
+                                    <strong>{{ member.user.get_full_name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ member.role|default:"عضو" }}</small>
+                                </div>
+                                <span class="badge bg-info">{{ member.participation_score }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="info-card">
+                            <h5>الإجراءات</h5>
+                            <a href="#" class="btn-action btn-warning">
+                                <i class="fas fa-edit"></i>
+                                تعديل المهمة
+                            </a>
+                            <a href="{% url 'cultural_dashboard' %}" class="btn-action btn-info">
+                                <i class="fas fa-arrow-right"></i>
+                                العودة للوحة الثقافية
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

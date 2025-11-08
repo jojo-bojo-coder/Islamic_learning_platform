@@ -1,0 +1,179 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}{{ title }} - {{ committee.name }}{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .form-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+        color: var(--text-gray);
+        margin: 0;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .btn-cancel {
+        background: var(--border-light);
+        color: var(--text-dark);
+        border: none;
+    }
+
+    .btn-cancel:hover {
+        background: #d3d3d3;
+        color: var(--text-dark);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-tasks ms-2" style="color: var(--primary-green);"></i>
+            {{ title }}
+        </h3>
+        <p>قم بتعبئة المعلومات التالية لإضافة أو تعديل المهمة</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.task_type.id_for_label }}" class="form-label">
+                    {{ form.task_type.label }}
+                    <span style="color: #dc3545;">*</span>
+                </label>
+                {{ form.task_type }}
+                {% if form.task_type.errors %}
+                    <div class="text-danger mt-1">{{ form.task_type.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.status.id_for_label }}" class="form-label">
+                    {{ form.status.label }}
+                    <span style="color: #dc3545;">*</span>
+                </label>
+                {{ form.status }}
+                {% if form.status.errors %}
+                    <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.title.id_for_label }}" class="form-label">
+                {{ form.title.label }}
+                <span style="color: #dc3545;">*</span>
+            </label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="text-danger mt-1">{{ form.title.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.description.id_for_label }}" class="form-label">
+                {{ form.description.label }}
+                <span style="color: #dc3545;">*</span>
+            </label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="text-danger mt-1">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.assigned_to_name.id_for_label }}" class="form-label">
+                    {{ form.assigned_to_name.label }}
+                </label>
+                {{ form.assigned_to_name }}
+                {% if form.assigned_to_name.errors %}
+                    <div class="text-danger mt-1">{{ form.assigned_to_name.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                    {{ form.due_date.label }}
+                    <span style="color: #dc3545;">*</span>
+                </label>
+                {{ form.due_date }}
+                {% if form.due_date.errors %}
+                    <div class="text-danger mt-1">{{ form.due_date.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">
+                {{ form.completion_percentage.label }}
+            </label>
+            {{ form.completion_percentage }}
+            {% if form.completion_percentage.errors %}
+                <div class="text-danger mt-1">{{ form.completion_percentage.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="btn-group-actions">
+            <button type="submit" class="btn btn-primary flex-fill">
+                <i class="fas fa-save ms-2"></i>
+                حفظ المهمة
+            </button>
+            <a href="{% url 'sharia_task_management' %}" class="btn btn-cancel flex-fill">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

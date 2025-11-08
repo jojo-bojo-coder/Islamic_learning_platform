@@ -1,0 +1,49 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}{{ title }} - {{ committee.name }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="background: var(--white); border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 700px; margin: 0 auto;">
+    <div class="form-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-light);">
+        <h3 style="color: var(--text-dark); font-weight: 700;">
+            <i class="fas fa-user-plus ms-2" style="color: var(--primary-green);"></i>
+            {{ title }}
+        </h3>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label" style="font-weight: 600;">{{ form.user.label }} <span style="color: #dc3545;">*</span></label>
+            {{ form.user }}
+            {% if form.user.errors %}<div class="text-danger mt-1">{{ form.user.errors }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" style="font-weight: 600;">{{ form.role.label }}</label>
+            {{ form.role }}
+            {% if form.role.errors %}<div class="text-danger mt-1">{{ form.role.errors }}</div>{% endif %}
+        </div>
+
+        <div class="mb-3 form-check">
+            {{ form.is_active }}
+            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                {{ form.is_active.label }}
+            </label>
+        </div>
+
+        <div class="btn-group-actions" style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+            <button type="submit" class="btn btn-primary flex-fill">
+                <i class="fas fa-save ms-2"></i>
+                حفظ العضو
+            </button>
+            <a href="{% url 'sharia_member_management' %}" class="btn btn-cancel flex-fill" style="background: var(--border-light); color: var(--text-dark);">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

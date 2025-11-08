@@ -1,0 +1,66 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}{{ title }} - {{ committee.name }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="form-card" style="background: var(--white); border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 900px; margin: 0 auto;">
+    <div class="form-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-light);">
+        <h3 style="color: var(--text-dark); font-weight: 700;">
+            <i class="fas fa-chart-bar ms-2" style="color: var(--primary-green);"></i>
+            {{ title }}
+        </h3>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.title.label }} <span style="color: #dc3545;">*</span></label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="text-danger mt-1">{{ form.title.errors }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.report_type.label }} <span style="color: #dc3545;">*</span></label>
+                {{ form.report_type }}
+                {% if form.report_type.errors %}<div class="text-danger mt-1">{{ form.report_type.errors }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" style="font-weight: 600;">{{ form.content.label }} <span style="color: #dc3545;">*</span></label>
+            {{ form.content }}
+            {% if form.content.errors %}<div class="text-danger mt-1">{{ form.content.errors }}</div>{% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.interaction_rate.label }} <span style="color: #dc3545;">*</span></label>
+                {{ form.interaction_rate }}
+                {% if form.interaction_rate.errors %}<div class="text-danger mt-1">{{ form.interaction_rate.errors }}</div>{% endif %}
+                <small class="form-text text-muted">أدخل نسبة التفاعل من 0 إلى 100</small>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label" style="font-weight: 600;">{{ form.file.label }}</label>
+                {{ form.file }}
+                {% if form.file.errors %}<div class="text-danger mt-1">{{ form.file.errors }}</div>{% endif %}
+                <small class="form-text text-muted">يمكنك رفع ملفات PDF, DOC, DOCX, XLS, XLSX</small>
+            </div>
+        </div>
+
+        <div class="btn-group-actions" style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+            <button type="submit" class="btn btn-primary flex-fill">
+                <i class="fas fa-save ms-2"></i>
+                حفظ التقرير
+            </button>
+            <a href="{% url 'sharia_reports' %}" class="btn btn-cancel flex-fill" style="background: var(--border-light); color: var(--text-dark);">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

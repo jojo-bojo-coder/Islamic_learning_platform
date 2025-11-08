@@ -1,0 +1,164 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}إدارة المحاضرات - اللجنة العلمية{% endblock %}
+
+{% block page_title %}إدارة المحاضرات والورش{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 style="color: var(--primary-blue);">
+                    <i class="fas fa-chalkboard-teacher ms-2"></i>
+                    المحاضرات والورش
+                </h4>
+                <a href="{% url 'scientific_add_lecture' %}" class="btn btn-primary">
+                    <i class="fas fa-plus ms-1"></i>
+                    إضافة محاضرة جديدة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="type" class="form-label">نوع المحاضرة</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="">جميع الأنواع</option>
+                        {% for lecture_type in lecture_types %}
+                        <option value="{{ lecture_type.0 }}" {% if lecture_type_filter == lecture_type.0 %}selected{% endif %}>
+                            {{ lecture_type.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label">الحالة</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="">جميع الحالات</option>
+                        {% for status in status_choices %}
+                        <option value="{{ status.0 }}" {% if status_filter == status.0 %}selected{% endif %}>
+                            {{ status.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter ms-1"></i>
+                        تصفية
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Lectures Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-card">
+            {% if lectures %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>النوع</th>
+                            <th>المحاضر</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                            <th>المكان</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lecture in lectures %}
+                        <tr>
+                            <td>
+                                <strong>{{ lecture.title }}</strong>
+                                {% if lecture.description %}
+                                <br>
+                                <small class="text-muted">{{ lecture.description|truncatewords:10 }}</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ lecture.get_lecture_type_display }}</td>
+                            <td>
+                                {% if lecture.lecturer %}
+                                {{ lecture.lecturer.get_full_name }}
+                                {% elif lecture.guest_lecturer %}
+                                {{ lecture.guest_lecturer }}
+                                {% else %}
+                                <span class="text-muted">غير محدد</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ lecture.date }}</td>
+                            <td>{{ lecture.time }}</td>
+                            <td>{{ lecture.location|default:"غير محدد" }}</td>
+                            <td>
+                                <span class="status-badge status-{{ lecture.status }}">
+                                    {{ lecture.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'scientific_edit_lecture' lecture.id %}" class="btn btn-outline-primary" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'scientific_lecture_attendance' lecture.id %}" class="btn btn-outline-success" title="الحضور">
+                                        <i class="fas fa-users"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ lecture.id }}" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ lecture.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">تأكيد الحذف</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>هل أنت متأكد من حذف المحاضرة "{{ lecture.title }}"؟</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="post" action="{% url 'scientific_delete_lecture' lecture.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                                    <button type="submit" class="btn btn-danger">حذف</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">لا توجد محاضرات</h5>
+                <p class="text-muted">لم يتم إضافة أي محاضرات بعد</p>
+                <a href="{% url 'scientific_add_lecture' %}" class="btn btn-primary">
+                    <i class="fas fa-plus ms-1"></i>
+                    إضافة أول محاضرة
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

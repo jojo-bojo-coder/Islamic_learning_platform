@@ -1,0 +1,96 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}إدارة الرسائل - {{ committee.name }}{% endblock %}
+{% block page_title %}إدارة الرسائل اليومية والأسبوعية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .message-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .message-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .message-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: rgba(134, 184, 23, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--primary-green);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 style="color: var(--text-dark); font-weight: 700;">
+        <i class="fas fa-envelope ms-2" style="color: var(--primary-green);"></i>
+        الرسائل اليومية والأسبوعية
+    </h3>
+    <a href="{% url 'sharia_add_message' %}" class="btn btn-primary">
+        <i class="fas fa-plus ms-2"></i>
+        إضافة رسالة جديدة
+    </a>
+</div>
+
+{% if messages_list %}
+    {% for message in messages_list %}
+    <div class="message-card">
+        <div class="message-header">
+            <div style="display: flex; gap: 1rem; flex: 1;">
+                <div class="message-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <span class="badge" style="background: {% if message.message_type == 'daily' %}#17a2b8{% else %}var(--primary-green){% endif %}; color: white;">
+                            {{ message.get_message_type_display }}
+                        </span>
+                        {% if message.is_sent %}
+                            <span class="badge badge-success">تم الإرسال</span>
+                        {% else %}
+                            <span class="badge badge-warning">قيد الانتظار</span>
+                        {% endif %}
+                    </div>
+                    <h5 style="font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">{{ message.title }}</h5>
+                    <p style="color: var(--text-gray); margin: 0;">{{ message.content|truncatewords:30 }}</p>
+                    <div style="margin-top: 1rem; color: var(--text-gray); font-size: 0.9rem;">
+                        <i class="fas fa-calendar ms-1" style="color: var(--primary-green);"></i>
+                        موعد الإرسال: {{ message.scheduled_date }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state" style="background: var(--white); border-radius: 15px; padding: 4rem 2rem; text-align: center;">
+        <i class="fas fa-envelope-open" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+        <h4 style="color: var(--text-dark);">لا توجد رسائل</h4>
+        <p style="color: var(--text-gray);">لم يتم إنشاء أي رسائل بعد.</p>
+        <a href="{% url 'sharia_add_message' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة رسالة جديدة
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

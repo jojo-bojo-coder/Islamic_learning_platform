@@ -1,0 +1,128 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}{{ title }} - اللجنة العلمية{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.report_type.id_for_label }}" class="form-label">نوع التقرير</label>
+                        {{ form.report_type }}
+                        {% if form.report_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.report_type.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">عنوان التقرير</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.title.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.content.id_for_label }}" class="form-label">محتوى التقرير</label>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.content.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.attendance_rate.id_for_label }}" class="form-label">نسبة الحضور (%)</label>
+                        {{ form.attendance_rate }}
+                        {% if form.attendance_rate.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.attendance_rate.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.evaluation_score.id_for_label }}" class="form-label">درجة التقييم</label>
+                        {{ form.evaluation_score }}
+                        {% if form.evaluation_score.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.evaluation_score.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.file.id_for_label }}" class="form-label">ملف مرفق (اختياري)</label>
+                    {{ form.file }}
+                    {% if form.file.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.file.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'scientific_reports' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right ms-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save ms-1"></i>
+                        حفظ التقرير
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.classList.add('form-select');
+        });
+    });
+</script>
+{% endblock %}

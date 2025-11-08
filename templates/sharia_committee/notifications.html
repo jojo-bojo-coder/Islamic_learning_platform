@@ -1,0 +1,174 @@
+{% extends 'sharia_committee/base.html' %}
+
+{% block title %}التنبيهات - {{ committee.name }}{% endblock %}
+{% block page_title %}التنبيهات والإشعارات{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .notification-card.unread {
+        border-right: 4px solid var(--primary-green);
+        background: rgba(134, 184, 23, 0.05);
+    }
+
+    .notification-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .icon-task {
+        background: rgba(134, 184, 23, 0.1);
+        color: var(--primary-green);
+    }
+
+    .icon-message {
+        background: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+    }
+
+    .icon-competition {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
+
+    .icon-report {
+        background: rgba(111, 66, 193, 0.1);
+        color: #6f42c1;
+    }
+
+    .mark-read-form {
+        display: inline;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 style="color: var(--text-dark); font-weight: 700;">
+        <i class="fas fa-bell ms-2" style="color: var(--primary-green);"></i>
+        التنبيهات والإشعارات
+    </h3>
+
+    {% if notifications %}
+    <form method="post" action="{% url 'sharia_mark_all_read' %}" class="mark-read-form">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="fas fa-check-double ms-2"></i>
+            تحديد الكل كمقروء
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% if notifications %}
+    {% for notification in notifications %}
+    <div class="notification-card {% if not notification.is_read %}unread{% endif %}">
+        <div style="display: flex; gap: 1.5rem; align-items: start;">
+            <div class="notification-icon icon-{{ notification.notification_type|slice:':4' }}">
+                {% if 'task' in notification.notification_type %}
+                    <i class="fas fa-tasks"></i>
+                {% elif 'message' in notification.notification_type %}
+                    <i class="fas fa-envelope"></i>
+                {% elif 'competition' in notification.notification_type %}
+                    <i class="fas fa-trophy"></i>
+                {% elif 'report' in notification.notification_type %}
+                    <i class="fas fa-chart-bar"></i>
+                {% elif 'lesson' in notification.notification_type %}
+                    <i class="fas fa-chalkboard-teacher"></i>
+                {% else %}
+                    <i class="fas fa-bell"></i>
+                {% endif %}
+            </div>
+
+            <div style="flex: 1;">
+                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
+                    <h5 style="font-weight: 700; color: var(--text-dark); margin: 0;">{{ notification.title }}</h5>
+                    <span style="color: var(--text-gray); font-size: 0.85rem;">
+                        {{ notification.created_at|timesince }} منذ
+                    </span>
+                </div>
+
+                {% if notification.related_discussion %}
+                            <a href="{% url 'cultural_discussion_detail' notification.related_discussion.id %}" class="notification-link mb-2">
+                                {{ notification.message }}
+                            </a>
+                            {% else %}
+                            <p style="color: var(--text-gray); margin-bottom: 1rem;">{{ notification.message }}</p>
+                            {% endif %}
+
+
+
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    {% if not notification.is_read %}
+                    <form method="post" class="mark-read-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="notification_id" value="{{ notification.id }}">
+                        <button type="submit" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-check ms-1"></i>
+                            تحديد كمقروء
+                        </button>
+                    </form>
+                    {% else %}
+                    <span style="color: var(--primary-green); font-size: 0.85rem;">
+                        <i class="fas fa-check-circle ms-1"></i>
+                        مقروء
+                    </span>
+                    {% endif %}
+
+                    {% if notification.related_task %}
+                    <a href="{% url 'sharia_task_management' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt ms-1"></i>
+                        عرض المهمة
+                    </a>
+                    {% elif notification.related_competition %}
+                    <a href="{% url 'sharia_competition_management' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt ms-1"></i>
+                        عرض المسابقة
+                    </a>
+                    {% elif notification.related_report %}
+                    <a href="{% url 'sharia_reports' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-external-link-alt ms-1"></i>
+                        عرض التقرير
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <i class="fas fa-bell-slash" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3; margin-bottom: 1.5rem;"></i>
+        <h4 style="color: var(--text-dark);">لا توجد تنبيهات</h4>
+        <p style="color: var(--text-gray);">لا توجد أي تنبيهات أو إشعارات جديدة.</p>
+    </div>
+{% endif %}
+{% endblock %}

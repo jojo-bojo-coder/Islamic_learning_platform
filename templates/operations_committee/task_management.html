@@ -1,0 +1,222 @@
+{% extends 'operations_committee/base.html' %}
+
+{% block title %}إدارة المهام - اللجنة التشغيلية{% endblock %}
+
+{% block page_title %}إدارة المهام{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .page-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+        color: var(--text-gray);
+        margin: 0;
+    }
+
+    .filter-section {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .table-container {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .priority-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .action-buttons .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        margin-left: 0.3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3>
+                <i class="fas fa-tasks" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+                إدارة المهام التشغيلية
+            </h3>
+            <p>عرض وإدارة جميع المهام التشغيلية</p>
+        </div>
+        <a href="{% url 'operations_add_task' %}" class="btn btn-primary">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة مهمة جديدة
+        </a>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section">
+    <form method="get" class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">تصفية حسب النوع</label>
+            <select name="type" class="form-select" onchange="this.form.submit()">
+                <option value="">جميع الأنواع</option>
+                <option value="operational_program" {% if task_type_filter == 'operational_program' %}selected{% endif %}>البرنامج التشغيلي</option>
+                <option value="awards_provision" {% if task_type_filter == 'awards_provision' %}selected{% endif %}>توفير الجوائز</option>
+                <option value="individuals_families_followup" {% if task_type_filter == 'individuals_families_followup' %}selected{% endif %}>متابعة الأفراد والأسر</option>
+                <option value="public_program" {% if task_type_filter == 'public_program' %}selected{% endif %}>البرنامج الجماهيري</option>
+                <option value="visits_coordination" {% if task_type_filter == 'visits_coordination' %}selected{% endif %}>معاون تنسيق الزيارات</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">تصفية حسب الحالة</label>
+            <select name="status" class="form-select" onchange="this.form.submit()">
+                <option value="">جميع الحالات</option>
+                <option value="not_started" {% if status_filter == 'not_started' %}selected{% endif %}>لم يبدأ</option>
+                <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>جاري</option>
+                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>مكتمل</option>
+                <option value="overdue" {% if status_filter == 'overdue' %}selected{% endif %}>متأخر</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">&nbsp;</label>
+            <a href="{% url 'operations_task_management' %}" class="btn btn-outline-secondary w-100">
+                <i class="fas fa-redo ms-2"></i>
+                إعادة تعيين
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Tasks Table -->
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>المهمة</th>
+                    <th>النوع</th>
+                    <th>المسؤول</th>
+                    <th>الموعد النهائي</th>
+                    <th>الأولوية</th>
+                    <th>الحالة</th>
+                    <th>الإنجاز</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>
+                        <strong>{{ task.title }}</strong>
+                        <br>
+                        <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
+                    </td>
+                    <td>{{ task.get_task_type_display }}</td>
+                    <td>
+                        {% if task.assigned_to %}
+                            <i class="fas fa-user ms-1"></i>
+                            {{ task.assigned_to.get_full_name }}
+                        {% else %}
+                            <span class="text-muted">غير محدد</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <i class="far fa-calendar ms-1"></i>
+                        {{ task.due_date }}
+                    </td>
+                    <td>
+                        <span class="priority-badge
+                            {% if task.priority == 'high' %}bg-danger text-white
+                            {% elif task.priority == 'medium' %}bg-warning text-dark
+                            {% else %}bg-secondary text-white{% endif %}">
+                            {{ task.get_priority_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge
+                            {% if task.status == 'completed' %}bg-success text-white
+                            {% elif task.status == 'overdue' %}bg-danger text-white
+                            {% elif task.status == 'in_progress' %}bg-info text-white
+                            {% else %}bg-warning text-dark{% endif %}">
+                            {{ task.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ task.completion_percentage }}%;"
+                                 aria-valuenow="{{ task.completion_percentage }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ task.completion_percentage }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{% url 'operations_edit_task' task.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'operations_delete_task' task.id %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">لا توجد مهام</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

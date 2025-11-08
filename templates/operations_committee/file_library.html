@@ -1,0 +1,172 @@
+{% extends 'operations_committee/base.html' %}
+
+{% block title %}مكتبة الملفات - اللجنة التشغيلية{% endblock %}
+
+{% block page_title %}مكتبة الملفات{% endblock %}
+
+{% block extra_css %}
+<style>
+    .file-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .file-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(134, 184, 23, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .file-icon i {
+        font-size: 1.8rem;
+        color: var(--primary-green);
+    }
+
+    .file-title {
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .file-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+        font-size: 0.9rem;
+        color: var(--text-gray);
+    }
+
+    .file-meta i {
+        margin-left: 0.3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="background: var(--white); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3>
+                <i class="fas fa-folder-open" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+                مكتبة الملفات التشغيلية
+            </h3>
+            <p style="margin: 0; color: var(--text-gray);">خطط تشغيلية وقوائم تجهيز</p>
+        </div>
+        <a href="{% url 'operations_upload_file' %}" class="btn btn-primary">
+            <i class="fas fa-upload ms-2"></i>
+            رفع ملف جديد
+        </a>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section mb-4" style="background: var(--white); border-radius: 15px; padding: 1.5rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-light);">
+    <form method="get" class="row g-3">
+        <div class="col-md-10">
+            <label class="form-label">تصفية حسب النوع</label>
+            <select name="type" class="form-select" onchange="this.form.submit()">
+                <option value="">جميع الأنواع</option>
+                <option value="operational_plan" {% if file_type_filter == 'operational_plan' %}selected{% endif %}>خطة تشغيلية</option>
+                <option value="preparation_list" {% if file_type_filter == 'preparation_list' %}selected{% endif %}>قائمة تجهيز</option>
+                <option value="schedule" {% if file_type_filter == 'schedule' %}selected{% endif %}>جدول زمني</option>
+                <option value="report" {% if file_type_filter == 'report' %}selected{% endif %}>تقرير</option>
+                <option value="other" {% if file_type_filter == 'other' %}selected{% endif %}>أخرى</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">&nbsp;</label>
+            <a href="{% url 'operations_file_library' %}" class="btn btn-outline-secondary w-100">
+                <i class="fas fa-redo ms-2"></i>
+                إعادة تعيين
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Files Grid -->
+<div class="row">
+    {% for file in files %}
+    <div class="col-lg-4 col-md-6">
+        <div class="file-card">
+            <div class="file-icon">
+                {% if file.file_type == 'operational_plan' %}
+                    <i class="fas fa-tasks"></i>
+                {% elif file.file_type == 'preparation_list' %}
+                    <i class="fas fa-list-check"></i>
+                {% elif file.file_type == 'schedule' %}
+                    <i class="fas fa-calendar-alt"></i>
+                {% elif file.file_type == 'report' %}
+                    <i class="fas fa-file-alt"></i>
+                {% else %}
+                    <i class="fas fa-file"></i>
+                {% endif %}
+            </div>
+
+            <div class="file-title">{{ file.title }}</div>
+
+            <div style="font-size: 0.85rem; color: var(--text-gray); margin-bottom: 0.5rem;">
+                <i class="fas fa-tag ms-1"></i>
+                {{ file.get_file_type_display }}
+            </div>
+
+            {% if file.description %}
+            <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1rem;">
+                {{ file.description|truncatewords:15 }}
+            </p>
+            {% endif %}
+
+            <div class="file-meta">
+                <span>
+                    <i class="fas fa-user"></i>
+                    {{ file.uploaded_by.get_full_name }}
+                </span>
+                <span>
+                    <i class="far fa-calendar"></i>
+                    {{ file.uploaded_at|date:"Y/m/d" }}
+                </span>
+            </div>
+
+            <div class="d-flex gap-2 mt-3">
+                <a href="{{ file.file.url }}" class="btn btn-sm btn-primary flex-fill" download>
+                    <i class="fas fa-download ms-1"></i>
+                    تحميل
+                </a>
+                <a href="{% url 'operations_delete_file' file.id %}" class="btn btn-sm btn-danger">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="text-center py-5" style="background: var(--white); border-radius: 15px;">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <p class="text-muted">لا توجد ملفات</p>
+            <a href="{% url 'operations_upload_file' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-upload ms-2"></i>
+                رفع ملف جديد
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

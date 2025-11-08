@@ -1,0 +1,172 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}التقارير - {{ committee.name }}{% endblock %}
+
+{% block page_title %}التقارير والإحصائيات{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">تقارير اللجنة الثقافية</h4>
+            <a href="{% url 'cultural_add_report' %}" class="btn btn-primary">
+                <i class="fas fa-plus ms-2"></i>
+                تقرير جديد
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_tasks }}</div>
+            <div class="stat-label">إجمالي المهام</div>
+            <i class="fas fa-tasks mt-3"></i>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ completed_tasks }}</div>
+            <div class="stat-label">مهام مكتملة</div>
+            <i class="fas fa-check-circle mt-3"></i>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ completion_rate }}%</div>
+            <div class="stat-label">نسبة الإنجاز</div>
+            <i class="fas fa-chart-pie mt-3"></i>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ task_stats|length }}</div>
+            <div class="stat-label">أنواع المهام</div>
+            <i class="fas fa-list-alt mt-3"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Task Type Statistics -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar ms-2"></i>
+                    إحصائيات أنواع المهام
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if task_stats %}
+                    {% for stat in task_stats %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>{{ stat.task_type_display }}</span>
+                            <span>{{ stat.completed }}/{{ stat.total }}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar" style="width: {% widthratio stat.completed stat.total 100 %}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-bar fa-2x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">لا توجد بيانات للإحصائيات</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-trophy ms-2"></i>
+                    أكثر الأعضاء مشاركة
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if top_members %}
+                    {% for member in top_members %}
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                        <div>
+                            <strong class="d-block">{{ member.user.get_full_name|default:member.user.username }}</strong>
+                            <small class="text-muted">{{ member.role|default:"عضو" }}</small>
+                        </div>
+                        <span class="badge bg-success">{{ member.participation_score }} نقطة</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">لا توجد بيانات للأعضاء</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reports -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt ms-2"></i>
+                    أحدث التقارير
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_reports %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>عنوان التقرير</th>
+                                <th>نوع التقرير</th>
+                                <th>تاريخ الإنشاء</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in recent_reports %}
+                            <tr>
+                                <td>
+                                    <strong>{{ report.title }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ report.content|truncatewords:10 }}</small>
+                                </td>
+                                <td>{{ report.report_type }}</td>
+                                <td>{{ report.created_at|date:"Y/m/d" }}</td>
+                                <td>
+                                    {% if report.file %}
+                                    <a href="{{ report.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download ms-2"></i>
+                                        تحميل
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">لا يوجد ملف</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-file-alt fa-2x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">لا توجد تقارير</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,618 @@
+{% extends 'director_base.html' %}
+
+{% block title %}إدارة البرامج{% endblock %}
+
+{% block page_title %}إدارة البرامج{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--primary-green);
+        margin-left: 12px;
+    }
+
+    /* Alert Messages */
+    .alert {
+        border: none;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-right: 4px solid;
+    }
+
+    .alert-success {
+        background: rgba(134, 184, 23, 0.1);
+        border-right-color: var(--primary-green);
+        color: var(--text-dark);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        border-right-color: #dc3545;
+        color: #721c24;
+    }
+
+    /* Programs Table Card */
+    .programs-table-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+
+    /* Enhanced Table */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+        font-size: 0.95rem;
+    }
+
+    .table thead {
+        background: rgba(134, 184, 23, 0.1);
+    }
+
+    .table thead th {
+        color: var(--text-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(134, 184, 23, 0.05);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        vertical-align: middle;
+        border: none;
+    }
+
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: inline-block;
+    }
+
+    .status-badge.active {
+        background: rgba(134, 184, 23, 0.1);
+        color: var(--primary-green);
+        border: 1px solid rgba(134, 184, 23, 0.2);
+    }
+
+    .status-badge.inactive {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        border: 1px solid rgba(108, 117, 125, 0.2);
+    }
+
+    /* Progress Bar */
+    .progress {
+        height: 8px;
+        border-radius: 4px;
+        background-color: rgba(134, 184, 23, 0.1);
+    }
+
+    .progress-bar {
+        background-color: var(--primary-green);
+        border-radius: 4px;
+    }
+
+    /* Action Buttons */
+    .btn-group-sm .btn {
+        padding: 0.4rem 0.7rem;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-light);
+        font-size: 0.8rem;
+    }
+
+    .btn-outline-primary {
+        color: var(--primary-green);
+        border-color: var(--border-light);
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-green);
+        border-color: var(--primary-green);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: var(--border-light);
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Statistics Grid */
+    .stats-grid {
+        margin-bottom: 2rem;
+    }
+
+    .mini-stat-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .mini-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .mini-stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .mini-stat-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    /* Add Program Button */
+    .btn-add-program {
+        background: var(--primary-green);
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        color: var(--white);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-add-program:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.4);
+        color: var(--white);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-green);
+        opacity: 0.2;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-gray);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Modal Enhancements */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        background: var(--primary-green);
+        color: var(--white);
+        border-radius: 15px 15px 0 0;
+        padding: 1.25rem 1.5rem;
+        border: none;
+    }
+
+    .modal-header .modal-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        font-size: 1rem;
+        color: var(--text-dark);
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--border-light);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-footer .btn {
+        border-radius: 8px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .table {
+            font-size: 0.9rem;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 0.8rem;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .programs-table-card {
+            padding: 1.5rem;
+        }
+
+        .table-responsive {
+            font-size: 0.85rem;
+        }
+
+        .mini-stat-card {
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .programs-table-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .table thead th,
+        .table tbody td {
+            padding: 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .mini-stat-number {
+            font-size: 1.5rem;
+        }
+
+        .mini-stat-label {
+            font-size: 0.8rem;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.3rem 0.5rem;
+            font-size: 0.7rem;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+        }
+
+        /* Stack buttons vertically on very small screens */
+        .btn-group-sm {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .btn-group-sm .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-grid .col-sm-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        .modal-dialog {
+            margin: 0.5rem;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .btn-add-program {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .stats-grid .col-sm-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        /* Hide less important columns on very small screens */
+        .table thead th:nth-child(3), /* Start date */
+        .table thead th:nth-child(4), /* End date */
+        .table thead th:nth-child(5), /* Target */
+        .table tbody td:nth-child(3),
+        .table tbody td:nth-child(4),
+        .table tbody td:nth-child(5) {
+            display: none;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-book-open"></i>
+        إدارة البرامج
+    </h2>
+    <a href="{% url 'add_program' %}" class="btn btn-add-program">
+        <i class="fas fa-plus"></i>
+        <span>إضافة برنامج جديد</span>
+    </a>
+</div>
+
+<!-- Alert Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show fade-in-up" role="alert" style="animation-delay: 0.1s;">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Statistics Grid -->
+<div class="row stats-grid">
+    <div class="col-xl-3 col-md-6 col-sm-6 mb-3 fade-in-up" style="animation-delay: 0.1s;">
+        <div class="mini-stat-card">
+            <div class="mini-stat-number">{{ programs.count }}</div>
+            <div class="mini-stat-label">إجمالي البرامج</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 col-sm-6 mb-3 fade-in-up" style="animation-delay: 0.2s;">
+        <div class="mini-stat-card">
+            <div class="mini-stat-number">{{ active_programs|default:0 }}</div>
+            <div class="mini-stat-label">البرامج النشطة</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 col-sm-6 mb-3 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="mini-stat-card">
+            <div class="mini-stat-number">{{ programs_with_managers|default:0 }}</div>
+            <div class="mini-stat-label">برامج بمدير</div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 col-sm-6 mb-3 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="mini-stat-card">
+            <div class="mini-stat-number">{{ avg_completion_rate|default:0 }}%</div>
+            <div class="mini-stat-label">متوسط الإنجاز</div>
+        </div>
+    </div>
+</div>
+
+<!-- Programs Table -->
+<div class="programs-table-card fade-in-up" style="animation-delay: 0.5s;">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>اسم البرنامج</th>
+                    <th>مدير البرنامج</th>
+                    <th class="d-none d-md-table-cell">تاريخ البدء</th>
+                    <th class="d-none d-md-table-cell">تاريخ الانتهاء</th>
+                    <th class="d-none d-sm-table-cell">الهدف</th>
+                    <th>نسبة الإنجاز</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for program in programs %}
+                <tr>
+                    <td>
+                        <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+                        <strong>{{ program.name }}</strong>
+                        {% if program.description %}
+                        <br>
+                        <small class="text-muted">{{ program.description|truncatechars:50 }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if program.manager %}
+                            <i class="fas fa-user-tie ms-2" style="color: var(--text-gray); font-size: 0.85rem;"></i>
+                            {{ program.manager.get_full_name|default:program.manager.username }}
+                        {% else %}
+                            <span class="text-muted">غير معين</span>
+                        {% endif %}
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <i class="far fa-calendar-alt ms-2" style="color: var(--text-gray); font-size: 0.85rem;"></i>
+                        {{ program.start_date }}
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <i class="far fa-calendar-check ms-2" style="color: var(--text-gray); font-size: 0.85rem;"></i>
+                        {{ program.end_date }}
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        <i class="fas fa-bullseye ms-2" style="color: var(--text-gray); font-size: 0.85rem;"></i>
+                        {{ program.target_students }} طالب
+                    </td>
+                    <td>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: {{ program.completion_rate }}%"
+                                 aria-valuenow="{{ program.completion_rate }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ program.completion_rate|floatformat:1 }}%</small>
+                    </td>
+                    <td>
+                        <span class="status-badge {% if program.is_active %}active{% else %}inactive{% endif %}">
+                            {% if program.is_active %}نشط{% else %}غير نشط{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'edit_program' program.id %}" class="btn btn-outline-primary" title="تعديل">
+                                <i class="fas fa-edit"></i>
+                                <span class="d-none d-sm-inline">تعديل</span>
+                            </a>
+                            <button type="button" class="btn btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal{{ program.id }}"
+                                    title="حذف">
+                                <i class="fas fa-trash"></i>
+                                <span class="d-none d-sm-inline">حذف</span>
+                            </button>
+                        </div>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ program.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            <i class="fas fa-exclamation-triangle ms-2"></i>
+                                            تأكيد الحذف
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>هل أنت متأكد من أنك تريد حذف البرنامج "<strong>{{ program.name }}</strong>"؟</p>
+                                        <p class="text-danger">هذا الإجراء لا يمكن التراجع عنه.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                                        <form method="post" action="{% url 'delete_program' program.id %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">حذف</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <p>لا توجد برامج مضافة حتى الآن</p>
+                            <a href="{% url 'add_program' %}" class="btn btn-add-program">
+                                <i class="fas fa-plus"></i>
+                                <span>إضافة أول برنامج</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

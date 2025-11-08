@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}لوحة تحكم مشرف اللجنة الرياضية - منصة التحفيظ{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-green: #86B817;
+            --dark-green: #0B3B24;
+            --light-bg: #F8F9FA;
+            --white: #FFFFFF;
+            --text-dark: #1a1a1a;
+            --text-gray: #6c757d;
+            --border-light: #e8e8e8;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--white);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+            border-left: 1px solid var(--border-light);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            text-align: center;
+            background: var(--white);
+        }
+
+        .sidebar-brand {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-green) !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .sidebar-brand:hover {
+            color: var(--primary-green) !important;
+        }
+
+        .sidebar-brand i {
+            margin-left: 10px;
+            color: var(--primary-green);
+        }
+
+        .sidebar-user {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: var(--white);
+            font-size: 1.8rem;
+            box-shadow: 0 8px 25px rgba(134, 184, 23, 0.3);
+            border: 3px solid var(--white);
+        }
+
+        .user-name {
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            color: var(--primary-green);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.2rem;
+            padding: 0 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 1rem 1.2rem !important;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-bottom: 0.2rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-green) !important;
+            background: rgba(134, 184, 23, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary-green) !important;
+            background: rgba(134, 184, 23, 0.1);
+            font-weight: 600;
+        }
+
+        .nav-link i {
+            margin-left: 12px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .notification-badge {
+            background: #dc3545;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-right: auto;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-light);
+            position: sticky;
+            bottom: 0;
+            background: var(--white);
+        }
+
+        .btn-outline-danger {
+            border: 2px solid var(--border-light);
+            color: var(--text-dark);
+            background: transparent;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-outline-danger:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-right: var(--sidebar-width);
+            padding: 0;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            background: var(--light-bg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .top-bar-title h1 {
+            color: var(--text-dark);
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .top-bar-actions .text-light {
+            color: var(--text-gray) !important;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .top-bar-actions i {
+            color: var(--primary-green);
+        }
+
+        /* Content Area */
+        .content-wrapper {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* Stat Cards */
+        .stat-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-light);
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .stat-card i {
+            color: var(--primary-green);
+            font-size: 2.5rem;
+            margin-top: 1rem;
+            opacity: 0.2;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary-green);
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #75a015;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        }
+
+        /* Footer */
+        .dashboard-footer {
+            background: var(--white);
+            border-top: 3px solid var(--primary-green);
+            padding: 2rem 0;
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .dashboard-footer p {
+            margin: 0;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .dashboard-footer i {
+            color: var(--primary-green);
+            margin-left: 8px;
+        }
+
+        /* Sidebar Toggle Button */
+        .sidebar-toggle {
+            display: none;
+            background: var(--primary-green);
+            border: none;
+            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            color: var(--white);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .sidebar-toggle:hover {
+            background: #75a015;
+            transform: scale(1.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .content-wrapper {
+                padding: 1.5rem 1rem;
+            }
+
+            .top-bar {
+                padding: 1.2rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .top-bar {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .top-bar-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* RTL specific styles */
+        .text-start { text-align: right !important; }
+        .text-end { text-align: left !important; }
+        .me-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+        .ms-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
+        .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+        .ms-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Dashboard Layout -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'sports_dashboard' %}" class="sidebar-brand">
+                    <i class="fas fa-futbol"></i>
+                    اللجنة الرياضية
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                <div class="user-role">مشرف اللجنة الرياضية</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-item">
+                    <a href="{% url 'sports_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'sports_dashboard' %}active{% endif %}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        الرئيسية
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_committee_info' %}" class="nav-link {% if request.resolver_match.url_name == 'sports_committee_info' %}active{% endif %}">
+                        <i class="fas fa-info-circle"></i>
+                        بيانات اللجنة
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_task_management' %}" class="nav-link {% if 'task' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-tasks"></i>
+                        المهام الأساسية
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_member_management' %}" class="nav-link {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-users"></i>
+                        الأعضاء
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_match_management' %}" class="nav-link {% if 'match' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-calendar-check"></i>
+                        جدول المباريات
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_file_library' %}" class="nav-link {% if 'file' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-folder-open"></i>
+                        مكتبة الملفات
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_reports' %}" class="nav-link {% if request.resolver_match.url_name == 'sports_reports' %}active{% endif %}">
+                        <i class="fas fa-chart-bar"></i>
+                        التقارير
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'schedule_calendar' %}" class="nav-link {% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-calendar-alt"></i>
+                        الجدول
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{% url 'sports_notifications' %}" class="nav-link {% if request.resolver_match.url_name == 'sports_notifications' %}active{% endif %}">
+                        <i class="fas fa-bell"></i>
+                        التنبيهات
+                        {% if unread_notifications > 0 %}
+                        <span class="notification-badge">{{ unread_notifications }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                    <i class="fas fa-sign-out-alt ms-2"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="top-bar-title">
+                    <h1>{% block page_title %}لوحة تحكم اللجنة الرياضية{% endblock %}</h1>
+                </div>
+                <div class="top-bar-actions">
+                    <span class="text-light">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="current-date"></span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Sidebar Toggle Button (Mobile) -->
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Content Wrapper -->
+            <div class="content-wrapper">
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}
+                {% endblock %}
+            </div>
+
+            <!-- Footer -->
+            <footer class="dashboard-footer text-center">
+                <p class="mb-2">
+                    <i class="fas fa-mosque"></i>
+                    منصة التحفيظ والدروس الدينية
+                </p>
+                <p style="font-size: 0.9rem; color: var(--text-gray); margin-top: 0.5rem;">
+                    جميع الحقوق محفوظة &copy; 2025
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar toggle for mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 991) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Set current date in Arabic
+        const currentDate = new Date();
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            dateElement.textContent = currentDate.toLocaleDateString('ar-SA', options);
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

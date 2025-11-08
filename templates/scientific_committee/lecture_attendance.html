@@ -1,0 +1,169 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}حضور المحاضرة - اللجنة العلمية{% endblock %}
+
+{% block page_title %}حضور المحاضرة: {{ lecture.title }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>{{ lecture.title }}</h4>
+                    <p class="text-muted mb-2">{{ lecture.description }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ lecture.date }}
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ lecture.time }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-start">
+                    <div class="border rounded p-3 text-center">
+                        <h5 class="text-primary">{{ lecture.attendance_count }}</h5>
+                        <p class="text-muted mb-0">عدد الحضور</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Form -->
+<div class="row">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <h5 class="mb-4" style="color: var(--primary-blue);">
+                <i class="fas fa-users me-2"></i>
+                تسجيل الحضور
+            </h5>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if members %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>اسم العضو</th>
+                                <th>الدور</th>
+                                <th>حضر</th>
+                                <th>التقييم</th>
+                                <th>ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in members %}
+                            <tr>
+                                <td>{{ member.user.get_full_name }}</td>
+                                <td>{{ member.get_role_display }}</td>
+                                <td>
+                                    <input type="checkbox" name="attended_{{ member.id }}" class="form-check-input">
+                                </td>
+                                <td>
+                                    <select name="rating_{{ member.id }}" class="form-select form-select-sm">
+                                        <option value="">اختر التقييم</option>
+                                        <option value="1">1 - ضعيف</option>
+                                        <option value="2">2 - مقبول</option>
+                                        <option value="3">3 - جيد</option>
+                                        <option value="4">4 - جيد جداً</option>
+                                        <option value="5">5 - ممتاز</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" name="notes_{{ member.id }}" class="form-control form-control-sm" placeholder="ملاحظات">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'scientific_lecture_management' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right me-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>
+                        حفظ الحضور
+                    </button>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                    <p class="text-muted">لا توجد أعضاء في اللجنة</p>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Existing Attendance Records -->
+{% if attendances %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <h5 class="mb-4" style="color: var(--primary-blue);">
+                <i class="fas fa-history me-2"></i>
+                سجل الحضور السابق
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>اسم العضو</th>
+                            <th>حضر</th>
+                            <th>التقييم</th>
+                            <th>ملاحظات</th>
+                            <th>مسجل بواسطة</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attendance in attendances %}
+                        <tr>
+                            <td>{{ attendance.user.get_full_name }}</td>
+                            <td>
+                                {% if attendance.attended %}
+                                <span class="badge bg-success">نعم</span>
+                                {% else %}
+                                <span class="badge bg-danger">لا</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if attendance.rating %}
+                                <div class="rating">
+                                    {% for i in "12345" %}
+                                    <i class="fas fa-star{% if forloop.counter > attendance.rating %}-o{% endif %} text-warning"></i>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ attendance.notes|default:"-" }}</td>
+                            <td>{{ attendance.recorded_by.get_full_name }}</td>
+                            <td>{{ attendance.recorded_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

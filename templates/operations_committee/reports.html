@@ -1,0 +1,263 @@
+{% extends 'operations_committee/base.html' %}
+
+{% block title %}التقارير - اللجنة التشغيلية{% endblock %}
+
+{% block page_title %}التقارير الأسبوعية{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        text-align: center;
+    }
+
+    .stat-box i {
+        font-size: 2.5rem;
+        color: var(--primary-green);
+        margin-bottom: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .stat-label {
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .report-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .report-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--text-dark);
+    }
+
+    .report-date {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .report-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .report-section h5 {
+        color: var(--primary-green);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .task-stats-table {
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    .task-stats-table th {
+        background: var(--light-bg);
+        padding: 1rem;
+        font-weight: 600;
+    }
+
+    .task-stats-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" style="background: var(--white); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3>
+                <i class="fas fa-chart-line" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+                التقارير الأسبوعية
+            </h3>
+            <p style="margin: 0; color: var(--text-gray);">عرض وإدارة التقارير الأسبوعية للإنجازات والتحديات</p>
+        </div>
+        <a href="{% url 'operations_add_report' %}" class="btn btn-primary">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة تقرير جديد
+        </a>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="stats-grid">
+    <div class="stat-box">
+        <i class="fas fa-tasks"></i>
+        <div class="stat-value">{{ total_tasks }}</div>
+        <div class="stat-label">إجمالي المهام</div>
+    </div>
+    <div class="stat-box">
+        <i class="fas fa-check-circle"></i>
+        <div class="stat-value">{{ completed_tasks }}</div>
+        <div class="stat-label">المهام المكتملة</div>
+    </div>
+    <div class="stat-box">
+        <i class="fas fa-percentage"></i>
+        <div class="stat-value">{{ completion_rate }}%</div>
+        <div class="stat-label">نسبة الإنجاز</div>
+    </div>
+</div>
+
+<!-- Task Type Statistics -->
+<div class="report-card">
+    <h4 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1.5rem;">
+        <i class="fas fa-chart-bar" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+        إحصائيات المهام حسب النوع
+    </h4>
+    <table class="task-stats-table">
+        <thead>
+            <tr>
+                <th>نوع المهمة</th>
+                <th>إجمالي المهام</th>
+                <th>المهام المكتملة</th>
+                <th>نسبة الإنجاز</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in task_stats %}
+            <tr>
+                <td><strong>{{ stat.get_task_type_display }}</strong></td>
+                <td>{{ stat.total }}</td>
+                <td>{{ stat.completed }}</td>
+                <td>
+                    {% widthratio stat.completed stat.total 100 %}%
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">لا توجد بيانات</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Weekly Reports -->
+<h4 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1.5rem;">
+    <i class="fas fa-calendar-week" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+    التقارير الأسبوعية
+</h4>
+
+{% for report in weekly_reports %}
+<div class="report-card">
+    <div class="report-header">
+        <div>
+            <div class="report-title">
+                تقرير الأسبوع: {{ report.week_start_date }} - {{ report.week_end_date }}
+            </div>
+            <div class="report-date">
+                <i class="far fa-calendar ms-1"></i>
+                تم الإنشاء: {{ report.created_at|date:"Y/m/d" }}
+            </div>
+        </div>
+        <div>
+            <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                نسبة الإنجاز: {{ report.completion_rate }}%
+            </span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="report-section">
+                <h5>
+                    <i class="fas fa-trophy ms-1"></i>
+                    الإنجازات
+                </h5>
+                <p style="color: var(--text-dark); line-height: 1.8;">{{ report.achievements }}</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="report-section">
+                <h5>
+                    <i class="fas fa-exclamation-triangle ms-1"></i>
+                    التحديات
+                </h5>
+                <p style="color: var(--text-dark); line-height: 1.8;">{{ report.challenges }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-green);">
+                    {{ report.tasks_completed }}
+                </div>
+                <div style="color: var(--text-gray); font-size: 0.9rem;">مهام مكتملة</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #ffc107;">
+                    {{ report.tasks_pending }}
+                </div>
+                <div style="color: var(--text-gray); font-size: 0.9rem;">مهام معلقة</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-green);">
+                    {{ report.completion_rate }}%
+                </div>
+                <div style="color: var(--text-gray); font-size: 0.9rem;">نسبة الإنجاز</div>
+            </div>
+        </div>
+    </div>
+
+    {% if report.notes %}
+    <div class="report-section mt-3">
+        <h5>
+            <i class="fas fa-sticky-note ms-1"></i>
+            ملاحظات إضافية
+        </h5>
+        <p style="color: var(--text-dark); line-height: 1.8;">{{ report.notes }}</p>
+    </div>
+    {% endif %}
+</div>
+{% empty %}
+<div class="text-center py-5" style="background: var(--white); border-radius: 15px;">
+    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+    <p class="text-muted">لا توجد تقارير أسبوعية</p>
+    <a href="{% url 'operations_add_report' %}" class="btn btn-primary mt-3">
+        <i class="fas fa-plus ms-2"></i>
+        إضافة تقرير جديد
+    </a>
+</div>
+{% endfor %}
+{% endblock %}

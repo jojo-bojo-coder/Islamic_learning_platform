@@ -1,0 +1,104 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}تأكيد الحذف - {{ committee.name }}{% endblock %}
+
+{% block page_title %}تأكيد الحذف{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white text-center border-0">
+                <div class="alert-icon mb-3">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+                </div>
+                <h4 class="text-danger mb-2">تأكيد الحذف</h4>
+            </div>
+            <div class="card-body text-center p-4">
+                <p class="lead mb-4">
+                    هل أنت متأكد من أنك تريد حذف
+                    <strong class="text-danger">"{{ object.title }}"</strong>؟
+                </p>
+                <p class="text-muted mb-4">
+                    <i class="fas fa-info-circle ms-2"></i>
+                    هذا الإجراء لا يمكن التراجع عنه وسيتم حذف {{ type }} بشكل دائم.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3">
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="fas fa-trash ms-2"></i>
+                            نعم، احذف
+                        </button>
+                    </form>
+                    <a href="{% if type == 'مهمة' %}{% url 'cultural_task_management' %}
+                            {% elif type == 'ملف' %}{% url 'cultural_file_library' %}
+                            {% elif type == 'عضو' %}{% url 'cultural_member_management' %}
+                            {% else %}{% url 'cultural_dashboard' %}{% endif %}"
+                       class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-times ms-2"></i>
+                        إلغاء
+                    </a>
+                </div>
+
+                {% if type == 'ملف' and object.file %}
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="text-muted mb-2">معلومات الملف:</h6>
+                    <p class="mb-1"><strong>اسم الملف:</strong> {{ object.title }}</p>
+                    <p class="mb-1"><strong>النوع:</strong> {{ object.get_file_type_display }}</p>
+                    <p class="mb-0"><strong>الحجم:</strong> {{ object.file.size|filesizeformat }}</p>
+                </div>
+                {% endif %}
+
+                {% if type == 'مهمة' %}
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="text-muted mb-2">معلومات المهمة:</h6>
+                    <p class="mb-1"><strong>العنوان:</strong> {{ object.title }}</p>
+                    <p class="mb-1"><strong>النوع:</strong> {{ object.get_task_type_display }}</p>
+                    <p class="mb-1"><strong>الحالة:</strong> {{ object.get_status_display }}</p>
+                    <p class="mb-0"><strong>تاريخ الاستحقاق:</strong> {{ object.due_date }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Warning Message -->
+        <div class="alert alert-warning mt-4 text-center">
+            <div class="d-flex align-items-center justify-content-center">
+                <i class="fas fa-exclamation-circle ms-2"></i>
+                <span class="fw-bold">تنبيه:</span>
+                <span class="me-2">لا يمكن استعادة البيانات المحذوفة</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.alert-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    padding: 0.8rem 2rem;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+.card {
+    border: 2px solid #ffc107 !important;
+}
+</style>
+{% endblock %}

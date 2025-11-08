@@ -1,0 +1,341 @@
+{% extends 'director_base.html' %}
+
+{% block title %}{{ title }} - منصة التحفيظ{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Form Card Styling - Matching Dashboard Design */
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .form-card:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        padding: 2rem;
+        color: var(--white);
+        text-align: center;
+    }
+
+    .form-header h4 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .form-header i {
+        margin-left: 10px;
+        font-size: 1.3rem;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    /* Form Styling - Matching Dashboard Design */
+    .form-label {
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+        transition: all 0.3s ease;
+        background: var(--white);
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        background: var(--white);
+    }
+
+    .form-text {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 0.25rem;
+    }
+
+    /* Buttons - Matching Dashboard Design */
+    .btn-primary {
+        background: var(--primary-green);
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--border-light);
+        background: transparent;
+        color: var(--text-dark);
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--border-light);
+        color: var(--text-dark);
+        transform: translateY(-2px);
+    }
+
+    /* File Input Custom Styling */
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-custom {
+        border: 2px dashed var(--border-light);
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        background: var(--light-bg);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-input-custom:hover {
+        border-color: var(--primary-green);
+        background: rgba(134, 184, 23, 0.05);
+    }
+
+    .file-input-custom i {
+        font-size: 2rem;
+        color: var(--primary-green);
+        margin-bottom: 1rem;
+    }
+
+    .file-input-custom .file-text {
+        color: var(--text-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-input-custom .file-hint {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    /* Select Styling */
+    .form-select {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+        transition: all 0.3s ease;
+        background: var(--white) url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") no-repeat right 0.75rem center/16px 12px;
+    }
+
+    .form-select:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+    }
+
+    /* Textarea Styling */
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 767px) {
+        .form-header {
+            padding: 1.5rem;
+        }
+
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .form-header h4 {
+            font-size: 1.3rem;
+        }
+
+        .btn-primary,
+        .btn-outline-secondary {
+            padding: 0.7rem 1.2rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up">
+    <div class="col-lg-8">
+        <div class="form-card">
+            <!-- Form Header -->
+            <div class="form-header">
+                <h4>
+                    <i class="fas fa-file-upload ms-2"></i>
+                    {{ title }}
+                </h4>
+            </div>
+
+            <!-- Form Body -->
+            <div class="form-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-4">
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                            {% endif %}
+                        </label>
+
+                        {% if field.name == 'file' %}
+                        <!-- Custom File Input -->
+                        <div class="file-input-wrapper">
+                            {{ field }}
+                            <div class="file-input-custom">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-text">انقر لاختيار الملف</div>
+                                <div class="file-hint">أو اسحب وأفلت الملف هنا</div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Regular Form Fields -->
+                        {{ field }}
+                        {% endif %}
+
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">
+                            <i class="fas fa-exclamation-circle ms-2"></i>
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <!-- Form Actions -->
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-upload ms-2"></i>
+                            {{ submit_text|default:"رفع الملف" }}
+                        </button>
+                        <a href="{% url 'file_library' %}" class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-times ms-2"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for File Input Enhancement -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enhance file input display
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : 'لم يتم اختيار ملف';
+                const customDisplay = this.nextElementSibling;
+                const fileText = customDisplay.querySelector('.file-text');
+
+                fileText.textContent = fileName;
+                customDisplay.style.borderColor = 'var(--primary-green)';
+                customDisplay.style.background = 'rgba(134, 184, 23, 0.1)';
+            });
+
+            // Add drag and drop functionality
+            const customDisplay = input.nextElementSibling;
+
+            customDisplay.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary-green)';
+                this.style.background = 'rgba(134, 184, 23, 0.1)';
+            });
+
+            customDisplay.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--border-light)';
+                this.style.background = 'var(--light-bg)';
+            });
+
+            customDisplay.addEventListener('drop', function(e) {
+                e.preventDefault();
+                input.files = e.dataTransfer.files;
+                const event = new Event('change');
+                input.dispatchEvent(event);
+            });
+        });
+    });
+</script>
+{% endblock %}

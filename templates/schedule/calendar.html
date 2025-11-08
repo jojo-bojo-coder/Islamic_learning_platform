@@ -1,0 +1,545 @@
+{% extends base_template %}
+
+{% block title %}جدول الأحداث - {{ program.name }}{% endblock %}
+
+{% block page_title %}جدول الأحداث - {{ program.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calendar-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .calendar-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .calendar-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .view-toggle {
+        background: var(--light-bg);
+        border-radius: 8px;
+        padding: 0.3rem;
+        display: flex;
+        gap: 0.3rem;
+    }
+
+    .view-toggle-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-dark);
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .view-toggle-btn:hover {
+        background: rgba(134, 184, 23, 0.1);
+        color: var(--primary-green);
+    }
+
+    .view-toggle-btn.active {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .calendar-nav {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .calendar-nav .btn {
+        background: var(--primary-green);
+        border: none;
+        color: var(--white);
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .calendar-nav .btn:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+    }
+
+    .calendar-nav .current-month {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        min-width: 150px;
+        text-align: center;
+    }
+
+    .btn-add-event {
+        background: var(--primary-green);
+        border: none;
+        color: var(--white);
+        padding: 0.7rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-add-event:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        color: var(--white);
+    }
+
+    .calendar-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 8px;
+    }
+
+    .calendar-table thead th {
+        background: var(--primary-green);
+        color: var(--white);
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .calendar-day {
+        background: var(--white);
+        border: 2px solid var(--border-light);
+        border-radius: 12px;
+        padding: 0.8rem;
+        min-height: 120px;
+        vertical-align: top;
+        transition: all 0.3s ease;
+        position: relative;
+        cursor: pointer;
+    }
+
+    /* Weekly view - larger day cells */
+    .weekly-view .calendar-day {
+        min-height: 200px;
+        padding: 1rem;
+    }
+
+    .weekly-view .day-content {
+        align-items: flex-start !important;
+    }
+
+    .weekly-view .event-item {
+        width: 100%;
+        text-align: right;
+        padding: 0.5rem;
+        background: rgba(134, 184, 23, 0.1);
+        border-right: 3px solid var(--primary-green);
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .weekly-view .event-item:hover {
+        background: rgba(134, 184, 23, 0.2);
+        transform: translateX(-3px);
+    }
+
+    .weekly-view .event-item .event-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        margin-bottom: 0.2rem;
+    }
+
+    .weekly-view .event-item .event-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .calendar-day:hover {
+        border-color: var(--primary-green);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .calendar-day.not-current-month {
+        background: var(--light-bg);
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    .calendar-day.not-current-month:hover {
+        border-color: var(--border-light);
+        box-shadow: none;
+        transform: none;
+    }
+
+    .calendar-day.today {
+        border-color: var(--primary-green);
+        background: rgba(134, 184, 23, 0.05);
+    }
+
+    .day-number {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        display: block;
+        text-align: center;
+    }
+
+    .calendar-day.today .day-number {
+        background: var(--primary-green);
+        color: var(--white);
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto 0.5rem;
+    }
+
+    .day-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        align-items: center;
+    }
+
+    .event-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--white);
+        min-width: 60px;
+    }
+
+    .event-count i {
+        font-size: 0.7rem;
+    }
+
+    .count-events { background: #2d5016; }
+    .count-tasks { background: #3498db; }
+    .count-activities { background: #9b59b6; }
+    .count-cultural_tasks { background: #e67e22; }
+
+    .no-events {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .legend {
+        display: flex;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid var(--border-light);
+        flex-wrap: wrap;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+
+    .legend-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    @media (max-width: 991px) {
+        .calendar-table {
+            font-size: 0.85rem;
+        }
+
+        .calendar-day {
+            min-height: 100px;
+            padding: 0.5rem;
+        }
+
+        .weekly-view .calendar-day {
+            min-height: 150px;
+        }
+
+        .event-count {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.4rem;
+            min-width: 50px;
+        }
+
+        .calendar-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .calendar-table thead th {
+            font-size: 0.8rem;
+            padding: 0.6rem;
+        }
+
+        .calendar-day {
+            min-height: 80px;
+            padding: 0.4rem;
+        }
+
+        .weekly-view .calendar-day {
+            min-height: 120px;
+        }
+
+        .day-number {
+            font-size: 1rem;
+        }
+
+        .event-count {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.3rem;
+            min-width: 45px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calendar-wrapper fade-in-up {% if view_type == 'weekly' %}weekly-view{% endif %}">
+    <div class="calendar-header">
+        <div>
+            <h2 class="calendar-title">
+                <i class="fas fa-calendar-alt" style="color: var(--primary-green);"></i>
+                جدول الأحداث
+            </h2>
+        </div>
+        <div class="calendar-controls">
+            <!-- View Toggle -->
+            <div class="view-toggle">
+                <a href="?view=monthly&year={{ year }}&month={{ month }}"
+                   class="view-toggle-btn {% if view_type == 'monthly' %}active{% endif %}">
+                    <i class="fas fa-calendar"></i>
+                    شهري
+                </a>
+                <a href="?view=weekly&year={{ year }}&week={{ week_number|default:today.isocalendar.1 }}"
+                   class="view-toggle-btn {% if view_type == 'weekly' %}active{% endif %}">
+                    <i class="fas fa-calendar-week"></i>
+                    أسبوعي
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <div class="calendar-nav">
+                {% if view_type == 'weekly' %}
+                    <a href="?view=weekly&year={{ prev_week_year }}&week={{ prev_week }}" class="btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <span class="current-month">أسبوع {{ week_number }} - {{ year }}</span>
+                    <a href="?view=weekly&year={{ next_week_year }}&week={{ next_week }}" class="btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                {% else %}
+                    <a href="?view=monthly&year={{ prev_year }}&month={{ prev_month }}" class="btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <span class="current-month">{{ month_name }} {{ year }}</span>
+                    <a href="?view=monthly&year={{ next_year }}&month={{ next_month }}" class="btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                {% endif %}
+            </div>
+
+            {% if user.role == 'director' or user.role == 'program_manager' or user.role == 'committee_supervisor' %}
+            <a href="{% url 'add_event' program.id %}" class="btn-add-event">
+                <i class="fas fa-plus"></i>
+                إضافة حدث
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <table class="calendar-table">
+        <thead>
+            <tr>
+                <th>الأحد</th>
+                <th>الاثنين</th>
+                <th>الثلاثاء</th>
+                <th>الأربعاء</th>
+                <th>الخميس</th>
+                <th>الجمعة</th>
+                <th>السبت</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in weeks %}
+            <tr>
+                {% for day_data in week %}
+                <td class="calendar-day {% if not day_data.is_current_month and view_type == 'monthly' %}not-current-month{% endif %} {% if day_data.is_today %}today{% endif %}"
+                    {% if view_type == 'monthly' and day_data.is_current_month %}onclick="location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'"{% endif %}>
+                    <span class="day-number">{{ day_data.day }}</span>
+
+                    <div class="day-content">
+                        {% if view_type == 'weekly' or day_data.is_current_month %}
+                            {% if view_type == 'weekly' %}
+                                <!-- Weekly View - Show event details -->
+                                {% for event in day_data.events %}
+                                <div class="event-item" onclick="location.href='{% url 'event_detail' event.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-calendar-check"></i> {{ event.title }}
+                                    </div>
+                                    {% if event.start_time %}
+                                    <div class="event-time">{{ event.start_time|time:"H:i" }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+
+                                {% for task in day_data.tasks %}
+                                <div class="event-item" style="border-right-color: #3498db;" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-tasks"></i> {{ task.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for activity in day_data.activities %}
+                                <div class="event-item" style="border-right-color: #9b59b6;" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-running"></i> {{ activity.title }}
+                                    </div>
+                                    {% if activity.time %}
+                                    <div class="event-time">{{ activity.time|time:"H:i" }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+
+                                {% for ctask in day_data.cultural_tasks %}
+                                <div class="event-item" style="border-right-color: #e67e22;" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-theater-masks"></i> {{ ctask.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% if day_data.total_events == 0 %}
+                                <div class="no-events">
+                                    لا توجد أحداث
+                                </div>
+                                {% endif %}
+                            {% else %}
+                                <!-- Monthly View - Show counts -->
+                                {% if day_data.events.count > 0 %}
+                                <div class="event-count count-events">
+                                    <i class="fas fa-calendar-check"></i>
+                                    {{ day_data.events.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.tasks.count > 0 %}
+                                <div class="event-count count-tasks">
+                                    <i class="fas fa-tasks"></i>
+                                    {{ day_data.tasks.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.activities.count > 0 %}
+                                <div class="event-count count-activities">
+                                    <i class="fas fa-running"></i>
+                                    {{ day_data.activities.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.cultural_tasks.count > 0 %}
+                                <div class="event-count count-cultural_tasks">
+                                    <i class="fas fa-theater-masks"></i>
+                                    {{ day_data.cultural_tasks.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.total_events == 0 %}
+                                <div class="no-events">
+                                    لا توجد أحداث
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <div class="no-events">
+                                -
+                            </div>
+                        {% endif %}
+                    </div>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #2d5016;"></div>
+            <span class="legend-label">أحداث</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #3498db;"></div>
+            <span class="legend-label">مهام</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #9b59b6;"></div>
+            <span class="legend-label">أنشطة</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e67e22;"></div>
+            <span class="legend-label">مهام ثقافية</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

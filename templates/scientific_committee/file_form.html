@@ -1,0 +1,114 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}{{ title }} - اللجنة العلمية{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.file_type.id_for_label }}" class="form-label">نوع الملف</label>
+                        {{ form.file_type }}
+                        {% if form.file_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.file_type.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.author.id_for_label }}" class="form-label">المؤلف</label>
+                        {{ form.author }}
+                        {% if form.author.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.author.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">عنوان الملف</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.title.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">الوصف</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.description.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.file.id_for_label }}" class="form-label">الملف</label>
+                    {{ form.file }}
+                    {% if form.file.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.file.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'scientific_file_library' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right ms-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload ms-1"></i>
+                        رفع الملف
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.classList.add('form-select');
+        });
+    });
+</script>
+{% endblock %}

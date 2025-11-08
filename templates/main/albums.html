@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}معرض الألبومات - منصة التحفيظ والدروس الدينية{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        padding: 5rem 0 3rem;
+        margin-bottom: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+    }
+
+    .page-header::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+    }
+
+    .page-header-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        color: var(--white);
+    }
+
+    .page-header h1 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-top: 1.5rem;
+        justify-content: center;
+    }
+
+    .breadcrumb-item {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--white);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.5);
+        content: "‹";
+    }
+
+    .breadcrumb-item a {
+        color: var(--white);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
+    /* Albums Section */
+    .albums-section {
+        padding: 0 0 4rem;
+    }
+
+    .albums-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .album-card {
+        background: var(--white);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-light);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .album-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(134, 184, 23, 0.2);
+        border-color: var(--primary-green);
+    }
+
+    .album-cover {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+    }
+
+    .album-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .album-card:hover .album-cover img {
+        transform: scale(1.1);
+    }
+
+    .album-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top, rgba(11, 59, 36, 0.8), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .album-card:hover .album-overlay {
+        opacity: 1;
+    }
+
+    .view-album-btn {
+        background: var(--white);
+        color: var(--primary-green);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .album-card:hover .view-album-btn {
+        transform: translateY(0);
+    }
+
+    .view-album-btn:hover {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .album-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--primary-green);
+        color: var(--white);
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 0 4px 15px rgba(134, 184, 23, 0.3);
+    }
+
+    .album-content {
+        padding: 1.8rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .album-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .album-description {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 1.2rem;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .album-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+        font-size: 0.9rem;
+        color: var(--text-gray);
+    }
+
+    .album-meta i {
+        color: var(--primary-green);
+        margin-left: 5px;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: var(--white);
+        border-radius: 15px;
+        border: 2px dashed var(--border-light);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: var(--text-gray);
+        font-size: 1.1rem;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+
+    .pagination {
+        gap: 0.5rem;
+    }
+
+    .page-link {
+        color: var(--text-dark);
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+    }
+
+    .page-item.active .page-link {
+        background: var(--primary-green);
+        border-color: var(--primary-green);
+        color: var(--white);
+    }
+
+    .page-item.disabled .page-link {
+        opacity: 0.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .albums-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .album-cover {
+            height: 240px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .page-header {
+            padding: 4rem 0 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .page-header p {
+            font-size: 1rem;
+        }
+
+        .albums-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .album-cover {
+            height: 220px;
+        }
+
+        .album-content {
+            padding: 1.5rem;
+        }
+
+        .album-title {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <h1>
+                <i class="fas fa-images me-3"></i>
+                معرض الألبومات
+            </h1>
+            <p>استكشف مجموعة متنوعة من الألبومات التي توثق أنشطتنا وبرامجنا التعليمية</p>
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}">الرئيسية</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">معرض الألبومات</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Albums Section -->
+<section class="albums-section">
+    <div class="container">
+        {% if albums %}
+            <div class="albums-grid">
+                {% for album in albums %}
+                <div class="album-card">
+                    <div class="album-cover">
+                        <img src="{{ album.cover_image.url }}" alt="{{ album.title }}"
+                             onerror="this.src='https://images.unsplash.com/photo-1542816417-0983c9c9ad53?w=800'">
+
+                        <div class="album-badge">
+                            <i class="fas fa-camera"></i>
+                            <span>{{ album.photos.count }} صورة</span>
+                        </div>
+
+                        <div class="album-overlay">
+                            <a href="{% url 'public_album_detail' album.id %}" class="view-album-btn">
+                                <i class="fas fa-eye me-2"></i>
+                                عرض الألبوم
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="album-content">
+                        <h3 class="album-title">{{ album.title }}</h3>
+                        {% if album.description %}
+                        <p class="album-description">{{ album.description }}</p>
+                        {% endif %}
+
+                        <div class="album-meta">
+                            <span>
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ album.created_at|date:"d/m/Y" }}
+                            </span>
+                            <span>
+                                <i class="fas fa-user"></i>
+                                {{ album.created_by.get_full_name|default:album.created_by.username }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if albums.has_other_pages %}
+            <div class="pagination-wrapper">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if albums.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ albums.previous_page_number }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in albums.paginator.page_range %}
+                            {% if albums.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > albums.number|add:'-3' and num < albums.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if albums.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ albums.next_page_number }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-images"></i>
+                <h3>لا توجدألبومات حالياً</h3>
+                <p>لم يتم إضافة أي ألبومات بعد. تحقق مرة أخرى لاحقاً.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Smooth scroll animation for cards
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all album cards
+    document.querySelectorAll('.album-card').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'all 0.6s ease-out';
+        observer.observe(card);
+    });
+</script>
+{% endblock %}

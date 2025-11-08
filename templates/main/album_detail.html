@@ -1,0 +1,681 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ album.title }} - معرض الألبومات{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Header */
+    .album-header {
+        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        padding: 4rem 0 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .album-header::before {
+        content: '';
+        position: absolute;
+        top: -30%;
+        right: -5%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+    }
+
+    .album-header-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .back-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--white);
+        padding: 10px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: var(--white);
+        transform: translateX(5px);
+    }
+
+    .album-header h1 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 1rem;
+    }
+
+    .album-header-desc {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 700px;
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+    }
+
+    .album-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--white);
+        font-size: 0.95rem;
+    }
+
+    .stat-item i {
+        width: 35px;
+        height: 35px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Photos Gallery */
+    .photos-section {
+        padding: 0 0 4rem;
+    }
+
+    .photos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .photo-item {
+        position: relative;
+        background: var(--white);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-light);
+        cursor: pointer;
+    }
+
+    .photo-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(134, 184, 23, 0.2);
+        border-color: var(--primary-green);
+    }
+
+    .photo-wrapper {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+    }
+
+    .photo-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .photo-item:hover .photo-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .photo-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to top, rgba(11, 59, 36, 0.9), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: flex-end;
+        padding: 1.5rem;
+    }
+
+    .photo-item:hover .photo-overlay {
+        opacity: 1;
+    }
+
+    .photo-info {
+        color: var(--white);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+        width: 100%;
+    }
+
+    .photo-item:hover .photo-info {
+        transform: translateY(0);
+    }
+
+    .photo-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+
+    .photo-desc {
+        font-size: 0.85rem;
+        opacity: 0.9;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 9999;
+        padding: 2rem;
+    }
+
+    .lightbox-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lightbox-content {
+        position: relative;
+        max-width: 90%;
+        max-height: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lightbox-image {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox-caption {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--text-dark);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        text-align: center;
+        max-width: 600px;
+    }
+
+    .lightbox-caption h4 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--dark-green);
+    }
+
+    .lightbox-caption p {
+        font-size: 0.95rem;
+        color: var(--text-gray);
+        margin: 0;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--white);
+        color: var(--text-dark);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .lightbox-close:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: rotate(90deg);
+    }
+
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--white);
+        color: var(--text-dark);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .lightbox-nav:hover {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .lightbox-prev {
+        right: 1rem;
+    }
+
+    .lightbox-next {
+        left: 1rem;
+    }
+
+    /* Empty State */
+    .empty-photos {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: var(--white);
+        border-radius: 15px;
+        border: 2px dashed var(--border-light);
+    }
+
+    .empty-photos i {
+        font-size: 5rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-photos h3 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .empty-photos p {
+        color: var(--text-gray);
+        font-size: 1.1rem;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+
+    .pagination {
+        gap: 0.5rem;
+    }
+
+    .page-link {
+        color: var(--text-dark);
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+    }
+
+    .page-item.active .page-link {
+        background: var(--primary-green);
+        border-color: var(--primary-green);
+        color: var(--white);
+    }
+
+    .page-item.disabled .page-link {
+        opacity: 0.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .album-header h1 {
+            font-size: 2.2rem;
+        }
+
+        .photos-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .photo-wrapper {
+            height: 240px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .album-header {
+            padding: 3rem 0 2rem;
+        }
+
+        .album-header h1 {
+            font-size: 1.8rem;
+        }
+
+        .album-header-desc {
+            font-size: 1rem;
+        }
+
+        .album-stats {
+            gap: 1rem;
+        }
+
+        .photos-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .photo-wrapper {
+            height: 220px;
+        }
+
+        .lightbox-content {
+            padding: 1rem;
+        }
+
+        .lightbox-nav {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .lightbox-close {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Album Header -->
+<section class="album-header">
+    <div class="container">
+        <div class="album-header-content">
+            <a href="{% url 'public_albums' %}" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                <span>العودة للألبومات</span>
+            </a>
+
+            <h1>{{ album.title }}</h1>
+
+            {% if album.description %}
+            <p class="album-header-desc">{{ album.description }}</p>
+            {% endif %}
+
+            <div class="album-stats">
+                <div class="stat-item">
+                    <i class="fas fa-images"></i>
+                    <span>{{ total_photos }} صورة</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>{{ album.created_at|date:"d F Y" }}</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-user"></i>
+                    <span>{{ album.created_by.get_full_name|default:album.created_by.username }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Photos Gallery -->
+<section class="photos-section">
+    <div class="container">
+        {% if photos %}
+            <div class="photos-grid">
+                {% for photo in photos %}
+                <div class="photo-item" onclick="openLightbox({{ forloop.counter0 }})">
+                    <div class="photo-wrapper">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}"
+                             data-full="{{ photo.image.url }}"
+                             onerror="this.src='https://images.unsplash.com/photo-1542816417-0983c9c9ad53?w=800'">
+
+                        <div class="photo-overlay">
+                            <div class="photo-info">
+                                <h4 class="photo-title">{{ photo.title }}</h4>
+                                {% if photo.description %}
+                                <p class="photo-desc">{{ photo.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if photos.has_other_pages %}
+            <div class="pagination-wrapper">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if photos.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ photos.previous_page_number }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </li>
+                        {% endif %}
+
+                        {% for num in photos.paginator.page_range %}
+                            {% if photos.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > photos.number|add:'-3' and num < photos.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if photos.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ photos.next_page_number }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <div class="empty-photos">
+                <i class="fas fa-camera"></i>
+                <h3>لا توجد صور في هذا الألبوم</h3>
+                <p>لم يتم إضافة أي صور لهذا الألبوم بعد.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox(event)">
+    <button class="lightbox-close" onclick="closeLightbox(event)">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <button class="lightbox-nav lightbox-prev" onclick="navigatePhoto(-1, event)">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <div class="lightbox-content">
+        <img id="lightboxImage" class="lightbox-image" src="" alt="">
+        <div class="lightbox-caption" id="lightboxCaption">
+            <h4 id="lightboxTitle"></h4>
+            <p id="lightboxDesc"></p>
+        </div>
+    </div>
+
+    <button class="lightbox-nav lightbox-next" onclick="navigatePhoto(1, event)">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+</div>
+
+<!-- Hidden data for lightbox -->
+<script id="photosData" type="application/json">
+[
+    {% for photo in photos %}
+    {
+        "image": "{{ photo.image.url }}",
+        "title": "{{ photo.title|escapejs }}",
+        "description": "{{ photo.description|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Photos data
+    let currentPhotoIndex = 0;
+    let photosData = [];
+
+    try {
+        photosData = JSON.parse(document.getElementById('photosData').textContent);
+    } catch (e) {
+        console.error('Failed to parse photos data', e);
+    }
+
+    // Open lightbox
+    function openLightbox(index) {
+        currentPhotoIndex = index;
+        updateLightboxContent();
+        document.getElementById('lightboxModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close lightbox
+    function closeLightbox(event) {
+        if (event.target.id === 'lightboxModal' || event.target.closest('.lightbox-close')) {
+            document.getElementById('lightboxModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Navigate photos
+    function navigatePhoto(direction, event) {
+        event.stopPropagation();
+        currentPhotoIndex += direction;
+
+        if (currentPhotoIndex < 0) {
+            currentPhotoIndex = photosData.length - 1;
+        } else if (currentPhotoIndex >= photosData.length) {
+            currentPhotoIndex = 0;
+        }
+
+        updateLightboxContent();
+    }
+
+    // Update lightbox content
+    function updateLightboxContent() {
+        if (photosData.length === 0) return;
+
+        const photo = photosData[currentPhotoIndex];
+        document.getElementById('lightboxImage').src = photo.image;
+        document.getElementById('lightboxTitle').textContent = photo.title;
+        document.getElementById('lightboxDesc').textContent = photo.description;
+
+        // Hide caption if no description
+        const caption = document.getElementById('lightboxCaption');
+        if (!photo.description) {
+            caption.style.display = 'none';
+        } else {
+            caption.style.display = 'block';
+        }
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('lightboxModal');
+        if (!modal.classList.contains('active')) return;
+
+        if (e.key === 'Escape') {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        } else if (e.key === 'ArrowLeft') {
+            navigatePhoto(1, e);
+        } else if (e.key === 'ArrowRight') {
+            navigatePhoto(-1, e);
+        }
+    });
+
+    // Smooth scroll animation for photos
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all photo items
+    document.querySelectorAll('.photo-item').forEach(item => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(30px)';
+        item.style.transition = 'all 0.6s ease-out';
+        observer.observe(item);
+    });
+</script>
+{% endblock %}

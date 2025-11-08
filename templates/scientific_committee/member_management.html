@@ -1,0 +1,130 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}إدارة الأعضاء - اللجنة العلمية{% endblock %}
+
+{% block page_title %}إدارة أعضاء اللجنة{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 style="color: var(--primary-blue);">
+                    <i class="fas fa-users ms-2"></i>
+                    أعضاء اللجنة العلمية
+                </h4>
+                <a href="{% url 'scientific_add_member' %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus ms-1"></i>
+                    إضافة عضو جديد
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Members Grid -->
+<div class="row">
+    {% for member in members %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="dashboard-card text-center">
+            <div class="member-avatar mb-3 mx-auto">
+                {{ member.user.get_full_name|slice:":1" }}
+            </div>
+            <h5 class="mb-2">{{ member.user.get_full_name }}</h5>
+            <p class="text-muted mb-2">{{ member.get_role_display }}</p>
+            {% if member.specialization %}
+            <p class="text-muted mb-3">{{ member.specialization }}</p>
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">درجة المشاركة:</span>
+                <span class="badge bg-primary">{{ member.participation_score }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted">الحالة:</span>
+                {% if member.is_active %}
+                <span class="badge bg-success">نشط</span>
+                {% else %}
+                <span class="badge bg-secondary">غير نشط</span>
+                {% endif %}
+            </div>
+
+            <div class="mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-calendar ms-1"></i>
+                    انضم في: {{ member.joined_date }}
+                </small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="dashboard-card text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">لا توجد أعضاء</h5>
+            <p class="text-muted">لم يتم إضافة أي أعضاء بعد</p>
+            <a href="{% url 'scientific_add_member' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus ms-1"></i>
+                إضافة أول عضو
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Statistics -->
+{% if members %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <h5 class="mb-4" style="color: var(--primary-blue);">
+                <i class="fas fa-chart-bar ms-2"></i>
+                إحصائيات الأعضاء
+            </h5>
+            <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <h3 class="text-primary">{{ members.count }}</h3>
+                        <p class="text-muted mb-0">إجمالي الأعضاء</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <h3 class="text-success">{{ members|length }}</h3>
+                        <p class="text-muted mb-0">أعضاء نشطون</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <h3 class="text-warning">{{ avg_participation|default:0 }}</h3>
+                        <p class="text-muted mb-0">متوسط المشاركة</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <h3 class="text-info">{{ top_member.participation_score|default:0 }}</h3>
+                        <p class="text-muted mb-0">أعلى مشاركة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+<style>
+.member-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary-blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+</style>

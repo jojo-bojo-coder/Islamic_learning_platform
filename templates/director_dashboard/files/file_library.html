@@ -1,0 +1,354 @@
+{% extends 'director_base.html' %}
+
+{% block title %}مكتبة الملفات - منصة التحفيظ{% endblock %}
+
+{% block page_title %}مكتبة الملفات{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Quick Actions Styling - Matching Dashboard */
+    .quick-actions-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .quick-actions-wrapper h4 {
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-actions-wrapper h4 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    /* Action Buttons - Matching Dashboard */
+    .action-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+    }
+
+    .action-btn-primary {
+        background: var(--primary-green);
+    }
+
+    .action-btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    /* File Cards - Updated to Match Dashboard Style */
+    .file-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+    }
+
+    .file-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-icon {
+        font-size: 3rem;
+        color: var(--primary-green);
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .file-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .file-description {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .file-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-bottom: 1rem;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .file-type-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+        background: var(--primary-green);
+        color: var(--white);
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    /* Filter Buttons - Updated to Match Dashboard Style */
+    .filter-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .filter-btn {
+        border: 1px solid var(--border-light);
+        background: var(--white);
+        color: var(--text-gray);
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: var(--primary-green);
+        color: var(--white);
+        border-color: var(--primary-green);
+    }
+
+    /* Empty State - Updated to Match Dashboard Style */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--primary-green);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h4 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    /* Buttons - Matching Dashboard Style */
+    .btn-primary {
+        background: var(--primary-green);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background: #75a015;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+    }
+
+    .btn-outline-primary {
+        border: 1px solid var(--primary-green);
+        background: transparent;
+        color: var(--primary-green);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-green);
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-danger {
+        border: 1px solid #dc3545;
+        background: transparent;
+        color: #dc3545;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Quick Actions - Matching Dashboard Style -->
+<div class="quick-actions-wrapper fade-in-up">
+    <h4>
+        <i class="fas fa-bolt"></i>
+        إجراءات سريعة
+    </h4>
+    <div class="row g-3">
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'upload_file' %}" class="action-btn action-btn-primary">
+                <i class="fas fa-upload"></i>
+                <span>رفع ملف جديد</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="fade-in-up" style="animation-delay: 0.1s;">
+    <h5 class="mb-3">تصفية حسب النوع:</h5>
+    <div class="filter-buttons">
+        <a href="{% url 'file_library' %}" class="filter-btn {% if not file_type_filter %}active{% endif %}">
+            الكل
+        </a>
+        <a href="{% url 'file_library' %}?type=video" class="filter-btn {% if file_type_filter == 'video' %}active{% endif %}">
+            <i class="fas fa-video ms-2"></i>
+            فيديوهات
+        </a>
+        <a href="{% url 'file_library' %}?type=presentation" class="filter-btn {% if file_type_filter == 'presentation' %}active{% endif %}">
+            <i class="fas fa-presentation ms-2"></i>
+            عروض تقديمية
+        </a>
+        <a href="{% url 'file_library' %}?type=document" class="filter-btn {% if file_type_filter == 'document' %}active{% endif %}">
+            <i class="fas fa-file-pdf ms-2"></i>
+            وثائق
+        </a>
+        <a href="{% url 'file_library' %}?type=image" class="filter-btn {% if file_type_filter == 'image' %}active{% endif %}">
+            <i class="fas fa-image ms-2"></i>
+            صور
+        </a>
+        <a href="{% url 'file_library' %}?type=audio" class="filter-btn {% if file_type_filter == 'audio' %}active{% endif %}">
+            <i class="fas fa-music ms-2"></i>
+            صوتيات
+        </a>
+    </div>
+</div>
+
+<!-- Files Grid -->
+<div class="row fade-in-up" style="animation-delay: 0.2s;">
+    {% for file in files %}
+    <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+        <div class="file-card">
+            <div class="position-relative">
+                <span class="file-type-badge">
+                    {{ file.get_file_type_display }}
+                </span>
+            </div>
+
+            <div class="file-icon">
+                {% if file.file_type == 'video' %}
+                <i class="fas fa-video"></i>
+                {% elif file.file_type == 'presentation' %}
+                <i class="fas fa-presentation"></i>
+                {% elif file.file_type == 'document' %}
+                <i class="fas fa-file-pdf"></i>
+                {% elif file.file_type == 'image' %}
+                <i class="fas fa-image"></i>
+                {% elif file.file_type == 'audio' %}
+                <i class="fas fa-music"></i>
+                {% else %}
+                <i class="fas fa-file"></i>
+                {% endif %}
+            </div>
+
+            <h4 class="file-title">{{ file.title }}</h4>
+            <p class="file-description">{{ file.description|default:"لا يوجد وصف" }}</p>
+
+            <div class="file-meta">
+                <span>
+                    <i class="fas fa-download ms-2"></i>
+                    {{ file.download_count }}
+                </span>
+                <span>
+                    <i class="fas fa-calendar ms-2"></i>
+                    {{ file.uploaded_at|date:"Y-m-d" }}
+                </span>
+            </div>
+
+            <div class="file-actions">
+                <a href="{% url 'download_file' file.id %}" class="btn btn-primary btn-sm" title="تحميل">
+                    <i class="fas fa-download"></i>
+                </a>
+                <a href="{% url 'edit_file' file.id %}" class="btn btn-outline-primary btn-sm" title="تعديل">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'delete_file' file.id %}" class="btn btn-outline-danger btn-sm" title="حذف">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <h4>لا توجد ملفات</h4>
+            <p>ابدأ برفع الملفات الأولى لمكتبة الملفات</p>
+            <a href="{% url 'upload_file' %}" class="btn btn-primary mt-3">
+                <i class="fas fa-upload ms-2"></i>
+                رفع ملف جديد
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

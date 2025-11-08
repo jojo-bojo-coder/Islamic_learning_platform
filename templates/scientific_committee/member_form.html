@@ -1,0 +1,127 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}{{ title }} - اللجنة العلمية{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.user.id_for_label }}" class="form-label">المستخدم</label>
+                        {{ form.user }}
+                        {% if form.user.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.user.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.role.id_for_label }}" class="form-label">الدور</label>
+                        {{ form.role }}
+                        {% if form.role.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.role.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.specialization.id_for_label }}" class="form-label">التخصص</label>
+                        {{ form.specialization }}
+                        {% if form.specialization.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.specialization.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.participation_score.id_for_label }}" class="form-label">درجة المشاركة</label>
+                        {{ form.participation_score }}
+                        {% if form.participation_score.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.participation_score.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                            عضو نشط
+                        </label>
+                    </div>
+                    {% if form.is_active.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.is_active.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'scientific_member_management' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right ms-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save ms-1"></i>
+                        حفظ العضو
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            if (input.type !== 'checkbox') {
+                input.classList.add('form-control');
+            }
+        });
+
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.classList.add('form-select');
+        });
+
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.classList.add('form-check-input');
+        });
+    });
+</script>
+{% endblock %}

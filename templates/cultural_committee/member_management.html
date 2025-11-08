@@ -1,0 +1,138 @@
+{% extends 'cultural_committee/base.html' %}
+
+{% block title %}إدارة الأعضاء - {{ committee.name }}{% endblock %}
+
+{% block page_title %}إدارة أعضاء اللجنة{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">أعضاء اللجنة الثقافية</h4>
+            <a href="{% url 'cultural_add_member' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus ms-2"></i>
+                إضافة عضو جديد
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ members.count }}</div>
+            <div class="stat-label">إجمالي الأعضاء</div>
+            <i class="fas fa-users mt-3"></i>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ active_members_count }}</div>
+            <div class="stat-label">أعضاء نشطون</div>
+            <i class="fas fa-user-check mt-3"></i>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ avg_participation_score }}</div>
+            <div class="stat-label">متوسط المشاركة</div>
+            <i class="fas fa-chart-line mt-3"></i>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="stat-number">{{ top_member_score }}</div>
+            <div class="stat-label">أعلى درجة مشاركة</div>
+            <i class="fas fa-trophy mt-3"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Members List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                {% if members %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>العضو</th>
+                                <th>الدور</th>
+                                <th>تاريخ الانضمام</th>
+                                <th>درجة المشاركة</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in members %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar-sm me-3">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <strong>{{ member.user.get_full_name|default:member.user.username }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ member.user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ member.role|default:"-" }}</td>
+                                <td>{{ member.joined_date }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ member.participation_score }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if member.is_active %}success{% else %}danger{% endif %}">
+                                        {% if member.is_active %}نشط{% else %}غير نشط{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">لا يوجد أعضاء</h5>
+                    <p class="text-muted">لم يتم إضافة أي أعضاء بعد</p>
+                    <a href="{% url 'cultural_add_member' %}" class="btn btn-primary">
+                        <i class="fas fa-user-plus ms-2"></i>
+                        إضافة أول عضو
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.user-avatar-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+</style>
+{% endblock %}

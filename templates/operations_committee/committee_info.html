@@ -1,0 +1,180 @@
+{% extends 'operations_committee/base.html' %}
+
+{% block title %}بيانات اللجنة - اللجنة التشغيلية{% endblock %}
+
+{% block page_title %}بيانات اللجنة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .info-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .info-header {
+        border-bottom: 2px solid var(--primary-green);
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .info-row {
+        display: flex;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-gray);
+        width: 200px;
+        flex-shrink: 0;
+    }
+
+    .info-value {
+        color: var(--text-dark);
+        flex-grow: 1;
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .stat-item {
+        background: var(--light-bg);
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-item i {
+        font-size: 2rem;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .stat-label {
+        color: var(--text-gray);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Committee Information -->
+<div class="info-card">
+    <div class="info-header">
+        <h3>
+            <i class="fas fa-info-circle" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+            معلومات اللجنة التشغيلية
+        </h3>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">
+            <i class="fas fa-tag ms-2" style="color: var(--primary-green);"></i>
+            اسم اللجنة
+        </div>
+        <div class="info-value">{{ committee.name }}</div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">
+            <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+            البرنامج
+        </div>
+        <div class="info-value">{{ committee.program.name }}</div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">
+            <i class="fas fa-user-tie ms-2" style="color: var(--primary-green);"></i>
+            المشرف
+        </div>
+        <div class="info-value">{{ committee.supervisor.get_full_name }}</div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">
+            <i class="fas fa-align-right ms-2" style="color: var(--primary-green);"></i>
+            الوصف
+        </div>
+        <div class="info-value">{{ committee.description|default:"لا يوجد وصف" }}</div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">
+            <i class="fas fa-calendar-plus ms-2" style="color: var(--primary-green);"></i>
+            تاريخ الإنشاء
+        </div>
+        <div class="info-value">{{ committee.created_at|date:"Y/m/d - h:i A" }}</div>
+    </div>
+
+    <div class="info-row">
+        <div class="info-label">
+            <i class="fas fa-clock ms-2" style="color: var(--primary-green);"></i>
+            آخر تحديث
+        </div>
+        <div class="info-value">{{ last_update|date:"Y/m/d - h:i A" }}</div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stat-grid">
+        <div class="stat-item">
+            <i class="fas fa-users"></i>
+            <div class="stat-number">{{ total_members }}</div>
+            <div class="stat-label">إجمالي الأعضاء</div>
+        </div>
+
+        <div class="stat-item">
+            <i class="fas fa-user-check"></i>
+            <div class="stat-number">{{ active_members }}</div>
+            <div class="stat-label">الأعضاء النشطون</div>
+        </div>
+
+        <div class="stat-item">
+            <i class="fas fa-star"></i>
+            <div class="stat-number">{{ avg_participation }}</div>
+            <div class="stat-label">متوسط المشاركة</div>
+        </div>
+    </div>
+</div>
+
+<!-- Committee Description -->
+{% if committee.description %}
+<div class="info-card">
+    <div class="info-header">
+        <h3>
+            <i class="fas fa-file-alt" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+            نبذة عن اللجنة
+        </h3>
+    </div>
+    <p style="color: var(--text-dark); line-height: 1.8; margin: 0;">
+        {{ committee.description }}
+    </p>
+</div>
+{% endif %}
+{% endblock %}

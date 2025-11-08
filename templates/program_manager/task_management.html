@@ -1,0 +1,251 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}متابعة المهام - {{ program.name }}{% endblock %}
+
+{% block page_title %}متابعة المهام{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-bar {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-bar .btn-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.6rem 1.2rem;
+        border: 2px solid var(--border-light);
+        background: var(--white);
+        color: var(--text-dark);
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--primary-green);
+        color: var(--primary-green);
+    }
+
+    .filter-btn.active {
+        background: var(--primary-green);
+        border-color: var(--primary-green);
+        color: var(--white);
+    }
+
+    .task-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 2px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .task-card:hover {
+        border-color: var(--primary-green);
+        box-shadow: 0 5px 20px rgba(134, 184, 23, 0.15);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .task-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .task-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .task-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .task-meta-item i {
+        color: var(--primary-green);
+    }
+
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: #ffc107;
+        color: var(--text-dark);
+    }
+
+    .status-completed {
+        background: var(--primary-green);
+        color: var(--white);
+    }
+
+    .status-overdue {
+        background: #dc3545;
+        color: var(--white);
+    }
+
+    .priority-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .priority-low {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .priority-medium {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .priority-high {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <span style="font-weight: 600; color: var(--text-dark);">
+        <i class="fas fa-filter ms-2" style="color: var(--primary-green);"></i>
+        تصفية حسب الحالة:
+    </span>
+    <div class="btn-group">
+        <a href="{% url 'pm_task_management' %}" class="filter-btn {% if not status_filter %}active{% endif %}">
+            الكل
+        </a>
+        <a href="?status=pending" class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">
+            قيد التنفيذ
+        </a>
+        <a href="?status=completed" class="filter-btn {% if status_filter == 'completed' %}active{% endif %}">
+            مكتملة
+        </a>
+        <a href="?status=overdue" class="filter-btn {% if status_filter == 'overdue' %}active{% endif %}">
+            متأخرة
+        </a>
+    </div>
+    <div style="margin-right: auto;">
+        <a href="{% url 'pm_add_task' %}" class="btn btn-primary">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة مهمة جديدة
+        </a>
+    </div>
+</div>
+
+<!-- Tasks List -->
+{% if tasks %}
+    {% for task in tasks %}
+    <div class="task-card">
+        <div class="task-header">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="status-badge status-{{ task.status }}">
+                        {% if task.status == 'pending' %}
+                            قيد التنفيذ
+                        {% elif task.status == 'completed' %}
+                            مكتملة
+                        {% else %}
+                            متأخرة
+                        {% endif %}
+                    </span>
+                    <span class="priority-badge priority-{{ task.priority }}">
+                        {% if task.priority == 'low' %}
+                            أولوية منخفضة
+                        {% elif task.priority == 'medium' %}
+                            أولوية متوسطة
+                        {% else %}
+                            أولوية عالية
+                        {% endif %}
+                    </span>
+                </div>
+                <h4 class="task-title">{{ task.title }}</h4>
+                <p style="color: var(--text-gray); margin: 0;">{{ task.description }}</p>
+            </div>
+            <div class="task-actions">
+                <a href="{% url 'pm_edit_task' task.id %}" class="btn btn-sm btn-info" title="تعديل">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'pm_delete_task' task.id %}" class="btn btn-sm btn-danger" title="حذف">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="task-meta">
+            {% if task.committee %}
+            <div class="task-meta-item">
+                <i class="fas fa-users"></i>
+                <span>{{ task.committee.name }}</span>
+            </div>
+            {% endif %}
+            {% if task.assigned_to %}
+            <div class="task-meta-item">
+                <i class="fas fa-user"></i>
+                <span>{{ task.assigned_to.get_full_name|default:task.assigned_to.username }}</span>
+            </div>
+            {% endif %}
+            <div class="task-meta-item">
+                <i class="fas fa-calendar"></i>
+                <span>{{ task.due_date }}</span>
+            </div>
+            <div class="task-meta-item">
+                <i class="fas fa-clock"></i>
+                <span>تم الإنشاء {{ task.created_at|date:"Y-m-d" }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div style="background: var(--white); border-radius: 15px; padding: 3rem; text-align: center; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);">
+        <i class="fas fa-tasks" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3; margin-bottom: 1rem;"></i>
+        <h5 style="font-weight: 600; margin-bottom: 1rem;">لا توجد مهام</h5>
+        <p style="color: var(--text-gray);">ابدأ بإضافة مهمة جديدة لمتابعة سير العمل</p>
+        <a href="{% url 'pm_add_task' %}" class="btn btn-primary mt-3">
+            <i class="fas fa-plus ms-2"></i>
+            إضافة مهمة الآن
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}التقارير والإحصائيات - {{ program.name }}{% endblock %}
+
+{% block page_title %}التقارير والإحصائيات{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-section {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .section-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .section-header h4 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .section-header h4 i {
+        color: var(--primary-green);
+        margin-left: 10px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid var(--border-light);
+    }
+
+    .stat-box-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-green);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-box-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .committee-report-item {
+        background: var(--light-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 2px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .committee-report-item:hover {
+        border-color: var(--primary-green);
+        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.1);
+    }
+
+    .committee-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .committee-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .committee-stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .committee-stat-item i {
+        color: var(--primary-green);
+    }
+
+    .progress-bar-wrapper {
+        margin-top: 1rem;
+    }
+
+    .progress {
+        height: 10px;
+        border-radius: 10px;
+        background: var(--border-light);
+    }
+
+    .progress-bar {
+        background: var(--primary-green);
+        border-radius: 10px;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .student-rank-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--light-bg);
+        border-radius: 8px;
+        margin-bottom: 0.8rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .student-rank-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .student-rank-number {
+        width: 35px;
+        height: 35px;
+        background: var(--primary-green);
+        color: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .student-progress {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-green);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Weekly/Monthly Statistics -->
+<div class="report-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-calendar-week"></i>
+            إحصائيات أسبوعية وشهرية
+        </h4>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-box-number">{{ weekly_tasks }}</div>
+            <div class="stat-box-label">المهام الأسبوعية</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-box-number">{{ monthly_tasks }}</div>
+            <div class="stat-box-label">المهام الشهرية</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-box-number">{{ weekly_activities }}</div>
+            <div class="stat-box-label">الأنشطة الأسبوعية</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-box-number">{{ monthly_activities }}</div>
+            <div class="stat-box-label">الأنشطة الشهرية</div>
+        </div>
+    </div>
+</div>
+
+<!-- Committee Reports -->
+<div class="report-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-users"></i>
+            تقرير اللجان ونسبة الإنجاز
+        </h4>
+    </div>
+
+    {% for committee in committees %}
+    <div class="committee-report-item">
+        <div class="committee-name">
+            <i class="fas fa-users ms-2" style="color: var(--primary-green);"></i>
+            {{ committee.name }}
+        </div>
+
+        <div class="committee-stats">
+            <div class="committee-stat-item">
+                <i class="fas fa-user-graduate"></i>
+                <span><strong>{{ committee.student_count }}</strong> طالب</span>
+            </div>
+            <div class="committee-stat-item">
+                <i class="fas fa-tasks"></i>
+                <span><strong>{{ committee.task_count }}</strong> مهمة</span>
+            </div>
+            {% if committee.supervisor %}
+            <div class="committee-stat-item">
+                <i class="fas fa-user-tie"></i>
+                <span>{{ committee.supervisor.get_full_name|default:committee.supervisor.username }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="progress-bar-wrapper">
+            <div class="progress-label">
+                <span>نسبة الإنجاز</span>
+                <span><strong>{{ committee.avg_progress|default:0|floatformat:1 }}%</strong></span>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" style="width: {{ committee.avg_progress|default:0 }}%"></div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 2rem; color: var(--text-gray);">
+        <i class="fas fa-users-slash" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+        <p>لا توجد لجان لعرض التقارير</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Top Students -->
+<div class="report-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-trophy"></i>
+            أفضل الطلاب (أعلى نسبة إنجاز)
+        </h4>
+    </div>
+
+    {% for student in top_students %}
+    <div class="student-rank-item">
+        <div class="student-rank-info">
+            <div class="student-rank-number">{{ forloop.counter }}</div>
+            <div>
+                <div class="student-name">{{ student.user.get_full_name|default:student.user.username }}</div>
+                {% if student.committee %}
+                <div style="font-size: 0.85rem; color: var(--text-gray);">
+                    <i class="fas fa-users ms-1"></i>
+                    {{ student.committee.name }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="student-progress">{{ student.progress }}%</div>
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 2rem; color: var(--text-gray);">
+        <i class="fas fa-user-graduate" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+        <p>لا يوجد طلاب مسجلين</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}{{ title }} - اللجنة العلمية{% endblock %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.lecture_type.id_for_label }}" class="form-label">نوع المحاضرة</label>
+                        {{ form.lecture_type }}
+                        {% if form.lecture_type.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.lecture_type.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">الحالة</label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.status.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">عنوان المحاضرة</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.title.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">الوصف</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.lecturer.id_for_label }}" class="form-label">المحاضر</label>
+                        {{ form.lecturer }}
+                        {% if form.lecturer.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.lecturer.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.guest_lecturer.id_for_label }}" class="form-label">محاضر ضيف</label>
+                        {{ form.guest_lecturer }}
+                        {% if form.guest_lecturer.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.guest_lecturer.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.date.id_for_label }}" class="form-label">التاريخ</label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.date.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.time.id_for_label }}" class="form-label">الوقت</label>
+                        {{ form.time }}
+                        {% if form.time.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.time.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.duration_minutes.id_for_label }}" class="form-label">المدة (دقيقة)</label>
+                        {{ form.duration_minutes }}
+                        {% if form.duration_minutes.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.duration_minutes.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.location.id_for_label }}" class="form-label">المكان</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                    <div class="text-danger small mt-1">
+                        {% for error in form.location.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'scientific_lecture_management' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right ms-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save ms-1"></i>
+                        حفظ المحاضرة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.classList.add('form-select');
+        });
+    });
+</script>
+{% endblock %}

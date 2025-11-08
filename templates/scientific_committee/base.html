@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}لوحة اللجنة العلمية - منصة التحفيظ{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-green: #86B817;
+            --dark-green: #0B3B24;
+            --light-bg: #F8F9FA;
+            --white: #FFFFFF;
+            --text-dark: #1a1a1a;
+            --text-gray: #6c757d;
+            --border-light: #e8e8e8;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--white);
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            z-index: 1000;
+            overflow-y: auto;
+            border-left: 1px solid var(--border-light);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            text-align: center;
+            background: var(--white);
+        }
+
+        .sidebar-brand {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-green) !important;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .sidebar-brand:hover {
+            color: var(--primary-green) !important;
+        }
+
+        .sidebar-brand i {
+            margin-left: 10px;
+            color: var(--primary-green);
+        }
+
+        .sidebar-user {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(134, 184, 23, 0.3);
+            border: 3px solid var(--white);
+        }
+
+        .user-name {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .user-role {
+            color: var(--primary-green);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(134, 184, 23, 0.05);
+            color: var(--primary-green);
+            border-right-color: var(--primary-green);
+        }
+
+        .nav-link.active {
+            background: rgba(134, 184, 23, 0.1);
+            color: var(--primary-green);
+            border-right-color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        .nav-link i {
+            margin-left: 10px;
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-badge {
+            background: var(--primary-green);
+            color: white;
+            border-radius: 50px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            margin-right: auto;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-right: var(--sidebar-width);
+            background: var(--light-bg);
+            min-height: 100vh;
+        }
+
+        .top-navbar {
+            background: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-green);
+            margin: 0;
+        }
+
+        .content-wrapper {
+            padding: 2rem;
+        }
+
+        /* Cards */
+        .dashboard-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon.primary {
+            background: rgba(134, 184, 23, 0.1);
+            color: var(--primary-green);
+        }
+
+        .card-icon.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .card-icon.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .card-icon.info {
+            background: rgba(23, 162, 184, 0.1);
+            color: #17a2b8;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-change {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .card-change.positive {
+            color: #28a745;
+        }
+
+        .card-change.negative {
+            color: #dc3545;
+        }
+
+        /* Tables */
+        .custom-table {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .table th {
+            background: var(--primary-green);
+            color: white;
+            font-weight: 600;
+            padding: 1rem;
+            border: none;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: var(--border-light);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: rgba(0, 123, 255, 0.15);
+            color: #004085;
+        }
+
+        .status-completed {
+            background: rgba(40, 167, 69, 0.15);
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: rgba(220, 53, 69, 0.15);
+            color: #721c24;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary-green);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #75a015;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+        }
+
+        /* Messages */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #155724;
+            border-right: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #721c24;
+            border-right: 4px solid #dc3545;
+        }
+
+        .rating {
+            direction: ltr;
+        }
+
+        .file-icon {
+            color: var(--primary-green);
+        }
+
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .status-pending { background: rgba(255, 193, 7, 0.15); color: #856404; }
+        .status-in-progress { background: rgba(0, 123, 255, 0.15); color: #004085; }
+        .status-completed { background: rgba(40, 167, 69, 0.15); color: #155724; }
+        .status-cancelled { background: rgba(220, 53, 69, 0.15); color: #721c24; }
+        .status-scheduled { background: rgba(108, 117, 125, 0.15); color: #383d41; }
+        .status-ongoing { background: rgba(23, 162, 184, 0.15); color: #0c5460; }
+
+        .progress {
+            background-color: #e9ecef;
+            border-radius: 0.375rem;
+        }
+
+        .progress-bar {
+            background-color: var(--primary-green);
+            border-radius: 0.375rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+
+            .btn-group-sm .btn {
+                padding: 0.25rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'scientific_dashboard' %}" class="sidebar-brand">
+                    <i class="fas fa-graduation-cap"></i>
+                    اللجنة العلمية
+                </a>
+            </div>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    {{ request.user.get_full_name|slice:":1" }}
+                </div>
+                <div class="user-name">{{ request.user.get_full_name }}</div>
+                <div class="user-role">مشرف اللجنة العلمية</div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">الرئيسية</div>
+                    <a href="{% url 'scientific_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'scientific_dashboard' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        لوحة التحكم
+                    </a>
+                    <a href="{% url 'scientific_committee_info' %}" class="nav-link {% if request.resolver_match.url_name == 'scientific_committee_info' %}active{% endif %}">
+                        <i class="fas fa-info-circle"></i>
+                        معلومات اللجنة
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">إدارة المهام</div>
+                    <a href="{% url 'scientific_task_management' %}" class="nav-link {% if 'task' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-tasks"></i>
+                        المهام العلمية
+                    </a>
+                    <a href="{% url 'scientific_member_management' %}" class="nav-link {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-users"></i>
+                        أعضاء اللجنة
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">المكتبة العلمية</div>
+                    <a href="{% url 'scientific_file_library' %}" class="nav-link {% if 'file' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-file-alt"></i>
+                        الملفات العلمية
+                    </a>
+                    <a href="{% url 'scientific_lecture_management' %}" class="nav-link {% if 'lecture' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        المحاضرات والورش
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">التقارير والإشعارات</div>
+                    <a href="{% url 'scientific_reports' %}" class="nav-link {% if 'report' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-chart-bar"></i>
+                        التقارير والإحصائيات
+                    </a>
+                    <a href="{% url 'scientific_notifications' %}" class="nav-link {% if 'notification' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-bell"></i>
+                        الإشعارات
+                        {% if request.user.scientific_notifications.filter.is_read.count > 0 %}
+                            <span class="nav-badge">{{ request.user.scientific_notifications.filter.is_read.count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-navbar">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="page-title">{% block page_title %}لوحة التحكم{% endblock %}</h1>
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'scientific_notifications' %}" class="btn btn-light position-relative ms-3">
+                            <i class="fas fa-bell"></i>
+                            {% if request.user.scientific_notifications.filter.is_read.count > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ request.user.scientific_notifications.filter.is_read.count }}
+                                </span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-out-alt"></i>
+                            تسجيل الخروج
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Content -->
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        // Auto-dismiss alerts
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>
