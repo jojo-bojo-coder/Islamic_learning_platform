@@ -35,4 +35,11 @@ urlpatterns = [
     # Notifications
     path('notifications/', views.notifications, name='cultural_notifications'),
     path('notifications/mark-all-read/', views.mark_all_read, name='cultural_mark_all_read'),
+
+    # Daily Phrases
+    path('daily-phrases/', views.daily_phrases, name='cultural_daily_phrases'),
+    path('daily-phrases/add/', views.add_daily_phrase, name='cultural_add_daily_phrase'),
+    path('daily-phrases/edit/<int:phrase_id>/', views.edit_daily_phrase, name='cultural_edit_daily_phrase'),
+    path('daily-phrases/delete/<int:phrase_id>/', views.delete_daily_phrase, name='cultural_delete_daily_phrase'),
+    path('daily-phrases/toggle/<int:phrase_id>/', views.toggle_daily_phrase, name='cultural_toggle_daily_phrase'),
 ]

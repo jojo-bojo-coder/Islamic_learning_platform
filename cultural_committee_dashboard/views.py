@@ -490,6 +490,14 @@ def cultural_dashboard(request):
         count=Count('id')
     )
 
+    # Daily phrase for today
+    from django.utils import timezone
+    daily_phrase = DailyPhrase.objects.filter(
+        committee=committee,
+        display_date=timezone.now().date(),
+        is_active=True
+    ).first()
+
     context = {
         'committee': committee,
         'total_members': total_members,
@@ -501,6 +509,7 @@ def cultural_dashboard(request):
         'unread_notifications': unread_notifications,
         'top_members': top_members,
         'task_distribution': task_distribution,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'cultural_committee/dashboard.html', context)
 
@@ -701,6 +710,7 @@ def delete_task(request, task_id):
     }
     return render(request, 'cultural_committee/confirm_delete.html', context)
 
+from django.db import models
 
 @login_required
 def member_management(request):
@@ -717,9 +727,26 @@ def member_management(request):
     members = CommitteeMember.objects.filter(committee=committee).select_related('user').order_by(
         '-participation_score')
 
+    active_members_count = CommitteeMember.objects.filter(committee=committee,is_active='True').count()
+
+    # حساب متوسط درجة المشاركة
+    avg_participation_score = members.aggregate(
+        avg_score=models.Avg('participation_score')
+    )['avg_score'] or 0
+
+    # تقريب المتوسط إلى منزلتين عشريتين
+    avg_participation_score = round(avg_participation_score, 2)
+
+    # الحصول على أعلى درجة مشاركة
+    top_member = members.first()
+    top_member_score = top_member.participation_score if top_member else 0
+
     context = {
         'committee': committee,
         'members': members,
+        'active_members_count':active_members_count,
+        'avg_participation_score': avg_participation_score,
+        'top_member_score': top_member_score,
     }
     return render(request, 'cultural_committee/member_management.html', context)
 
@@ -781,3 +808,193 @@ def file_library(request):
     except Committee.DoesNotExist:
         messages.error(request, 'لم يتم العثور على لجنة مرتبطة بحسابك')
         return redirect('home')  # or wherever appropriate
+
+
+from .models import DailyPhrase
+from .forms import DailyPhraseForm
+@login_required
+def daily_phrases(request):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    phrases = DailyPhrase.objects.filter(committee=committee).order_by('-display_date')
+
+    # Filter by active status
+    is_active = request.GET.get('is_active')
+    if is_active == 'true':
+        phrases = phrases.filter(is_active=True)
+    elif is_active == 'false':
+        phrases = phrases.filter(is_active=False)
+
+    context = {
+        'committee': committee,
+        'phrases': phrases,
+        'is_active_filter': is_active,
+    }
+    return render(request, 'cultural_committee/daily_phrases.html', context)
+
+
+@login_required
+def add_daily_phrase(request):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = DailyPhraseForm(request.POST)
+        if form.is_valid():
+            phrase = form.save(commit=False)
+            phrase.committee = committee
+            phrase.created_by = request.user
+
+            # Check if date already exists
+            if DailyPhrase.objects.filter(display_date=phrase.display_date, committee=committee).exists():
+                messages.error(request, 'يوجد بالفعل عبارة لهذا التاريخ')
+                return redirect('cultural_add_daily_phrase')
+
+            phrase.save()
+
+            # Notify members
+            members = CommitteeMember.objects.filter(committee=committee, is_active=True)
+            for member in members:
+                CulturalNotification.objects.create(
+                    user=member.user,
+                    committee=committee,
+                    notification_type='daily_phrase_added',
+                    title='عبارة اليوم',
+                    message=f'تم إضافة عبارة جديدة ليوم {phrase.display_date}',
+                    related_daily_phrase=phrase
+                )
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'إضافة عبارة اليوم: {phrase.display_date}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم إضافة عبارة اليوم بنجاح!')
+            return redirect('cultural_daily_phrases')
+    else:
+        form = DailyPhraseForm()
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'title': 'إضافة عبارة اليوم'
+    }
+    return render(request, 'cultural_committee/daily_phrase_form.html', context)
+
+
+@login_required
+def edit_daily_phrase(request, phrase_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    phrase = get_object_or_404(DailyPhrase, id=phrase_id, committee=committee)
+
+    if request.method == 'POST':
+        form = DailyPhraseForm(request.POST, instance=phrase)
+        if form.is_valid():
+            # Check if date already exists (excluding current phrase)
+            new_date = form.cleaned_data['display_date']
+            if DailyPhrase.objects.filter(display_date=new_date, committee=committee).exclude(id=phrase.id).exists():
+                messages.error(request, 'يوجد بالفعل عبارة لهذا التاريخ')
+                return redirect('cultural_edit_daily_phrase', phrase_id=phrase.id)
+
+            form.save()
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل عبارة اليوم: {phrase.display_date}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تعديل عبارة اليوم بنجاح!')
+            return redirect('cultural_daily_phrases')
+    else:
+        form = DailyPhraseForm(instance=phrase)
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'phrase': phrase,
+        'title': 'تعديل عبارة اليوم'
+    }
+    return render(request, 'cultural_committee/daily_phrase_form.html', context)
+
+
+@login_required
+def delete_daily_phrase(request, phrase_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    phrase = get_object_or_404(DailyPhrase, id=phrase_id, committee=committee)
+
+    if request.method == 'POST':
+        phrase_date = phrase.display_date
+        phrase.delete()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف عبارة اليوم: {phrase_date}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف عبارة اليوم بنجاح!')
+        return redirect('cultural_daily_phrases')
+
+    context = {
+        'committee': committee,
+        'object': phrase,
+        'type': 'عبارة اليوم'
+    }
+    return render(request, 'cultural_committee/confirm_delete.html', context)
+
+
+@login_required
+def toggle_daily_phrase(request, phrase_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    phrase = get_object_or_404(DailyPhrase, id=phrase_id, committee=committee)
+    phrase.is_active = not phrase.is_active
+    phrase.save()
+
+    action = "تفعيل" if phrase.is_active else "تعطيل"
+    messages.success(request, f'تم {action} عبارة اليوم بنجاح!')
+
+    return redirect('cultural_daily_phrases')

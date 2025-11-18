@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 from .models import (CulturalTask, CommitteeMember, FileLibrary,
-                     Discussion, DiscussionComment, CulturalReport)
+                     Discussion, DiscussionComment, CulturalReport,DailyPhrase)
 from accounts.models import User
 
 
@@ -198,3 +198,44 @@ class CulturalReportForm(forms.ModelForm):
             'content': 'المحتوى',
             'file': 'ملف مرفق (اختياري)',
         }
+
+class DailyPhraseForm(forms.ModelForm):
+    class Meta:
+        model = DailyPhrase
+        fields = ['phrase', 'author', 'category', 'display_date', 'is_active']
+        widgets = {
+            'phrase': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'أدخل عبارة اليوم...',
+                'rows': 4
+            }),
+            'author': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'اسم المؤلف (اختياري)'
+            }),
+            'category': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'التصنيف (اختياري)'
+            }),
+            'display_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+            }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+        }
+        labels = {
+            'phrase': 'العبارة',
+            'author': 'المؤلف',
+            'category': 'التصنيف',
+            'display_date': 'تاريخ العرض',
+            'is_active': 'نشط',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set minimum date to today
+        self.fields['display_date'].widget.attrs['min'] = timezone.now().date().isoformat()
+        self.fields['author'].required = False
+        self.fields['category'].required = False

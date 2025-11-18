@@ -162,6 +162,7 @@ class CulturalNotification(models.Model):
     related_file = models.ForeignKey(FileLibrary, on_delete=models.CASCADE, null=True, blank=True)
     related_report = models.ForeignKey(CulturalReport, on_delete=models.CASCADE, null=True, blank=True)
     related_discussion = models.ForeignKey(Discussion, on_delete=models.CASCADE, null=True, blank=True)
+    related_daily_phrase = models.ForeignKey('DailyPhrase', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -170,3 +171,28 @@ class CulturalNotification(models.Model):
 
     def __str__(self):
         return self.title
+
+from django.utils import timezone
+
+class DailyPhrase(models.Model):
+    """Phrase of the Day model"""
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE, related_name='daily_phrases')
+    phrase = models.TextField(verbose_name='العبارة')
+    author = models.CharField(max_length=255, blank=True, verbose_name='المؤلف (اختياري)')
+    category = models.CharField(max_length=100, blank=True, verbose_name='التصنيف (اختياري)')
+    is_active = models.BooleanField(default=True, verbose_name='نشط')
+    display_date = models.DateField(verbose_name='تاريخ العرض', unique=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-display_date']
+        verbose_name = 'عبارة اليوم'
+        verbose_name_plural = 'عبارات اليوم'
+
+    def __str__(self):
+        return f"عبارة اليوم - {self.display_date}"
+
+    def is_today_phrase(self):
+        return self.display_date == timezone.now().date()
