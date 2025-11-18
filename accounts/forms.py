@@ -25,7 +25,6 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('يرجى إدخال اسم المستخدم أو البريد الإلكتروني')
         return username_or_email
 
-
 class RegisterForm(UserCreationForm):
     class Meta:
         model = User

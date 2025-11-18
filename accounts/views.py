@@ -5,7 +5,6 @@ from django.contrib import messages
 from .models import User, UserActivity
 from .forms import LoginForm, RegisterForm
 
-
 def login_view(request):
     print(f"=== LOGIN VIEW STARTED ===")
     print(f"Request method: {request.method}")
