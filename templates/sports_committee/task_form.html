@@ -198,6 +198,18 @@
         {% csrf_token %}
 
         <div class="form-group">
+            <label class="form-label">{{ form.task_type.label }}</label>
+            {{ form.task_type }}
+            {% if form.task_type.errors %}
+            <div class="text-danger mt-1">
+                {% for error in form.task_type.errors %}
+                <small>{{ error }}</small>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
             <label class="form-label">{{ form.title.label }}</label>
             {{ form.title }}
             {% if form.title.errors %}
@@ -226,6 +238,7 @@
             <div class="form-group">
                 <label class="form-label">{{ form.assigned_to_name.label }}</label>
                 {{ form.assigned_to_name }}
+                <div class="help-text">اسم المسؤول عن تنفيذ المهمة (اختياري)</div>
                 {% if form.assigned_to_name.errors %}
                 <div class="text-danger mt-1">
                     {% for error in form.assigned_to_name.errors %}
@@ -235,20 +248,6 @@
                 {% endif %}
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ form.priority.label }}</label>
-                {{ form.priority }}
-                {% if form.priority.errors %}
-                <div class="text-danger mt-1">
-                    {% for error in form.priority.errors %}
-                    <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="form-row">
             <div class="form-group">
                 <label class="form-label">{{ form.due_date.label }}</label>
                 {{ form.due_date }}
@@ -260,7 +259,9 @@
                 </div>
                 {% endif %}
             </div>
+        </div>
 
+        <div class="form-row">
             <div class="form-group">
                 <label class="form-label">{{ form.status.label }}</label>
                 {{ form.status }}
@@ -272,19 +273,19 @@
                 </div>
                 {% endif %}
             </div>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">{{ form.related_match.label }}</label>
-            {{ form.related_match }}
-            <div class="help-text">اختياري - ربط المهمة بمباراة معينة</div>
-            {% if form.related_match.errors %}
-            <div class="text-danger mt-1">
-                {% for error in form.related_match.errors %}
-                <small>{{ error }}</small>
-                {% endfor %}
+            <div class="form-group">
+                <label class="form-label">{{ form.completion_percentage.label }}</label>
+                {{ form.completion_percentage }}
+                <div class="help-text">نسبة إنجاز المهمة من 0% إلى 100%</div>
+                {% if form.completion_percentage.errors %}
+                <div class="text-danger mt-1">
+                    {% for error in form.completion_percentage.errors %}
+                    <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
 
         <div class="form-actions">

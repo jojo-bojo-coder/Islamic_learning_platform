@@ -18,7 +18,7 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-
+from cultural_committee_dashboard.models import DailyPhrase
 @login_required
 def sports_dashboard(request):
     if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sports':
@@ -63,16 +63,21 @@ def sports_dashboard(request):
         is_read=False
     ).count()
 
-    # Top participating members
-    top_members = SportsMember.objects.filter(
-        committee=committee,
-        is_active=True
-    ).order_by('-participation_score')[:5]
+    # Get daily phrase from cultural committee in the same program
+    try:
+        cultural_committee = Committee.objects.filter(
+            program=committee.program,
+        ).first()
 
-    # Task type distribution
-    task_distribution = SportsTask.objects.filter(committee=committee).values('task_type').annotate(
-        count=Count('id')
-    )
+        if cultural_committee:
+            daily_phrase = DailyPhrase.objects.filter(
+                display_date=timezone.now().date(),
+                is_active=True
+            ).first()
+        else:
+            daily_phrase = None
+    except:
+        daily_phrase = None
 
     context = {
         'committee': committee,
@@ -85,8 +90,7 @@ def sports_dashboard(request):
         'recent_tasks': recent_tasks,
         'next_matches': next_matches,
         'unread_notifications': unread_notifications,
-        'top_members': top_members,
-        'task_distribution': task_distribution,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'sports_committee/dashboard.html', context)
 
@@ -172,10 +176,11 @@ def add_task(request):
             task.created_by = request.user
             task.save()
 
+            # Create notifications for committee members
             members = SportsMember.objects.filter(committee=committee, is_active=True)
             for member in members:
                 SportsNotification.objects.create(
-                    user=member.user,  # Send to each member individually
+                    user=member.user,
                     committee=committee,
                     notification_type='task_added',
                     title='مهمة جديدة',
@@ -192,6 +197,10 @@ def add_task(request):
 
             messages.success(request, 'تم إضافة المهمة بنجاح!')
             return redirect('sports_task_management')
+        else:
+            # Print form errors for debugging
+            print("Form errors:", form.errors)
+            messages.error(request, 'حدث خطأ في حفظ النموذج. يرجى مراجعة البيانات.')
     else:
         form = SportsTaskForm(committee=committee)
 
@@ -222,6 +231,7 @@ def edit_task(request, task_id):
         if form.is_valid():
             task = form.save()
 
+            # Create notifications for committee members
             members = SportsMember.objects.filter(committee=committee, is_active=True)
             for member in members:
                 SportsNotification.objects.create(
@@ -242,86 +252,9 @@ def edit_task(request, task_id):
 
             messages.success(request, 'تم تعديل المهمة بنجاح!')
             return redirect('sports_task_management')
-    else:
-        form = SportsTaskForm(instance=task, committee=committee)
-
-    context = {
-        'committee': committee,
-        'form': form,
-        'task': task,
-        'title': 'تعديل المهمة'
-    }
-    return render(request, 'sports_committee/task_form.html', context)@login_required
-def add_task(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sports':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
-
-    try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
-
-    if request.method == 'POST':
-        form = SportsTaskForm(request.POST, committee=committee)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.committee = committee
-            task.created_by = request.user
-            task.save()
-
-            # ملاحظة: لم نعد ننشئ إشعارات لأن assigned_to لم يعد مستخدم
-            # إذا كنت تريد إنشاء إشعارات بطريقة أخرى، يمكنك تعديل هذا الجزء
-
-            UserActivity.objects.create(
-                user=request.user,
-                action=f'إضافة مهمة رياضية: {task.title}',
-                ip_address=get_client_ip(request)
-            )
-
-            messages.success(request, 'تم إضافة المهمة بنجاح!')
-            return redirect('sports_task_management')
-    else:
-        form = SportsTaskForm(committee=committee)
-
-    context = {
-        'committee': committee,
-        'form': form,
-        'title': 'إضافة مهمة جديدة'
-    }
-    return render(request, 'sports_committee/task_form.html', context)
-
-
-@login_required
-def edit_task(request, task_id):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sports':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
-
-    try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
-
-    task = get_object_or_404(SportsTask, id=task_id, committee=committee)
-
-    if request.method == 'POST':
-        form = SportsTaskForm(request.POST, instance=task, committee=committee)
-        if form.is_valid():
-            task = form.save()
-
-            # ملاحظة: إزالة إنشاء الإشعارات المرتبطة بـ assigned_to
-
-            UserActivity.objects.create(
-                user=request.user,
-                action=f'تعديل مهمة رياضية: {task.title}',
-                ip_address=get_client_ip(request)
-            )
-
-            messages.success(request, 'تم تعديل المهمة بنجاح!')
-            return redirect('sports_task_management')
+        else:
+            print("Form errors:", form.errors)
+            messages.error(request, 'حدث خطأ في حفظ النموذج. يرجى مراجعة البيانات.')
     else:
         form = SportsTaskForm(instance=task, committee=committee)
 
@@ -332,6 +265,7 @@ def edit_task(request, task_id):
         'title': 'تعديل المهمة'
     }
     return render(request, 'sports_committee/task_form.html', context)
+
 
 @login_required
 def delete_task(request, task_id):

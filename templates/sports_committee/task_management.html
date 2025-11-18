@@ -5,219 +5,399 @@
 
 {% block extra_css %}
 <style>
-    .filter-card {
-        background: var(--white);
-        border-radius: 15px;
+    .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
         padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
-        position: relative;
-        overflow: hidden;
     }
 
-    .filter-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    .takween {
+        text-align: center;
+        margin-bottom: 3rem;
     }
 
-    .filter-form {
-        display: flex;
-        gap: 1rem;
-        align-items: end;
-        flex-wrap: wrap;
-    }
-
-    .filter-group {
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .task-card {
-        background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--border-light);
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .task-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
-    }
-
-    .task-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
-    }
-
-    .task-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 1rem;
-    }
-
-    .task-title {
-        font-size: 1.3rem;
+    .takween h2 {
+        font-size: 2.5rem;
         font-weight: 700;
         color: var(--blue-dark);
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
         font-family: 'Cairo', sans-serif;
     }
 
-    .task-type {
-        display: inline-block;
-        padding: 0.4rem 1rem;
+    .takween p {
+        font-size: 1.1rem;
+        color: var(--text-gray);
+    }
+
+    .progress-container {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
         border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        background: rgba(0, 132, 171, 0.1);
-        color: var(--blue-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .task-description {
-        color: var(--text-gray);
-        font-size: 0.95rem;
-        margin-bottom: 1.5rem;
-        line-height: 1.6;
-    }
-
-    .task-meta {
-        display: flex;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-        color: var(--text-gray);
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .task-meta i {
-        color: var(--blue-primary);
-        margin-left: 0.3rem;
-    }
-
-    .progress-section {
-        margin-bottom: 1.5rem;
-    }
-
-    .progress-label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
-        color: var(--text-dark);
-        font-weight: 500;
-    }
-
-    .progress-bar-custom {
-        height: 8px;
-        border-radius: 10px;
-        background: var(--border-light);
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
         overflow: hidden;
     }
 
-    .progress-bar-fill {
-        height: 100%;
-        background: var(--blue-primary);
-        border-radius: 10px;
-        transition: width 0.3s ease;
+    .progress-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
-    .task-actions {
+    .progress-container label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .progress-container label span {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1.5rem;
+    }
+
+    .progress-bar-main {
+        background: rgba(255, 255, 255, 0.5);
+        height: 30px;
+        border-radius: 50px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 50px;
+        transition: width 1s ease;
+        width: 0;
+        box-shadow: 0 2px 10px rgba(0, 132, 171, 0.5);
+    }
+
+    .progress-container p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-encouragement {
+        font-style: italic;
+        color: var(--blue-primary);
+        font-weight: 600;
+    }
+
+    /* Filter buttons as cards */
+    .filter-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        border: 2px solid transparent;
+        text-align: center;
+    }
+
+    .filter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        border-color: var(--blue-primary);
+    }
+
+    .filter-card.active {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        border-color: var(--blue-primary);
+    }
+
+    .filter-card i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .filter-card:not(.active) i {
+        color: var(--blue-primary);
+    }
+
+    .filter-card.active i {
+        color: white;
+    }
+
+    .filter-card span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: block;
+    }
+
+    .filter-card:not(.active) span {
+        color: var(--text-dark);
+    }
+
+    /* Task cards grid */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.2);
+    }
+
+    .card-header-custom {
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header-custom h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin: 0 0 0.5rem 0;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .card-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: var(--text-dark);
+    }
+
+    .status-in_progress {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .status-cancelled {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .type-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.3);
+    }
+
+    .card-description {
+        color: var(--text-gray);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+        margin-bottom: 1rem;
+    }
+
+    .card-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .card-meta-item i {
+        color: var(--blue-primary);
+        width: 20px;
+    }
+
+    /* Progress section in card */
+    .card-progress {
+        margin-bottom: 1rem;
+    }
+
+    .card-progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        font-weight: 600;
+    }
+
+    .card-progress-bar {
+        background: rgba(0, 132, 171, 0.1);
+        height: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .card-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+
+    .card-actions {
         display: flex;
         gap: 0.5rem;
         justify-content: flex-end;
     }
 
-    .btn {
+    .btn-action {
+        padding: 0.6rem 1rem;
+        border: none;
         border-radius: 8px;
+        font-size: 0.9rem;
         font-weight: 600;
+        cursor: pointer;
         transition: all 0.3s ease;
+        text-decoration: none;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 0.3rem;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #138496, #117a8b);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        color: white;
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #c82333, #a71e2a);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        color: white;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .add-task-btn, .back-btn {
+        display: inline-flex;
+        align-items: center;
         gap: 0.5rem;
-    }
-
-    .btn-primary {
         background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
         border: none;
-        color: var(--white);
-        text-decoration: none;
+        cursor: pointer;
     }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
-        color: var(--white);
-    }
-
-    .btn-outline-primary {
-        border: 2px solid var(--blue-primary);
-        color: var(--blue-primary);
-        background: transparent;
-        text-decoration: none;
-    }
-
-    .btn-outline-primary:hover {
-        background: var(--blue-primary);
-        color: var(--white);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
-    }
-
-    .btn-outline-secondary {
-        border: 2px solid var(--text-gray);
-        color: var(--text-gray);
-        background: transparent;
-        text-decoration: none;
-    }
-
-    .btn-outline-secondary:hover {
-        background: var(--text-gray);
-        color: var(--white);
-        transform: translateY(-2px);
-    }
-
-    .btn-outline-danger {
-        border: 2px solid #dc3545;
-        color: #dc3545;
-        background: transparent;
-        text-decoration: none;
-    }
-
-    .btn-outline-danger:hover {
-        background: #dc3545;
-        color: var(--white);
-        transform: translateY(-2px);
-    }
-
-    .btn-sm {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        border-radius: 6px;
+    .add-task-btn:hover, .back-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 25px rgba(0, 132, 171, 0.4);
+        color: white;
     }
 
     .empty-state {
-        text-align: center;
+        background: white;
+        border-radius: 20px;
         padding: 4rem 2rem;
-        color: var(--text-gray);
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .empty-state i {
@@ -227,214 +407,288 @@
         margin-bottom: 1.5rem;
     }
 
-    .empty-state h4 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-        color: var(--text-dark);
+    .empty-state h5 {
         font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--blue-dark);
+        font-size: 1.5rem;
     }
 
-    .badge {
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 0.85rem;
-    }
-
-    .badge-success {
-        background: var(--blue-primary);
-        color: var(--white);
-    }
-
-    .badge-info {
-        background: var(--blue-gradient);
-        color: var(--white);
-    }
-
-    .badge-warning {
-        background: #ffc107;
-        color: var(--text-dark);
-    }
-
-    .badge-danger {
-        background: #dc3545;
-        color: var(--white);
-    }
-
-    /* Animations */
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.6s ease forwards;
+    .empty-state p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
         to {
             opacity: 1;
             transform: translateY(0);
         }
     }
 
-    /* Page Header */
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 1.5rem 0;
-    }
-
-    .page-header h3 {
-        color: var(--blue-dark);
-        font-weight: 700;
-        font-family: 'Cairo', sans-serif;
-        margin: 0;
-    }
-
-    .page-header h3 i {
-        color: var(--blue-primary);
-        margin-left: 10px;
-    }
+    /* Stagger animation for cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+    .card:nth-child(n+7) { animation-delay: 0.7s; }
 
     /* Responsive Design */
     @media (max-width: 768px) {
-        .filter-form {
-            flex-direction: column;
-            align-items: stretch;
+        .dashboard {
+            padding: 1rem;
         }
 
-        .filter-group {
-            min-width: auto;
+        .takween h2 {
+            font-size: 2rem;
         }
 
-        .task-header {
-            flex-direction: column;
+        .filter-cards {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 1rem;
         }
 
-        .task-meta {
-            flex-direction: column;
-            gap: 0.5rem;
+        .cards {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
 
-        .task-actions {
-            justify-content: flex-start;
+        .card {
+            padding: 1.5rem;
+        }
+
+        .card-actions {
+            justify-content: center;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header fade-in-up">
-    <h3>
-        <i class="fas fa-tasks"></i>
-        إدارة المهام الرياضية
-    </h3>
-    <a href="{% url 'sports_add_task' %}" class="btn btn-primary">
-        <i class="fas fa-plus ms-2"></i>
-        إضافة مهمة جديدة
-    </a>
-</div>
-
-<!-- Filters -->
-<div class="filter-card fade-in-up" style="animation-delay: 0.1s;">
-    <form method="get" class="filter-form">
-        <div class="filter-group">
-            <label class="form-label">نوع المهمة</label>
-            <select name="type" class="form-select" onchange="this.form.submit()">
-                <option value="">الكل</option>
-                <option value="football_volleyball" {% if task_type_filter == 'football_volleyball' %}selected{% endif %}>دوري القدم والطائرة</option>
-                <option value="sports_programs" {% if task_type_filter == 'sports_programs' %}selected{% endif %}>البرامج الرياضية</option>
-                <option value="hall_meetings" {% if task_type_filter == 'hall_meetings' %}selected{% endif %}>لقاءات الصالة</option>
-                <option value="table_tennis" {% if task_type_filter == 'table_tennis' %}selected{% endif %}>تنس الطاولة</option>
-                <option value="playstation" {% if task_type_filter == 'playstation' %}selected{% endif %}>البلايستيشن</option>
-                <option value="intelligence_games" {% if task_type_filter == 'intelligence_games' %}selected{% endif %}>ألعاب الذكاء</option>
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label class="form-label">الحالة</label>
-            <select name="status" class="form-select" onchange="this.form.submit()">
-                <option value="">الكل</option>
-                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>قيد التنفيذ</option>
-                <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>جاري العمل</option>
-                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>مكتملة</option>
-                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>ملغاة</option>
-            </select>
-        </div>
-
-        {% if task_type_filter or status_filter %}
-        <div class="filter-group">
-            <a href="{% url 'sports_task_management' %}" class="btn btn-outline-secondary">
-                <i class="fas fa-times ms-2"></i>
-                مسح الفلاتر
-            </a>
-        </div>
-        {% endif %}
-    </form>
-</div>
-
-<!-- Tasks List -->
-<div class="tasks-list">
-    {% for task in tasks %}
-    <div class="task-card fade-in-up" style="animation-delay: {{ forloop.counter|add:1|divisibleby:10 }}s">
-        <div class="task-header">
-            <div>
-                <div class="task-type">{{ task.get_task_type_display }}</div>
-                <h5 class="task-title">{{ task.title }}</h5>
-            </div>
-            <span class="badge badge-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}info{% elif task.status == 'cancelled' %}danger{% else %}warning{% endif %}">
-                {{ task.get_status_display }}
-            </span>
-        </div>
-
-        <p class="task-description">{{ task.description|truncatewords:30 }}</p>
-
-        <div class="task-meta">
-            <div>
-                <i class="far fa-calendar"></i>
-                تاريخ الاستحقاق: {{ task.due_date }}
-            </div>
-            {% if task.assigned_to %}
-            <div>
-                <i class="fas fa-user"></i>
-                المسؤول: {{ task.assigned_to.get_full_name|default:task.assigned_to.username }}
-            </div>
-            {% endif %}
-        </div>
-
-        <div class="progress-section">
-            <div class="progress-label">
-                <span>نسبة الإنجاز</span>
-                <span>{{ task.completion_percentage }}%</span>
-            </div>
-            <div class="progress-bar-custom">
-                <div class="progress-bar-fill" style="width: {{ task.completion_percentage }}%"></div>
-            </div>
-        </div>
-
-        <div class="task-actions">
-            <a href="{% url 'sports_edit_task' task.id %}" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-edit"></i>
-                تعديل
-            </a>
-            <a href="{% url 'sports_delete_task' task.id %}" class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-                حذف
-            </a>
-        </div>
+<div class="dashboard">
+    <!-- Header Section -->
+    <div class="takween">
+        <h2>إدارة المهام الرياضية</h2>
+        <p>متابعة وإدارة المهام الرياضية بكفاءة عالية</p>
     </div>
-    {% empty %}
-    <div class="empty-state fade-in-up" style="animation-delay: 0.2s;">
-        <i class="fas fa-tasks"></i>
-        <h4>لا توجد مهام</h4>
-        <p>ابدأ بإضافة مهمة رياضية جديدة</p>
-        <a href="{% url 'sports_add_task' %}" class="btn btn-primary mt-3">
-            <i class="fas fa-plus ms-2"></i>
-            إضافة مهمة
+
+    <!-- Progress Container -->
+    <div class="progress-container">
+        <label>
+            إنجازك في المهام الرياضية
+            <span id="percentageText">0%</span>
+        </label>
+        <div class="progress-bar-main">
+            <div class="progress-fill" id="mainProgress"></div>
+        </div>
+        <p id="mainText">
+            {% if tasks %}
+                عرض {{ tasks|length }} مهمة
+            {% else %}
+                لا توجد مهام حالياً
+            {% endif %}
+        </p>
+        <p class="progress-encouragement">استمر في التقدم وحقق المزيد من النجاح!</p>
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <div id="taskData" style="display: none;">
+        {% for task in tasks %}
+            <span data-percentage="{{ task.completion_percentage }}"></span>
+        {% endfor %}
+    </div>
+
+    <!-- Filter Cards -->
+    <div class="filter-cards">
+        <a href="{% url 'sports_task_management' %}" class="filter-card {% if not status_filter %}active{% endif %}">
+            <i class="fas fa-list"></i>
+            <span>الكل</span>
+        </a>
+        <a href="?status=pending" class="filter-card {% if status_filter == 'pending' %}active{% endif %}">
+            <i class="fas fa-clock"></i>
+            <span>قيد التنفيذ</span>
+        </a>
+        <a href="?status=in_progress" class="filter-card {% if status_filter == 'in_progress' %}active{% endif %}">
+            <i class="fas fa-spinner"></i>
+            <span>جاري العمل</span>
+        </a>
+        <a href="?status=completed" class="filter-card {% if status_filter == 'completed' %}active{% endif %}">
+            <i class="fas fa-check-circle"></i>
+            <span>مكتملة</span>
+        </a>
+        <a href="?status=cancelled" class="filter-card {% if status_filter == 'cancelled' %}active{% endif %}">
+            <i class="fas fa-times-circle"></i>
+            <span>ملغاة</span>
         </a>
     </div>
-    {% endfor %}
+
+    <!-- Tasks Grid -->
+    {% if tasks %}
+        <div class="cards">
+            {% for task in tasks %}
+            <div class="card">
+                <div class="card-header-custom">
+                    <h4>{{ task.title }}</h4>
+
+                    <div class="card-badges">
+                        <span class="status-badge status-{{ task.status }}">
+                            <i class="fas {% if task.status == 'pending' %}fa-clock{% elif task.status == 'in_progress' %}fa-spinner{% elif task.status == 'completed' %}fa-check{% else %}fa-times{% endif %}"></i>
+                            {{ task.get_status_display }}
+                        </span>
+                        <span class="type-badge">
+                            <i class="fas fa-tag"></i>
+                            {{ task.get_task_type_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-description">
+                    {{ task.description|truncatewords:20 }}
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="card-progress">
+                    <div class="card-progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ task.completion_percentage }}%</span>
+                    </div>
+                    <div class="card-progress-bar">
+                        <div class="card-progress-fill" style="width: {{ task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+
+                <div class="card-meta">
+                    <div class="card-meta-item">
+                        <i class="fas fa-user-tie"></i>
+                        <span>{{ task.assigned_to_name|default:"غير محدد" }}</span>
+                    </div>
+                    <div class="card-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>تاريخ الاستحقاق: {{ task.due_date }}</span>
+                    </div>
+                    <div class="card-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>تم الإنشاء: {{ task.created_at|date:"Y-m-d" }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="{% url 'sports_edit_task' task.id %}" class="btn-action btn-edit" title="تعديل">
+                        <i class="fas fa-edit"></i>
+                        تعديل
+                    </a>
+                    <a href="{% url 'sports_delete_task' task.id %}" class="btn-action btn-delete" title="حذف">
+                        <i class="fas fa-trash"></i>
+                        حذف
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-tasks"></i>
+            <h5>لا توجد مهام</h5>
+            <p>ابدأ بإضافة مهمة رياضية جديدة</p>
+            <a href="{% url 'sports_add_task' %}" class="add-task-btn">
+                <i class="fas fa-plus ms-2"></i>
+                إضافة مهمة الآن
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="button-container">
+        <a href="{% url 'sports_add_task' %}" class="add-task-btn" style="margin-left: 1rem;">
+            <i class="fas fa-plus ms-2"></i>
+            <span class="btn-text">إضافة مهمة جديدة</span>
+        </a>
+    </div>
 </div>
+
+<script>
+// Function to determine color based on percentage
+function getColor(percentage) {
+    if (percentage <= 30) return "#dc3545"; // red
+    if (percentage <= 70) return "#ffc107"; // orange
+    return "#28a745"; // green
+}
+
+// Calculate dynamic progress based on task completion percentages
+function calculateProgress() {
+    const taskDataDiv = document.getElementById('taskData');
+    if (!taskDataDiv) return 0;
+
+    const taskElements = taskDataDiv.querySelectorAll('[data-percentage]');
+    if (taskElements.length === 0) return 0;
+
+    let totalProgress = 0;
+
+    taskElements.forEach(task => {
+        const percentage = parseInt(task.dataset.percentage) || 0;
+        totalProgress += percentage;
+    });
+
+    const averageProgress = Math.round(totalProgress / taskElements.length);
+
+    // Update the text to show breakdown
+    const mainText = document.getElementById('mainText');
+    mainText.innerHTML = `عرض ${taskElements.length} مهمة - متوسط الإنجاز: ${averageProgress}%`;
+
+    return averageProgress;
+}
+
+// Animate progress bars on load
+window.addEventListener('load', function() {
+    // Main progress bar
+    setTimeout(() => {
+        const mainProgress = document.getElementById('mainProgress');
+        const percentageText = document.getElementById('percentageText');
+        const percent = calculateProgress();
+
+        mainProgress.style.width = percent + '%';
+        mainProgress.style.background = `linear-gradient(90deg, ${getColor(percent)}, ${getColor(percent)})`;
+        percentageText.textContent = percent + '%';
+    }, 800);
+
+    // Animate individual card progress bars
+    setTimeout(() => {
+        const cardProgressFills = document.querySelectorAll('.card-progress-fill');
+        cardProgressFills.forEach((fill, index) => {
+            setTimeout(() => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 50);
+            }, index * 100);
+        });
+    }, 1000);
+});
+
+// Intersection observer for card animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.card').forEach(card => {
+    observer.observe(card);
+});
+</script>
 {% endblock %}

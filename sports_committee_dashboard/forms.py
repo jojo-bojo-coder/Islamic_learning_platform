@@ -48,13 +48,14 @@ class SportsTaskForm(forms.ModelForm):
             'assigned_to_name': 'اسم المسؤول (اختياري)',
             'due_date': 'تاريخ الاستحقاق',
             'status': 'الحالة',
-            'completion_percentage': 'نسبة الإنجاز',
+            'completion_percentage': 'نسبة الإنجاز (%)',
         }
 
     def __init__(self, *args, **kwargs):
         committee = kwargs.pop('committee', None)
         super().__init__(*args, **kwargs)
         self.fields['assigned_to_name'].required = False
+        self.fields['completion_percentage'].required = False
 
 
 class SportsMemberForm(forms.ModelForm):
