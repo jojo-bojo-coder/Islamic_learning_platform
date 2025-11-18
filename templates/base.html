@@ -42,6 +42,36 @@
             line-height: 1.6;
         }
 
+        /* شاشة البداية */
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #splash video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* إخفاء المحتوى الرئيسي في البداية */
+        main {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        main.show {
+            opacity: 1;
+        }
+
         /* Header/Navbar Styling from header.html */
         .header {
             position: relative;
@@ -497,6 +527,13 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- شاشة البداية -->
+    <div id="splash">
+        <video autoplay muted playsinline>
+            <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
+        </video>
+    </div>
+
     <!-- Navigation -->
     <header class="header">
         <!-- التدرجات الجانبية -->
@@ -648,6 +685,27 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // شاشة البداية
+        const splash = document.getElementById("splash");
+        const main = document.querySelector("main");
+        const video = splash.querySelector("video");
+
+        // عند انتهاء الفيديو
+        video.onended = () => {
+            splash.style.display = "none";
+            main.classList.add("show");
+            document.body.style.overflow = "auto";
+        };
+
+        // احتياطي: إخفاء شاشة البداية بعد 5 ثوانٍ كحد أقصى
+        setTimeout(() => {
+            if (splash.style.display !== "none") {
+                splash.style.display = "none";
+                main.classList.add("show");
+                document.body.style.overflow = "auto";
+            }
+        }, 5000);
+
         // Mobile menu functionality
         const hamburger = document.querySelector('.hamburger');
         const sidebar = document.querySelector('.mobile-sidebar');
