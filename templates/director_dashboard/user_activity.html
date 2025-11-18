@@ -15,24 +15,37 @@
         border: 1px solid var(--border-light);
         margin-bottom: 2rem;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .user-info-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .user-info-card:hover {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
+        transform: translateY(-2px);
     }
 
     .user-info-card h5 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
         font-size: 1.3rem;
         margin-bottom: 1.5rem;
-        border-bottom: 2px solid var(--primary-green);
+        border-bottom: 2px solid var(--blue-primary);
         padding-bottom: 0.5rem;
     }
 
     .user-info-card h5 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 8px;
     }
 
@@ -44,7 +57,7 @@
     }
 
     .user-info-card strong {
-        color: var(--dark-green);
+        color: var(--blue-dark);
         font-weight: 600;
     }
 
@@ -57,14 +70,27 @@
         border: 1px solid var(--border-light);
         margin-bottom: 2rem;
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .activity-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .activity-card:hover {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
+        transform: translateY(-2px);
     }
 
     .activity-card h4 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
         font-size: 1.5rem;
@@ -72,7 +98,7 @@
     }
 
     .activity-card h4 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 10px;
     }
 
@@ -83,11 +109,12 @@
         transition: all 0.3s ease;
         border-radius: 8px;
         margin-bottom: 0.5rem;
+        position: relative;
     }
 
     .activity-item:hover {
-        background: rgba(134, 184, 23, 0.05);
-        transform: translateX(-5px);
+        background: rgba(0, 132, 171, 0.05);
+        transform: translateX(5px);
     }
 
     .activity-item:last-child {
@@ -105,7 +132,7 @@
     }
 
     .activity-action i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 10px;
         font-size: 0.8rem;
     }
@@ -120,7 +147,7 @@
     }
 
     .activity-timestamp {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         font-weight: 600;
         display: flex;
         align-items: center;
@@ -128,7 +155,7 @@
     }
 
     .activity-timestamp i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
     }
 
     /* Badge Styling - Matching Dashboard Design */
@@ -137,14 +164,15 @@
         border-radius: 50px;
         font-weight: 600;
         font-size: 0.8rem;
+        border: none;
     }
 
     .bg-success {
-        background: var(--primary-green) !important;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)) !important;
     }
 
     .bg-danger {
-        background: #dc3545 !important;
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
     }
 
     /* Empty State - Matching Dashboard Design */
@@ -156,7 +184,7 @@
 
     .empty-state i {
         font-size: 4rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         opacity: 0.3;
         margin-bottom: 1rem;
     }
@@ -169,7 +197,7 @@
 
     /* Buttons - Matching Dashboard Design */
     .btn-secondary {
-        background: var(--dark-green);
+        background: linear-gradient(135deg, var(--blue-dark), #00576F);
         border: none;
         border-radius: 8px;
         padding: 0.8rem 1.5rem;
@@ -181,13 +209,106 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-secondary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-secondary:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-secondary:hover {
-        background: #0a2f1c;
+        background: linear-gradient(135deg, #00576F, var(--blue-dark));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(11, 59, 36, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 87, 111, 0.4);
         color: var(--white);
+    }
+
+    /* Statistics Cards */
+    .stats-grid {
+        margin-bottom: 2rem;
+    }
+
+    .mini-stat-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mini-stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .mini-stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .mini-stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .mini-stat-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    /* Activity Type Badges */
+    .activity-type-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+    }
+
+    .activity-login {
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.2);
+    }
+
+    .activity-update {
+        background: rgba(97, 188, 215, 0.1);
+        color: var(--blue-gradient);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .activity-create {
+        background: rgba(0, 87, 111, 0.1);
+        color: var(--blue-dark);
+        border: 1px solid rgba(0, 87, 111, 0.2);
     }
 
     /* Animations */
@@ -230,11 +351,37 @@
             width: 100%;
             justify-content: center;
         }
+
+        .mini-stat-number {
+            font-size: 1.5rem;
+        }
+
+        .mini-stat-label {
+            font-size: 0.8rem;
+        }
     }
 
-    /* RTL Adjustments */
-    .activity-item:hover {
-        transform: translateX(5px);
+    @media (max-width: 576px) {
+        .user-info-card,
+        .activity-card {
+            padding: 1rem;
+        }
+
+        .activity-item {
+            padding: 1rem 0.5rem;
+        }
+
+        .activity-action {
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+        }
     }
 </style>
 {% endblock %}
@@ -251,6 +398,7 @@
             <p><strong>اسم المستخدم:</strong> {{ target_user.username }}</p>
             <p><strong>الاسم الكامل:</strong> {{ target_user.get_full_name|default:"غير مكتمل" }}</p>
             <p><strong>الدور:</strong> {{ target_user.get_role_display }}</p>
+            <p><strong>البريد الإلكتروني:</strong> {{ target_user.email|default:"غير محدد" }}</p>
         </div>
         <div class="col-md-6">
             <h5>
@@ -269,11 +417,14 @@
 </div>
 
 <!-- Activity Log -->
-<div class="activity-card fade-in-up" style="animation-delay: 0.1s;">
-    <h4>
-        <i class="fas fa-history"></i>
-        سجل النشاط
-    </h4>
+<div class="activity-card fade-in-up" style="animation-delay: 0.2s;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">
+            <i class="fas fa-history"></i>
+            سجل النشاط
+        </h4>
+        <span class="badge bg-success">{{ activities.count }} نشاط</span>
+    </div>
 
     {% if activities %}
         {% for activity in activities %}
@@ -281,6 +432,13 @@
             <div class="activity-action">
                 <i class="fas fa-circle"></i>
                 {{ activity.action }}
+                {% if "تسجيل دخول" in activity.action %}
+                <span class="activity-type-badge activity-login">تسجيل دخول</span>
+                {% elif "تحديث" in activity.action or "تعديل" in activity.action %}
+                <span class="activity-type-badge activity-update">تحديث</span>
+                {% elif "إضافة" in activity.action or "جديد" in activity.action %}
+                <span class="activity-type-badge activity-create">إضافة</span>
+                {% endif %}
             </div>
             <div class="activity-meta">
                 <span class="activity-timestamp">
@@ -291,6 +449,12 @@
                 <span>
                     <i class="fas fa-globe"></i>
                     {{ activity.ip_address }}
+                </span>
+                {% endif %}
+                {% if activity.browser_info %}
+                <span>
+                    <i class="fas fa-window-restore"></i>
+                    {{ activity.browser_info|truncatechars:30 }}
                 </span>
                 {% endif %}
             </div>
@@ -305,7 +469,7 @@
 </div>
 
 <!-- Back Button -->
-<div class="fade-in-up" style="animation-delay: 0.2s;">
+<div class="fade-in-up" style="animation-delay: 0.3s;">
     <a href="{% url 'user_management' %}" class="btn btn-secondary">
         <i class="fas fa-arrow-right"></i>
         العودة إلى إدارة المستخدمين

@@ -8,67 +8,106 @@
 <style>
     .events-wrapper {
         background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .events-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .back-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         text-decoration: none;
         font-weight: 600;
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
+        padding: 0.8rem 1.5rem;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(97, 188, 215, 0.3);
     }
 
     .back-link:hover {
-        color: #75a015;
+        color: var(--blue-dark);
+        background: rgba(0, 132, 171, 0.2);
         transform: translateX(-5px);
     }
 
     .date-header {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
         margin-bottom: 2rem;
         text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
     }
 
     .date-header h3 {
         margin: 0;
         font-size: 1.5rem;
         font-weight: 700;
+        font-family: 'Cairo', sans-serif;
     }
 
     .filter-section {
-        background: var(--light-bg);
-        border-radius: 10px;
-        padding: 1.5rem;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+        border-radius: 16px;
+        padding: 2rem;
         margin-bottom: 2rem;
-        border: 1px solid var(--border-light);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filter-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .filter-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 1.5rem;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-title i {
+        color: var(--blue-primary);
     }
 
     .filter-buttons {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        gap: 0.8rem;
     }
 
     .filter-btn {
-        padding: 0.5rem 1rem;
-        border: 2px solid var(--border-light);
+        padding: 0.8rem 1.5rem;
+        border: 2px solid rgba(97, 188, 215, 0.3);
         border-radius: 25px;
         background: var(--white);
         color: var(--text-dark);
@@ -81,36 +120,47 @@
     }
 
     .filter-btn:hover {
-        border-color: var(--primary-green);
-        color: var(--primary-green);
+        border-color: var(--blue-primary);
+        color: var(--blue-primary);
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 132, 171, 0.2);
     }
 
     .filter-btn.active {
-        background: var(--primary-green);
-        border-color: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border-color: var(--blue-primary);
         color: var(--white);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
     }
 
     .filter-btn .count {
         background: rgba(255, 255, 255, 0.2);
-        padding: 0.2rem 0.5rem;
+        padding: 0.3rem 0.6rem;
         border-radius: 15px;
         font-size: 0.8rem;
+        font-weight: 700;
     }
 
     .filter-btn:not(.active) .count {
-        background: var(--light-bg);
-        color: var(--text-muted);
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
     }
 
     .section-title {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--border-light);
+        color: var(--blue-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 2px solid rgba(0, 132, 171, 0.1);
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--blue-primary);
     }
 
     .events-grid {
@@ -121,82 +171,113 @@
 
     .event-card {
         background: var(--white);
-        border: 2px solid var(--border-light);
-        border-radius: 12px;
-        padding: 1.5rem;
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        border-radius: 16px;
+        padding: 2rem;
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
         display: block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .event-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .event-card:hover {
-        border-color: var(--primary-green);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.2);
-        transform: translateY(-2px);
+        border-color: var(--blue-primary);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        transform: translateY(-5px);
         color: inherit;
     }
 
     .event-header {
         display: flex;
-        justify-content: between;
+        justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .event-title {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin: 0;
         flex: 1;
+        font-family: 'Cairo', sans-serif;
     }
 
     .event-type {
-        background: var(--primary-green);
         color: var(--white);
-        padding: 0.3rem 0.8rem;
+        padding: 0.5rem 1rem;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     .event-details {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.2rem;
+        margin-bottom: 1.5rem;
     }
 
     .event-detail {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-        color: var(--text-muted);
+        gap: 0.8rem;
+        font-size: 0.95rem;
+        color: var(--text-gray);
+        font-weight: 500;
+        padding: 0.8rem;
+        background: rgba(0, 132, 171, 0.05);
+        border-radius: 10px;
+        border: 1px solid rgba(97, 188, 215, 0.2);
     }
 
     .event-detail i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         width: 16px;
+        font-size: 1rem;
     }
 
     .event-description {
         color: var(--text-dark);
         line-height: 1.6;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
+        font-size: 1rem;
     }
 
     .no-events {
         text-align: center;
-        padding: 3rem;
-        color: var(--text-muted);
+        padding: 3rem 2rem;
+        color: var(--text-gray);
     }
 
     .no-events i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: var(--border-light);
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+    }
+
+    .no-events h5 {
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 0.5rem;
+        font-size: 1.3rem;
     }
 
     /* Hide sections by default - will be shown via JavaScript */
@@ -209,20 +290,71 @@
     }
 
     /* Event type specific colors */
-    .event-type-task { background: #2d5016; }
-    .event-type-activity { background: var(--primary-green); }
-    .event-type-meeting { background: #c9a961; }
-    .event-type-exam { background: #dc3545; }
-    .event-type-other { background: #6c757d; }
+    .event-type-task {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+    .event-type-activity {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+    .event-type-meeting {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+    .event-type-exam {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+    .event-type-other {
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+    }
 
     /* Object type specific colors */
-    .object-type-task { background: #3498db; }
-    .object-type-activity { background: #9b59b6; }
-    .object-type-cultural_task { background: #e67e22; }
+    .object-type-task {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+    .object-type-activity {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    }
+    .object-type-cultural_task {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
     @media (max-width: 768px) {
         .events-wrapper {
-            padding: 1rem;
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .date-header {
+            padding: 1.2rem 1.5rem;
+        }
+
+        .date-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .filter-section {
+            padding: 1.5rem;
+        }
+
+        .filter-buttons {
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
         }
 
         .event-details {
@@ -231,15 +363,19 @@
 
         .event-header {
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .event-type {
             align-self: flex-start;
         }
 
-        .filter-buttons {
-            justify-content: center;
+        .event-card {
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
         }
     }
 </style>
@@ -272,7 +408,7 @@
                 <span class="count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
-                <i class="fas fa-calendar-check "></i>
+                <i class="fas fa-calendar-check"></i>
                 الأحداث
                 <span class="count">{{ events.count }}</span>
             </button>
@@ -297,7 +433,7 @@
     <!-- Schedule Events -->
     <div class="events-section active" id="events-section">
         <h4 class="section-title">
-            <i class="fas fa-calendar-check me-2"></i>
+            <i class="fas fa-calendar-check"></i>
             الأحداث المجدولة
         </h4>
         <div class="events-grid">
@@ -306,6 +442,7 @@
                 <div class="event-header">
                     <h5 class="event-title">{{ event.title }}</h5>
                     <span class="event-type event-type-{{ event.event_type }}">
+                        <i class="fas fa-calendar-check"></i>
                         {{ event.get_event_type_display }}
                     </span>
                 </div>
@@ -345,7 +482,7 @@
     <!-- Tasks -->
     <div class="events-section active" id="tasks-section">
         <h4 class="section-title">
-            <i class="fas fa-tasks me-2"></i>
+            <i class="fas fa-tasks"></i>
             المهام
         </h4>
         <div class="events-grid">
@@ -353,7 +490,10 @@
             <a href="{% url 'object_detail' 'task' task.id %}" class="event-card">
                 <div class="event-header">
                     <h5 class="event-title">{{ task.title }}</h5>
-                    <span class="event-type object-type-task">مهمة</span>
+                    <span class="event-type object-type-task">
+                        <i class="fas fa-tasks"></i>
+                        مهمة
+                    </span>
                 </div>
                 <div class="event-details">
                     {% if task.committee %}
@@ -389,7 +529,7 @@
     <!-- Activities -->
     <div class="events-section active" id="activities-section">
         <h4 class="section-title">
-            <i class="fas fa-running me-2"></i>
+            <i class="fas fa-running"></i>
             الأنشطة
         </h4>
         <div class="events-grid">
@@ -397,7 +537,10 @@
             <a href="{% url 'object_detail' 'activity' activity.id %}" class="event-card">
                 <div class="event-header">
                     <h5 class="event-title">{{ activity.title }}</h5>
-                    <span class="event-type object-type-activity">نشاط</span>
+                    <span class="event-type object-type-activity">
+                        <i class="fas fa-running"></i>
+                        نشاط
+                    </span>
                 </div>
                 <div class="event-details">
                     {% if activity.committee %}
@@ -429,7 +572,7 @@
     <!-- Cultural Tasks -->
     <div class="events-section active" id="cultural_tasks-section">
         <h4 class="section-title">
-            <i class="fas fa-theater-masks me-2"></i>
+            <i class="fas fa-theater-masks"></i>
             المهام الثقافية
         </h4>
         <div class="events-grid">
@@ -437,7 +580,10 @@
             <a href="{% url 'object_detail' 'cultural_task' cultural_task.id %}" class="event-card">
                 <div class="event-header">
                     <h5 class="event-title">{{ cultural_task.title }}</h5>
-                    <span class="event-type object-type-cultural_task">مهمة ثقافية</span>
+                    <span class="event-type object-type-cultural_task">
+                        <i class="fas fa-theater-masks"></i>
+                        مهمة ثقافية
+                    </span>
                 </div>
                 <div class="event-details">
                     {% if cultural_task.committee %}

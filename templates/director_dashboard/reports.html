@@ -1,6 +1,6 @@
 {% extends 'director_base.html' %}
 
-{% block title %}التقارير والإحصائيات - منصة التحفيظ{% endblock %}
+{% block title %}التقارير والإحصائيات - منصة مداد{% endblock %}
 
 {% block page_title %}التقارير والإحصائيات{% endblock %}
 
@@ -17,7 +17,7 @@
     }
 
     .page-header h2 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
@@ -25,13 +25,12 @@
     }
 
     .page-header h2 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 12px;
     }
 
     /* Export Buttons */
-    .btn-export {
-        border: 2px solid var(--border-light);
+    .btn {
         border-radius: 8px;
         padding: 0.8rem 1.5rem;
         font-weight: 600;
@@ -40,30 +39,51 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        border: none;
     }
 
-    .btn-export-primary {
-        color: var(--primary-green);
-        border-color: var(--primary-green);
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
     }
 
-    .btn-export-primary:hover {
-        background: var(--primary-green);
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
-    }
-
-    .btn-export-success {
-        color: var(--dark-green);
-        border-color: var(--dark-green);
-    }
-
-    .btn-export-success:hover {
-        background: var(--dark-green);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
         color: var(--white);
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--blue-dark), #00576F);
+        color: var(--white);
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #00576F, var(--blue-dark));
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(11, 59, 36, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 87, 111, 0.4);
+        color: var(--white);
     }
 
     /* Summary Cards */
@@ -80,18 +100,31 @@
         border: 1px solid var(--border-light);
         height: 100%;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .stat-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
     }
 
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .stat-label {
@@ -109,10 +142,22 @@
         border: 1px solid var(--border-light);
         height: 100%;
         margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .feature-card h4 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
         font-size: 1.4rem;
@@ -120,7 +165,7 @@
     }
 
     .feature-card h4 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 10px;
     }
 
@@ -136,11 +181,11 @@
     }
 
     .table thead {
-        background: rgba(134, 184, 23, 0.1);
+        background: rgba(0, 132, 171, 0.1);
     }
 
     .table thead th {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 600;
         padding: 1rem;
         border: none;
@@ -154,7 +199,7 @@
     }
 
     .table tbody tr:hover {
-        background: rgba(134, 184, 23, 0.05);
+        background: rgba(0, 132, 171, 0.05);
     }
 
     .table tbody td {
@@ -178,19 +223,19 @@
     }
 
     .bg-success {
-        background: var(--primary-green) !important;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)) !important;
     }
 
     .bg-primary {
-        background: var(--dark-green) !important;
+        background: linear-gradient(135deg, var(--blue-dark), #00576F) !important;
     }
 
     .bg-warning {
-        background: #c9a961 !important;
+        background: linear-gradient(135deg, #c9a961, #d4b873) !important;
     }
 
     .bg-info {
-        background: #2d5016 !important;
+        background: linear-gradient(135deg, #2d5016, #3a6720) !important;
     }
 
     .bg-secondary {
@@ -198,7 +243,7 @@
     }
 
     .bg-danger {
-        background: #dc3545 !important;
+        background: linear-gradient(135deg, #dc3545, #e35d6e) !important;
     }
 
     /* Progress Bars */
@@ -214,7 +259,7 @@
     }
 
     .bg-success {
-        background-color: var(--primary-green) !important;
+        background-color: var(--blue-primary) !important;
     }
 
     .bg-warning {
@@ -234,11 +279,23 @@
         text-align: center;
         transition: all 0.3s ease;
         height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .overview-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .overview-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.15);
     }
 
     .overview-card i {
@@ -247,19 +304,21 @@
     }
 
     .overview-card h5 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 1rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .overview-card h3 {
         font-weight: 700;
         margin: 0;
+        font-family: 'Cairo', sans-serif;
     }
 
-    .text-primary { color: var(--primary-green) !important; }
-    .text-success { color: var(--primary-green) !important; }
+    .text-primary { color: var(--blue-primary) !important; }
+    .text-success { color: var(--blue-primary) !important; }
     .text-warning { color: #c9a961 !important; }
     .text-danger { color: #dc3545 !important; }
 
@@ -268,10 +327,27 @@
         text-align: center;
         padding: 3rem 2rem;
         color: var(--text-gray);
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .empty-state i {
         font-size: 3rem;
+        color: var(--blue-primary);
         opacity: 0.3;
         margin-bottom: 1rem;
     }
@@ -280,6 +356,28 @@
         font-size: 1.1rem;
         font-weight: 500;
         margin: 0;
+    }
+
+    /* Export Buttons Container */
+    .export-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
     }
 
     /* Responsive Design */
@@ -319,6 +417,11 @@
 
         .overview-card h3 {
             font-size: 1.5rem;
+        }
+
+        .export-buttons {
+            width: 100%;
+            justify-content: center;
         }
     }
 
@@ -366,7 +469,7 @@
     }
 
     @media (max-width: 576px) {
-        .btn-export {
+        .btn {
             width: 100%;
             justify-content: center;
             margin-bottom: 0.5rem;
@@ -431,22 +534,6 @@
             margin: 0;
         }
     }
-
-    /* Animation */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .fade-in-up {
-        animation: fadeInUp 0.6s ease-out forwards;
-    }
 </style>
 {% endblock %}
 
@@ -458,12 +545,12 @@
         التقارير والإحصائيات
     </h2>
     <div class="export-buttons">
-        <a href="#" class="btn-export btn-export-primary">
-            <i class="fas fa-download"></i>
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-download me-2"></i>
             <span>تصدير PDF</span>
         </a>
-        <a href="#" class="btn-export btn-export-success">
-            <i class="fas fa-file-excel"></i>
+        <a href="#" class="btn btn-success">
+            <i class="fas fa-file-excel me-2"></i>
             <span>تصدير Excel</span>
         </a>
     </div>
@@ -510,7 +597,7 @@
     <div class="col-12 fade-in-up mb-4" style="animation-delay: 0.5s;">
         <div class="feature-card">
             <h4>
-                <i class="fas fa-chart-bar"></i>
+                <i class="fas fa-chart-bar me-2"></i>
                 تقرير شهري عن إنجاز البرامج
             </h4>
 
@@ -589,7 +676,7 @@
     <div class="col-lg-6 fade-in-up mb-4" style="animation-delay: 0.6s;">
         <div class="feature-card">
             <h4>
-                <i class="fas fa-trophy"></i>
+                <i class="fas fa-trophy me-2"></i>
                 أكثر اللجان نشاطاً
             </h4>
 
@@ -652,7 +739,7 @@
     <div class="col-lg-6 fade-in-up mb-4" style="animation-delay: 0.7s;">
         <div class="feature-card">
             <h4>
-                <i class="fas fa-star"></i>
+                <i class="fas fa-star me-2"></i>
                 أفضل الطلاب أداءً
             </h4>
 
@@ -730,7 +817,7 @@
     <div class="col-12">
         <div class="feature-card">
             <h4>
-                <i class="fas fa-chart-pie"></i>
+                <i class="fas fa-chart-pie me-2"></i>
                 نظرة عامة على الإنجازات
             </h4>
 

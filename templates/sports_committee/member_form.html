@@ -11,22 +11,37 @@
         padding: 2rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .form-header {
         margin-bottom: 2rem;
         padding-bottom: 1rem;
-        border-bottom: 2px solid var(--primary-green);
+        border-bottom: 2px solid var(--blue-primary);
     }
 
     .form-header h3 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 700;
         margin: 0;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.5rem;
     }
 
     .form-header h3 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
+        margin-left: 10px;
     }
 
     .form-group {
@@ -46,11 +61,13 @@
         padding: 0.75rem 1rem;
         font-size: 1rem;
         transition: all 0.3s ease;
+        width: 100%;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
     }
 
     .form-actions {
@@ -74,15 +91,92 @@
         margin-top: 0.3rem;
     }
 
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-secondary {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        border: 2px solid var(--border-light);
+    }
+
+    .btn-secondary:hover {
+        background: var(--border-light);
+        transform: translateY(-2px);
+        color: var(--text-dark);
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .text-danger small {
+        display: block;
+    }
+
     /* Custom styles for form switch */
     .form-check-input:checked {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
+        background-color: var(--blue-primary);
+        border-color: var(--blue-primary);
     }
 
     .form-check-input:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 3.5rem;
+    }
+
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+
+    .form-check-label {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    /* Animation */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @media (max-width: 768px) {
@@ -97,15 +191,19 @@
         .form-actions .btn {
             width: 100%;
         }
+
+        .form-container {
+            padding: 1.5rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="form-container">
+<div class="form-container fade-in-up">
     <div class="form-header">
         <h3>
-            <i class="fas fa-user-plus ms-2"></i>
+            <i class="fas fa-user-plus"></i>
             {{ title }}
         </h3>
     </div>

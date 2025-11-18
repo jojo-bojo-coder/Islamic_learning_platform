@@ -8,54 +8,76 @@
 <style>
     .form-wrapper {
         background: var(--white);
-        border-radius: 15px;
+        border-radius: 20px;
         padding: 2.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
         max-width: 800px;
         margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .form-header {
         text-align: center;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
-        border-bottom: 2px solid var(--border-light);
+        border-bottom: 1px solid var(--border-light);
     }
 
     .form-header h3 {
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
+        font-size: 1.8rem;
     }
 
     .form-header h3 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 10px;
     }
 
     .form-header p {
         color: var(--text-gray);
         margin: 0;
+        font-size: 1rem;
     }
 
     .form-label {
         font-weight: 600;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
+        font-size: 1rem;
     }
 
     .form-control, .form-select {
         border: 2px solid var(--border-light);
-        border-radius: 8px;
+        border-radius: 12px;
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.15);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.15);
+    }
+
+    .form-text {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
     }
 
     .btn-group-actions {
@@ -63,28 +85,113 @@
         gap: 1rem;
         margin-top: 2rem;
         padding-top: 2rem;
-        border-top: 2px solid var(--border-light);
+        border-top: 1px solid var(--border-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        color: var(--white);
     }
 
     .btn-cancel {
         background: var(--light-bg);
         border: 2px solid var(--border-light);
         color: var(--text-dark);
-        padding: 0.8rem 2rem;
-        border-radius: 8px;
+        padding: 1rem 2rem;
+        border-radius: 12px;
         font-weight: 600;
         transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        flex: 1;
     }
 
     .btn-cancel:hover {
         background: var(--border-light);
         color: var(--text-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-wrapper {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .btn-group-actions {
+            flex-direction: column;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="form-wrapper">
+<div class="form-wrapper fade-in-up">
     <div class="form-header">
         <h3>
             <i class="fas fa-users"></i>
@@ -103,7 +210,7 @@
             </label>
             {{ form.name }}
             {% if form.name.errors %}
-                <div class="text-danger mt-2">{{ form.name.errors.0 }}</div>
+                <div class="text-danger">{{ form.name.errors.0 }}</div>
             {% endif %}
         </div>
 
@@ -113,9 +220,9 @@
             </label>
             {{ form.supervisor }}
             {% if form.supervisor.errors %}
-                <div class="text-danger mt-2">{{ form.supervisor.errors.0 }}</div>
+                <div class="text-danger">{{ form.supervisor.errors.0 }}</div>
             {% endif %}
-            <small class="text-muted">يمكنك تعيين مشرف للجنة أو تركه فارغاً للتعيين لاحقاً</small>
+            <div class="form-text">يمكنك تعيين مشرف للجنة أو تركه فارغاً للتعيين لاحقاً</div>
         </div>
 
         <div class="mb-4">
@@ -125,12 +232,12 @@
             </label>
             {{ form.description }}
             {% if form.description.errors %}
-                <div class="text-danger mt-2">{{ form.description.errors.0 }}</div>
+                <div class="text-danger">{{ form.description.errors.0 }}</div>
             {% endif %}
         </div>
 
         <div class="btn-group-actions">
-            <button type="submit" class="btn btn-primary flex-fill">
+            <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save ms-2"></i>
                 حفظ البيانات
             </button>

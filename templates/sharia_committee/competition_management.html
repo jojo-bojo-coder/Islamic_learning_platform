@@ -1,4 +1,5 @@
 {% extends 'sharia_committee/base.html' %}
+{% load static %}
 
 {% block title %}إدارة المسابقات - {{ committee.name }}{% endblock %}
 {% block page_title %}إدارة المسابقات الأسرية{% endblock %}
@@ -7,16 +8,30 @@
 <style>
     .competition-card {
         background: var(--white);
-        border-radius: 12px;
+        border-radius: 15px;
         padding: 2rem;
         margin-bottom: 1.5rem;
         border: 1px solid var(--border-light);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .competition-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .competition-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
     }
 
     .competition-badge {
@@ -27,42 +42,260 @@
         border-radius: 20px;
         font-weight: 600;
         font-size: 0.85rem;
+        z-index: 2;
     }
 
     .badge-upcoming {
         background: rgba(23, 162, 184, 0.1);
         color: #17a2b8;
+        border: 1px solid rgba(23, 162, 184, 0.2);
     }
 
     .badge-active {
-        background: rgba(134, 184, 23, 0.1);
-        color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.2);
     }
 
     .badge-completed {
         background: rgba(108, 117, 125, 0.1);
         color: #6c757d;
+        border: 1px solid rgba(108, 117, 125, 0.2);
     }
 
     .competition-icon {
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
         border-radius: 15px;
-        background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
+        font-size: 2.2rem;
         color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .competition-card:hover .competition-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .competition-title {
+        font-weight: 700;
+        color: var(--text-dark);
         margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+        line-height: 1.4;
+    }
+
+    .competition-description {
+        color: var(--text-gray);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        background: var(--light-bg);
+        border-radius: 10px;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .competition-card:hover .stat-item {
+        transform: translateY(-2px);
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--blue-primary);
+        font-family: 'Cairo', sans-serif;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        font-weight: 600;
+    }
+
+    .competition-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+        margin-top: auto;
+    }
+
+    .date-info {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .date-info i {
+        color: var(--blue-primary);
+    }
+
+    .empty-state {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h4 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-outline-primary {
+        border: 1px solid var(--blue-primary);
+        color: var(--blue-primary);
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--blue-primary);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.2);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stagger-animation {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .competition-card {
+            padding: 1.5rem;
+        }
+
+        .competition-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .competition-footer {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 style="color: var(--text-dark); font-weight: 700;">
-        <i class="fas fa-trophy ms-2" style="color: var(--primary-green);"></i>
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in-up">
+    <h3 style="color: var(--text-dark); font-weight: 700; font-family: 'Cairo', sans-serif;">
+        <i class="fas fa-trophy ms-2" style="color: var(--blue-primary);"></i>
         المسابقات الأسرية
     </h3>
     <a href="{% url 'sharia_add_competition' %}" class="btn btn-primary">
@@ -74,9 +307,10 @@
 {% if competitions %}
     <div class="row">
         {% for competition in competitions %}
-        <div class="col-md-6 mb-4">
-            <div class="competition-card" style="position: relative;">
+        <div class="col-lg-6 mb-4">
+            <div class="competition-card stagger-animation" style="animation-delay: {{ forloop.counter0|divisibleby:2|add:forloop.counter0|divisibleby:2 }}s">
                 <span class="competition-badge badge-{{ competition.status }}">
+                    <i class="fas fa-{% if competition.status == 'active' %}play-circle{% elif competition.status == 'upcoming' %}clock{% else %}check-circle{% endif %} ms-1"></i>
                     {{ competition.get_status_display }}
                 </span>
 
@@ -84,52 +318,61 @@
                     <i class="fas fa-trophy"></i>
                 </div>
 
-                <h4 style="font-weight: 700; color: var(--text-dark); margin-bottom: 1rem;">
+                <h4 class="competition-title">
                     {{ competition.title }}
                 </h4>
 
-                <p style="color: var(--text-gray); margin-bottom: 1.5rem;">
+                <p class="competition-description">
                     {{ competition.description|truncatewords:25 }}
                 </p>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="text-align: center; padding: 1rem; background: var(--light-bg); border-radius: 8px;">
-                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--primary-green);">
-                            {{ competition.participants_count }}
-                        </div>
-                        <div style="font-size: 0.85rem; color: var(--text-gray);">مشارك</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ competition.participants_count|default:"0" }}</div>
+                        <div class="stat-label">عدد المشاركين</div>
                     </div>
-                    <div style="text-align: center; padding: 1rem; background: var(--light-bg); border-radius: 8px;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-dark);">
-                            <i class="fas fa-calendar-alt" style="color: var(--primary-green);"></i>
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
-                        <div style="font-size: 0.85rem; color: var(--text-gray);">
+                        <div class="stat-label">
                             {{ competition.start_date|date:"Y-m-d" }}
                         </div>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-light);">
-                    <span style="color: var(--text-gray); font-size: 0.9rem;">
-                        <i class="fas fa-clock ms-1"></i>
+                <div class="competition-footer">
+                    <span class="date-info">
+                        <i class="fas fa-clock"></i>
                         ينتهي في: {{ competition.end_date|date:"Y-m-d" }}
                     </span>
-                    {% if competition.file %}
-                        <a href="{{ competition.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-download ms-1"></i>
-                            التفاصيل
+                    <div class="competition-actions">
+                        {% if competition.file %}
+                            <a href="{{ competition.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-download ms-1"></i>
+                                التفاصيل
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'sharia_edit_competition' competition.id %}" class="btn btn-outline-primary btn-sm" title="تعديل">
+                            <i class="fas fa-edit"></i>
                         </a>
-                    {% endif %}
+                        <form method="post" action="{% url 'sharia_delete_competition' competition.id %}" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذه المسابقة؟')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm" title="حذف">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 {% else %}
-    <div class="empty-state" style="background: var(--white); border-radius: 15px; padding: 4rem 2rem; text-align: center;">
-        <i class="fas fa-trophy" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3; margin-bottom: 1.5rem;"></i>
-        <h4 style="color: var(--text-dark);">لا توجد مسابقات</h4>
-        <p style="color: var(--text-gray);">لم يتم إنشاء أي مسابقات بعد.</p>
+    <div class="empty-state fade-in-up" style="animation-delay: 0.2s;">
+        <i class="fas fa-trophy"></i>
+        <h4>لا توجد مسابقات</h4>
+        <p style="color: var(--text-gray);">لم يتم إنشاء أي مسابقات بعد. ابدأ بإضافة مسابقة جديدة.</p>
         <a href="{% url 'sharia_add_competition' %}" class="btn btn-primary mt-3">
             <i class="fas fa-plus ms-2"></i>
             إضافة مسابقة جديدة

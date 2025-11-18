@@ -1,11 +1,34 @@
 {% extends 'director_base.html' %}
 
-{% block title %}مكتبة الملفات - منصة التحفيظ{% endblock %}
+{% block title %}مكتبة الملفات - منصة مداد{% endblock %}
 
 {% block page_title %}مكتبة الملفات{% endblock %}
 
 {% block extra_css %}
 <style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--blue-primary);
+        margin-left: 12px;
+    }
+
     /* Quick Actions Styling - Matching Dashboard */
     .quick-actions-wrapper {
         background: var(--white);
@@ -14,10 +37,22 @@
         margin-bottom: 2rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .quick-actions-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .quick-actions-wrapper h4 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
         font-size: 1.5rem;
@@ -25,7 +60,7 @@
     }
 
     .quick-actions-wrapper h4 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 10px;
     }
 
@@ -43,16 +78,36 @@
         gap: 0.5rem;
         width: 100%;
         text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .action-btn-primary {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
     }
 
     .action-btn-primary:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
     }
 
     /* File Cards - Updated to Match Dashboard Style */
@@ -65,16 +120,27 @@
         transition: all 0.3s ease;
         height: 100%;
         position: relative;
+        overflow: hidden;
+    }
+
+    .file-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .file-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
     }
 
     .file-icon {
         font-size: 3rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-bottom: 1rem;
         text-align: center;
     }
@@ -82,9 +148,10 @@
     .file-title {
         font-size: 1.1rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
         text-align: center;
+        font-family: 'Cairo', sans-serif;
     }
 
     .file-description {
@@ -119,10 +186,11 @@
         left: 1rem;
         font-size: 0.7rem;
         padding: 0.3rem 0.6rem;
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
         border-radius: 50px;
         font-weight: 600;
+        z-index: 1;
     }
 
     /* Filter Buttons - Updated to Match Dashboard Style */
@@ -141,13 +209,16 @@
         border-radius: 25px;
         transition: all 0.3s ease;
         text-decoration: none;
+        font-weight: 500;
     }
 
     .filter-btn:hover,
     .filter-btn.active {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
-        border-color: var(--primary-green);
+        border-color: var(--blue-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 132, 171, 0.3);
     }
 
     /* Empty State - Updated to Match Dashboard Style */
@@ -155,67 +226,129 @@
         text-align: center;
         padding: 3rem;
         color: var(--text-gray);
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .empty-state i {
         font-size: 4rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         opacity: 0.3;
         margin-bottom: 1rem;
     }
 
     .empty-state h4 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 1rem;
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
     }
 
     /* Buttons - Matching Dashboard Style */
-    .btn-primary {
-        background: var(--primary-green);
-        border: none;
+    .btn {
         border-radius: 8px;
         padding: 0.5rem 1rem;
         font-weight: 600;
         transition: all 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
     }
 
     .btn-primary:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        color: var(--white);
     }
 
     .btn-outline-primary {
-        border: 1px solid var(--primary-green);
+        color: var(--blue-primary);
+        border: 1px solid var(--border-light);
         background: transparent;
-        color: var(--primary-green);
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
     }
 
     .btn-outline-primary:hover {
-        background: var(--primary-green);
+        background: var(--blue-primary);
+        border-color: var(--blue-primary);
         color: var(--white);
         transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
     }
 
     .btn-outline-danger {
+        color: #dc3545;
         border: 1px solid #dc3545;
         background: transparent;
-        color: #dc3545;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
     }
 
     .btn-outline-danger:hover {
         background: #dc3545;
+        border-color: #dc3545;
         color: var(--white);
         transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+
+    /* Section Headers */
+    .section-header {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+
+    .section-header i {
+        color: var(--blue-primary);
+        margin-left: 8px;
     }
 
     /* Animations */
@@ -233,51 +366,130 @@
     .fade-in-up {
         animation: fadeInUp 0.6s ease-out forwards;
     }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .filter-buttons {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .quick-actions-wrapper {
+            padding: 1.5rem;
+        }
+
+        .file-actions {
+            flex-direction: column;
+        }
+
+        .file-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .file-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .file-card {
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+        }
+
+        .filter-buttons {
+            justify-content: flex-start;
+        }
+
+        .filter-btn {
+            flex: 1;
+            min-width: calc(50% - 0.5rem);
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .filter-buttons {
+            flex-direction: column;
+        }
+
+        .filter-btn {
+            width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Quick Actions - Matching Dashboard Style -->
-<div class="quick-actions-wrapper fade-in-up">
-    <h4>
-        <i class="fas fa-bolt"></i>
-        إجراءات سريعة
-    </h4>
-    <div class="row g-3">
-        <div class="col-lg-3 col-md-6">
-            <a href="{% url 'upload_file' %}" class="action-btn action-btn-primary">
-                <i class="fas fa-upload"></i>
-                <span>رفع ملف جديد</span>
-            </a>
-        </div>
-    </div>
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-folder-open"></i>
+        مكتبة الملفات
+    </h2>
+    <a href="{% url 'upload_file' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>
+        رفع ملف جديد
+    </a>
 </div>
 
 <!-- Filters -->
 <div class="fade-in-up" style="animation-delay: 0.1s;">
-    <h5 class="mb-3">تصفية حسب النوع:</h5>
+    <h5 class="section-header">
+        <i class="fas fa-filter"></i>
+        تصفية حسب النوع:
+    </h5>
     <div class="filter-buttons">
         <a href="{% url 'file_library' %}" class="filter-btn {% if not file_type_filter %}active{% endif %}">
             الكل
         </a>
         <a href="{% url 'file_library' %}?type=video" class="filter-btn {% if file_type_filter == 'video' %}active{% endif %}">
-            <i class="fas fa-video ms-2"></i>
+            <i class="fas fa-video me-2"></i>
             فيديوهات
         </a>
         <a href="{% url 'file_library' %}?type=presentation" class="filter-btn {% if file_type_filter == 'presentation' %}active{% endif %}">
-            <i class="fas fa-presentation ms-2"></i>
+            <i class="fas fa-presentation me-2"></i>
             عروض تقديمية
         </a>
         <a href="{% url 'file_library' %}?type=document" class="filter-btn {% if file_type_filter == 'document' %}active{% endif %}">
-            <i class="fas fa-file-pdf ms-2"></i>
+            <i class="fas fa-file-pdf me-2"></i>
             وثائق
         </a>
         <a href="{% url 'file_library' %}?type=image" class="filter-btn {% if file_type_filter == 'image' %}active{% endif %}">
-            <i class="fas fa-image ms-2"></i>
+            <i class="fas fa-image me-2"></i>
             صور
         </a>
         <a href="{% url 'file_library' %}?type=audio" class="filter-btn {% if file_type_filter == 'audio' %}active{% endif %}">
-            <i class="fas fa-music ms-2"></i>
+            <i class="fas fa-music me-2"></i>
             صوتيات
         </a>
     </div>
@@ -315,11 +527,11 @@
 
             <div class="file-meta">
                 <span>
-                    <i class="fas fa-download ms-2"></i>
+                    <i class="fas fa-download me-2"></i>
                     {{ file.download_count }}
                 </span>
                 <span>
-                    <i class="fas fa-calendar ms-2"></i>
+                    <i class="fas fa-calendar me-2"></i>
                     {{ file.uploaded_at|date:"Y-m-d" }}
                 </span>
             </div>
@@ -344,7 +556,7 @@
             <h4>لا توجد ملفات</h4>
             <p>ابدأ برفع الملفات الأولى لمكتبة الملفات</p>
             <a href="{% url 'upload_file' %}" class="btn btn-primary mt-3">
-                <i class="fas fa-upload ms-2"></i>
+                <i class="fas fa-upload me-2"></i>
                 رفع ملف جديد
             </a>
         </div>

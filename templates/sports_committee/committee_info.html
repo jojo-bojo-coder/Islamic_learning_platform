@@ -12,20 +12,32 @@
         margin-bottom: 2rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .info-card h4 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
         font-size: 1.4rem;
         margin-bottom: 1.5rem;
         padding-bottom: 1rem;
-        border-bottom: 2px solid var(--primary-green);
+        border-bottom: 2px solid var(--blue-primary);
     }
 
     .info-card h4 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 10px;
     }
 
@@ -49,7 +61,7 @@
     }
 
     .info-label i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         width: 20px;
     }
 
@@ -67,24 +79,28 @@
     }
 
     .role-item {
-        background: var(--light-bg);
+        background: var(--white);
         border-radius: 12px;
         padding: 1.5rem;
         text-align: center;
         transition: all 0.3s ease;
         border: 2px solid transparent;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
     }
 
     .role-item:hover {
-        border-color: var(--primary-green);
+        border-color: var(--blue-primary);
         transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
     }
 
     .role-icon {
         width: 60px;
         height: 60px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -102,17 +118,30 @@
     .role-count {
         font-size: 1.8rem;
         font-weight: 700;
-        color: var(--primary-green);
+        color: var(--blue-primary);
     }
 
     .committee-header {
-        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
         border-radius: 15px;
         padding: 2.5rem;
         margin-bottom: 2rem;
         color: var(--white);
         text-align: center;
-        box-shadow: 0 10px 30px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .committee-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        pointer-events: none;
     }
 
     .committee-header h2 {
@@ -129,19 +158,21 @@
     }
 
     .supervisor-card {
-        background: var(--light-bg);
+        background: var(--white);
         border-radius: 12px;
         padding: 1.5rem;
         display: flex;
         align-items: center;
         gap: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
     }
 
     .supervisor-avatar {
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -157,40 +188,80 @@
     }
 
     .supervisor-info p {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         font-weight: 600;
         margin: 0;
     }
 
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
     .btn-outline-primary {
-        border: 2px solid var(--primary-green);
-        color: var(--primary-green);
+        border: 2px solid var(--blue-primary);
+        color: var(--blue-primary);
         background: transparent;
         border-radius: 8px;
         padding: 0.8rem 1.5rem;
         font-weight: 600;
         transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
     }
 
     .btn-outline-primary:hover {
-        background: var(--primary-green);
+        background: var(--blue-primary);
         color: var(--white);
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Committee Header -->
-<div class="committee-header">
+<div class="committee-header fade-in-up">
     <h2>{{ committee.name }}</h2>
     <p>{{ committee.description }}</p>
 </div>
 
 <div class="row">
     <!-- Basic Information -->
-    <div class="col-lg-6 mb-4">
+    <div class="col-lg-6 mb-4 fade-in-up" style="animation-delay: 0.1s;">
         <div class="info-card">
             <h4>
                 <i class="fas fa-info-circle"></i>
@@ -232,7 +303,7 @@
     </div>
 
     <!-- Supervisor Information -->
-    <div class="col-lg-6 mb-4">
+    <div class="col-lg-6 mb-4 fade-in-up" style="animation-delay: 0.2s;">
         <div class="info-card">
             <h4>
                 <i class="fas fa-user-tie"></i>
@@ -289,7 +360,7 @@
 </div>
 
 <!-- Role Distribution -->
-<div class="info-card">
+<div class="info-card fade-in-up" style="animation-delay: 0.3s;">
     <h4>
         <i class="fas fa-users-cog"></i>
         توزيع الأدوار
@@ -327,7 +398,7 @@
 </div>
 
 <!-- Quick Actions -->
-<div class="info-card">
+<div class="info-card fade-in-up" style="animation-delay: 0.4s;">
     <h4>
         <i class="fas fa-bolt"></i>
         إجراءات سريعة

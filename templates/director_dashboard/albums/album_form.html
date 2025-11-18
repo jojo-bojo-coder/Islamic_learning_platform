@@ -1,6 +1,6 @@
 {% extends 'director_base.html' %}
 
-{% block title %}{{ title }} - منصة التحفيظ{% endblock %}
+{% block title %}{{ title }} - منصة مداد{% endblock %}
 
 {% block page_title %}{{ title }}{% endblock %}
 
@@ -17,7 +17,7 @@
     }
 
     .page-header h2 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
@@ -25,7 +25,7 @@
     }
 
     .page-header h2 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 12px;
     }
 
@@ -40,8 +40,8 @@
     }
 
     .alert-success {
-        background: rgba(134, 184, 23, 0.1);
-        border-right-color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        border-right-color: var(--blue-primary);
         color: var(--text-dark);
     }
 
@@ -59,10 +59,21 @@
         border: 1px solid var(--border-light);
         overflow: hidden;
         margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .form-card-header {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
         padding: 1.5rem 2rem;
         border-bottom: none;
@@ -103,8 +114,8 @@
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
     }
 
     .form-text {
@@ -127,16 +138,38 @@
         font-weight: 600;
         transition: all 0.3s ease;
         border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-primary {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
     }
 
     .btn-primary:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        color: var(--white);
     }
 
     .btn-outline-secondary {
@@ -168,8 +201,8 @@
     }
 
     .form-control[type="file"]:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
     }
 
     /* Animation */

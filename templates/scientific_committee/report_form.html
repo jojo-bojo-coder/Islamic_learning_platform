@@ -5,26 +5,38 @@
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
     <div class="col-lg-8">
         <div class="dashboard-card">
+            <div class="form-header mb-4">
+                <h4 style="color: var(--blue-dark);">
+                    <i class="fas fa-file-alt ms-2"></i>
+                    {{ title }}
+                </h4>
+                <p class="text-muted">أدخل معلومات التقرير</p>
+            </div>
+
             <form method="post" enctype="multipart/form-data" novalidate>
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
-                <div class="alert alert-danger">
+                <div class="alert alert-danger" style="background: rgba(220, 53, 69, 0.1); color: #721c24; border: none; border-right: 4px solid #dc3545;">
                     {% for error in form.non_field_errors %}
-                    <p class="mb-0">{{ error }}</p>
+                    <p class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>{{ error }}</p>
                     {% endfor %}
                 </div>
                 {% endif %}
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="{{ form.report_type.id_for_label }}" class="form-label">نوع التقرير</label>
+                        <label for="{{ form.report_type.id_for_label }}" class="form-label">
+                            <i class="fas fa-tag me-2" style="color: var(--blue-primary);"></i>
+                            نوع التقرير
+                        </label>
                         {{ form.report_type }}
                         {% if form.report_type.errors %}
-                        <div class="text-danger small mt-1">
+                        <div class="text-danger small mt-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
                             {% for error in form.report_type.errors %}
                             {{ error }}
                             {% endfor %}
@@ -33,10 +45,14 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="{{ form.title.id_for_label }}" class="form-label">عنوان التقرير</label>
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <i class="fas fa-heading me-2" style="color: var(--blue-primary);"></i>
+                            عنوان التقرير
+                        </label>
                         {{ form.title }}
                         {% if form.title.errors %}
-                        <div class="text-danger small mt-1">
+                        <div class="text-danger small mt-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
                             {% for error in form.title.errors %}
                             {{ error }}
                             {% endfor %}
@@ -46,10 +62,14 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="{{ form.content.id_for_label }}" class="form-label">محتوى التقرير</label>
+                    <label for="{{ form.content.id_for_label }}" class="form-label">
+                        <i class="fas fa-align-left me-2" style="color: var(--blue-primary);"></i>
+                        محتوى التقرير
+                    </label>
                     {{ form.content }}
                     {% if form.content.errors %}
-                    <div class="text-danger small mt-1">
+                    <div class="text-danger small mt-2">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
                         {% for error in form.content.errors %}
                             {{ error }}
                         {% endfor %}
@@ -57,37 +77,61 @@
                     {% endif %}
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ form.attendance_rate.id_for_label }}" class="form-label">نسبة الحضور (%)</label>
-                        {{ form.attendance_rate }}
-                        {% if form.attendance_rate.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in form.attendance_rate.errors %}
-                            {{ error }}
-                            {% endfor %}
+                <div class="report-metrics mb-4 p-3 rounded" style="background: rgba(0, 132, 171, 0.05); border: 1px solid var(--border-light);">
+                    <h6 style="color: var(--blue-dark); margin-bottom: 1rem;">
+                        <i class="fas fa-chart-line me-2" style="color: var(--blue-primary);"></i>
+                        مقاييس التقرير
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.attendance_rate.id_for_label }}" class="form-label">
+                                <i class="fas fa-users me-2" style="color: var(--blue-primary);"></i>
+                                نسبة الحضور (%)
+                            </label>
+                            <div class="input-group">
+                                {{ form.attendance_rate }}
+                                <span class="input-group-text" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary); border-color: var(--border-light);">%</span>
+                            </div>
+                            {% if form.attendance_rate.errors %}
+                            <div class="text-danger small mt-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                {% for error in form.attendance_rate.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                    </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ form.evaluation_score.id_for_label }}" class="form-label">درجة التقييم</label>
-                        {{ form.evaluation_score }}
-                        {% if form.evaluation_score.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in form.evaluation_score.errors %}
-                            {{ error }}
-                            {% endfor %}
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.evaluation_score.id_for_label }}" class="form-label">
+                                <i class="fas fa-star me-2" style="color: var(--blue-primary);"></i>
+                                درجة التقييم
+                            </label>
+                            <div class="input-group">
+                                {{ form.evaluation_score }}
+                                <span class="input-group-text" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary); border-color: var(--border-light);">/5</span>
+                            </div>
+                            {% if form.evaluation_score.errors %}
+                            <div class="text-danger small mt-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                {% for error in form.evaluation_score.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="{{ form.file.id_for_label }}" class="form-label">ملف مرفق (اختياري)</label>
+                    <label for="{{ form.file.id_for_label }}" class="form-label">
+                        <i class="fas fa-paperclip me-2" style="color: var(--blue-primary);"></i>
+                        ملف مرفق (اختياري)
+                    </label>
                     {{ form.file }}
                     {% if form.file.errors %}
-                    <div class="text-danger small mt-1">
+                    <div class="text-danger small mt-2">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
                         {% for error in form.file.errors %}
                             {{ error }}
                         {% endfor %}
@@ -95,12 +139,12 @@
                     {% endif %}
                 </div>
 
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'scientific_reports' %}" class="btn btn-secondary">
+                <div class="d-flex justify-content-between mt-4 pt-3" style="border-top: 1px solid var(--border-light);">
+                    <a href="{% url 'scientific_reports' %}" class="btn btn-secondary" style="background: var(--text-gray); border: none; padding: 0.8rem 1.5rem; border-radius: 8px;">
                         <i class="fas fa-arrow-right ms-1"></i>
                         رجوع
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary action-btn-primary" style="padding: 0.8rem 1.5rem; border: none;">
                         <i class="fas fa-save ms-1"></i>
                         حفظ التقرير
                     </button>
@@ -113,16 +157,396 @@
 
 {% block extra_js %}
 <script>
+    // Add Bootstrap classes to form elements and enhance styling
     document.addEventListener('DOMContentLoaded', function() {
         const inputs = document.querySelectorAll('input, select, textarea');
         inputs.forEach(input => {
             input.classList.add('form-control');
+            input.style.borderRadius = '8px';
+            input.style.border = '1px solid var(--border-light)';
+            input.style.padding = '0.75rem 1rem';
+            input.style.transition = 'all 0.3s ease';
         });
 
+        // Make sure select elements have the correct class
         const selects = document.querySelectorAll('select');
         selects.forEach(select => {
             select.classList.add('form-select');
         });
+
+        // Style file input specifically
+        const fileInput = document.getElementById('{{ form.file.id_for_label }}');
+        if (fileInput) {
+            fileInput.style.padding = '0.5rem';
+        }
+
+        // Add focus effects
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--blue-primary)';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(0, 132, 171, 0.25)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.style.borderColor = 'var(--border-light)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Style textarea specifically
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+            textarea.style.minHeight = '150px';
+            textarea.style.resize = 'vertical';
+        });
+
+        // Add character counter for textarea
+        const contentTextarea = document.getElementById('{{ form.content.id_for_label }}');
+        if (contentTextarea) {
+            const counter = document.createElement('div');
+            counter.className = 'form-text text-end';
+            counter.style.color = 'var(--text-gray)';
+            counter.style.fontSize = '0.8rem';
+            counter.style.marginTop = '0.25rem';
+            contentTextarea.parentNode.appendChild(counter);
+
+            function updateCounter() {
+                const length = contentTextarea.value.length;
+                counter.textContent = `${length} حرف`;
+
+                // Change color based on length
+                if (length < 50) {
+                    counter.style.color = '#dc3545';
+                } else if (length < 100) {
+                    counter.style.color = '#ffc107';
+                } else {
+                    counter.style.color = 'var(--text-gray)';
+                }
+            }
+
+            contentTextarea.addEventListener('input', updateCounter);
+            updateCounter();
+        }
+
+        // Add real-time validation for attendance rate
+        const attendanceInput = document.getElementById('{{ form.attendance_rate.id_for_label }}');
+        if (attendanceInput) {
+            attendanceInput.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                if (value > 100) {
+                    this.value = 100;
+                } else if (value < 0) {
+                    this.value = 0;
+                }
+
+                // Visual feedback
+                if (value >= 80) {
+                    this.style.borderColor = '#28a745';
+                } else if (value >= 60) {
+                    this.style.borderColor = '#ffc107';
+                } else {
+                    this.style.borderColor = 'var(--border-light)';
+                }
+            });
+        }
+
+        // Add real-time validation for evaluation score
+        const evaluationInput = document.getElementById('{{ form.evaluation_score.id_for_label }}');
+        if (evaluationInput) {
+            evaluationInput.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                if (value > 5) {
+                    this.value = 5;
+                } else if (value < 0) {
+                    this.value = 0;
+                }
+
+                // Visual feedback
+                if (value >= 4) {
+                    this.style.borderColor = '#28a745';
+                } else if (value >= 3) {
+                    this.style.borderColor = '#ffc107';
+                } else {
+                    this.style.borderColor = 'var(--border-light)';
+                }
+            });
+        }
+
+        // File input styling
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    this.style.borderColor = '#28a745';
+                    this.style.background = 'rgba(40, 167, 69, 0.05)';
+                } else {
+                    this.style.borderColor = 'var(--border-light)';
+                    this.style.background = '';
+                }
+            });
+        });
+
+        // Report type change effect
+        const reportTypeSelect = document.getElementById('{{ form.report_type.id_for_label }}');
+        if (reportTypeSelect) {
+            reportTypeSelect.addEventListener('change', function() {
+                this.style.background = 'rgba(0, 132, 171, 0.05)';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 1000);
+            });
+        }
     });
 </script>
+
+<style>
+    /* Report Form Specific Styles */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-header h4 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-header h4 i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+    }
+
+    .form-header p {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    /* Form Labels */
+    .form-label {
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Form Controls */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+        color: var(--text-dark);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        background: var(--white);
+    }
+
+    /* Input Group */
+    .input-group-text {
+        border-radius: 0 8px 8px 0;
+        background: rgba(0, 132, 171, 0.1);
+        border: 1px solid var(--border-light);
+        color: var(--blue-primary);
+        font-weight: 500;
+    }
+
+    .input-group .form-control {
+        border-radius: 8px 0 0 8px;
+    }
+
+    /* Report Metrics Section */
+    .report-metrics {
+        background: rgba(0, 132, 171, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    /* File Input Styling */
+    input[type="file"] {
+        padding: 0.5rem !important;
+    }
+
+    input[type="file"]::file-selector-button {
+        background: var(--blue-primary);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+        background: var(--blue-gradient);
+    }
+
+    /* Action Buttons */
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    /* Error Styling */
+    .text-danger {
+        color: #dc3545 !important;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .text-danger i {
+        font-size: 0.8rem;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border: none;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        color: #721c24;
+        border-right: 4px solid #dc3545;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+
+        .form-header h4 {
+            font-size: 1.3rem;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .d-flex.justify-content-between .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .input-group {
+            flex-direction: column;
+        }
+
+        .input-group .form-control {
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group-text {
+            border-radius: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .report-metrics .row .col-md-6 {
+            margin-bottom: 1rem;
+        }
+    }
+
+    /* Enhanced select dropdown styling */
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%230084AB' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: left 0.75rem center;
+        background-size: 16px 12px;
+        padding-left: 2.5rem;
+    }
+
+    /* Character counter styling */
+    .form-text {
+        transition: color 0.3s ease;
+    }
+</style>
 {% endblock %}

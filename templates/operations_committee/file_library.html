@@ -1,75 +1,388 @@
 {% extends 'operations_committee/base.html' %}
+{% load static %}
 
-{% block title %}مكتبة الملفات - اللجنة التشغيلية{% endblock %}
+{% block title %}مكتبة الملفات - اللجنة التشغيلية - منصة مداد{% endblock %}
 
 {% block page_title %}مكتبة الملفات{% endblock %}
 
 {% block extra_css %}
 <style>
-    .file-card {
+    .page-header {
         background: var(--white);
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .page-header h3 {
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+    }
+
+    .page-header h3 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    .page-header p {
+        color: var(--text-gray);
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+    }
+
+    .filter-section {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filter-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .form-label {
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .form-select {
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
         transition: all 0.3s ease;
     }
 
+    .form-select:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--blue-primary);
+        color: var(--blue-primary);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--blue-primary);
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    .file-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .file-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
     .file-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0, 132, 171, 0.2);
     }
 
     .file-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(134, 184, 23, 0.1);
-        border-radius: 10px;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
+        border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
     }
 
     .file-icon i {
-        font-size: 1.8rem;
-        color: var(--primary-green);
+        font-size: 2rem;
+        color: var(--blue-primary);
+        transition: all 0.3s ease;
+    }
+
+    .file-card:hover .file-icon {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        transform: scale(1.1);
+    }
+
+    .file-card:hover .file-icon i {
+        color: var(--white);
     }
 
     .file-title {
         font-weight: 700;
-        color: var(--text-dark);
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
+        color: var(--blue-dark);
+        margin-bottom: 0.8rem;
+        font-size: 1.3rem;
+        font-family: 'Cairo', sans-serif;
+        line-height: 1.4;
+    }
+
+    .file-type {
+        font-size: 1rem;
+        color: var(--text-gray);
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .file-type i {
+        color: var(--blue-primary);
+        margin-left: 0.5rem;
     }
 
     .file-meta {
         display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border-light);
-        font-size: 0.9rem;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(97, 188, 215, 0.2);
+        font-size: 0.95rem;
         color: var(--text-gray);
+        flex-wrap: wrap;
+    }
+
+    .file-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
     }
 
     .file-meta i {
-        margin-left: 0.3rem;
+        color: var(--blue-primary);
+        font-size: 1rem;
+    }
+
+    .btn-sm {
+        border: none;
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-sm::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-sm:hover::before {
+        width: 200px;
+        height: 200px;
+    }
+
+    .btn-sm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state p {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--text-gray);
+        margin: 0 0 2rem 0;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* File Description */
+    .file-description {
+        color: var(--text-gray);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        min-height: 60px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header, .filter-section {
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .page-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .file-card {
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .file-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .file-icon i {
+            font-size: 1.8rem;
+        }
+
+        .file-title {
+            font-size: 1.1rem;
+        }
+
+        .file-meta {
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Page Header -->
-<div class="page-header" style="background: var(--white); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);">
+<div class="page-header fade-in-up">
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h3>
-                <i class="fas fa-folder-open" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+                <i class="fas fa-folder-open"></i>
                 مكتبة الملفات التشغيلية
             </h3>
-            <p style="margin: 0; color: var(--text-gray);">خطط تشغيلية وقوائم تجهيز</p>
+            <p>خطط تشغيلية وقوائم تجهيز</p>
         </div>
         <a href="{% url 'operations_upload_file' %}" class="btn btn-primary">
             <i class="fas fa-upload ms-2"></i>
@@ -79,7 +392,7 @@
 </div>
 
 <!-- Filter Section -->
-<div class="filter-section mb-4" style="background: var(--white); border-radius: 15px; padding: 1.5rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); border: 1px solid var(--border-light);">
+<div class="filter-section fade-in-up" style="animation-delay: 0.1s;">
     <form method="get" class="row g-3">
         <div class="col-md-10">
             <label class="form-label">تصفية حسب النوع</label>
@@ -105,7 +418,7 @@
 <!-- Files Grid -->
 <div class="row">
     {% for file in files %}
-    <div class="col-lg-4 col-md-6">
+    <div class="col-lg-4 col-md-6 mb-4 fade-in-up" style="animation-delay: {{ forloop.counter|add:1|divisibleby:2 }}0.2s;">
         <div class="file-card">
             <div class="file-icon">
                 {% if file.file_type == 'operational_plan' %}
@@ -123,15 +436,15 @@
 
             <div class="file-title">{{ file.title }}</div>
 
-            <div style="font-size: 0.85rem; color: var(--text-gray); margin-bottom: 0.5rem;">
-                <i class="fas fa-tag ms-1"></i>
+            <div class="file-type">
+                <i class="fas fa-tag"></i>
                 {{ file.get_file_type_display }}
             </div>
 
             {% if file.description %}
-            <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 1rem;">
+            <div class="file-description">
                 {{ file.description|truncatewords:15 }}
-            </p>
+            </div>
             {% endif %}
 
             <div class="file-meta">
@@ -157,10 +470,10 @@
         </div>
     </div>
     {% empty %}
-    <div class="col-12">
-        <div class="text-center py-5" style="background: var(--white); border-radius: 15px;">
-            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-            <p class="text-muted">لا توجد ملفات</p>
+    <div class="col-12 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>لا توجد ملفات</p>
             <a href="{% url 'operations_upload_file' %}" class="btn btn-primary mt-3">
                 <i class="fas fa-upload ms-2"></i>
                 رفع ملف جديد

@@ -17,7 +17,7 @@
     }
 
     .page-header h2 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
@@ -25,7 +25,7 @@
     }
 
     .page-header h2 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 12px;
     }
 
@@ -40,8 +40,8 @@
     }
 
     .alert-success {
-        background: rgba(134, 184, 23, 0.1);
-        border-right-color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        border-right-color: var(--blue-primary);
         color: var(--text-dark);
     }
 
@@ -65,11 +65,23 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
         margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     /* Form Styling */
     .form-label {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 0.95rem;
@@ -85,8 +97,8 @@
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
         background: var(--white);
     }
 
@@ -104,13 +116,13 @@
     }
 
     .form-check-input:checked {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
+        background-color: var(--blue-primary);
+        border-color: var(--blue-primary);
     }
 
     .form-check-label {
-        color: var(--text-dark);
-        font-weight: 500;
+        color: var(--blue-dark);
+        font-weight: 600;
         margin-right: 0.5rem;
     }
 
@@ -123,19 +135,39 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
     }
 
     .btn-primary {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         border: none;
         color: var(--white);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-primary:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.4);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
         color: var(--white);
     }
 
@@ -194,6 +226,33 @@
         color: #dc3545;
     }
 
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        color: var(--blue-dark);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--blue-primary);
+    }
+
     /* Animation */
     @keyframes fadeInUp {
         from {
@@ -234,6 +293,10 @@
         .d-md-flex .btn {
             width: auto;
         }
+
+        .section-title {
+            font-size: 1.1rem;
+        }
     }
 
     @media (max-width: 576px) {
@@ -248,6 +311,11 @@
         .btn-back {
             width: 100%;
             justify-content: center;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
         }
     }
 </style>
@@ -282,77 +350,110 @@
     <form method="post">
         {% csrf_token %}
 
-        <!-- Program Name -->
-        <div class="row">
-            <div class="col-md-12 mb-3">
-                <label for="id_name" class="form-label required-field">اسم البرنامج</label>
-                {{ form.name }}
-                {% if form.name.errors %}
-                    <div class="text-danger small">{{ form.name.errors }}</div>
-                {% endif %}
+        <!-- Basic Information Section -->
+        <div class="form-section">
+            <h4 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                المعلومات الأساسية
+            </h4>
+
+            <!-- Program Name -->
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="id_name" class="form-label required-field">اسم البرنامج</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger small">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="id_description" class="form-label">وصف البرنامج</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger small">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- Description -->
-        <div class="row">
-            <div class="col-md-12 mb-3">
-                <label for="id_description" class="form-label">وصف البرنامج</label>
-                {{ form.description }}
-                {% if form.description.errors %}
-                    <div class="text-danger small">{{ form.description.errors }}</div>
-                {% endif %}
+        <!-- Management Section -->
+        <div class="form-section">
+            <h4 class="section-title">
+                <i class="fas fa-user-tie"></i>
+                الإدارة والأهداف
+            </h4>
+
+            <!-- Manager and Target -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_manager" class="form-label">مدير البرنامج</label>
+                    {{ form.manager }}
+                    {% if form.manager.errors %}
+                        <div class="text-danger small">{{ form.manager.errors }}</div>
+                    {% endif %}
+                    <div class="form-text">اختر مدير برنامج من المستخدمين المسجلين</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="id_target_students" class="form-label">الهدف من عدد الطلاب</label>
+                    {{ form.target_students }}
+                    {% if form.target_students.errors %}
+                        <div class="text-danger small">{{ form.target_students.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- Manager and Target -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="id_manager" class="form-label">مدير البرنامج</label>
-                {{ form.manager }}
-                {% if form.manager.errors %}
-                    <div class="text-danger small">{{ form.manager.errors }}</div>
-                {% endif %}
-                <div class="form-text">اختر مدير برنامج من المستخدمين المسجلين</div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_target_students" class="form-label">الهدف من عدد الطلاب</label>
-                {{ form.target_students }}
-                {% if form.target_students.errors %}
-                    <div class="text-danger small">{{ form.target_students.errors }}</div>
-                {% endif %}
+        <!-- Timeline Section -->
+        <div class="form-section">
+            <h4 class="section-title">
+                <i class="fas fa-calendar-alt"></i>
+                الجدول الزمني
+            </h4>
+
+            <!-- Dates -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_start_date" class="form-label required-field">تاريخ البدء</label>
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <div class="text-danger small">{{ form.start_date.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="id_end_date" class="form-label required-field">تاريخ الانتهاء</label>
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                        <div class="text-danger small">{{ form.end_date.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <!-- Dates -->
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="id_start_date" class="form-label required-field">تاريخ البدء</label>
-                {{ form.start_date }}
-                {% if form.start_date.errors %}
-                    <div class="text-danger small">{{ form.start_date.errors }}</div>
-                {% endif %}
-            </div>
-            <div class="col-md-6 mb-3">
-                <label for="id_end_date" class="form-label required-field">تاريخ الانتهاء</label>
-                {{ form.end_date }}
-                {% if form.end_date.errors %}
-                    <div class="text-danger small">{{ form.end_date.errors }}</div>
-                {% endif %}
-            </div>
-        </div>
+        <!-- Status Section -->
+        <div class="form-section">
+            <h4 class="section-title">
+                <i class="fas fa-toggle-on"></i>
+                حالة البرنامج
+            </h4>
 
-        <!-- Active Status -->
-        <div class="row">
-            <div class="col-12 mb-4">
-                <div class="form-check form-switch">
-                    {{ form.is_active }}
-                    <label class="form-check-label" for="id_is_active">البرنامج نشط</label>
+            <!-- Active Status -->
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="form-check form-switch">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="id_is_active">البرنامج نشط</label>
+                    </div>
+                    <div class="form-text">سيظهر البرنامج للمستخدمين فقط إذا كان نشطاً</div>
                 </div>
             </div>
         </div>
 
         <!-- Form Actions -->
-        <div class="d-flex gap-2 justify-content-end">
+        <div class="d-flex gap-2 justify-content-end pt-3 border-top">
             <a href="{% url 'program_management' %}" class="btn btn-secondary">
                 <i class="fas fa-times"></i>
                 <span>إلغاء</span>
@@ -405,6 +506,18 @@
                 input.placeholder = 'YYYY-MM-DD';
             }
         });
+
+        // Enhance form with better UX
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>جاري الحفظ...</span>';
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

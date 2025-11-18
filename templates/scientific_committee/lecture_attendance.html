@@ -5,12 +5,15 @@
 {% block page_title %}حضور المحاضرة: {{ lecture.title }}{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
     <div class="col-12">
         <div class="dashboard-card">
             <div class="row">
                 <div class="col-md-8">
-                    <h4>{{ lecture.title }}</h4>
+                    <h4 style="color: var(--blue-dark);">
+                        <i class="fas fa-chalkboard-teacher ms-2"></i>
+                        {{ lecture.title }}
+                    </h4>
                     <p class="text-muted mb-2">{{ lecture.description }}</p>
                     <div class="row">
                         <div class="col-md-6">
@@ -28,8 +31,8 @@
                     </div>
                 </div>
                 <div class="col-md-4 text-start">
-                    <div class="border rounded p-3 text-center">
-                        <h5 class="text-primary">{{ lecture.attendance_count }}</h5>
+                    <div class="stat-card">
+                        <h3 class="text-primary" style="color: var(--blue-primary);">{{ lecture.attendance_count }}</h3>
                         <p class="text-muted mb-0">عدد الحضور</p>
                     </div>
                 </div>
@@ -39,10 +42,10 @@
 </div>
 
 <!-- Attendance Form -->
-<div class="row">
+<div class="row fade-in-up" style="animation-delay: 0.2s;">
     <div class="col-12">
         <div class="dashboard-card">
-            <h5 class="mb-4" style="color: var(--primary-blue);">
+            <h5 class="mb-4" style="color: var(--blue-dark);">
                 <i class="fas fa-users me-2"></i>
                 تسجيل الحضور
             </h5>
@@ -52,7 +55,7 @@
 
                 {% if members %}
                 <div class="table-responsive">
-                    <table class="table table-hover">
+                    <table class="table table-hover custom-table">
                         <thead>
                             <tr>
                                 <th>اسم العضو</th>
@@ -65,8 +68,19 @@
                         <tbody>
                             {% for member in members %}
                             <tr>
-                                <td>{{ member.user.get_full_name }}</td>
-                                <td>{{ member.get_role_display }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="member-avatar-small me-2">
+                                            {{ member.user.first_name|first }}{{ member.user.last_name|first }}
+                                        </div>
+                                        {{ member.user.get_full_name }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary);">
+                                        {{ member.get_role_display }}
+                                    </span>
+                                </td>
                                 <td>
                                     <input type="checkbox" name="attended_{{ member.id }}" class="form-check-input">
                                 </td>
@@ -90,19 +104,20 @@
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'scientific_lecture_management' %}" class="btn btn-secondary">
+                    <a href="{% url 'scientific_lecture_management' %}" class="btn btn-secondary" style="background: var(--text-gray); border: none; padding: 0.8rem 1.5rem; border-radius: 8px;">
                         <i class="fas fa-arrow-right me-1"></i>
                         رجوع
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary action-btn-primary" style="padding: 0.8rem 1.5rem; border: none;">
                         <i class="fas fa-save me-1"></i>
                         حفظ الحضور
                     </button>
                 </div>
                 {% else %}
-                <div class="text-center py-4">
-                    <i class="fas fa-users fa-2x text-muted mb-3"></i>
-                    <p class="text-muted">لا توجد أعضاء في اللجنة</p>
+                <div class="text-center py-5 empty-state">
+                    <i class="fas fa-users fa-3x mb-3" style="color: var(--blue-primary); opacity: 0.3;"></i>
+                    <h5 style="color: var(--blue-dark);">لا توجد أعضاء في اللجنة</h5>
+                    <p class="text-muted">لم يتم إضافة أي أعضاء بعد</p>
                 </div>
                 {% endif %}
             </form>
@@ -112,16 +127,16 @@
 
 <!-- Existing Attendance Records -->
 {% if attendances %}
-<div class="row mt-4">
+<div class="row mt-4 fade-in-up" style="animation-delay: 0.3s;">
     <div class="col-12">
         <div class="dashboard-card">
-            <h5 class="mb-4" style="color: var(--primary-blue);">
+            <h5 class="mb-4" style="color: var(--blue-dark);">
                 <i class="fas fa-history me-2"></i>
                 سجل الحضور السابق
             </h5>
 
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover custom-table">
                     <thead>
                         <tr>
                             <th>اسم العضو</th>
@@ -135,7 +150,14 @@
                     <tbody>
                         {% for attendance in attendances %}
                         <tr>
-                            <td>{{ attendance.user.get_full_name }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="member-avatar-small me-2">
+                                        {{ attendance.user.first_name|first }}{{ attendance.user.last_name|first }}
+                                    </div>
+                                    {{ attendance.user.get_full_name }}
+                                </div>
+                            </td>
                             <td>
                                 {% if attendance.attended %}
                                 <span class="badge bg-success">نعم</span>
@@ -155,7 +177,14 @@
                                 {% endif %}
                             </td>
                             <td>{{ attendance.notes|default:"-" }}</td>
-                            <td>{{ attendance.recorded_by.get_full_name }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="member-avatar-small me-2">
+                                        {{ attendance.recorded_by.first_name|first }}{{ attendance.recorded_by.last_name|first }}
+                                    </div>
+                                    {{ attendance.recorded_by.get_full_name }}
+                                </div>
+                            </td>
                             <td>{{ attendance.recorded_at|date:"Y-m-d H:i" }}</td>
                         </tr>
                         {% endfor %}
@@ -166,4 +195,320 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* Lecture Attendance Specific Styles */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .dashboard-card h4, .dashboard-card h5 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+    }
+
+    .dashboard-card h4 i, .dashboard-card h5 i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.15);
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Table Styling */
+    .custom-table {
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table th {
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-align: right;
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: var(--border-light);
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    /* Member Avatar */
+    .member-avatar-small {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--blue-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    /* Form Controls */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+        padding: 0.5rem 0.75rem;
+        transition: all 0.3s ease;
+        background: var(--white);
+        color: var(--text-dark);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        background: var(--white);
+    }
+
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--blue-primary);
+        border-color: var(--blue-primary);
+    }
+
+    /* Action Buttons */
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        border-radius: 12px;
+    }
+
+    /* Rating Stars */
+    .rating {
+        display: flex;
+        gap: 2px;
+    }
+
+    .rating .fas {
+        font-size: 0.9rem;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+
+        .action-btn-primary {
+            padding: 1rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .d-flex.justify-content-between .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .table th, .table td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .member-avatar-small {
+            width: 24px;
+            height: 24px;
+            font-size: 0.7rem;
+        }
+    }
+</style>
+
+<script>
+    // Add focus effects to form elements
+    document.addEventListener('DOMContentLoaded', function() {
+        const formControls = document.querySelectorAll('.form-control, .form-select, .form-check-input');
+
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--blue-primary)';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(0, 132, 171, 0.25)';
+            });
+
+            control.addEventListener('blur', function() {
+                this.style.borderColor = 'var(--border-light)';
+                this.style.boxShadow = 'none';
+            });
+        });
+
+        // Add real-time validation for rating
+        const ratingSelects = document.querySelectorAll('select[name^="rating_"]');
+        ratingSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    this.style.background = 'rgba(40, 167, 69, 0.1)';
+                } else {
+                    this.style.background = '';
+                }
+            });
+        });
+
+        // Add attendance checkbox styling
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const row = this.closest('tr');
+                if (this.checked) {
+                    row.style.background = 'rgba(40, 167, 69, 0.05)';
+                } else {
+                    row.style.background = '';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

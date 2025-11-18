@@ -1,96 +1,567 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}إنشاء حساب جديد{% endblock %}
+{% block title %}إنشاء حساب جديد - مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Register Section Styling */
+    .register-section {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 0;
+        background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(248, 249, 250, 0.9) 50%,
+            rgba(0, 132, 171, 0.1) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+            radial-gradient(circle at 20% 80%, rgba(0, 132, 171, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(0, 132, 171, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .register-container {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 800px;
+    }
+
+    .register-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1),
+                    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+        border: 1px solid #e8e8e8;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15),
+                    0 10px 30px rgba(0, 132, 171, 0.15);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .register-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #0084AB;
+        font-size: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.2);
+        position: relative;
+    }
+
+    .register-title {
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+    }
+
+    .register-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 1.8rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e8e8e8;
+        border-radius: 12px;
+        background: #fff;
+        font-size: 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #0084AB;
+        box-shadow: 0 0 0 3px rgba(0, 132, 171, 0.1),
+                    0 10px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-control::placeholder {
+        color: #6c757d;
+        opacity: 0.7;
+    }
+
+    /* Enhanced Button */
+    .register-btn {
+        background: #0084AB;
+        border: none;
+        border-radius: 12px;
+        padding: 1.2rem 2rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.3);
+        color: #fff;
+        width: 100%;
+        margin-top: 1rem;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .register-btn:hover {
+        background: #006d8c;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 132, 171, 0.4);
+        color: #fff;
+    }
+
+    .register-btn:active {
+        transform: translateY(-1px);
+    }
+
+    /* Alert Styling */
+    .alert {
+        border-radius: 15px;
+        padding: 1.2rem 1.5rem;
+        margin-bottom: 2rem;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        border-right: 4px solid;
+    }
+
+    .alert-success {
+        background: rgba(0, 132, 171, 0.1);
+        color: #0084AB;
+        border-right-color: #0084AB;
+    }
+
+    .alert-error,
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border-right-color: #dc3545;
+    }
+
+    .alert-warning {
+        background: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+        border-right-color: #ffc107;
+    }
+
+    .alert-info {
+        background: rgba(13, 202, 240, 0.1);
+        color: #0dcaf0;
+        border-right-color: #0dcaf0;
+    }
+
+    .btn-close {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Login Link */
+    .login-link {
+        text-align: center;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e8e8e8;
+    }
+
+    .login-link p {
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .login-link a {
+        color: #0084AB;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .login-link a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        right: 0;
+        width: 0;
+        height: 2px;
+        background: #0084AB;
+        transition: width 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: #006d8c;
+    }
+
+    .login-link a:hover::after {
+        width: 100%;
+    }
+
+    /* Error Messages */
+    .text-danger {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    .small {
+        font-size: 0.875rem;
+    }
+
+    /* Form Row Layout */
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -0.75rem;
+    }
+
+    .form-col {
+        flex: 1 0 0%;
+        padding: 0 0.75rem;
+        min-width: 250px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 767px) {
+        .register-section {
+            padding: 2rem 1rem;
+        }
+
+        .register-card {
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .register-title {
+            font-size: 1.8rem;
+        }
+
+        .register-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+        }
+
+        .form-control {
+            padding: 0.9rem 1rem;
+        }
+
+        .register-btn {
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        .form-col {
+            flex: 0 0 100%;
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .register-card {
+            padding: 1.5rem;
+        }
+
+        .register-title {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="feature-card p-4">
-                <h2 class="text-center mb-4">إنشاء حساب جديد</h2>
+<!-- Register Section -->
+<section class="register-section">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <div class="register-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1 class="register-title">إنشاء حساب جديد</h1>
+                <p class="register-subtitle">انضم إلى منصة مداد وابدأ رحلتك التعليمية</p>
+            </div>
 
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-                <form method="post">
-                    {% csrf_token %}
+            <form method="post">
+                {% csrf_token %}
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">اسم المستخدم</label>
-                            {{ form.username }}
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_username" class="form-label">
+                                <i class="fas fa-user me-2"></i>اسم المستخدم
+                            </label>
+                            <input type="text"
+                                   name="username"
+                                   id="id_username"
+                                   class="form-control"
+                                   placeholder="أدخل اسم المستخدم"
+                                   value="{{ form.username.value|default_if_none:'' }}"
+                                   required>
                             {% if form.username.errors %}
                                 <div class="text-danger small">{{ form.username.errors }}</div>
                             {% endif %}
                         </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">البريد الإلكتروني</label>
-                            {{ form.email }}
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>البريد الإلكتروني
+                            </label>
+                            <input type="email"
+                                   name="email"
+                                   id="id_email"
+                                   class="form-control"
+                                   placeholder="أدخل بريدك الإلكتروني"
+                                   value="{{ form.email.value|default_if_none:'' }}"
+                                   required>
                             {% if form.email.errors %}
                                 <div class="text-danger small">{{ form.email.errors }}</div>
                             {% endif %}
                         </div>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">الاسم الأول</label>
-                            {{ form.first_name }}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">اسم العائلة</label>
-                            {{ form.last_name }}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">رقم الهاتف</label>
-                            {{ form.phone }}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">الدور</label>
-                            {{ form.role }}
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_first_name" class="form-label">
+                                <i class="fas fa-signature me-2"></i>الاسم الأول
+                            </label>
+                            <input type="text"
+                                   name="first_name"
+                                   id="id_first_name"
+                                   class="form-control"
+                                   placeholder="أدخل الاسم الأول"
+                                   value="{{ form.first_name.value|default_if_none:'' }}">
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">كلمة المرور</label>
-                            {{ form.password1 }}
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_last_name" class="form-label">
+                                <i class="fas fa-signature me-2"></i>اسم العائلة
+                            </label>
+                            <input type="text"
+                                   name="last_name"
+                                   id="id_last_name"
+                                   class="form-control"
+                                   placeholder="أدخل اسم العائلة"
+                                   value="{{ form.last_name.value|default_if_none:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_phone" class="form-label">
+                                <i class="fas fa-phone me-2"></i>رقم الهاتف
+                            </label>
+                            <input type="tel"
+                                   name="phone"
+                                   id="id_phone"
+                                   class="form-control"
+                                   placeholder="أدخل رقم الهاتف"
+                                   value="{{ form.phone.value|default_if_none:'' }}">
+                        </div>
+                    </div>
+
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_role" class="form-label">
+                                <i class="fas fa-user-tag me-2"></i>الدور
+                            </label>
+                            <select name="role"
+                                    id="id_role"
+                                    class="form-control"
+                                    required>
+                                <option value="">اختر الدور</option>
+                                {% for value, label in form.role.field.choices %}
+                                    <option value="{{ value }}" {% if form.role.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_password1" class="form-label">
+                                <i class="fas fa-lock me-2"></i>كلمة المرور
+                            </label>
+                            <input type="password"
+                                   name="password1"
+                                   id="id_password1"
+                                   class="form-control"
+                                   placeholder="أدخل كلمة المرور"
+                                   required>
                             {% if form.password1.errors %}
                                 <div class="text-danger small">{{ form.password1.errors }}</div>
                             {% endif %}
                         </div>
+                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">تأكيد كلمة المرور</label>
-                            {{ form.password2 }}
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="id_password2" class="form-label">
+                                <i class="fas fa-lock me-2"></i>تأكيد كلمة المرور
+                            </label>
+                            <input type="password"
+                                   name="password2"
+                                   id="id_password2"
+                                   class="form-control"
+                                   placeholder="أكد كلمة المرور"
+                                   required>
                             {% if form.password2.errors %}
                                 <div class="text-danger small">{{ form.password2.errors }}</div>
                             {% endif %}
                         </div>
                     </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-2">
-                        <i class="fas fa-user-plus me-2"></i> إنشاء الحساب
-                    </button>
-                </form>
-
-                <div class="text-center mt-3">
-                    <p>لديك حساب بالفعل؟ <a href="{% url 'login' %}">تسجيل الدخول</a></p>
                 </div>
+
+                <button type="submit" class="register-btn">
+                    <i class="fas fa-user-plus me-2"></i> إنشاء الحساب
+                </button>
+            </form>
+
+            <div class="login-link">
+                <p>لديك حساب بالفعل؟ <a href="{% url 'login' %}">تسجيل الدخول</a></p>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form field focus effects
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.querySelector('.form-label').style.color = '#0084AB';
+        });
+
+        input.addEventListener('blur', function() {
+            if (!this.value) {
+                this.parentElement.querySelector('.form-label').style.color = '#1a1a1a';
+            }
+        });
+    });
+
+    // Add animation to register card on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const registerCard = document.querySelector('.register-card');
+        registerCard.style.opacity = '0';
+        registerCard.style.transform = 'translateY(30px)';
+
+        setTimeout(() => {
+            registerCard.style.transition = 'all 0.6s ease-out';
+            registerCard.style.opacity = '1';
+            registerCard.style.transform = 'translateY(0)';
+        }, 100);
+    });
+
+    // Enhanced button hover effect
+    const registerBtn = document.querySelector('.register-btn');
+    if (registerBtn) {
+        registerBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+
+        registerBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    }
+
+    // Password strength indicator (optional enhancement)
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+
+    if (password1 && password2) {
+        password1.addEventListener('input', function() {
+            const strength = checkPasswordStrength(this.value);
+            // يمكن إضافة مؤشر قوة كلمة المرور هنا
+        });
+
+        password2.addEventListener('input', function() {
+            if (this.value !== password1.value) {
+                this.style.borderColor = '#dc3545';
+            } else {
+                this.style.borderColor = '#0084AB';
+            }
+        });
+    }
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+        if (password.match(/\d/)) strength++;
+        if (password.match(/[^a-zA-Z\d]/)) strength++;
+        return strength;
+    }
+</script>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends 'sharia_committee/base.html' %}
-
+{% load static %}
+{% load math_filters %}
 {% block title %}إدارة الكتب - {{ committee.name }}{% endblock %}
 {% block page_title %}إدارة الكتب الشبابية{% endblock %}
 
@@ -7,33 +8,52 @@
 <style>
     .book-card {
         background: var(--white);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
         border: 1px solid var(--border-light);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .book-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .book-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
     }
 
     .book-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 10px;
-        background: rgba(134, 184, 23, 0.1);
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        background: rgba(0, 132, 171, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.8rem;
-        color: var(--primary-green);
+        font-size: 2rem;
+        color: var(--blue-primary);
         flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .book-card:hover .book-icon {
+        transform: scale(1.1);
+        background: rgba(0, 132, 171, 0.15);
     }
 
     .progress-bar-wrapper {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
     }
 
     .progress-label {
@@ -42,69 +62,252 @@
         margin-bottom: 0.5rem;
         font-size: 0.9rem;
         color: var(--text-gray);
+        font-family: 'Cairo', sans-serif;
     }
 
     .progress {
-        height: 8px;
+        height: 10px;
         border-radius: 10px;
         background: var(--border-light);
+        overflow: hidden;
     }
 
     .progress-bar {
-        background: var(--primary-green);
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
         border-radius: 10px;
+        transition: width 0.8s ease;
     }
 
     .status-badge {
-        padding: 0.4rem 0.8rem;
+        padding: 0.5rem 1rem;
         border-radius: 20px;
         font-size: 0.85rem;
         font-weight: 600;
+        font-family: 'Cairo', sans-serif;
     }
 
     .status-reading {
-        background: rgba(134, 184, 23, 0.1);
-        color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.2);
     }
 
     .status-completed {
-        background: rgba(108, 117, 125, 0.1);
-        color: #6c757d;
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.2);
     }
 
     .status-pending {
         background: rgba(255, 193, 7, 0.1);
         color: #ffc107;
+        border: 1px solid rgba(255, 193, 7, 0.2);
+    }
+
+    .book-meta {
+        display: flex;
+        gap: 2rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .book-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .book-meta-item i {
+        color: var(--blue-primary);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Empty State Styling */
+    .empty-state {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Header Styling */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
+        margin: 0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .book-card {
+            padding: 1.5rem;
+            margin: 0 1rem 1.5rem 1rem;
+        }
+
+        .book-meta {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .book-content {
+            flex-direction: column;
+        }
+
+        .book-icon {
+            align-self: center;
+        }
+    }
+
+    /* Book Content Layout */
+    .book-content {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .book-details {
+        flex: 1;
+    }
+
+    .book-title {
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.3rem;
+    }
+
+    .book-author {
+        color: var(--text-gray);
+        margin-bottom: 1rem;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .book-description {
+        color: var(--text-gray);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 style="color: var(--text-dark); font-weight: 700;">
-        <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+<div class="page-header fade-in-up">
+    <h3>
+        <i class="fas fa-book me-2" style="color: var(--blue-primary);"></i>
         الكتب الشبابية
     </h3>
     <a href="{% url 'sharia_add_book' %}" class="btn btn-primary">
-        <i class="fas fa-plus ms-2"></i>
+        <i class="fas fa-plus me-2"></i>
         إضافة كتاب جديد
     </a>
 </div>
 
 {% if books %}
     {% for book in books %}
-    <div class="book-card">
-        <div style="display: flex; gap: 1.5rem; align-items: start;">
+    <div class="book-card fade-in-up" style="animation-delay: {{ forloop.counter0|add:1|mul:0.1 }}s">
+        <div class="book-content">
             <div class="book-icon">
                 <i class="fas fa-book"></i>
             </div>
 
-            <div style="flex: 1;">
-                <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
+            <div class="book-details">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                     <div>
-                        <h5 style="font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">{{ book.title }}</h5>
-                        <p style="color: var(--text-gray); margin: 0;">
-                            <i class="fas fa-user-edit ms-1"></i>
+                        <h5 class="book-title">{{ book.title }}</h5>
+                        <p class="book-author">
+                            <i class="fas fa-user-edit me-1"></i>
                             {{ book.author }}
                         </p>
                     </div>
@@ -114,23 +317,23 @@
                 </div>
 
                 {% if book.description %}
-                    <p style="color: var(--text-gray); margin-bottom: 1rem;">{{ book.description|truncatewords:20 }}</p>
+                    <p class="book-description">{{ book.description|truncatewords:20 }}</p>
                 {% endif %}
 
-                <div style="display: flex; gap: 2rem; color: var(--text-gray); font-size: 0.9rem; margin-bottom: 1rem;">
-                    <span>
-                        <i class="fas fa-user ms-1"></i>
+                <div class="book-meta">
+                    <span class="book-meta-item">
+                        <i class="fas fa-user"></i>
                         {{ book.assigned_to.get_full_name|default:"غير محدد" }}
                     </span>
                     {% if book.start_date %}
-                        <span>
-                            <i class="fas fa-calendar ms-1"></i>
+                        <span class="book-meta-item">
+                            <i class="fas fa-calendar"></i>
                             بدأ: {{ book.start_date }}
                         </span>
                     {% endif %}
                     {% if book.completion_date %}
-                        <span>
-                            <i class="fas fa-check-circle ms-1"></i>
+                        <span class="book-meta-item">
+                            <i class="fas fa-check-circle"></i>
                             اكتمل: {{ book.completion_date }}
                         </span>
                     {% endif %}
@@ -139,7 +342,7 @@
                 <div class="progress-bar-wrapper">
                     <div class="progress-label">
                         <span>نسبة الإنجاز</span>
-                        <span style="font-weight: 600;">{{ book.progress_percentage }}%</span>
+                        <span style="font-weight: 600; color: var(--blue-primary);">{{ book.progress_percentage }}%</span>
                     </div>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" style="width: {{ book.progress_percentage }}%"></div>
@@ -150,14 +353,54 @@
     </div>
     {% endfor %}
 {% else %}
-    <div class="empty-state" style="background: var(--white); border-radius: 15px; padding: 4rem 2rem; text-align: center;">
-        <i class="fas fa-book" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3; margin-bottom: 1.5rem;"></i>
-        <h4 style="color: var(--text-dark);">لا توجد كتب</h4>
-        <p style="color: var(--text-gray);">لم يتم إضافة أي كتب بعد.</p>
-        <a href="{% url 'sharia_add_book' %}" class="btn btn-primary mt-3">
-            <i class="fas fa-plus ms-2"></i>
+    <div class="empty-state fade-in-up">
+        <i class="fas fa-book"></i>
+        <h4 style="color: var(--text-dark); font-family: 'Cairo', sans-serif; margin-bottom: 1rem;">لا توجد كتب</h4>
+        <p style="color: var(--text-gray); font-family: 'IBM Plex Sans Arabic', sans-serif; margin-bottom: 2rem;">لم يتم إضافة أي كتب بعد.</p>
+        <a href="{% url 'sharia_add_book' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>
             إضافة كتاب جديد
         </a>
     </div>
 {% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add animation to progress bars when they come into view
+        const progressBars = document.querySelectorAll('.progress-bar');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressBar = entry.target;
+                    const width = progressBar.style.width;
+                    progressBar.style.width = '0%';
+
+                    setTimeout(() => {
+                        progressBar.style.transition = 'width 1.5s ease-in-out';
+                        progressBar.style.width = width;
+                    }, 300);
+
+                    observer.unobserve(progressBar);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        progressBars.forEach(bar => {
+            observer.observe(bar);
+        });
+
+        // Add hover effects to book cards
+        const bookCards = document.querySelectorAll('.book-card');
+        bookCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
 {% endblock %}

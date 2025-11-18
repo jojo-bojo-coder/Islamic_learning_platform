@@ -1,6 +1,7 @@
 {% extends 'operations_committee/base.html' %}
+{% load static %}
 
-{% block title %}إدارة المهام - اللجنة التشغيلية{% endblock %}
+{% block title %}إدارة المهام - اللجنة التشغيلية - منصة مداد{% endblock %}
 
 {% block page_title %}إدارة المهام{% endblock %}
 
@@ -8,87 +9,327 @@
 <style>
     .page-header {
         background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
+        border-radius: 20px;
+        padding: 2.5rem;
         margin-bottom: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .page-header h3 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 700;
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+    }
+
+    .page-header h3 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
     }
 
     .page-header p {
         color: var(--text-gray);
         margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
     }
 
     .filter-section {
         background: var(--white);
-        border-radius: 15px;
-        padding: 1.5rem;
+        border-radius: 20px;
+        padding: 2rem;
         margin-bottom: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filter-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .form-label {
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .form-select, .form-control {
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--blue-primary);
+        color: var(--blue-primary);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--blue-primary);
+        color: var(--white);
+        transform: translateY(-2px);
     }
 
     .table-container {
         background: var(--white);
-        border-radius: 15px;
+        border-radius: 20px;
         padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .table-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .table {
         margin-bottom: 0;
+        border-radius: 10px;
+        overflow: hidden;
     }
 
     .table thead th {
-        background: var(--light-bg);
-        color: var(--text-dark);
-        font-weight: 600;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        font-weight: 700;
         border: none;
-        padding: 1rem;
+        padding: 1.2rem 1rem;
+        font-size: 1rem;
+        text-align: center;
     }
 
     .table tbody td {
-        padding: 1rem;
+        padding: 1.2rem 1rem;
         vertical-align: middle;
+        border-bottom: 1px solid rgba(97, 188, 215, 0.2);
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(0, 132, 171, 0.05);
+        transform: translateX(-5px);
     }
 
     .status-badge {
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.2rem;
         border-radius: 50px;
         font-weight: 600;
         font-size: 0.85rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .priority-badge {
-        padding: 0.4rem 0.8rem;
+        padding: 0.5rem 1rem;
         border-radius: 50px;
         font-weight: 600;
         font-size: 0.8rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .action-buttons .btn {
-        padding: 0.4rem 0.8rem;
+        padding: 0.6rem 0.8rem;
         font-size: 0.85rem;
         margin-left: 0.3rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-sm {
+        padding: 0.5rem 0.8rem !important;
+    }
+
+    .progress {
+        background: rgba(97, 188, 215, 0.2);
+        border-radius: 10px;
+        height: 20px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.75rem;
+        line-height: 20px;
+    }
+
+    /* Badge Colors with Blue Theme */
+    .bg-success {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)) !important;
+    }
+
+    .bg-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    }
+
+    .bg-info {
+        background: linear-gradient(135deg, #17a2b8, #138496) !important;
+    }
+
+    .bg-warning {
+        background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+        color: var(--text-dark) !important;
+    }
+
+    .bg-secondary {
+        background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state p {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header, .filter-section, .table-container {
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .page-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+        }
+
+        .action-buttons .btn {
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .status-badge, .priority-badge {
+            font-size: 0.75rem;
+            padding: 0.4rem 0.8rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Page Header -->
-<div class="page-header">
+<div class="page-header fade-in-up">
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h3>
-                <i class="fas fa-tasks" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+                <i class="fas fa-tasks"></i>
                 إدارة المهام التشغيلية
             </h3>
             <p>عرض وإدارة جميع المهام التشغيلية</p>
@@ -101,7 +342,7 @@
 </div>
 
 <!-- Filter Section -->
-<div class="filter-section">
+<div class="filter-section fade-in-up" style="animation-delay: 0.1s;">
     <form method="get" class="row g-3">
         <div class="col-md-4">
             <label class="form-label">تصفية حسب النوع</label>
@@ -135,7 +376,7 @@
 </div>
 
 <!-- Tasks Table -->
-<div class="table-container">
+<div class="table-container fade-in-up" style="animation-delay: 0.2s;">
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -154,21 +395,21 @@
                 {% for task in tasks %}
                 <tr>
                     <td>
-                        <strong>{{ task.title }}</strong>
+                        <strong style="color: var(--blue-dark);">{{ task.title }}</strong>
                         <br>
                         <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
                     </td>
                     <td>{{ task.get_task_type_display }}</td>
                     <td>
                         {% if task.assigned_to %}
-                            <i class="fas fa-user ms-1"></i>
+                            <i class="fas fa-user ms-1" style="color: var(--blue-primary);"></i>
                             {{ task.assigned_to.get_full_name }}
                         {% else %}
                             <span class="text-muted">غير محدد</span>
                         {% endif %}
                     </td>
                     <td>
-                        <i class="far fa-calendar ms-1"></i>
+                        <i class="far fa-calendar ms-1" style="color: var(--blue-primary);"></i>
                         {{ task.due_date }}
                     </td>
                     <td>
@@ -190,7 +431,7 @@
                     </td>
                     <td>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-success" role="progressbar"
+                            <div class="progress-bar" role="progressbar"
                                  style="width: {{ task.completion_percentage }}%;"
                                  aria-valuenow="{{ task.completion_percentage }}"
                                  aria-valuemin="0" aria-valuemax="100">
@@ -210,8 +451,10 @@
                 {% empty %}
                 <tr>
                     <td colspan="8" class="text-center py-5">
-                        <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">لا توجد مهام</p>
+                        <div class="empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <p>لا توجد مهام</p>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

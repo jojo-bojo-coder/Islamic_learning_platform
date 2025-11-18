@@ -1,19 +1,43 @@
 {% extends 'director_base.html' %}
 
-{% block title %}{{ album.title }} - منصة التحفيظ{% endblock %}
+{% block title %}{{ album.title }} - منصة مداد{% endblock %}
 
 {% block page_title %}{{ album.title }}{% endblock %}
 
 {% block extra_css %}
 <style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--blue-primary);
+        margin-left: 12px;
+    }
+
     .album-header {
-        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-primary) 100%);
         border-radius: 15px;
         padding: 2rem;
         color: var(--white);
         margin-bottom: 2rem;
         position: relative;
         overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
     }
 
     .album-header::before {
@@ -36,6 +60,7 @@
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .album-description {
@@ -54,12 +79,111 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
     }
 
     .stat-item i {
         font-size: 1.2rem;
     }
 
+    /* Album Actions */
+    .album-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        color: var(--white);
+    }
+
+    .btn-outline-primary {
+        color: var(--blue-primary);
+        border: 1px solid var(--border-light);
+        background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--blue-primary);
+        border-color: var(--blue-primary);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-outline-secondary {
+        color: var(--text-gray);
+        border: 1px solid var(--border-light);
+        background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--text-gray);
+        border-color: var(--text-gray);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border: 1px solid #dc3545;
+        background: transparent;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        border-color: #dc3545;
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+    }
+
+    /* Photo Grid */
     .photo-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -74,11 +198,22 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
         transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .photo-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .photo-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
     }
 
     .photo-image {
@@ -86,6 +221,11 @@
         height: 200px;
         object-fit: cover;
         cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .photo-card:hover .photo-image {
+        transform: scale(1.05);
     }
 
     .photo-info {
@@ -97,6 +237,7 @@
         font-weight: 700;
         color: var(--text-dark);
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .photo-description {
@@ -126,8 +267,13 @@
     .btn-sm {
         padding: 0.4rem 0.8rem;
         font-size: 0.8rem;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
     }
 
+    /* Empty State */
     .empty-state {
         text-align: center;
         padding: 3rem;
@@ -136,60 +282,129 @@
         border-radius: 15px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .empty-state i {
         font-size: 4rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         opacity: 0.3;
         margin-bottom: 1rem;
     }
 
     .empty-state h4 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 1rem;
-    }
-
-    .album-actions {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
     }
 
     /* Modal Styles */
     .modal-content {
         border-radius: 15px;
         border: none;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
 
     .modal-header {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
         border-radius: 15px 15px 0 0;
         border: none;
+        padding: 1.5rem;
+    }
+
+    .modal-header .modal-title {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+    }
+
+    .modal-body {
+        padding: 2rem;
     }
 
     .modal-body img {
         width: 100%;
         height: auto;
         border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
     .photo-details {
-        margin-top: 1rem;
+        margin-top: 1.5rem;
     }
 
     .photo-details h5 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
     }
 
     .photo-details p {
         color: var(--text-gray);
+        margin-bottom: 1rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid var(--border-light);
+        padding: 1.5rem;
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    /* Pagination */
+    .pagination {
         margin-bottom: 0;
     }
 
+    .page-link {
+        color: var(--blue-primary);
+        border: 1px solid var(--border-light);
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: var(--blue-primary);
+        color: var(--white);
+        border-color: var(--blue-primary);
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border-color: var(--blue-primary);
+        color: var(--white);
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
         .photo-grid {
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -204,11 +419,81 @@
         .album-actions {
             flex-direction: column;
         }
+
+        .album-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .album-title {
+            font-size: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .album-header {
+            padding: 1.5rem;
+        }
+
+        .photo-actions {
+            flex-direction: column;
+        }
+
+        .photo-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .photo-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-images"></i>
+        {{ album.title }}
+    </h2>
+    <a href="{% url 'album_management' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-right me-2"></i>
+        العودة للألبومات
+    </a>
+</div>
+
 <!-- Album Header -->
 <div class="album-header fade-in-up">
     <div class="album-header-content">
@@ -239,19 +524,15 @@
 <!-- Album Actions -->
 <div class="album-actions fade-in-up" style="animation-delay: 0.1s;">
     <a href="{% url 'add_photo' album.id %}" class="btn btn-primary">
-        <i class="fas fa-plus ms-2"></i>
+        <i class="fas fa-plus me-2"></i>
         إضافة صورة جديدة
     </a>
     <a href="{% url 'edit_album' album.id %}" class="btn btn-outline-primary">
-        <i class="fas fa-edit ms-2"></i>
+        <i class="fas fa-edit me-2"></i>
         تعديل الألبوم
     </a>
-    <a href="{% url 'album_management' %}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-right ms-2"></i>
-        العودة للألبومات
-    </a>
     <a href="{% url 'delete_album' album.id %}" class="btn btn-outline-danger">
-        <i class="fas fa-trash ms-2"></i>
+        <i class="fas fa-trash me-2"></i>
         حذف الألبوم
     </a>
 </div>
@@ -271,11 +552,11 @@
 
                 <div class="photo-meta">
                     <span>
-                        <i class="fas fa-sort-numeric-down ms-2"></i>
+                        <i class="fas fa-sort-numeric-down me-2"></i>
                         الترتيب: {{ photo.order }}
                     </span>
                     <span>
-                        <i class="fas fa-calendar ms-2"></i>
+                        <i class="fas fa-calendar me-2"></i>
                         {{ photo.created_at|date:"Y-m-d" }}
                     </span>
                 </div>
@@ -283,11 +564,11 @@
                 <div class="photo-actions">
                     <button type="button" class="btn btn-primary btn-sm"
                             data-bs-toggle="modal" data-bs-target="#photoModal{{ photo.id }}">
-                        <i class="fas fa-eye ms-2"></i>
+                        <i class="fas fa-eye me-2"></i>
                         عرض
                     </button>
                     <a href="{% url 'delete_photo' photo.id %}" class="btn btn-outline-danger btn-sm">
-                        <i class="fas fa-trash ms-2"></i>
+                        <i class="fas fa-trash me-2"></i>
                         حذف
                     </a>
                 </div>
@@ -311,11 +592,11 @@
 
                             <div class="row mt-3">
                                 <div class="col-md-6">
-                                    <strong><i class="fas fa-sort-numeric-down ms-2"></i> الترتيب:</strong>
+                                    <strong><i class="fas fa-sort-numeric-down me-2"></i> الترتيب:</strong>
                                     {{ photo.order }}
                                 </div>
                                 <div class="col-md-6">
-                                    <strong><i class="fas fa-calendar ms-2"></i> تاريخ الإضافة:</strong>
+                                    <strong><i class="fas fa-calendar me-2"></i> تاريخ الإضافة:</strong>
                                     {{ photo.created_at|date:"Y-m-d" }}
                                 </div>
                             </div>
@@ -323,15 +604,15 @@
                     </div>
                     <div class="modal-footer">
                         <a href="{{ photo.image.url }}" download class="btn btn-primary">
-                            <i class="fas fa-download ms-2"></i>
+                            <i class="fas fa-download me-2"></i>
                             تحميل الصورة
                         </a>
                         <a href="{% url 'delete_photo' photo.id %}" class="btn btn-outline-danger">
-                            <i class="fas fa-trash ms-2"></i>
+                            <i class="fas fa-trash me-2"></i>
                             حذف الصورة
                         </a>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="fas fa-times ms-2"></i>
+                            <i class="fas fa-times me-2"></i>
                             إغلاق
                         </button>
                     </div>
@@ -346,7 +627,7 @@
         <h4>لا توجد صور في هذا الألبوم</h4>
         <p>ابدأ بإضافة الصور الأولى لهذا الألبوم</p>
         <a href="{% url 'add_photo' album.id %}" class="btn btn-primary mt-3">
-            <i class="fas fa-plus ms-2"></i>
+            <i class="fas fa-plus me-2"></i>
             إضافة صورة جديدة
         </a>
     </div>

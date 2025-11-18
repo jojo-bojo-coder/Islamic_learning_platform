@@ -8,10 +8,22 @@
     .filter-card {
         background: var(--white);
         border-radius: 15px;
-        padding: 1.5rem;
+        padding: 2rem;
         margin-bottom: 2rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filter-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .filter-form {
@@ -28,17 +40,29 @@
 
     .task-card {
         background: var(--white);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
         border: 1px solid var(--border-light);
         transition: all 0.3s ease;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .task-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .task-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
     }
 
     .task-header {
@@ -49,27 +73,28 @@
     }
 
     .task-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--text-dark);
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .task-type {
         display: inline-block;
-        padding: 0.3rem 0.8rem;
+        padding: 0.4rem 1rem;
         border-radius: 20px;
         font-size: 0.85rem;
         font-weight: 600;
-        background: rgba(255, 107, 53, 0.1);
-        color: var(--sports-orange);
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
         margin-bottom: 0.5rem;
     }
 
     .task-description {
         color: var(--text-gray);
         font-size: 0.95rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         line-height: 1.6;
     }
 
@@ -79,16 +104,16 @@
         flex-wrap: wrap;
         color: var(--text-gray);
         font-size: 0.9rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .task-meta i {
-        color: var(--sports-orange);
+        color: var(--blue-primary);
         margin-left: 0.3rem;
     }
 
     .progress-section {
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .progress-label {
@@ -100,14 +125,91 @@
         font-weight: 500;
     }
 
+    .progress-bar-custom {
+        height: 8px;
+        border-radius: 10px;
+        background: var(--border-light);
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: var(--blue-primary);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+    }
+
     .task-actions {
         display: flex;
         gap: 0.5rem;
         justify-content: flex-end;
     }
 
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        color: var(--white);
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-outline-primary {
+        border: 2px solid var(--blue-primary);
+        color: var(--blue-primary);
+        background: transparent;
+        text-decoration: none;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--blue-primary);
+        color: var(--white);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--text-gray);
+        color: var(--text-gray);
+        background: transparent;
+        text-decoration: none;
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--text-gray);
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-danger {
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        background: transparent;
+        text-decoration: none;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
     .btn-sm {
-        padding: 0.4rem 1rem;
+        padding: 0.5rem 1rem;
         font-size: 0.875rem;
         border-radius: 6px;
     }
@@ -120,7 +222,7 @@
 
     .empty-state i {
         font-size: 4rem;
-        color: var(--sports-orange);
+        color: var(--blue-primary);
         opacity: 0.3;
         margin-bottom: 1.5rem;
     }
@@ -129,15 +231,105 @@
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
         color: var(--text-dark);
+        font-weight: 700;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .badge-success {
+        background: var(--blue-primary);
+        color: var(--white);
+    }
+
+    .badge-info {
+        background: var(--blue-gradient);
+        color: var(--white);
+    }
+
+    .badge-warning {
+        background: #ffc107;
+        color: var(--text-dark);
+    }
+
+    .badge-danger {
+        background: #dc3545;
+        color: var(--white);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem 0;
+    }
+
+    .page-header h3 {
+        color: var(--blue-dark);
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
+        margin: 0;
+    }
+
+    .page-header h3 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            min-width: auto;
+        }
+
+        .task-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .task-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .task-actions {
+            justify-content: flex-start;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 style="color: var(--text-dark); font-weight: 700;">
-        <i class="fas fa-tasks" style="color: var(--sports-orange); margin-left: 10px;"></i>
-        المهام الرياضية
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h3>
+        <i class="fas fa-tasks"></i>
+        إدارة المهام الرياضية
     </h3>
     <a href="{% url 'sports_add_task' %}" class="btn btn-primary">
         <i class="fas fa-plus ms-2"></i>
@@ -146,7 +338,7 @@
 </div>
 
 <!-- Filters -->
-<div class="filter-card">
+<div class="filter-card fade-in-up" style="animation-delay: 0.1s;">
     <form method="get" class="filter-form">
         <div class="filter-group">
             <label class="form-label">نوع المهمة</label>
@@ -186,7 +378,7 @@
 <!-- Tasks List -->
 <div class="tasks-list">
     {% for task in tasks %}
-    <div class="task-card">
+    <div class="task-card fade-in-up" style="animation-delay: {{ forloop.counter|add:1|divisibleby:10 }}s">
         <div class="task-header">
             <div>
                 <div class="task-type">{{ task.get_task_type_display }}</div>
@@ -234,7 +426,7 @@
         </div>
     </div>
     {% empty %}
-    <div class="empty-state">
+    <div class="empty-state fade-in-up" style="animation-delay: 0.2s;">
         <i class="fas fa-tasks"></i>
         <h4>لا توجد مهام</h4>
         <p>ابدأ بإضافة مهمة رياضية جديدة</p>

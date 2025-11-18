@@ -8,10 +8,23 @@
 <style>
     .calendar-wrapper {
         background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .calendar-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle at top right, rgba(97, 188, 215, 0.1) 0%, transparent 70%);
+        pointer-events: none;
     }
 
     .calendar-header {
@@ -29,7 +42,7 @@
         font-family: 'Cairo', sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin: 0;
     }
 
@@ -41,8 +54,8 @@
     }
 
     .view-toggle {
-        background: var(--light-bg);
-        border-radius: 8px;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 12px;
         padding: 0.3rem;
         display: flex;
         gap: 0.3rem;
@@ -53,7 +66,7 @@
         border: none;
         color: var(--text-dark);
         padding: 0.5rem 1rem;
-        border-radius: 6px;
+        border-radius: 8px;
         font-weight: 600;
         transition: all 0.3s ease;
         cursor: pointer;
@@ -64,12 +77,12 @@
     }
 
     .view-toggle-btn:hover {
-        background: rgba(134, 184, 23, 0.1);
-        color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.2);
+        color: var(--blue-primary);
     }
 
     .view-toggle-btn.active {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
     }
 
@@ -80,7 +93,7 @@
     }
 
     .calendar-nav .btn {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         border: none;
         color: var(--white);
         padding: 0.6rem 1.2rem;
@@ -91,9 +104,9 @@
     }
 
     .calendar-nav .btn:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), #00576F);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
     }
 
     .calendar-nav .current-month {
@@ -105,7 +118,7 @@
     }
 
     .btn-add-event {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         border: none;
         color: var(--white);
         padding: 0.7rem 1.5rem;
@@ -116,12 +129,32 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-add-event::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-add-event:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-add-event:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), #00576F);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
         color: var(--white);
     }
 
@@ -132,7 +165,7 @@
     }
 
     .calendar-table thead th {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
         padding: 1rem;
         text-align: center;
@@ -167,8 +200,8 @@
         width: 100%;
         text-align: right;
         padding: 0.5rem;
-        background: rgba(134, 184, 23, 0.1);
-        border-right: 3px solid var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        border-right: 3px solid var(--blue-primary);
         border-radius: 4px;
         margin-bottom: 0.5rem;
         cursor: pointer;
@@ -176,7 +209,7 @@
     }
 
     .weekly-view .event-item:hover {
-        background: rgba(134, 184, 23, 0.2);
+        background: rgba(0, 132, 171, 0.2);
         transform: translateX(-3px);
     }
 
@@ -193,8 +226,8 @@
     }
 
     .calendar-day:hover {
-        border-color: var(--primary-green);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.2);
+        border-color: var(--blue-primary);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.2);
         transform: translateY(-2px);
     }
 
@@ -211,8 +244,8 @@
     }
 
     .calendar-day.today {
-        border-color: var(--primary-green);
-        background: rgba(134, 184, 23, 0.05);
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
     }
 
     .day-number {
@@ -225,7 +258,7 @@
     }
 
     .calendar-day.today .day-number {
-        background: var(--primary-green);
+        background: var(--blue-primary);
         color: var(--white);
         width: 35px;
         height: 35px;
@@ -260,10 +293,10 @@
         font-size: 0.7rem;
     }
 
-    .count-events { background: #2d5016; }
-    .count-tasks { background: #3498db; }
-    .count-activities { background: #9b59b6; }
-    .count-cultural_tasks { background: #e67e22; }
+    .count-events { background: linear-gradient(135deg, #0084AB, #61bcd7); }
+    .count-tasks { background: linear-gradient(135deg, #00576F, #0084AB); }
+    .count-activities { background: linear-gradient(135deg, #0084AB, #61bcd7); }
+    .count-cultural_tasks { background: linear-gradient(135deg, #00576F, #0084AB); }
 
     .no-events {
         color: var(--text-muted);
@@ -291,12 +324,27 @@
         width: 20px;
         height: 20px;
         border-radius: 4px;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
     }
 
     .legend-label {
         font-size: 0.9rem;
         font-weight: 500;
         color: var(--text-dark);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @media (max-width: 991px) {
@@ -358,7 +406,7 @@
     <div class="calendar-header">
         <div>
             <h2 class="calendar-title">
-                <i class="fas fa-calendar-alt" style="color: var(--primary-green);"></i>
+                <i class="fas fa-calendar-alt" style="color: var(--blue-primary);"></i>
                 جدول الأحداث
             </h2>
         </div>
@@ -443,7 +491,7 @@
                                 {% endfor %}
 
                                 {% for task in day_data.tasks %}
-                                <div class="event-item" style="border-right-color: #3498db;" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
+                                <div class="event-item" style="border-right-color: #00576F;" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-tasks"></i> {{ task.title }}
                                     </div>
@@ -451,7 +499,7 @@
                                 {% endfor %}
 
                                 {% for activity in day_data.activities %}
-                                <div class="event-item" style="border-right-color: #9b59b6;" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
+                                <div class="event-item" style="border-right-color: #61bcd7;" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-running"></i> {{ activity.title }}
                                     </div>
@@ -462,7 +510,7 @@
                                 {% endfor %}
 
                                 {% for ctask in day_data.cultural_tasks %}
-                                <div class="event-item" style="border-right-color: #e67e22;" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
+                                <div class="event-item" style="border-right-color: #0084AB;" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-theater-masks"></i> {{ ctask.title }}
                                     </div>
@@ -525,19 +573,19 @@
 
     <div class="legend">
         <div class="legend-item">
-            <div class="legend-color" style="background: #2d5016;"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #0084AB, #61bcd7);"></div>
             <span class="legend-label">أحداث</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color" style="background: #3498db;"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #00576F, #0084AB);"></div>
             <span class="legend-label">مهام</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color" style="background: #9b59b6;"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #0084AB, #61bcd7);"></div>
             <span class="legend-label">أنشطة</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color" style="background: #e67e22;"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #00576F, #0084AB);"></div>
             <span class="legend-label">مهام ثقافية</span>
         </div>
     </div>

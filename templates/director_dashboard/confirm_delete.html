@@ -1,22 +1,238 @@
-{% extends 'director_base.html' %}
+{% extends 'operations_committee/base.html' %}
+{% load static %}
 
-{% block title %}تأكيد الحذف{% endblock %}
+{% block title %}تأكيد الحذف - اللجنة التشغيلية - منصة مداد{% endblock %}
+
+{% block page_title %}تأكيد الحذف{% endblock %}
+
+{% block extra_css %}
+<style>
+    .delete-container {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .delete-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .warning-icon {
+        margin-bottom: 2rem;
+    }
+
+    .warning-icon i {
+        font-size: 4rem;
+        color: #ffc107;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .delete-title {
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+    }
+
+    .delete-message {
+        color: var(--text-dark);
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .delete-message strong {
+        color: var(--blue-primary);
+    }
+
+    .alert-warning {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+        border: 2px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: var(--text-dark);
+    }
+
+    .alert-warning i {
+        color: #ffc107;
+        margin-left: 0.5rem;
+    }
+
+    .alert-warning strong {
+        color: var(--blue-dark);
+    }
+
+    .details-card {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .details-card h6 {
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .details-card .card-text {
+        color: var(--text-gray);
+        line-height: 1.6;
+        font-weight: 500;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        font-size: 1rem;
+    }
+
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: var(--white);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: var(--white);
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #c82333, #a71e2a);
+    }
+
+    .additional-info {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .additional-info p {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .additional-info i {
+        color: var(--blue-primary);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .delete-container {
+            padding: 2rem 1.5rem;
+            border-radius: 15px;
+            margin: 0 1rem;
+        }
+
+        .delete-title {
+            font-size: 1.5rem;
+        }
+
+        .delete-message {
+            font-size: 1.1rem;
+        }
+
+        .warning-icon i {
+            font-size: 3rem;
+        }
+
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .d-grid {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-6">
-            <div class="feature-card p-4 text-center">
+            <div class="delete-container fade-in-up">
                 <!-- Warning Icon -->
-                <div class="mb-4">
-                    <i class="fas fa-exclamation-triangle fa-4x text-warning"></i>
+                <div class="warning-icon text-center">
+                    <i class="fas fa-exclamation-triangle"></i>
                 </div>
 
                 <!-- Title -->
-                <h2 class="mb-3">تأكيد الحذف</h2>
+                <h2 class="delete-title text-center">تأكيد الحذف</h2>
 
                 <!-- Message -->
-                <p class="lead mb-4">
+                <p class="delete-message text-center">
                     هل أنت متأكد من أنك تريد حذف {{ type }}
                     {% if object.name %}
                         "<strong>{{ object.name }}</strong>"؟
@@ -28,17 +244,15 @@
                 </p>
 
                 <div class="alert alert-warning">
-                    <i class="fas fa-info-circle me-2"></i>
+                    <i class="fas fa-info-circle"></i>
                     <strong>تحذير:</strong> هذا الإجراء لا يمكن التراجع عنه وسيتم حذف جميع البيانات المرتبطة.
                 </div>
 
                 <!-- Object Details -->
                 {% if object.description %}
-                <div class="card mb-4">
-                    <div class="card-body text-start">
-                        <h6 class="card-title">تفاصيل {{ type }}:</h6>
-                        <p class="card-text text-muted">{{ object.description|truncatechars:200 }}</p>
-                    </div>
+                <div class="details-card">
+                    <h6>تفاصيل {{ type }}:</h6>
+                    <p class="card-text">{{ object.description|truncatechars:200 }}</p>
                 </div>
                 {% endif %}
 
@@ -48,18 +262,18 @@
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                         <a href="{% if type == 'برنامج' %}{% url 'program_management' %}{% else %}{% url 'user_management' %}{% endif %}"
                            class="btn btn-secondary me-md-2">
-                            <i class="fas fa-arrow-right me-2"></i> العودة
+                            <i class="fas fa-arrow-right ms-2"></i> العودة
                         </a>
                         <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-trash me-2"></i> نعم، احذف
+                            <i class="fas fa-trash ms-2"></i> نعم، احذف
                         </button>
                     </div>
                 </form>
 
                 <!-- Additional Info -->
-                <div class="mt-4 text-muted small">
+                <div class="additional-info text-center">
                     <p>
-                        <i class="fas fa-lightbulb me-2"></i>
+                        <i class="fas fa-lightbulb"></i>
                         ننصح بالتحقق جيداً قبل المتابعة في عملية الحذف
                     </p>
                 </div>

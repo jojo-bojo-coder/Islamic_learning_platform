@@ -1,6 +1,6 @@
 {% extends 'director_base.html' %}
 
-{% block title %}{{ title }} - منصة التحفيظ{% endblock %}
+{% block title %}{{ title }} - منصة مداد{% endblock %}
 
 {% block page_title %}{{ title }}{% endblock %}
 
@@ -18,6 +18,18 @@
         padding: 2rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     /* Form Header */
@@ -31,7 +43,7 @@
     }
 
     .form-header h2 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
@@ -39,13 +51,13 @@
     }
 
     .form-header h2 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 12px;
     }
 
     /* Form Elements */
     .form-label {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 0.95rem;
@@ -61,8 +73,8 @@
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 3px rgba(134, 184, 23, 0.1);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 3px rgba(0, 132, 171, 0.1);
         outline: none;
     }
 
@@ -93,13 +105,13 @@
     }
 
     .form-check-input:checked {
-        background-color: var(--primary-green);
-        border-color: var(--primary-green);
+        background-color: var(--blue-primary);
+        border-color: var(--blue-primary);
     }
 
     .form-check-label {
-        color: var(--text-dark);
-        font-weight: 500;
+        color: var(--blue-dark);
+        font-weight: 600;
         margin-right: 0.5rem;
     }
 
@@ -114,14 +126,14 @@
     }
 
     .alert-info {
-        background: rgba(134, 184, 23, 0.1);
-        border-right-color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        border-right-color: var(--blue-primary);
         color: var(--text-dark);
     }
 
     .alert-success {
-        background: rgba(134, 184, 23, 0.1);
-        border-right-color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        border-right-color: var(--blue-primary);
         color: var(--text-dark);
     }
 
@@ -132,7 +144,7 @@
     }
 
     .alert-heading {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         font-weight: 700;
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
@@ -159,17 +171,38 @@
         align-items: center;
         gap: 0.5rem;
         text-decoration: none;
+        position: relative;
+        overflow: hidden;
     }
 
     .btn-primary {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-primary:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
         color: var(--white);
     }
 
@@ -212,6 +245,33 @@
     .required::after {
         content: " *";
         color: #dc3545;
+    }
+
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        color: var(--blue-dark);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .section-title i {
+        color: var(--blue-primary);
     }
 
     /* Responsive Design */
@@ -274,6 +334,10 @@
             flex: 0 0 100%;
             max-width: 100%;
         }
+
+        .section-title {
+            font-size: 1.1rem;
+        }
     }
 
     @media (max-width: 576px) {
@@ -317,6 +381,11 @@
         .form-actions {
             margin-top: 1.5rem;
             padding-top: 1rem;
+        }
+
+        .form-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
         }
     }
 
@@ -368,7 +437,7 @@
 
     /* Success State */
     .is-valid {
-        border-color: var(--primary-green) !important;
+        border-color: var(--blue-primary) !important;
     }
 
     .is-invalid {
@@ -407,89 +476,122 @@
         <form method="post" id="userForm">
             {% csrf_token %}
 
-            <div class="row">
-                <!-- Username & Email -->
-                <div class="col-md-6 mb-3">
-                    <label for="id_username" class="form-label required">اسم المستخدم</label>
-                    {{ form.username }}
-                    {% if form.username.errors %}
-                        <div class="text-danger">{{ form.username.errors }}</div>
-                    {% endif %}
-                    <div class="form-text">اسم المستخدم يجب أن يكون فريداً</div>
+            <!-- Personal Information Section -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-user"></i>
+                    المعلومات الشخصية
+                </h4>
+
+                <div class="row">
+                    <!-- Username & Email -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_username" class="form-label required">اسم المستخدم</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">اسم المستخدم يجب أن يكون فريداً</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_email" class="form-label">البريد الإلكتروني</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="id_email" class="form-label">البريد الإلكتروني</label>
-                    {{ form.email }}
-                    {% if form.email.errors %}
-                        <div class="text-danger">{{ form.email.errors }}</div>
-                    {% endif %}
+
+                <div class="row">
+                    <!-- First Name & Last Name -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_first_name" class="form-label">الاسم الأول</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_last_name" class="form-label">اسم العائلة</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <!-- First Name & Last Name -->
-                <div class="col-md-6 mb-3">
-                    <label for="id_first_name" class="form-label">الاسم الأول</label>
-                    {{ form.first_name }}
-                    {% if form.first_name.errors %}
-                        <div class="text-danger">{{ form.first_name.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="id_last_name" class="form-label">اسم العائلة</label>
-                    {{ form.last_name }}
-                    {% if form.last_name.errors %}
-                        <div class="text-danger">{{ form.last_name.errors }}</div>
-                    {% endif %}
+            <!-- Contact & Role Section -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-id-card"></i>
+                    معلومات الاتصال والدور
+                </h4>
+
+                <div class="row">
+                    <!-- Phone & Role -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_phone" class="form-label">رقم الهاتف</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div class="text-danger">{{ form.phone.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_role" class="form-label required">الدور</label>
+                        {{ form.role }}
+                        {% if form.role.errors %}
+                            <div class="text-danger">{{ form.role.errors }}</div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <!-- Phone & Role -->
-                <div class="col-md-6 mb-3">
-                    <label for="id_phone" class="form-label">رقم الهاتف</label>
-                    {{ form.phone }}
-                    {% if form.phone.errors %}
-                        <div class="text-danger">{{ form.phone.errors }}</div>
-                    {% endif %}
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="id_role" class="form-label required">الدور</label>
-                    {{ form.role }}
-                    {% if form.role.errors %}
-                        <div class="text-danger">{{ form.role.errors }}</div>
-                    {% endif %}
+            <!-- Security Section -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-lock"></i>
+                    الأمان
+                </h4>
+
+                <div class="row">
+                    <!-- Password & Confirm Password -->
+                    <div class="col-md-6 mb-3">
+                        <label for="id_password" class="form-label required">كلمة المرور</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger">{{ form.password.errors }}</div>
+                        {% endif %}
+                        <div class="form-text">كلمة المرور يجب أن تكون قوية</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="id_confirm_password" class="form-label required">تأكيد كلمة المرور</label>
+                        <input type="password"
+                               class="form-control"
+                               id="id_confirm_password"
+                               name="confirm_password"
+                               placeholder="أعد إدخال كلمة المرور"
+                               required>
+                        <div class="form-text">يجب أن تطابق كلمة المرور</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="row">
-                <!-- Password & Confirm Password -->
-                <div class="col-md-6 mb-3">
-                    <label for="id_password" class="form-label required">كلمة المرور</label>
-                    {{ form.password }}
-                    {% if form.password.errors %}
-                        <div class="text-danger">{{ form.password.errors }}</div>
-                    {% endif %}
-                    <div class="form-text">كلمة المرور يجب أن تكون قوية</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="id_confirm_password" class="form-label required">تأكيد كلمة المرور</label>
-                    <input type="password"
-                           class="form-control"
-                           id="id_confirm_password"
-                           name="confirm_password"
-                           placeholder="أعد إدخال كلمة المرور"
-                           required>
-                    <div class="form-text">يجب أن تطابق كلمة المرور</div>
-                </div>
-            </div>
+            <!-- Status Section -->
+            <div class="form-section">
+                <h4 class="section-title">
+                    <i class="fas fa-toggle-on"></i>
+                    حالة الحساب
+                </h4>
 
-            <!-- Active Status -->
-            <div class="row">
-                <div class="col-12 mb-4">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" name="is_active" id="id_is_active" checked>
-                        <label class="form-check-label" for="id_is_active">الحساب نشط</label>
+                <!-- Active Status -->
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_active" id="id_is_active" checked>
+                            <label class="form-check-label" for="id_is_active">الحساب نشط</label>
+                        </div>
+                        <div class="form-text">سيتمكن المستخدم من تسجيل الدخول فقط إذا كان الحساب نشطاً</div>
                     </div>
                 </div>
             </div>
@@ -578,6 +680,18 @@
             control.classList.add('fade-in-up');
             control.style.animationDelay = '0.2s';
         });
+
+        // Auto-format phone number
+        const phoneInput = document.getElementById('id_phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.match(/.{1,4}/g).join(' ');
+                }
+                e.target.value = value;
+            });
+        }
     });
 </script>
 {% endblock %}

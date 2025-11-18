@@ -5,15 +5,16 @@
 {% block page_title %}إدارة أعضاء اللجنة{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
+<!-- Header Section -->
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
     <div class="col-12">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 style="color: var(--primary-blue);">
+                <h4 style="color: var(--blue-dark);">
                     <i class="fas fa-users ms-2"></i>
                     أعضاء اللجنة العلمية
                 </h4>
-                <a href="{% url 'scientific_add_member' %}" class="btn btn-primary">
+                <a href="{% url 'scientific_add_member' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem;">
                     <i class="fas fa-user-plus ms-1"></i>
                     إضافة عضو جديد
                 </a>
@@ -22,88 +23,37 @@
     </div>
 </div>
 
-<!-- Members Grid -->
-<div class="row">
-    {% for member in members %}
-    <div class="col-lg-4 col-md-6 mb-4">
-        <div class="dashboard-card text-center">
-            <div class="member-avatar mb-3 mx-auto">
-                {{ member.user.get_full_name|slice:":1" }}
-            </div>
-            <h5 class="mb-2">{{ member.user.get_full_name }}</h5>
-            <p class="text-muted mb-2">{{ member.get_role_display }}</p>
-            {% if member.specialization %}
-            <p class="text-muted mb-3">{{ member.specialization }}</p>
-            {% endif %}
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="text-muted">درجة المشاركة:</span>
-                <span class="badge bg-primary">{{ member.participation_score }}</span>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="text-muted">الحالة:</span>
-                {% if member.is_active %}
-                <span class="badge bg-success">نشط</span>
-                {% else %}
-                <span class="badge bg-secondary">غير نشط</span>
-                {% endif %}
-            </div>
-
-            <div class="mt-3">
-                <small class="text-muted">
-                    <i class="fas fa-calendar ms-1"></i>
-                    انضم في: {{ member.joined_date }}
-                </small>
-            </div>
-        </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="dashboard-card text-center py-5">
-            <i class="fas fa-users fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">لا توجد أعضاء</h5>
-            <p class="text-muted">لم يتم إضافة أي أعضاء بعد</p>
-            <a href="{% url 'scientific_add_member' %}" class="btn btn-primary">
-                <i class="fas fa-user-plus ms-1"></i>
-                إضافة أول عضو
-            </a>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-
 <!-- Statistics -->
 {% if members %}
-<div class="row mt-4">
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
     <div class="col-12">
         <div class="dashboard-card">
-            <h5 class="mb-4" style="color: var(--primary-blue);">
+            <h5 class="mb-4" style="color: var(--blue-dark);">
                 <i class="fas fa-chart-bar ms-2"></i>
                 إحصائيات الأعضاء
             </h5>
             <div class="row text-center">
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <h3 class="text-primary">{{ members.count }}</h3>
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ members.count }}</h3>
                         <p class="text-muted mb-0">إجمالي الأعضاء</p>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <h3 class="text-success">{{ members|length }}</h3>
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ active_members_count }}</h3>
                         <p class="text-muted mb-0">أعضاء نشطون</p>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <h3 class="text-warning">{{ avg_participation|default:0 }}</h3>
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ avg_participation|default:0 }}</h3>
                         <p class="text-muted mb-0">متوسط المشاركة</p>
                     </div>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <div class="border rounded p-3">
-                        <h3 class="text-info">{{ top_member.participation_score|default:0 }}</h3>
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ top_member.participation_score|default:0 }}</h3>
                         <p class="text-muted mb-0">أعلى مشاركة</p>
                     </div>
                 </div>
@@ -112,19 +62,320 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Members Grid -->
+<div class="row fade-in-up" style="animation-delay: 0.3s;">
+    {% for member in members %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="dashboard-card text-center member-card">
+            <div class="member-avatar mb-3 mx-auto">
+                {{ member.user.get_full_name|slice:":1" }}
+            </div>
+            <h5 class="mb-2" style="color: var(--blue-dark);">{{ member.user.get_full_name }}</h5>
+            <p class="text-muted mb-2">
+                <i class="fas fa-user-tag me-2" style="color: var(--blue-primary);"></i>
+                {{ member.get_role_display }}
+            </p>
+            {% if member.specialization %}
+            <p class="text-muted mb-3">
+                <i class="fas fa-graduation-cap me-2" style="color: var(--blue-primary);"></i>
+                {{ member.specialization }}
+            </p>
+            {% endif %}
+
+            <div class="member-stats">
+                <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded" style="background: rgba(0, 132, 171, 0.05);">
+                    <span class="text-muted">درجة المشاركة:</span>
+                    <span class="badge" style="background: var(--blue-primary);">{{ member.participation_score }}</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-2 rounded" style="background: rgba(0, 132, 171, 0.05);">
+                    <span class="text-muted">الحالة:</span>
+                    {% if member.is_active %}
+                    <span class="badge bg-success">نشط</span>
+                    {% else %}
+                    <span class="badge bg-secondary">غير نشط</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-3 pt-3" style="border-top: 1px solid var(--border-light);">
+                <small class="text-muted">
+                    <i class="fas fa-calendar ms-1" style="color: var(--blue-primary);"></i>
+                    انضم في: {{ member.joined_date }}
+                </small>
+            </div>
+
+            <div class="mt-3">
+                <div class="btn-group w-100">
+                    <button class="btn btn-outline-primary btn-sm" style="border-color: var(--blue-primary); color: var(--blue-primary);">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" style="border-color: var(--blue-primary); color: var(--blue-primary);">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" style="border-color: #dc3545; color: #dc3545;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="dashboard-card text-center py-5 empty-state">
+            <i class="fas fa-users fa-3x mb-3" style="color: var(--blue-primary); opacity: 0.3;"></i>
+            <h5 style="color: var(--blue-dark);">لا توجد أعضاء</h5>
+            <p class="text-muted">لم يتم إضافة أي أعضاء بعد</p>
+            <a href="{% url 'scientific_add_member' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                <i class="fas fa-user-plus ms-1"></i>
+                إضافة أول عضو
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
 
+{% block extra_js %}
 <style>
-.member-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--primary-blue);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: bold;
-}
+    /* Member Management Specific Styles */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .dashboard-card h4, .dashboard-card h5 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+    }
+
+    .dashboard-card h4 i, .dashboard-card h5 i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+    }
+
+    /* Member Card */
+    .member-card {
+        transition: all 0.3s ease;
+    }
+
+    .member-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 132, 171, 0.2);
+    }
+
+    /* Member Avatar */
+    .member-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .member-card:hover .member-avatar {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 132, 171, 0.4);
+    }
+
+    /* Member Stats */
+    .member-stats {
+        margin: 1rem 0;
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.15);
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    /* Button Group */
+    .btn-group {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-group .btn {
+        border-radius: 0;
+        flex: 1;
+        padding: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-group .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+
+        .action-btn {
+            padding: 1rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .member-avatar {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .row.text-center .col-md-3 {
+            margin-bottom: 1rem;
+        }
+
+        .btn-group .btn {
+            padding: 0.4rem;
+            font-size: 0.8rem;
+        }
+    }
 </style>
+{% endblock %}

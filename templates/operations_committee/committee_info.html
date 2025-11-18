@@ -1,6 +1,7 @@
 {% extends 'operations_committee/base.html' %}
+{% load static %}
 
-{% block title %}بيانات اللجنة - اللجنة التشغيلية{% endblock %}
+{% block title %}بيانات اللجنة - اللجنة التشغيلية - منصة مداد{% endblock %}
 
 {% block page_title %}بيانات اللجنة{% endblock %}
 
@@ -8,29 +9,56 @@
 <style>
     .info-card {
         background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
+        border-radius: 20px;
+        padding: 2.5rem;
         margin-bottom: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .info-header {
-        border-bottom: 2px solid var(--primary-green);
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--blue-primary);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
     }
 
     .info-header h3 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 700;
         margin: 0;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+    }
+
+    .info-header h3 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
     }
 
     .info-row {
         display: flex;
-        padding: 1rem 0;
+        padding: 1.2rem 0;
         border-bottom: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .info-row:hover {
+        background: rgba(0, 132, 171, 0.03);
+        padding-right: 10px;
+        border-radius: 8px;
     }
 
     .info-row:last-child {
@@ -38,64 +66,186 @@
     }
 
     .info-label {
-        font-weight: 600;
-        color: var(--text-gray);
-        width: 200px;
+        font-weight: 700;
+        color: var(--blue-dark);
+        width: 220px;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .info-label i {
+        color: var(--blue-primary);
+        font-size: 1.2rem;
     }
 
     .info-value {
         color: var(--text-dark);
         flex-grow: 1;
+        font-weight: 500;
+        font-size: 1.1rem;
     }
 
     .stat-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-top: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 2.5rem;
     }
 
     .stat-item {
-        background: var(--light-bg);
-        padding: 1.5rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        padding: 2rem 1.5rem;
+        border-radius: 15px;
         text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
     }
 
     .stat-item i {
-        font-size: 2rem;
-        color: var(--primary-green);
-        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        color: var(--blue-primary);
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .stat-item:hover i {
+        transform: scale(1.1);
     }
 
     .stat-number {
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .stat-label {
-        color: var(--text-gray);
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Description Card Styling */
+    .description-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .description-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .description-content {
+        color: var(--text-dark);
+        line-height: 1.8;
+        font-size: 1.1rem;
         font-weight: 500;
-        font-size: 0.9rem;
+        margin: 0;
+        padding: 1rem 0;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .info-card, .description-card {
+            padding: 1.5rem;
+        }
+
+        .info-row {
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
+
+        .info-label {
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .info-value {
+            font-size: 1rem;
+        }
+
+        .stat-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            padding: 1.5rem 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .info-header h3 {
+            font-size: 1.5rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Committee Information -->
-<div class="info-card">
+<div class="info-card fade-in-up">
     <div class="info-header">
         <h3>
-            <i class="fas fa-info-circle" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+            <i class="fas fa-info-circle"></i>
             معلومات اللجنة التشغيلية
         </h3>
     </div>
 
     <div class="info-row">
         <div class="info-label">
-            <i class="fas fa-tag ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-tag"></i>
             اسم اللجنة
         </div>
         <div class="info-value">{{ committee.name }}</div>
@@ -103,7 +253,7 @@
 
     <div class="info-row">
         <div class="info-label">
-            <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-book"></i>
             البرنامج
         </div>
         <div class="info-value">{{ committee.program.name }}</div>
@@ -111,7 +261,7 @@
 
     <div class="info-row">
         <div class="info-label">
-            <i class="fas fa-user-tie ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-user-tie"></i>
             المشرف
         </div>
         <div class="info-value">{{ committee.supervisor.get_full_name }}</div>
@@ -119,7 +269,7 @@
 
     <div class="info-row">
         <div class="info-label">
-            <i class="fas fa-align-right ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-align-right"></i>
             الوصف
         </div>
         <div class="info-value">{{ committee.description|default:"لا يوجد وصف" }}</div>
@@ -127,7 +277,7 @@
 
     <div class="info-row">
         <div class="info-label">
-            <i class="fas fa-calendar-plus ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-calendar-plus"></i>
             تاريخ الإنشاء
         </div>
         <div class="info-value">{{ committee.created_at|date:"Y/m/d - h:i A" }}</div>
@@ -135,7 +285,7 @@
 
     <div class="info-row">
         <div class="info-label">
-            <i class="fas fa-clock ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-clock"></i>
             آخر تحديث
         </div>
         <div class="info-value">{{ last_update|date:"Y/m/d - h:i A" }}</div>
@@ -143,19 +293,19 @@
 
     <!-- Statistics Grid -->
     <div class="stat-grid">
-        <div class="stat-item">
+        <div class="stat-item fade-in-up" style="animation-delay: 0.2s;">
             <i class="fas fa-users"></i>
             <div class="stat-number">{{ total_members }}</div>
             <div class="stat-label">إجمالي الأعضاء</div>
         </div>
 
-        <div class="stat-item">
+        <div class="stat-item fade-in-up" style="animation-delay: 0.3s;">
             <i class="fas fa-user-check"></i>
             <div class="stat-number">{{ active_members }}</div>
             <div class="stat-label">الأعضاء النشطون</div>
         </div>
 
-        <div class="stat-item">
+        <div class="stat-item fade-in-up" style="animation-delay: 0.4s;">
             <i class="fas fa-star"></i>
             <div class="stat-number">{{ avg_participation }}</div>
             <div class="stat-label">متوسط المشاركة</div>
@@ -165,14 +315,14 @@
 
 <!-- Committee Description -->
 {% if committee.description %}
-<div class="info-card">
+<div class="description-card fade-in-up" style="animation-delay: 0.5s;">
     <div class="info-header">
         <h3>
-            <i class="fas fa-file-alt" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+            <i class="fas fa-file-alt"></i>
             نبذة عن اللجنة
         </h3>
     </div>
-    <p style="color: var(--text-dark); line-height: 1.8; margin: 0;">
+    <p class="description-content">
         {{ committee.description }}
     </p>
 </div>

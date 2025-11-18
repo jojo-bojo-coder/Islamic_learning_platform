@@ -5,17 +5,22 @@
 {% block page_title %}لوحة التحكم - اللجنة العلمية{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <!-- Welcome Banner -->
-    <div class="col-12">
-        <div class="dashboard-card">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h2 class="mb-3" style="color: var(--dark-green);">مرحباً بك في لوحة اللجنة العلمية</h2>
-                    <p class="mb-0 text-muted">إدارة متكاملة للمهام العلمية والمحاضرات والأنشطة التعليمية</p>
-                </div>
-                <div class="col-md-4 text-start">
-                    <i class="fas fa-graduation-cap" style="font-size: 4rem; color: var(--primary-green); opacity: 0.3;"></i>
+<!-- Welcome Container -->
+<div class="welcome-container fade-in-up">
+    <div class="welcome-box">
+        <div class="user-section">
+            <div class="title">مرحباً <span>{{ request.user.first_name }} 👋</span></div>
+            <div class="team">"مشرف اللجنة العلمية"</div>
+            <div class="message">إدارة متكاملة للمهام العلمية والمحاضرات والأنشطة التعليمية</div>
+        </div>
+        <div class="quotes-section">
+            <div class="quotes-container">
+                <div class="quote active">
+                    <p class="quote-text">عبارة اليوم:</p>
+                    <p class="quote-text">{{ daily_phrase.phrase|default:"لا توجد عبارة متاحة اليوم" }}</p>
+                    {% if daily_phrase.author %}
+                    <p class="quote-text" style="font-style: italic; margin-top: 10px;">- {{ daily_phrase.author }}</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -23,190 +28,169 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="dashboard-card">
-            <div class="card-icon primary">
-                <i class="fas fa-users"></i>
-            </div>
-            <div class="card-title">إجمالي الأعضاء</div>
-            <div class="card-value">{{ total_members }}</div>
-            <div class="card-change positive">
-                <i class="fas fa-arrow-up"></i> نشطون
-            </div>
+<div class="row stats-row">
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_members }}</div>
+            <div class="stat-label">إجمالي الأعضاء</div>
+            <i class="fas fa-users mt-3"></i>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="dashboard-card">
-            <div class="card-icon success">
-                <i class="fas fa-tasks"></i>
-            </div>
-            <div class="card-title">المهام المكتملة</div>
-            <div class="card-value">{{ completed_tasks }}</div>
-            <div class="card-change positive">
-                {{ completion_rate }}% من إجمالي المهام
-            </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.2s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ completed_tasks }}</div>
+            <div class="stat-label">المهام المكتملة</div>
+            <i class="fas fa-tasks mt-3"></i>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="dashboard-card">
-            <div class="card-icon warning">
-                <i class="fas fa-chalkboard-teacher"></i>
-            </div>
-            <div class="card-title">المحاضرات القادمة</div>
-            <div class="card-value">{{ upcoming_lectures }}</div>
-            <div class="card-change positive">
-                مجدولة هذا الشهر
-            </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ upcoming_lectures }}</div>
+            <div class="stat-label">المحاضرات القادمة</div>
+            <i class="fas fa-chalkboard-teacher mt-3"></i>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="dashboard-card">
-            <div class="card-icon info">
-                <i class="fas fa-bell"></i>
-            </div>
-            <div class="card-title">إشعارات جديدة</div>
-            <div class="card-value">{{ unread_notifications }}</div>
-            <div class="card-change negative">
-                تحتاج إلى مراجعة
-            </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ unread_notifications }}</div>
+            <div class="stat-label">إشعارات جديدة</div>
+            <i class="fas fa-bell mt-3"></i>
         </div>
     </div>
 </div>
 
 <!-- Quick Actions -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="dashboard-card">
-            <h4 class="mb-4" style="color: var(--dark-green);">
-                <i class="fas fa-bolt ms-2"></i>
-                إجراءات سريعة
-            </h4>
-            <div class="row g-3">
-                <div class="col-lg-3 col-md-6">
-                    <a href="{% url 'scientific_add_task' %}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center py-3">
-                        <i class="fas fa-plus-circle ms-2"></i>
-                        إضافة مهمة جديدة
-                    </a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <a href="{% url 'scientific_add_lecture' %}" class="btn btn-success w-100 d-flex align-items-center justify-content-center py-3">
-                        <i class="fas fa-chalkboard-teacher ms-2"></i>
-                        جدولة محاضرة
-                    </a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <a href="{% url 'scientific_upload_file' %}" class="btn btn-warning w-100 d-flex align-items-center justify-content-center py-3">
-                        <i class="fas fa-upload ms-2"></i>
-                        رفع ملف علمي
-                    </a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <a href="{% url 'scientific_add_report' %}" class="btn btn-info w-100 d-flex align-items-center justify-content-center py-3">
-                        <i class="fas fa-chart-bar ms-2"></i>
-                        إنشاء تقرير
-                    </a>
-                </div>
-            </div>
+<div class="quick-actions-wrapper fade-in-up" style="animation-delay: 0.5s;">
+    <h4>
+        <i class="fas fa-bolt"></i>
+        إجراءات سريعة
+    </h4>
+    <div class="row g-3">
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة مهمة جديدة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-success">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>جدولة محاضرة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_upload_file' %}" class="action-btn action-btn-info">
+                <i class="fas fa-upload"></i>
+                <span>رفع ملف علمي</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_add_report' %}" class="action-btn action-btn-warning">
+                <i class="fas fa-chart-bar"></i>
+                <span>إنشاء تقرير</span>
+            </a>
         </div>
     </div>
 </div>
 
-<!-- Recent Data -->
+<!-- Activities and Stats -->
 <div class="row">
-    <!-- Recent Tasks -->
-    <div class="col-lg-6 mb-4">
-        <div class="dashboard-card">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 style="color: var(--dark-green);">
-                    <i class="fas fa-tasks ms-2"></i>
-                    أحدث المهام
-                </h5>
-                <a href="{% url 'scientific_task_management' %}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
-            </div>
-
+    <div class="col-lg-8 mb-4 fade-in-up" style="animation-delay: 0.6s;">
+        <div class="activities-card">
+            <h4>
+                <i class="fas fa-tasks"></i>
+                أحدث المهام
+            </h4>
             {% if recent_tasks %}
-            <div class="list-group list-group-flush">
-                {% for task in recent_tasks %}
-                <div class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
-                    <div>
-                        <h6 class="mb-1">{{ task.title }}</h6>
-                        <small class="text-muted">{{ task.get_task_type_display }}</small>
-                    </div>
-                    <div class="text-start">
-                        <span class="status-badge status-{{ task.status }}">{{ task.get_status_display }}</span>
-                        <div class="progress mt-2" style="width: 100px; height: 6px;">
-                            <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%"></div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>المهمة</th>
+                            <th>النوع</th>
+                            <th>الحالة</th>
+                            <th>التقدم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in recent_tasks %}
+                        <tr>
+                            <td>
+                                <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
+                                {{ task.title }}
+                            </td>
+                            <td>{{ task.get_task_type_display }}</td>
+                            <td>
+                                <span class="status-badge status-{{ task.status }}">{{ task.get_status_display }}</span>
+                            </td>
+                            <td>
+                                <div class="progress" style="width: 100px; height: 6px;">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%"></div>
+                                </div>
+                                <small>{{ task.completion_percentage }}%</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
             {% else %}
-            <div class="text-center py-4">
-                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
-                <p class="text-muted">لا توجد مهام حالياً</p>
+            <div class="empty-state">
+                <i class="fas fa-tasks"></i>
+                <p>لا توجد مهام حالياً</p>
             </div>
             {% endif %}
         </div>
     </div>
 
-    <!-- Upcoming Lectures -->
-    <div class="col-lg-6 mb-4">
-        <div class="dashboard-card">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 style="color: var(--dark-green);">
-                    <i class="fas fa-chalkboard-teacher ms-2"></i>
-                    المحاضرات القادمة
-                </h5>
-                <a href="{% url 'scientific_lecture_management' %}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
-            </div>
-
-            {% if next_lectures %}
-            <div class="list-group list-group-flush">
-                {% for lecture in next_lectures %}
-                <div class="list-group-item border-0 px-0 py-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="mb-0">{{ lecture.title }}</h6>
-                        <span class="status-badge status-{{ lecture.status }}">{{ lecture.get_status_display }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="fas fa-calendar ms-1"></i>
-                            {{ lecture.date }}
-                        </small>
-                        <small class="text-muted">
-                            <i class="fas fa-clock ms-1"></i>
-                            {{ lecture.time }}
-                        </small>
-                    </div>
-                    {% if lecture.lecturer %}
-                    <small class="text-muted">
-                        <i class="fas fa-user ms-1"></i>
-                        {{ lecture.lecturer.get_full_name }}
-                    </small>
-                    {% endif %}
+    <div class="col-lg-4 mb-4 fade-in-up" style="animation-delay: 0.7s;">
+        <div class="stats-sidebar-card">
+            <h4>
+                <i class="fas fa-chart-pie"></i>
+                إحصائيات سريعة
+            </h4>
+            <div class="list-group">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-users me-2" style="color: var(--blue-primary);"></i>
+                        إجمالي الأعضاء
+                    </span>
+                    <span class="badge">{{ total_members }}</span>
                 </div>
-                {% endfor %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
+                        إجمالي المهام
+                    </span>
+                    <span class="badge">{{ total_tasks }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-check-circle me-2" style="color: var(--blue-primary);"></i>
+                        المهام المكتملة
+                    </span>
+                    <span class="badge">{{ completed_tasks }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-chalkboard-teacher me-2" style="color: var(--blue-primary);"></i>
+                        المحاضرات القادمة
+                    </span>
+                    <span class="badge">{{ upcoming_lectures }}</span>
+                </div>
             </div>
-            {% else %}
-            <div class="text-center py-4">
-                <i class="fas fa-chalkboard-teacher fa-3x text-muted mb-3"></i>
-                <p class="text-muted">لا توجد محاضرات قادمة</p>
-            </div>
-            {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Task Distribution -->
 <div class="row">
-    <div class="col-12">
-        <div class="dashboard-card">
-            <h5 class="mb-4" style="color: var(--dark-green);">
-                <i class="fas fa-chart-pie ms-2"></i>
+    <div class="col-12 fade-in-up" style="animation-delay: 0.8s;">
+        <div class="activities-card">
+            <h4>
+                <i class="fas fa-chart-pie"></i>
                 توزيع المهام حسب النوع
-            </h5>
+            </h4>
             <div class="row">
                 {% for dist in task_distribution %}
                 <div class="col-md-4 mb-3">
@@ -216,13 +200,402 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="col-12 text-center py-4">
-                    <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">لا توجد بيانات للإحصائيات</p>
+                <div class="empty-state">
+                    <i class="fas fa-chart-pie"></i>
+                    <p>لا توجد بيانات للإحصائيات</p>
                 </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* Welcome Container Styling */
+    .welcome-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle at top right, rgba(97, 188, 215, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .welcome-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .user-section {
+        flex: 1;
+    }
+
+    .user-section .title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .user-section .title span {
+        color: var(--blue-primary);
+    }
+
+    .user-section .team {
+        font-size: 1.2rem;
+        color: var(--blue-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        background: rgba(0, 132, 171, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    .user-section .message {
+        font-size: 1rem;
+        color: var(--text-gray);
+        margin-top: 1rem;
+    }
+
+    .quotes-section {
+        flex: 0 0 40%;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.1);
+    }
+
+    .quote-text {
+        margin: 0;
+        color: var(--blue-dark);
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    .quote-text:first-child {
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    /* Statistics Cards - Using director_base colors */
+    .stat-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+
+    .stat-card i {
+        font-size: 2rem;
+        color: var(--blue-gradient);
+        margin-top: 1rem;
+    }
+
+    /* Quick Actions Styling */
+    .quick-actions-wrapper {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+    }
+
+    .quick-actions-wrapper h4 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quick-actions-wrapper h4 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    /* Action Buttons - Using director_base colors */
+    .action-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    .action-btn-success {
+        background: linear-gradient(135deg, var(--blue-dark), #00576F);
+    }
+
+    .action-btn-info {
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+    }
+
+    .action-btn-warning {
+        background: linear-gradient(135deg, #00576F, #0084AB);
+    }
+
+    /* Cards Styling */
+    .activities-card, .stats-sidebar-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .activities-card::before, .stats-sidebar-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .activities-card h4, .stats-sidebar-card h4 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .activities-card h4 i, .stats-sidebar-card h4 i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+    }
+
+    /* Table Styling */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background: rgba(0, 132, 171, 0.1);
+    }
+
+    .table thead th {
+        color: var(--blue-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-align: right;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        border: none;
+    }
+
+    /* List Group */
+    .list-group-item {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--border-light);
+        padding: 1rem 0;
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-group-item:hover {
+        color: var(--blue-primary);
+    }
+
+    .list-group-item .badge {
+        background: var(--blue-primary);
+        color: var(--white);
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    /* Stats Row Spacing */
+    .stats-row {
+        margin-bottom: 2rem;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .welcome-box {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .quotes-section {
+            flex: 1;
+            width: 100%;
+        }
+
+        .user-section .title {
+            font-size: 1.7rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .welcome-container {
+            padding: 1.5rem;
+        }
+
+        .user-section .title {
+            font-size: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
 {% endblock %}

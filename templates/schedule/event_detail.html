@@ -13,6 +13,18 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
         margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .event-detail-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .event-header {
@@ -30,7 +42,7 @@
         font-family: 'Cairo', sans-serif;
         font-size: 2rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
     }
 
@@ -52,18 +64,18 @@
     }
 
     .event-badge.type-task {
-        background: rgba(45, 80, 22, 0.1);
-        color: #2d5016;
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
     }
 
     .event-badge.type-activity {
-        background: rgba(134, 184, 23, 0.1);
-        color: var(--primary-green);
+        background: rgba(97, 188, 215, 0.1);
+        color: var(--blue-gradient);
     }
 
     .event-badge.type-meeting {
-        background: rgba(201, 169, 97, 0.1);
-        color: #c9a961;
+        background: rgba(0, 87, 111, 0.1);
+        color: var(--blue-dark);
     }
 
     .event-badge.type-exam {
@@ -81,6 +93,9 @@
         border-radius: 8px;
         font-weight: 600;
         font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .status-pending {
@@ -108,6 +123,9 @@
         border-radius: 8px;
         font-weight: 600;
         font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .priority-low {
@@ -141,29 +159,48 @@
         align-items: center;
         gap: 0.5rem;
         border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-action::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-action:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-action:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
     }
 
     .btn-edit {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
     }
 
     .btn-edit:hover {
-        background: #75a015;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
         color: var(--white);
     }
 
     .btn-delete {
-        background: #dc3545;
+        background: linear-gradient(135deg, #dc3545, #c82333);
         color: var(--white);
     }
 
     .btn-delete:hover {
-        background: #bb2d3b;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
         color: var(--white);
     }
 
@@ -174,7 +211,6 @@
 
     .btn-back:hover {
         background: var(--border-light);
-        transform: translateY(-2px);
         color: var(--text-dark);
     }
 
@@ -189,7 +225,15 @@
         background: var(--light-bg);
         padding: 1.5rem;
         border-radius: 12px;
-        border-left: 4px solid var(--primary-green);
+        border-left: 4px solid var(--blue-primary);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .info-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
     }
 
     .info-label {
@@ -202,9 +246,13 @@
         gap: 0.5rem;
     }
 
+    .info-label i {
+        color: var(--blue-primary);
+    }
+
     .info-value {
         font-size: 1.1rem;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 600;
     }
 
@@ -213,17 +261,24 @@
         padding: 1.5rem;
         border-radius: 12px;
         margin-bottom: 2rem;
+        border-left: 4px solid var(--blue-primary);
+        position: relative;
+        overflow: hidden;
     }
 
     .description-section h4 {
         font-family: 'Cairo', sans-serif;
         font-size: 1.3rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    .description-section h4 i {
+        color: var(--blue-primary);
     }
 
     .description-content {
@@ -237,17 +292,33 @@
         padding: 1.5rem;
         border-radius: 12px;
         border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .participants-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .participants-section h4 {
         font-family: 'Cairo', sans-serif;
         font-size: 1.3rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    .participants-section h4 i {
+        color: var(--blue-primary);
     }
 
     .participant-item {
@@ -259,17 +330,20 @@
         border-radius: 8px;
         margin-bottom: 0.5rem;
         transition: all 0.3s ease;
+        border: 1px solid transparent;
     }
 
     .participant-item:hover {
-        background: rgba(134, 184, 23, 0.1);
+        background: rgba(0, 132, 171, 0.05);
+        border-color: var(--blue-primary);
+        transform: translateX(-5px);
     }
 
     .participant-avatar {
         width: 45px;
         height: 45px;
         border-radius: 50%;
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -284,7 +358,7 @@
 
     .participant-name {
         font-weight: 600;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.2rem;
     }
 
@@ -301,11 +375,31 @@
 
     .empty-state i {
         font-size: 3rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         opacity: 0.3;
         margin-bottom: 1rem;
     }
 
+    .empty-state p {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    /* Animation */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
     @media (max-width: 767px) {
         .event-header {
             flex-direction: column;
@@ -322,6 +416,10 @@
         .btn-action {
             flex: 1;
             justify-content: center;
+        }
+
+        .event-title-section h2 {
+            font-size: 1.5rem;
         }
     }
 </style>
@@ -370,7 +468,7 @@
     <div class="info-grid">
         <div class="info-item">
             <div class="info-label">
-                <i class="far fa-calendar" style="color: var(--primary-green);"></i>
+                <i class="far fa-calendar"></i>
                 تاريخ البداية
             </div>
             <div class="info-value">{{ event.start_date|date:"Y/m/d" }}</div>
@@ -379,7 +477,7 @@
         {% if event.end_date %}
         <div class="info-item">
             <div class="info-label">
-                <i class="far fa-calendar-check" style="color: var(--primary-green);"></i>
+                <i class="far fa-calendar-check"></i>
                 تاريخ النهاية
             </div>
             <div class="info-value">{{ event.end_date|date:"Y/m/d" }}</div>
@@ -389,7 +487,7 @@
         {% if event.start_time %}
         <div class="info-item">
             <div class="info-label">
-                <i class="far fa-clock" style="color: var(--primary-green);"></i>
+                <i class="far fa-clock"></i>
                 وقت البداية
             </div>
             <div class="info-value">{{ event.start_time|time:"H:i" }}</div>
@@ -399,7 +497,7 @@
         {% if event.end_time %}
         <div class="info-item">
             <div class="info-label">
-                <i class="far fa-clock" style="color: var(--primary-green);"></i>
+                <i class="far fa-clock"></i>
                 وقت النهاية
             </div>
             <div class="info-value">{{ event.end_time|time:"H:i" }}</div>
@@ -409,7 +507,7 @@
         {% if event.location %}
         <div class="info-item">
             <div class="info-label">
-                <i class="fas fa-map-marker-alt" style="color: var(--primary-green);"></i>
+                <i class="fas fa-map-marker-alt"></i>
                 المكان
             </div>
             <div class="info-value">{{ event.location }}</div>
@@ -419,7 +517,7 @@
         {% if event.committee %}
         <div class="info-item">
             <div class="info-label">
-                <i class="fas fa-users" style="color: var(--primary-green);"></i>
+                <i class="fas fa-users"></i>
                 اللجنة
             </div>
             <div class="info-value">{{ event.committee.name }}</div>
@@ -429,7 +527,7 @@
         {% if event.assigned_to %}
         <div class="info-item">
             <div class="info-label">
-                <i class="fas fa-user-check" style="color: var(--primary-green);"></i>
+                <i class="fas fa-user-check"></i>
                 المسؤول
             </div>
             <div class="info-value">{{ event.assigned_to.get_full_name|default:event.assigned_to.username }}</div>
@@ -438,7 +536,7 @@
 
         <div class="info-item">
             <div class="info-label">
-                <i class="fas fa-user" style="color: var(--primary-green);"></i>
+                <i class="fas fa-user"></i>
                 أنشئ بواسطة
             </div>
             <div class="info-value">{{ event.created_by.get_full_name|default:event.created_by.username }}</div>
@@ -447,7 +545,7 @@
 
     <div class="description-section">
         <h4>
-            <i class="fas fa-align-right" style="color: var(--primary-green);"></i>
+            <i class="fas fa-align-right"></i>
             الوصف
         </h4>
         <div class="description-content">
@@ -458,7 +556,7 @@
     {% if event.participants.exists %}
     <div class="participants-section">
         <h4>
-            <i class="fas fa-users" style="color: var(--primary-green);"></i>
+            <i class="fas fa-users"></i>
             المشاركون ({{ event.participants.count }})
         </h4>
         {% for participant in event.participants.all %}
@@ -472,6 +570,11 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-users"></i>
+        <p>لا يوجد مشاركون في هذا الحدث</p>
     </div>
     {% endif %}
 </div>

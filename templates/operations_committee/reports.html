@@ -1,111 +1,406 @@
 {% extends 'operations_committee/base.html' %}
+{% load static %}
 
-{% block title %}التقارير - اللجنة التشغيلية{% endblock %}
+{% block title %}التقارير - اللجنة التشغيلية - منصة مداد{% endblock %}
 
 {% block page_title %}التقارير الأسبوعية{% endblock %}
 
 {% block extra_css %}
 <style>
+    .page-header {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .page-header h3 {
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+    }
+
+    .page-header h3 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    .page-header p {
+        color: var(--text-gray);
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 12px;
+        padding: 12px 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+    }
+
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2.5rem;
     }
 
     .stat-box {
         background: var(--white);
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
         text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0, 132, 171, 0.2);
     }
 
     .stat-box i {
-        font-size: 2.5rem;
-        color: var(--primary-green);
-        margin-bottom: 1rem;
+        font-size: 3rem;
+        color: var(--blue-primary);
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .stat-box:hover i {
+        transform: scale(1.1);
     }
 
     .stat-value {
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--blue-dark);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .stat-label {
-        color: var(--text-gray);
-        font-weight: 500;
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1.1rem;
     }
 
     .report-card {
         background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .report-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .report-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
-        border-bottom: 2px solid var(--border-light);
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid rgba(97, 188, 215, 0.2);
     }
 
     .report-title {
         font-weight: 700;
-        font-size: 1.2rem;
-        color: var(--text-dark);
+        font-size: 1.4rem;
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
     }
 
     .report-date {
         color: var(--text-gray);
-        font-size: 0.9rem;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .report-date i {
+        color: var(--blue-primary);
+        margin-left: 0.5rem;
     }
 
     .report-section {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .report-section h5 {
-        color: var(--primary-green);
-        font-weight: 600;
-        margin-bottom: 0.75rem;
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .report-section h5 i {
+        color: var(--blue-primary);
+        margin-left: 0.5rem;
+    }
+
+    .report-content {
+        color: var(--text-dark);
+        line-height: 1.8;
+        font-size: 1.1rem;
+        font-weight: 500;
     }
 
     .task-stats-table {
         width: 100%;
         margin-top: 2rem;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.1);
     }
 
     .task-stats-table th {
-        background: var(--light-bg);
-        padding: 1rem;
-        font-weight: 600;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        padding: 1.2rem 1rem;
+        font-weight: 700;
+        font-size: 1rem;
+        text-align: center;
+        border: none;
     }
 
     .task-stats-table td {
-        padding: 1rem;
-        border-bottom: 1px solid var(--border-light);
+        padding: 1.2rem 1rem;
+        border-bottom: 1px solid rgba(97, 188, 215, 0.2);
+        text-align: center;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .task-stats-table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .task-stats-table tbody tr:hover {
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .metric-box {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .metric-box:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.15);
+    }
+
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .metric-label {
+        color: var(--text-dark);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .badge {
+        padding: 0.7rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)) !important;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state p {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--text-gray);
+        margin: 0 0 2rem 0;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Section Headers */
+    .section-header {
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.6rem;
+    }
+
+    .section-header i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header, .report-card {
+            padding: 1.5rem;
+            border-radius: 15px;
+        }
+
+        .page-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .stat-box {
+            padding: 2rem 1.5rem;
+        }
+
+        .report-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .task-stats-table {
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Page Header -->
-<div class="page-header" style="background: var(--white); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);">
+<div class="page-header fade-in-up">
     <div class="d-flex justify-content-between align-items-center">
         <div>
             <h3>
-                <i class="fas fa-chart-line" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+                <i class="fas fa-chart-line"></i>
                 التقارير الأسبوعية
             </h3>
-            <p style="margin: 0; color: var(--text-gray);">عرض وإدارة التقارير الأسبوعية للإنجازات والتحديات</p>
+            <p>عرض وإدارة التقارير الأسبوعية للإنجازات والتحديات</p>
         </div>
         <a href="{% url 'operations_add_report' %}" class="btn btn-primary">
             <i class="fas fa-plus ms-2"></i>
@@ -115,7 +410,7 @@
 </div>
 
 <!-- Statistics -->
-<div class="stats-grid">
+<div class="stats-grid fade-in-up" style="animation-delay: 0.1s;">
     <div class="stat-box">
         <i class="fas fa-tasks"></i>
         <div class="stat-value">{{ total_tasks }}</div>
@@ -134,9 +429,9 @@
 </div>
 
 <!-- Task Type Statistics -->
-<div class="report-card">
-    <h4 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1.5rem;">
-        <i class="fas fa-chart-bar" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+<div class="report-card fade-in-up" style="animation-delay: 0.2s;">
+    <h4 class="section-header">
+        <i class="fas fa-chart-bar"></i>
         إحصائيات المهام حسب النوع
     </h4>
     <table class="task-stats-table">
@@ -160,7 +455,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="text-center text-muted">لا توجد بيانات</td>
+                <td colspan="4" class="text-center text-muted py-4">لا توجد بيانات</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -168,25 +463,25 @@
 </div>
 
 <!-- Weekly Reports -->
-<h4 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1.5rem;">
-    <i class="fas fa-calendar-week" style="color: var(--primary-green); margin-left: 0.5rem;"></i>
+<h4 class="section-header fade-in-up" style="animation-delay: 0.3s;">
+    <i class="fas fa-calendar-week"></i>
     التقارير الأسبوعية
 </h4>
 
 {% for report in weekly_reports %}
-<div class="report-card">
+<div class="report-card fade-in-up" style="animation-delay: {{ forloop.counter|add:2|divisibleby:2 }}0.1s;">
     <div class="report-header">
         <div>
             <div class="report-title">
                 تقرير الأسبوع: {{ report.week_start_date }} - {{ report.week_end_date }}
             </div>
             <div class="report-date">
-                <i class="far fa-calendar ms-1"></i>
+                <i class="far fa-calendar"></i>
                 تم الإنشاء: {{ report.created_at|date:"Y/m/d" }}
             </div>
         </div>
         <div>
-            <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+            <span class="badge bg-success">
                 نسبة الإنجاز: {{ report.completion_rate }}%
             </span>
         </div>
@@ -196,46 +491,40 @@
         <div class="col-md-6">
             <div class="report-section">
                 <h5>
-                    <i class="fas fa-trophy ms-1"></i>
+                    <i class="fas fa-trophy"></i>
                     الإنجازات
                 </h5>
-                <p style="color: var(--text-dark); line-height: 1.8;">{{ report.achievements }}</p>
+                <p class="report-content">{{ report.achievements }}</p>
             </div>
         </div>
         <div class="col-md-6">
             <div class="report-section">
                 <h5>
-                    <i class="fas fa-exclamation-triangle ms-1"></i>
+                    <i class="fas fa-exclamation-triangle"></i>
                     التحديات
                 </h5>
-                <p style="color: var(--text-dark); line-height: 1.8;">{{ report.challenges }}</p>
+                <p class="report-content">{{ report.challenges }}</p>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-green);">
-                    {{ report.tasks_completed }}
-                </div>
-                <div style="color: var(--text-gray); font-size: 0.9rem;">مهام مكتملة</div>
+        <div class="col-md-4 mb-3">
+            <div class="metric-box">
+                <div class="metric-value">{{ report.tasks_completed }}</div>
+                <div class="metric-label">مهام مكتملة</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 700; color: #ffc107;">
-                    {{ report.tasks_pending }}
-                </div>
-                <div style="color: var(--text-gray); font-size: 0.9rem;">مهام معلقة</div>
+        <div class="col-md-4 mb-3">
+            <div class="metric-box">
+                <div class="metric-value" style="color: #ffc107;">{{ report.tasks_pending }}</div>
+                <div class="metric-label">مهام معلقة</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; text-align: center;">
-                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-green);">
-                    {{ report.completion_rate }}%
-                </div>
-                <div style="color: var(--text-gray); font-size: 0.9rem;">نسبة الإنجاز</div>
+        <div class="col-md-4 mb-3">
+            <div class="metric-box">
+                <div class="metric-value">{{ report.completion_rate }}%</div>
+                <div class="metric-label">نسبة الإنجاز</div>
             </div>
         </div>
     </div>
@@ -243,17 +532,17 @@
     {% if report.notes %}
     <div class="report-section mt-3">
         <h5>
-            <i class="fas fa-sticky-note ms-1"></i>
+            <i class="fas fa-sticky-note"></i>
             ملاحظات إضافية
         </h5>
-        <p style="color: var(--text-dark); line-height: 1.8;">{{ report.notes }}</p>
+        <p class="report-content">{{ report.notes }}</p>
     </div>
     {% endif %}
 </div>
 {% empty %}
-<div class="text-center py-5" style="background: var(--white); border-radius: 15px;">
-    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-    <p class="text-muted">لا توجد تقارير أسبوعية</p>
+<div class="empty-state fade-in-up" style="animation-delay: 0.4s;">
+    <i class="fas fa-chart-line"></i>
+    <p>لا توجد تقارير أسبوعية</p>
     <a href="{% url 'operations_add_report' %}" class="btn btn-primary mt-3">
         <i class="fas fa-plus ms-2"></i>
         إضافة تقرير جديد

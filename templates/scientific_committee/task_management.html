@@ -5,15 +5,16 @@
 {% block page_title %}إدارة المهام العلمية{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
+<!-- Header Section -->
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
     <div class="col-12">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 style="color: var(--primary-blue);">
+                <h4 style="color: var(--blue-dark);">
                     <i class="fas fa-tasks ms-2"></i>
                     المهام العلمية
                 </h4>
-                <a href="{% url 'scientific_add_task' %}" class="btn btn-primary">
+                <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem;">
                     <i class="fas fa-plus ms-1"></i>
                     إضافة مهمة جديدة
                 </a>
@@ -23,13 +24,13 @@
 </div>
 
 <!-- Filters -->
-<div class="row mb-4">
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
     <div class="col-12">
         <div class="dashboard-card">
             <form method="get" class="row g-3">
                 <div class="col-md-4">
-                    <label for="type" class="form-label">نوع المهمة</label>
-                    <select name="type" id="type" class="form-select">
+                    <label for="type" class="form-label" style="color: var(--blue-dark); font-weight: 600;">نوع المهمة</label>
+                    <select name="type" id="type" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
                         <option value="">جميع الأنواع</option>
                         {% for task_type in task_types %}
                         <option value="{{ task_type.0 }}" {% if task_type_filter == task_type.0 %}selected{% endif %}>
@@ -39,8 +40,8 @@
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label for="status" class="form-label">الحالة</label>
-                    <select name="status" id="status" class="form-select">
+                    <label for="status" class="form-label" style="color: var(--blue-dark); font-weight: 600;">الحالة</label>
+                    <select name="status" id="status" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
                         <option value="">جميع الحالات</option>
                         {% for status in status_choices %}
                         <option value="{{ status.0 }}" {% if status_filter == status.0 %}selected{% endif %}>
@@ -50,7 +51,7 @@
                     </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="action-btn action-btn-info w-100" style="padding: 0.8rem 1.5rem;">
                         <i class="fas fa-filter ms-1"></i>
                         تصفية
                     </button>
@@ -61,12 +62,12 @@
 </div>
 
 <!-- Tasks Table -->
-<div class="row">
+<div class="row fade-in-up" style="animation-delay: 0.3s;">
     <div class="col-12">
         <div class="dashboard-card">
             {% if tasks %}
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover custom-table">
                     <thead>
                         <tr>
                             <th>العنوان</th>
@@ -82,21 +83,37 @@
                         {% for task in tasks %}
                         <tr>
                             <td>
-                                <strong>{{ task.title }}</strong>
-                                {% if task.description %}
-                                <br>
-                                <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
-                                {% endif %}
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
+                                    <div>
+                                        <strong style="color: var(--blue-dark);">{{ task.title }}</strong>
+                                        {% if task.description %}
+                                        <br>
+                                        <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </td>
-                            <td>{{ task.get_task_type_display }}</td>
+                            <td>
+                                <span class="badge" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary);">
+                                    {{ task.get_task_type_display }}
+                                </span>
+                            </td>
                             <td>
                                 {% if task.assigned_to %}
-                                {{ task.assigned_to.get_full_name }}
+                                <div class="d-flex align-items-center">
+                                    <div class="member-avatar-small me-2">
+                                        {{ task.assigned_to.first_name|first }}{{ task.assigned_to.last_name|first }}
+                                    </div>
+                                    {{ task.assigned_to.get_full_name }}
+                                </div>
                                 {% else %}
                                 <span class="text-muted">غير معين</span>
                                 {% endif %}
                             </td>
-                            <td>{{ task.due_date }}</td>
+                            <td>
+                                <span style="color: var(--blue-dark); font-weight: 500;">{{ task.due_date }}</span>
+                            </td>
                             <td>
                                 <span class="status-badge status-{{ task.status }}">
                                     {{ task.get_status_display }}
@@ -104,18 +121,18 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="progress ms-2" style="width: 80px; height: 8px;">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%"></div>
+                                    <div class="progress ms-2" style="width: 80px; height: 8px; background-color: rgba(0, 132, 171, 0.1);">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%; background-color: var(--blue-primary);"></div>
                                     </div>
-                                    <span>{{ task.completion_percentage }}%</span>
+                                    <span style="color: var(--blue-dark); font-weight: 600; margin-right: 8px;">{{ task.completion_percentage }}%</span>
                                 </div>
                             </td>
                             <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{% url 'scientific_edit_task' task.id %}" class="btn btn-outline-primary" title="تعديل">
+                                <div class="btn-group btn-group-sm d-flex flex-row-reverse">
+                                    <a href="{% url 'scientific_edit_task' task.id %}" class="btn btn-outline-primary" title="تعديل" style="border-color: var(--blue-primary); color: var(--blue-primary);">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}" title="حذف">
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}" title="حذف" style="border-color: #dc3545; color: #dc3545;">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -124,9 +141,9 @@
                                 <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <div class="modal-header">
+                                            <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
                                                 <h5 class="modal-title">تأكيد الحذف</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <p>هل أنت متأكد من حذف المهمة "{{ task.title }}"؟</p>
@@ -134,8 +151,8 @@
                                             <div class="modal-footer">
                                                 <form method="post" action="{% url 'scientific_delete_task' task.id %}">
                                                     {% csrf_token %}
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                                                    <button type="submit" class="btn btn-danger">حذف</button>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
+                                                    <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -149,11 +166,11 @@
             </div>
             {% else %}
             <div class="text-center py-5">
-                <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">لا توجد مهام</h5>
+                <i class="fas fa-tasks fa-3x text-muted mb-3" style="color: var(--blue-primary) !important; opacity: 0.3;"></i>
+                <h5 class="text-muted" style="color: var(--blue-dark) !important;">لا توجد مهام</h5>
                 <p class="text-muted">لم يتم إضافة أي مهام بعد</p>
-                <a href="{% url 'scientific_add_task' %}" class="btn btn-primary">
-                    <i class="fas fa-plus ms-1"></i>
+                <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                    <i class="fas fa-plus me-1"></i>
                     إضافة أول مهمة
                 </a>
             </div>
@@ -161,4 +178,230 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* Task Management Specific Styles */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .dashboard-card h4 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+
+    .dashboard-card h4 i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    .action-btn-info {
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+    }
+
+    /* Table Styling */
+    .custom-table {
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table th {
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-dark);
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-align: right;
+    }
+
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: var(--border-light);
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .table tbody tr:hover {
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: rgba(255, 193, 7, 0.15);
+        color: #856404;
+    }
+
+    .status-in-progress {
+        background: rgba(0, 123, 255, 0.15);
+        color: #004085;
+    }
+
+    .status-completed {
+        background: rgba(40, 167, 69, 0.15);
+        color: #155724;
+    }
+
+    .status-cancelled {
+        background: rgba(220, 53, 69, 0.15);
+        color: #721c24;
+    }
+
+    /* Member Avatar */
+    .member-avatar-small {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--blue-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    /* Form Styling */
+    .form-label {
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select {
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+    }
+
+    /* Progress Bar */
+    .progress {
+        background-color: rgba(0, 132, 171, 0.1);
+        border-radius: 0.375rem;
+    }
+
+    .progress-bar {
+        background-color: var(--blue-primary);
+        border-radius: 0.375rem;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+
+        .action-btn {
+            padding: 1rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            font-size: 0.875rem;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+        }
+    }
+</style>
 {% endblock %}

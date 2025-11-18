@@ -5,15 +5,16 @@
 {% block page_title %}المكتبة العلمية{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
+<!-- Header Section -->
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
     <div class="col-12">
         <div class="dashboard-card">
             <div class="d-flex justify-content-between align-items-center">
-                <h4 style="color: var(--primary-blue);">
+                <h4 style="color: var(--blue-dark);">
                     <i class="fas fa-file-alt ms-2"></i>
                     المكتبة العلمية
                 </h4>
-                <a href="{% url 'scientific_upload_file' %}" class="btn btn-primary">
+                <a href="{% url 'scientific_upload_file' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem;">
                     <i class="fas fa-upload ms-1"></i>
                     رفع ملف جديد
                 </a>
@@ -23,13 +24,16 @@
 </div>
 
 <!-- Filters -->
-<div class="row mb-4">
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
     <div class="col-12">
         <div class="dashboard-card">
             <form method="get" class="row g-3">
                 <div class="col-md-6">
-                    <label for="type" class="form-label">نوع الملف</label>
-                    <select name="type" id="type" class="form-select">
+                    <label for="type" class="form-label" style="color: var(--blue-dark); font-weight: 600;">
+                        <i class="fas fa-filter me-2" style="color: var(--blue-primary);"></i>
+                        نوع الملف
+                    </label>
+                    <select name="type" id="type" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
                         <option value="">جميع الأنواع</option>
                         {% for file_type in file_types %}
                         <option value="{{ file_type.0 }}" {% if file_type_filter == file_type.0 %}selected{% endif %}>
@@ -39,7 +43,7 @@
                     </select>
                 </div>
                 <div class="col-md-6 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="action-btn action-btn-info w-100" style="padding: 0.8rem 1.5rem;">
                         <i class="fas fa-filter ms-1"></i>
                         تصفية
                     </button>
@@ -50,60 +54,90 @@
 </div>
 
 <!-- Files Grid -->
-<div class="row">
+<div class="row fade-in-up" style="animation-delay: 0.3s;">
     {% for file in files %}
     <div class="col-lg-4 col-md-6 mb-4">
-        <div class="dashboard-card h-100">
-            <div class="file-icon text-center mb-3">
-                <i class="fas fa-file-pdf fa-3x text-danger"></i>
+        <div class="dashboard-card h-100 file-card">
+            <div class="file-header mb-3">
+                <div class="file-icon text-center">
+                    {% if file.file_type == 'pdf' %}
+                    <i class="fas fa-file-pdf fa-3x" style="color: #dc3545;"></i>
+                    {% elif file.file_type == 'doc' or file.file_type == 'docx' %}
+                    <i class="fas fa-file-word fa-3x" style="color: #2b579a;"></i>
+                    {% elif file.file_type == 'ppt' or file.file_type == 'pptx' %}
+                    <i class="fas fa-file-powerpoint fa-3x" style="color: #d24726;"></i>
+                    {% elif file.file_type == 'xls' or file.file_type == 'xlsx' %}
+                    <i class="fas fa-file-excel fa-3x" style="color: #217346;"></i>
+                    {% elif file.file_type == 'image' %}
+                    <i class="fas fa-file-image fa-3x" style="color: var(--blue-primary);"></i>
+                    {% elif file.file_type == 'video' %}
+                    <i class="fas fa-file-video fa-3x" style="color: #6f42c1;"></i>
+                    {% else %}
+                    <i class="fas fa-file fa-3x" style="color: var(--blue-primary);"></i>
+                    {% endif %}
+                </div>
+                <div class="file-badge">
+                    <span class="badge" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary);">
+                        {{ file.get_file_type_display }}
+                    </span>
+                </div>
             </div>
-            <h5 class="mb-2">{{ file.title }}</h5>
-            <p class="text-muted mb-2">{{ file.get_file_type_display }}</p>
+
+            <h5 class="mb-2" style="color: var(--blue-dark);">{{ file.title }}</h5>
+
             {% if file.description %}
-            <p class="text-muted small mb-3">{{ file.description|truncatewords:15 }}</p>
+            <p class="text-muted small mb-3" style="min-height: 40px;">{{ file.description|truncatewords:15 }}</p>
             {% endif %}
-            {% if file.author %}
-            <p class="text-muted small mb-2">
-                <i class="fas fa-user ms-1"></i>
-                {{ file.author }}
-            </p>
-            {% endif %}
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <small class="text-muted">
-                    <i class="fas fa-calendar ms-1"></i>
-                    {{ file.uploaded_at|date:"Y-m-d" }}
-                </small>
-                <small class="text-muted">
-                    <i class="fas fa-user ms-1"></i>
-                    {{ file.uploaded_by.get_full_name }}
-                </small>
+
+            <div class="file-meta mb-3">
+                {% if file.author %}
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-user me-2" style="color: var(--blue-primary); font-size: 0.8rem;"></i>
+                    <small class="text-muted">{{ file.author }}</small>
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar me-2" style="color: var(--blue-primary); font-size: 0.8rem;"></i>
+                        <small class="text-muted">{{ file.uploaded_at|date:"Y-m-d" }}</small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user me-2" style="color: var(--blue-primary); font-size: 0.8rem;"></i>
+                        <small class="text-muted">{{ file.uploaded_by.get_full_name }}</small>
+                    </div>
+                </div>
             </div>
-            <div class="btn-group w-100">
-                <a href="{{ file.file.url }}" class="btn btn-outline-primary" target="_blank">
-                    <i class="fas fa-download ms-1"></i>
-                    تحميل
-                </a>
-                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ file.id }}">
-                    <i class="fas fa-trash"></i>
-                </button>
+
+            <div class="file-actions mt-auto">
+                <div class="btn-group w-100">
+                    <a href="{{ file.file.url }}" class="btn btn-outline-primary btn-download" target="_blank" style="border-color: var(--blue-primary); color: var(--blue-primary); flex: 2;">
+                        <i class="fas fa-download me-1"></i>
+                        تحميل
+                    </a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ file.id }}" style="border-color: #dc3545; color: #dc3545; flex: 1;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Delete Modal -->
             <div class="modal fade" id="deleteModal{{ file.id }}" tabindex="-1">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
                             <h5 class="modal-title">تأكيد الحذف</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
                         </div>
                         <div class="modal-body">
                             <p>هل أنت متأكد من حذف الملف "{{ file.title }}"؟</p>
+                            <small class="text-muted">لا يمكن التراجع عن هذا الإجراء.</small>
                         </div>
                         <div class="modal-footer">
                             <form method="post" action="{% url 'scientific_delete_file' file.id %}">
                                 {% csrf_token %}
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                                <button type="submit" class="btn btn-danger">حذف</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
+                                <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
                             </form>
                         </div>
                     </div>
@@ -112,12 +146,12 @@
         </div>
     </div>
     {% empty %}
-    <div class="col-12">
-        <div class="dashboard-card text-center py-5">
-            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">لا توجد ملفات</h5>
+    <div class="col-12 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="dashboard-card text-center py-5 empty-state">
+            <i class="fas fa-file-alt fa-3x mb-3" style="color: var(--blue-primary); opacity: 0.3;"></i>
+            <h5 style="color: var(--blue-dark);">لا توجد ملفات</h5>
             <p class="text-muted">لم يتم رفع أي ملفات بعد</p>
-            <a href="{% url 'scientific_upload_file' %}" class="btn btn-primary">
+            <a href="{% url 'scientific_upload_file' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
                 <i class="fas fa-upload ms-1"></i>
                 رفع أول ملف
             </a>
@@ -125,4 +159,346 @@
     </div>
     {% endfor %}
 </div>
+
+<!-- File Statistics -->
+{% if files %}
+<div class="row mt-4 fade-in-up" style="animation-delay: 0.5s;">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <h5 class="mb-4" style="color: var(--blue-dark);">
+                <i class="fas fa-chart-bar ms-2"></i>
+                إحصائيات المكتبة
+            </h5>
+            <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ total_files }}</h3>
+                        <p class="text-muted mb-0">إجمالي الملفات</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ pdf_count }}</h3>
+                        <p class="text-muted mb-0">ملفات PDF</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ doc_count }}</h3>
+                        <p class="text-muted mb-0">ملفات مستندات</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ recent_uploads }}</h3>
+                        <p class="text-muted mb-0">مرفوعة حديثاً</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* File Library Specific Styles */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .dashboard-card h4, .dashboard-card h5 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+    }
+
+    .dashboard-card h4 i, .dashboard-card h5 i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+    }
+
+    /* File Card */
+    .file-card {
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    .file-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 132, 171, 0.2);
+    }
+
+    .file-header {
+        position: relative;
+    }
+
+    .file-badge {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    .file-icon {
+        margin-bottom: 1rem;
+    }
+
+    .file-meta {
+        border-top: 1px solid var(--border-light);
+        padding-top: 1rem;
+    }
+
+    .file-actions {
+        margin-top: auto;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    .action-btn-info {
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+    }
+
+    /* Download Button */
+    .btn-download {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-download:hover {
+        background: var(--blue-primary);
+        color: white !important;
+        transform: translateY(-2px);
+    }
+
+    /* Button Group */
+    .btn-group {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-group .btn {
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+
+    .btn-group .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Statistics Cards */
+    .stat-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.15);
+    }
+
+    .stat-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+    }
+
+    /* Form Styling */
+    .form-label {
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-select {
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+
+        .action-btn {
+            padding: 1rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .file-icon i {
+            font-size: 2.5rem !important;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 1.5rem;
+        }
+
+        .btn-group .btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .row.text-center .col-md-3 {
+            margin-bottom: 1rem;
+        }
+
+        .file-header {
+            text-align: center;
+        }
+
+        .file-badge {
+            position: static;
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Add focus effects to form elements
+    document.addEventListener('DOMContentLoaded', function() {
+        const formSelects = document.querySelectorAll('.form-select');
+
+        formSelects.forEach(select => {
+            select.addEventListener('focus', function() {
+                this.style.borderColor = 'var(--blue-primary)';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(0, 132, 171, 0.25)';
+            });
+
+            select.addEventListener('blur', function() {
+                this.style.borderColor = 'var(--border-light)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    });
+</script>
 {% endblock %}

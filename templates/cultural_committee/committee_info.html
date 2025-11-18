@@ -4,92 +4,301 @@
 
 {% block page_title %}بيانات اللجنة{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Committee Info Card Styling */
+    .committee-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .committee-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle at top right, rgba(97, 188, 215, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .committee-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .committee-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .committee-header h3 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+    .committee-header h3 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    /* Info Items Styling */
+    .info-item {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.1);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .info-item label {
+        color: var(--text-gray);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .info-item p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .info-item i {
+        color: var(--blue-primary);
+        margin-left: 8px;
+        font-size: 1.2rem;
+    }
+
+    /* Description Section */
+    .description-section {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .description-section label {
+        color: var(--text-gray);
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .description-section p {
+        font-size: 1rem;
+        color: var(--text-dark);
+        line-height: 1.8;
+        margin: 0;
+    }
+
+    /* Statistics Section */
+    .stats-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .stats-section h5 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-section h5 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    .stat-box {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .committee-card {
+            padding: 1.5rem;
+        }
+
+        .committee-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .committee-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto">
-        <div class="card shadow-sm border-0" style="border-radius: 15px;">
-            <div class="card-header bg-white" style="border-bottom: 2px solid var(--primary-green); border-radius: 15px 15px 0 0;">
-                <h3 class="mb-0" style="color: var(--text-dark); font-weight: 700;">
-                    <i class="fas fa-info-circle ms-2" style="color: var(--primary-green);"></i>
-                    معلومات اللجنة الثقافية
-                </h3>
+<!-- Committee Info Card -->
+<div class="committee-card fade-in-up">
+    <div class="committee-header">
+        <h3>
+            <i class="fas fa-info-circle"></i>
+            معلومات اللجنة الثقافية
+        </h3>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="info-item">
+                <label>اسم اللجنة</label>
+                <p>
+                    <i class="fas fa-users"></i>
+                    {{ committee.name }}
+                </p>
             </div>
-            <div class="card-body p-4">
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <div class="info-item">
-                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">اسم اللجنة</label>
-                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
-                                <i class="fas fa-users ms-2" style="color: var(--primary-green);"></i>
-                                {{ committee.name }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="info-item">
-                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">المشرف</label>
-                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
-                                <i class="fas fa-user-tie ms-2" style="color: var(--primary-green);"></i>
-                                {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
-                            </p>
-                        </div>
-                    </div>
+        </div>
+        <div class="col-md-6 mb-3 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="info-item">
+                <label>المشرف</label>
+                <p>
+                    <i class="fas fa-user-tie"></i>
+                    {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3 fade-in-up" style="animation-delay: 0.3s;">
+            <div class="info-item">
+                <label>البرنامج</label>
+                <p>
+                    <i class="fas fa-book"></i>
+                    {{ committee.program.name }}
+                </p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3 fade-in-up" style="animation-delay: 0.4s;">
+            <div class="info-item">
+                <label>تاريخ الإنشاء</label>
+                <p>
+                    <i class="far fa-calendar"></i>
+                    {{ committee.created_at|date:"Y/m/d" }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="description-section fade-in-up" style="animation-delay: 0.5s;">
+        <label>الوصف</label>
+        <p>{{ committee.description }}</p>
+    </div>
+
+    <div class="stats-section">
+        <h5>
+            <i class="fas fa-chart-line"></i>
+            إحصائيات اللجنة
+        </h5>
+
+        <div class="row">
+            <div class="col-md-4 mb-3 fade-in-up" style="animation-delay: 0.6s;">
+                <div class="stat-box">
+                    <div class="stat-number">{{ total_members }}</div>
+                    <div class="stat-label">إجمالي الأعضاء</div>
                 </div>
-
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <div class="info-item">
-                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">البرنامج</label>
-                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
-                                <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
-                                {{ committee.program.name }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="info-item">
-                            <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">تاريخ الإنشاء</label>
-                            <p style="font-size: 1.1rem; font-weight: 600; color: var(--text-dark); margin-top: 0.5rem;">
-                                <i class="far fa-calendar ms-2" style="color: var(--primary-green);"></i>
-                                {{ committee.created_at|date:"Y/m/d" }}
-                            </p>
-                        </div>
-                    </div>
+            </div>
+            <div class="col-md-4 mb-3 fade-in-up" style="animation-delay: 0.7s;">
+                <div class="stat-box">
+                    <div class="stat-number">{{ active_members }}</div>
+                    <div class="stat-label">الأعضاء النشطون</div>
                 </div>
-
-                <div class="mb-4">
-                    <label style="color: var(--text-gray); font-weight: 600; font-size: 0.9rem;">الوصف</label>
-                    <p style="font-size: 1rem; color: var(--text-dark); line-height: 1.8; margin-top: 0.5rem;">
-                        {{ committee.description }}
-                    </p>
-                </div>
-
-                <hr style="border-color: var(--border-light); margin: 2rem 0;">
-
-                <h5 style="color: var(--text-dark); font-weight: 700; margin-bottom: 1.5rem;">
-                    <i class="fas fa-chart-line ms-2" style="color: var(--primary-green);"></i>
-                    إحصائيات اللجنة
-                </h5>
-
-                <div class="row text-center">
-                    <div class="col-md-4 mb-3">
-                        <div style="background: rgba(134, 184, 23, 0.1); padding: 1.5rem; border-radius: 10px;">
-                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-green);">{{ total_members }}</div>
-                            <div style="color: var(--text-gray); font-weight: 600; margin-top: 0.5rem;">إجمالي الأعضاء</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div style="background: rgba(134, 184, 23, 0.1); padding: 1.5rem; border-radius: 10px;">
-                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-green);">{{ active_members }}</div>
-                            <div style="color: var(--text-gray); font-weight: 600; margin-top: 0.5rem;">الأعضاء النشطون</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div style="background: rgba(134, 184, 23, 0.1); padding: 1.5rem; border-radius: 10px;">
-                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-green);">{{ avg_participation }}</div>
-                            <div style="color: var(--text-gray); font-weight: 600; margin-top: 0.5rem;">متوسط المشاركة</div>
-                        </div>
-                    </div>
+            </div>
+            <div class="col-md-4 mb-3 fade-in-up" style="animation-delay: 0.8s;">
+                <div class="stat-box">
+                    <div class="stat-number">{{ avg_participation }}</div>
+                    <div class="stat-label">متوسط المشاركة</div>
                 </div>
             </div>
         </div>

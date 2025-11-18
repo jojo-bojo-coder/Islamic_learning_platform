@@ -1,7 +1,7 @@
 {% extends 'sharia_committee/base.html' %}
+{% load static %}
 
 {% block title %}{{ title }} - {{ committee.name }}{% endblock %}
-
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
@@ -9,34 +9,55 @@
     .form-card {
         background: var(--white);
         border-radius: 15px;
-        padding: 2rem;
+        padding: 2.5rem;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
         max-width: 900px;
         margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .form-header {
         margin-bottom: 2rem;
-        padding-bottom: 1rem;
+        padding-bottom: 1.5rem;
         border-bottom: 2px solid var(--border-light);
+        text-align: center;
     }
 
     .form-header h3 {
         color: var(--text-dark);
         font-weight: 700;
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
     }
 
     .form-header p {
         color: var(--text-gray);
         margin: 0;
+        font-size: 1.1rem;
     }
 
     .form-label {
         font-weight: 600;
         color: var(--text-dark);
         margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-right: 4px;
     }
 
     .form-control, .form-select {
@@ -44,39 +65,167 @@
         border-radius: 8px;
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 
     .form-control:focus, .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
     }
 
     .btn-group-actions {
         display: flex;
         gap: 1rem;
-        margin-top: 2rem;
+        margin-top: 2.5rem;
         padding-top: 2rem;
         border-top: 2px solid var(--border-light);
     }
 
-    .btn-cancel {
-        background: var(--border-light);
-        color: var(--text-dark);
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-cancel {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cairo', sans-serif;
     }
 
     .btn-cancel:hover {
-        background: #d3d3d3;
+        background: var(--border-light);
         color: var(--text-dark);
+        border-color: var(--blue-primary);
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Form Section Styling */
+    .form-section {
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .form-section-title {
+        color: var(--blue-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .btn-group-actions {
+            flex-direction: column;
+        }
+
+        .form-header {
+            text-align: right;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Custom styling for form fields */
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    input[type="date"].form-control {
+        direction: ltr;
+        text-align: right;
+    }
+
+    input[type="number"].form-control {
+        direction: ltr;
+        text-align: right;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="form-card">
+<div class="form-card fade-in-up">
     <div class="form-header">
         <h3>
-            <i class="fas fa-tasks ms-2" style="color: var(--primary-green);"></i>
+            <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
             {{ title }}
         </h3>
         <p>قم بتعبئة المعلومات التالية لإضافة أو تعديل المهمة</p>
@@ -85,92 +234,111 @@
     <form method="post">
         {% csrf_token %}
 
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="{{ form.task_type.id_for_label }}" class="form-label">
-                    {{ form.task_type.label }}
-                    <span style="color: #dc3545;">*</span>
+        <!-- Basic Information Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-info-circle me-2"></i>
+                المعلومات الأساسية
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.task_type.id_for_label }}" class="form-label">
+                        {{ form.task_type.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.task_type }}
+                    {% if form.task_type.errors %}
+                        <div class="text-danger mt-1">{{ form.task_type.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">
+                        {{ form.status.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    {{ form.title.label }}
+                    <span class="required-star">*</span>
                 </label>
-                {{ form.task_type }}
-                {% if form.task_type.errors %}
-                    <div class="text-danger mt-1">{{ form.task_type.errors }}</div>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger mt-1">{{ form.title.errors }}</div>
                 {% endif %}
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="{{ form.status.id_for_label }}" class="form-label">
-                    {{ form.status.label }}
-                    <span style="color: #dc3545;">*</span>
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">
+                    {{ form.description.label }}
+                    <span class="required-star">*</span>
                 </label>
-                {{ form.status }}
-                {% if form.status.errors %}
-                    <div class="text-danger mt-1">{{ form.status.errors }}</div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="{{ form.title.id_for_label }}" class="form-label">
-                {{ form.title.label }}
-                <span style="color: #dc3545;">*</span>
-            </label>
-            {{ form.title }}
-            {% if form.title.errors %}
-                <div class="text-danger mt-1">{{ form.title.errors }}</div>
-            {% endif %}
-        </div>
-
-        <div class="mb-3">
-            <label for="{{ form.description.id_for_label }}" class="form-label">
-                {{ form.description.label }}
-                <span style="color: #dc3545;">*</span>
-            </label>
-            {{ form.description }}
-            {% if form.description.errors %}
-                <div class="text-danger mt-1">{{ form.description.errors }}</div>
-            {% endif %}
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="{{ form.assigned_to_name.id_for_label }}" class="form-label">
-                    {{ form.assigned_to_name.label }}
-                </label>
-                {{ form.assigned_to_name }}
-                {% if form.assigned_to_name.errors %}
-                    <div class="text-danger mt-1">{{ form.assigned_to_name.errors }}</div>
-                {% endif %}
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="{{ form.due_date.id_for_label }}" class="form-label">
-                    {{ form.due_date.label }}
-                    <span style="color: #dc3545;">*</span>
-                </label>
-                {{ form.due_date }}
-                {% if form.due_date.errors %}
-                    <div class="text-danger mt-1">{{ form.due_date.errors }}</div>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
                 {% endif %}
             </div>
         </div>
 
-        <div class="mb-3">
-            <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">
-                {{ form.completion_percentage.label }}
-            </label>
-            {{ form.completion_percentage }}
-            {% if form.completion_percentage.errors %}
-                <div class="text-danger mt-1">{{ form.completion_percentage.errors }}</div>
-            {% endif %}
+        <!-- Assignment & Timeline Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-calendar-alt me-2"></i>
+                التعيين والجدول الزمني
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.assigned_to_name.id_for_label }}" class="form-label">
+                        {{ form.assigned_to_name.label }}
+                    </label>
+                    {{ form.assigned_to_name }}
+                    {% if form.assigned_to_name.errors %}
+                        <div class="text-danger mt-1">{{ form.assigned_to_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                        {{ form.due_date.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.due_date }}
+                    {% if form.due_date.errors %}
+                        <div class="text-danger mt-1">{{ form.due_date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">
+                    {{ form.completion_percentage.label }}
+                </label>
+                <div class="input-group d-flex flex-row-reverse">
+                    {{ form.completion_percentage }}
+                    <span class="input-group-text">%</span>
+                </div>
+                {% if form.completion_percentage.errors %}
+                    <div class="text-danger mt-1">{{ form.completion_percentage.errors }}</div>
+                {% endif %}
+            </div>
         </div>
 
         <div class="btn-group-actions">
             <button type="submit" class="btn btn-primary flex-fill">
-                <i class="fas fa-save ms-2"></i>
+                <i class="fas fa-save me-2"></i>
                 حفظ المهمة
             </button>
             <a href="{% url 'sharia_task_management' %}" class="btn btn-cancel flex-fill">
-                <i class="fas fa-times ms-2"></i>
+                <i class="fas fa-times me-2"></i>
                 إلغاء
             </a>
         </div>

@@ -1,13 +1,251 @@
 {% extends 'sharia_committee/base.html' %}
+{% load static %}
 
 {% block title %}{{ title }} - {{ committee.name }}{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        text-align: center;
+    }
+
+    .form-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-right: 4px;
+    }
+
+    .form-control, .form-select, .form-textarea {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .form-control:focus, .form-select:focus, .form-textarea:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-cancel {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-cancel:hover {
+        background: var(--border-light);
+        color: var(--text-dark);
+        border-color: var(--blue-primary);
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Form Section Styling */
+    .form-section {
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .form-section-title {
+        color: var(--blue-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.1rem;
+    }
+
+    /* Progress Input Styling */
+    .progress-input-wrapper {
+        position: relative;
+    }
+
+    .progress-input-wrapper .form-control {
+        padding-right: 3rem;
+    }
+
+    .progress-percentage {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--blue-primary);
+        font-weight: 600;
+        background: rgba(0, 132, 171, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    /* Date Input Styling */
+    input[type="date"].form-control {
+        direction: ltr;
+        text-align: right;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .btn-group-actions {
+            flex-direction: column;
+        }
+
+        .form-header {
+            text-align: right;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .row {
+            flex-direction: column;
+        }
+
+        .col-md-4, .col-md-6, .col-md-8 {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="form-card" style="background: var(--white); border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 900px; margin: 0 auto;">
-    <div class="form-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-light);">
-        <h3 style="color: var(--text-dark); font-weight: 700;">
-            <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+<div class="form-card fade-in-up">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-book me-2" style="color: var(--blue-primary);"></i>
             {{ title }}
         </h3>
     </div>
@@ -15,70 +253,213 @@
     <form method="post">
         {% csrf_token %}
 
-        <div class="row">
-            <div class="col-md-8 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.title.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.title }}
-                {% if form.title.errors %}<div class="text-danger mt-1">{{ form.title.errors }}</div>{% endif %}
+        <!-- Book Basic Information Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-info-circle me-2"></i>
+                المعلومات الأساسية للكتاب
+            </h5>
+
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label">
+                        {{ form.title.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">أدخل عنوان الكتاب الكامل</small>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        {{ form.author.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.author }}
+                    {% if form.author.errors %}
+                        <div class="text-danger mt-1">{{ form.author.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">اسم المؤلف أو الكاتب</small>
+                </div>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.author.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.author }}
-                {% if form.author.errors %}<div class="text-danger mt-1">{{ form.author.errors }}</div>{% endif %}
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" style="font-weight: 600;">{{ form.description.label }}</label>
-            {{ form.description }}
-            {% if form.description.errors %}<div class="text-danger mt-1">{{ form.description.errors }}</div>{% endif %}
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.assigned_to.label }}</label>
-                {{ form.assigned_to }}
-                {% if form.assigned_to.errors %}<div class="text-danger mt-1">{{ form.assigned_to.errors }}</div>{% endif %}
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.status.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.status }}
-                {% if form.status.errors %}<div class="text-danger mt-1">{{ form.status.errors }}</div>{% endif %}
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.progress_percentage.label }}</label>
-                {{ form.progress_percentage }}
-                {% if form.progress_percentage.errors %}<div class="text-danger mt-1">{{ form.progress_percentage.errors }}</div>{% endif %}
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.start_date.label }}</label>
-                {{ form.start_date }}
-                {% if form.start_date.errors %}<div class="text-danger mt-1">{{ form.start_date.errors }}</div>{% endif %}
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.completion_date.label }}</label>
-                {{ form.completion_date }}
-                {% if form.completion_date.errors %}<div class="text-danger mt-1">{{ form.completion_date.errors }}</div>{% endif %}
+            <div class="mb-3">
+                <label class="form-label">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">وصف مختصر عن محتوى الكتاب</small>
             </div>
         </div>
 
-        <div class="btn-group-actions" style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+        <!-- Book Status & Assignment Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-tasks me-2"></i>
+                حالة الكتاب والتكليف
+            </h5>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">{{ form.assigned_to.label }}</label>
+                    {{ form.assigned_to }}
+                    {% if form.assigned_to.errors %}
+                        <div class="text-danger mt-1">{{ form.assigned_to.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">الشخص المكلف بقراءة الكتاب</small>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        {{ form.status.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">الحالة الحالية للكتاب</small>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <div class="progress-input-wrapper">
+                        <label class="form-label">{{ form.progress_percentage.label }}</label>
+                        {{ form.progress_percentage }}
+                        {% if form.progress_percentage.errors %}
+                            <div class="text-danger mt-1">{{ form.progress_percentage.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <small class="form-text text-muted">نسبة الإنجاز من 0 إلى 100</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Dates Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-calendar-alt me-2"></i>
+                تواريخ الكتاب
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">{{ form.start_date.label }}</label>
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <div class="text-danger mt-1">{{ form.start_date.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">تاريخ بداية قراءة الكتاب</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">{{ form.completion_date.label }}</label>
+                    {{ form.completion_date }}
+                    {% if form.completion_date.errors %}
+                        <div class="text-danger mt-1">{{ form.completion_date.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">تاريخ إكمال قراءة الكتاب</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group-actions">
             <button type="submit" class="btn btn-primary flex-fill">
-                <i class="fas fa-save ms-2"></i>
+                <i class="fas fa-save me-2"></i>
                 حفظ الكتاب
             </button>
-            <a href="{% url 'sharia_book_management' %}" class="btn btn-cancel flex-fill" style="background: var(--border-light); color: var(--text-dark);">
-                <i class="fas fa-times ms-2"></i>
+            <a href="{% url 'sharia_book_management' %}" class="btn btn-cancel flex-fill">
+                <i class="fas fa-times me-2"></i>
                 إلغاء
             </a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Progress percentage input enhancement
+        const progressInput = document.querySelector('input[name="progress_percentage"]');
+        if (progressInput) {
+            progressInput.addEventListener('input', function() {
+                let value = parseInt(this.value) || 0;
+                if (value < 0) this.value = 0;
+                if (value > 100) this.value = 100;
+
+                // Visual feedback
+                if (value >= 100) {
+                    this.style.borderColor = '#28a745';
+                } else if (value >= 50) {
+                    this.style.borderColor = '#ffc107';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+        }
+
+        // Date input enhancement
+        const startDateInput = document.querySelector('input[name="start_date"]');
+        const completionDateInput = document.querySelector('input[name="completion_date"]');
+
+        if (startDateInput) {
+            // Set min date to today
+            const today = new Date().toISOString().split('T')[0];
+            startDateInput.min = today;
+
+            // If no value is set, set it to today by default
+            if (!startDateInput.value) {
+                startDateInput.value = today;
+            }
+        }
+
+        if (completionDateInput && startDateInput) {
+            // Set min date to start date for completion date
+            startDateInput.addEventListener('change', function() {
+                completionDateInput.min = this.value;
+            });
+
+            // Initialize completion date min value
+            if (startDateInput.value) {
+                completionDateInput.min = startDateInput.value;
+            }
+        }
+
+        // Status change effect
+        const statusSelect = document.querySelector('select[name="status"]');
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                this.style.borderLeft = '4px solid var(--blue-primary)';
+
+                // Auto-set progress based on status
+                if (this.value === 'completed' && progressInput) {
+                    progressInput.value = 100;
+                } else if (this.value === 'reading' && progressInput && !progressInput.value) {
+                    progressInput.value = 50;
+                }
+
+                // Add animation effect
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        // Form field focus effects
+        const formInputs = document.querySelectorAll('.form-control, .form-select, .form-textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    });
+</script>
 {% endblock %}

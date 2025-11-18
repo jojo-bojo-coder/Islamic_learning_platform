@@ -4,80 +4,507 @@
 
 {% block page_title %}التنبيهات والإشعارات{% endblock %}
 
-{% block content %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">الإشعارات</h4>
-            <form method="post" action="{% url 'cultural_mark_all_read' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="fas fa-check-double ms-2"></i>
-                    تحديد الكل كمقروء
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
+{% block extra_css %}
+<style>
+    /* Notifications Container Styling */
+    .notifications-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
 
-<!-- Notifications List -->
-<div class="row">
-    <div class="col-12">
+    .notifications-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle at top right, rgba(97, 188, 215, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .notifications-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(97, 188, 171, 0.2);
+    }
+
+    .notifications-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin: 0;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .notifications-title i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    /* Notifications List Styling */
+    .notifications-list {
+        background: var(--white);
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .notifications-list::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    /* Notification Item Styling */
+    .notification-item {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item.unread {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.03) 0%, rgba(255, 255, 255, 1) 100%);
+        border-right: 4px solid var(--blue-primary);
+    }
+
+    .notification-item:hover {
+        background: rgba(0, 132, 171, 0.02);
+        transform: translateX(-5px);
+    }
+
+    .notification-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+
+    .notification-main {
+        flex: 1;
+    }
+
+    .notification-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    .notification-icon.unread {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .notification-icon.read {
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+    }
+
+    .notification-title {
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .notification-title.unread {
+        color: var(--blue-primary);
+    }
+
+    .notification-message {
+        color: var(--text-dark);
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .notification-link {
+        color: var(--blue-primary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    .notification-link:hover {
+        color: var(--blue-dark);
+        text-decoration: underline;
+        transform: translateX(5px);
+    }
+
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .notification-time {
+        color: var(--text-gray);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .notification-time i {
+        color: var(--blue-primary);
+        font-size: 0.8rem;
+    }
+
+    .notification-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.75rem;
+        min-width: 120px;
+    }
+
+    .notification-badge {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    .notification-badge.task {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    .notification-badge.file {
+        background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+    .notification-badge.discussion {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    }
+
+    .notification-badge.system {
+        background: linear-gradient(135deg, #6c757d, #adb5bd);
+    }
+
+    /* Button Styling - Consistent with dashboard */
+    .btn-mark-all {
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-mark-all::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-mark-all:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-mark-all:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.2);
+        color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.15);
+    }
+
+    .btn-mark-read {
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        background: linear-gradient(135deg, #28a745, #20c997);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    .btn-mark-read:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        color: var(--white);
+    }
+
+    .read-badge {
+        background: rgba(108, 117, 125, 0.1);
+        color: var(--text-gray);
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state-title {
+        color: var(--text-gray);
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .empty-state-text {
+        color: var(--text-gray);
+        margin-bottom: 2rem;
+        font-size: 1rem;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .notification-item {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .notification-item:nth-child(1) { animation-delay: 0.1s; }
+    .notification-item:nth-child(2) { animation-delay: 0.2s; }
+    .notification-item:nth-child(3) { animation-delay: 0.3s; }
+    .notification-item:nth-child(4) { animation-delay: 0.4s; }
+    .notification-item:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .notifications-container {
+            padding: 1.5rem;
+        }
+
+        .notifications-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .notifications-title {
+            font-size: 1.5rem;
+        }
+
+        .notification-item {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .notification-content {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .notification-actions {
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            min-width: auto;
+        }
+
+        .notification-meta {
+            justify-content: space-between;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notifications-container fade-in-up">
+    <!-- Header -->
+    <div class="notifications-header">
+        <h2 class="notifications-title">
+            <i class="fas fa-bell"></i>
+            التنبيهات والإشعارات
+        </h2>
         {% if notifications %}
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                {% for notification in notifications %}
-                <div class="notification-item p-4 border-bottom {% if not notification.is_read %}bg-light{% endif %}">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center mb-2">
-                                <i class="fas fa-bell ms-2 text-{% if notification.is_read %}muted{% else %}primary{% endif %}"></i>
-                                <h6 class="mb-0 {% if not notification.is_read %}text-primary{% endif %}">
-                                    {{ notification.title }}
-                                </h6>
+        <form method="post" action="{% url 'cultural_mark_all_read' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-mark-all">
+                <i class="fas fa-check-double"></i>
+                تحديد الكل كمقروء
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- Notifications List -->
+    <div class="notifications-list">
+        {% if notifications %}
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                <div class="notification-content">
+                    <div class="notification-main">
+                        <div class="notification-header">
+                            <div class="notification-icon {% if not notification.is_read %}unread{% else %}read{% endif %}">
+                                <i class="fas fa-bell"></i>
                             </div>
-                            {% if notification.related_discussion %}
-                            <a href="{% url 'cultural_discussion_detail' notification.related_discussion.id %}" class="notification-link mb-2">
-                                {{ notification.message }}
-                            </a>
-                            {% else %}
-                            <p class="mb-2 text-muted">{{ notification.message }}</p>
-                            {% endif %}
-                            <p class="mb-2 text-muted">{{ notification.message }}</p>
-                            <small class="text-muted">
-                                <i class="far fa-clock ms-2"></i>
-                                {{ notification.created_at|timesince }} منذ
-                            </small>
+                            <h4 class="notification-title {% if not notification.is_read %}unread{% endif %}">
+                                {{ notification.title }}
+                            </h4>
                         </div>
-                        <div class="d-flex flex-column align-items-end">
-                            <span class="badge bg-{% if notification.notification_type == 'task_added' %}primary{% elif notification.notification_type == 'file_uploaded' %}success{% else %}info{% endif %} mb-2">
-                                {{ notification.get_notification_type_display }}
-                            </span>
-                            {% if not notification.is_read %}
-                            <form method="post" class="mt-1">
-                                {% csrf_token %}
-                                <input type="hidden" name="notification_id" value="{{ notification.id }}">
-                                <button type="submit" class="btn btn-sm btn-outline-success">
-                                    <i class="fas fa-check ms-2"></i>
-                                    تم القراءة
-                                </button>
-                            </form>
-                            {% else %}
-                            <span class="badge bg-secondary">مقروء</span>
-                            {% endif %}
+
+                        {% if notification.related_discussion %}
+                        <a href="{% url 'cultural_discussion_detail' notification.related_discussion.id %}" class="notification-link">
+                            {{ notification.message }}
+                        </a>
+                        {% else %}
+                        <p class="notification-message">{{ notification.message }}</p>
+                        {% endif %}
+
+                        <div class="notification-meta">
+                            <div class="notification-time">
+                                <i class="far fa-clock"></i>
+                                {{ notification.created_at|timesince }} منذ
+                            </div>
                         </div>
                     </div>
+
+                    <div class="notification-actions">
+                        <span class="notification-badge {{ notification.notification_type }}">
+                            {{ notification.get_notification_type_display }}
+                        </span>
+                        {% if not notification.is_read %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="notification_id" value="{{ notification.id }}">
+                            <button type="submit" class="btn-mark-read">
+                                <i class="fas fa-check"></i>
+                                تم القراءة
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="read-badge">مقروء</span>
+                        {% endif %}
+                    </div>
                 </div>
-                {% endfor %}
             </div>
-        </div>
+            {% endfor %}
         {% else %}
-        <div class="text-center py-5">
-            <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">لا توجد إشعارات</h5>
-            <p class="text-muted">لم تتلق أي إشعارات بعد</p>
+        <div class="empty-state">
+            <i class="fas fa-bell-slash empty-state-icon"></i>
+            <h4 class="empty-state-title">لا توجد إشعارات</h4>
+            <p class="empty-state-text">لم تتلق أي إشعارات بعد</p>
         </div>
         {% endif %}
     </div>
 </div>
+
+<script>
+    // Add click animation to notification items
+    document.addEventListener('DOMContentLoaded', function() {
+        const notificationItems = document.querySelectorAll('.notification-item');
+
+        notificationItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't trigger if clicking on buttons or links
+                if (!e.target.closest('button') && !e.target.closest('a')) {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                }
+            });
+        });
+
+        // Auto-mark as read when clicking on notification (except buttons)
+        notificationItems.forEach(item => {
+            if (item.classList.contains('unread')) {
+                item.addEventListener('click', function(e) {
+                    if (!e.target.closest('button') && !e.target.closest('a')) {
+                        const form = this.querySelector('form');
+                        if (form) {
+                            form.submit();
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

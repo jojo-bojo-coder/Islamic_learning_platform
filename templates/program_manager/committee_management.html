@@ -1,101 +1,180 @@
 {% extends 'program_manager_base.html' %}
-
+{% load committee_tags %}
 {% block title %}إدارة اللجان - {{ program.name }}{% endblock %}
 
 {% block page_title %}إدارة اللجان{% endblock %}
 
 {% block extra_css %}
 <style>
-    .table-wrapper {
-        background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+
+
+    .committees-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
     }
 
-    .table-header {
+    .main-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.1);
+    }
+
+    .title-with-icon {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
     }
 
-    .table-header h3 {
+    .title-with-icon i {
+        color: #0084AB;
+        font-size: 2.5rem;
+    }
+
+    .main-header h1 {
+        color: #0B3B24;
         font-family: 'Cairo', sans-serif;
         font-weight: 700;
-        color: var(--text-dark);
+        font-size: 2.5rem;
         margin: 0;
     }
 
-    .table-header h3 i {
-        color: var(--primary-green);
-        margin-left: 10px;
+    .main-header p {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin: 0;
     }
 
-    .table-responsive {
-        border-radius: 8px;
+    .header-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 2rem;
+    }
+
+    .btn-add-committee {
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.3);
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-add-committee:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.4);
+        color: white;
+    }
+
+    .committees-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .committee-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
         overflow: hidden;
     }
 
-    .table {
-        margin-bottom: 0;
+    .committee-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0084AB, #61bcd7);
     }
 
-    .table thead {
-        background: rgba(134, 184, 23, 0.1);
+    .committee-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 132, 171, 0.2);
+        border-color: #61bcd7;
     }
 
-    .table thead th {
-        color: var(--text-dark);
+    .committee-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f8ff;
+    }
+
+    .committee-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    .committee-card-header h3 {
+        color: #0B3B24;
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .committee-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        background: #f8f9ff;
+        border-radius: 10px;
+    }
+
+    .info-row i {
+        color: #0084AB;
+        font-size: 1.2rem;
+        width: 25px;
+        text-align: center;
+    }
+
+    .info-label {
         font-weight: 600;
-        padding: 1rem;
-        border: none;
-        text-align: right;
+        color: #6c757d;
+        font-size: 0.9rem;
     }
 
-    .table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid var(--border-light);
-    }
-
-    .table tbody tr:hover {
-        background: rgba(134, 184, 23, 0.05);
-    }
-
-    .table tbody td {
-        padding: 1rem;
-        color: var(--text-dark);
-        font-weight: 500;
-        border: none;
-        vertical-align: middle;
-    }
-
-    .btn-sm {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.875rem;
-        border-radius: 6px;
+    .info-value {
+        margin-right: auto;
+        color: #0B3B24;
         font-weight: 600;
-    }
-
-    .btn-success {
-        background: var(--primary-green);
-        border: none;
-        color: var(--white);
-    }
-
-    .btn-success:hover {
-        background: #75a015;
-    }
-
-    .btn-info {
-        background: #17a2b8;
-        border: none;
-        color: var(--white);
-    }
-
-    .btn-info:hover {
-        background: #138496;
     }
 
     .badge {
@@ -105,102 +184,249 @@
         font-size: 0.85rem;
     }
 
+    .badge.bg-success {
+        background: linear-gradient(135deg, #86B817, #9cd01f) !important;
+    }
+
+    .badge.bg-secondary {
+        background: #6c757d !important;
+    }
+
+    .progress-container {
+        margin-top: 1rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .progress {
+        height: 12px;
+        border-radius: 10px;
+        background: #e9ecef;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, #86B817, #9cd01f);
+        transition: width 0.6s ease;
+    }
+
+    .committee-actions {
+        display: flex;
+        gap: 0.8rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #f0f8ff;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 0.8rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #17a2b8, #20c0d8);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+        color: white;
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545, #e85563);
+        color: white;
+    }
+
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        color: white;
+    }
+
     .empty-state {
         text-align: center;
-        padding: 3rem;
-        color: var(--text-gray);
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
     .empty-state i {
-        font-size: 4rem;
-        color: var(--primary-green);
+        font-size: 5rem;
+        color: #0084AB;
         opacity: 0.3;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .empty-state h5 {
-        font-weight: 600;
+        color: #0B3B24;
+        font-weight: 700;
+        font-size: 1.8rem;
         margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .back-home-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .back-home-btn {
+        display: inline-block;
+        padding: 1rem 2.5rem;
+        background: linear-gradient(135deg, #0B3B24, #0f5234);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(11, 59, 36, 0.3);
+    }
+
+    .back-home-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(11, 59, 36, 0.4);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .committees-container {
+            padding: 2rem 1rem;
+        }
+
+        .main-header {
+            padding: 1.5rem;
+        }
+
+        .main-header h1 {
+            font-size: 2rem;
+        }
+
+        .committees-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .committee-card {
+            padding: 1.5rem;
+        }
+
+        .header-actions {
+            justify-content: center;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="table-wrapper">
-    <div class="table-header">
-        <h3>
-            <i class="fas fa-users"></i>
-            قائمة اللجان
-        </h3>
-        <a href="{% url 'pm_add_committee' %}" class="btn btn-primary">
-            <i class="fas fa-plus ms-2"></i>
+<div class="committees-container">
+    <header class="main-header">
+        <div class="title-with-icon">
+            <i class="fas fa-puzzle-piece"></i>
+            <h1>اللجان</h1>
+        </div>
+        <p>إدارة وتنظيم لجان البرنامج والإشراف على أنشطتها</p>
+    </header>
+
+    <div class="header-actions">
+        <a href="{% url 'pm_add_committee' %}" class="btn-add-committee">
+            <i class="fas fa-plus"></i>
             إضافة لجنة جديدة
         </a>
     </div>
 
     {% if committees %}
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>اسم اللجنة</th>
-                    <th>المشرف</th>
-                    <th>عدد الطلاب</th>
-                    <th>نسبة الإنجاز</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for committee in committees %}
-                <tr>
-                    <td>
-                        <i class="fas fa-users ms-2" style="color: var(--primary-green);"></i>
-                        <strong>{{ committee.name }}</strong>
-                    </td>
-                    <td>
+    <div class="committees-grid">
+        {% for committee in committees %}
+        <div class="committee-card">
+            <div class="committee-card-header">
+                <div class="committee-icon">
+                    <i class="fas {{ committee.name|get_committee_icon }}"></i>
+                </div>
+                <h3>{{ committee.name }}</h3>
+            </div>
+
+            <div class="committee-info">
+                <div class="info-row">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="info-label">المشرف:</span>
+                    <span class="info-value">
                         {% if committee.supervisor %}
-                            <i class="fas fa-user-tie ms-2" style="color: var(--text-gray);"></i>
                             {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
                         {% else %}
                             <span class="badge bg-secondary">لم يتم التعيين</span>
                         {% endif %}
-                    </td>
-                    <td>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <i class="fas fa-user-graduate"></i>
+                    <span class="info-label">عدد الطلاب:</span>
+                    <span class="info-value">
                         <span class="badge bg-success">{{ committee.student_count }} طالب</span>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <div class="progress" style="width: 100px; height: 8px; margin-left: 10px;">
-                                <div class="progress-bar bg-success" style="width: {{ committee.avg_progress|default:0 }}%"></div>
-                            </div>
-                            <span style="font-weight: 600;">{{ committee.avg_progress|default:0|floatformat:0 }}%</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <a href="{% url 'pm_edit_committee' committee.id %}" class="btn btn-sm btn-info" title="تعديل">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'pm_delete_committee' committee.id %}" class="btn btn-sm btn-danger" title="حذف">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </span>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>نسبة الإنجاز</span>
+                    <span>{{ committee.avg_progress|default:0|floatformat:0 }}%</span>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ committee.avg_progress|default:0 }}%"></div>
+                </div>
+            </div>
+
+            <div class="committee-actions">
+                <a href="{% url 'pm_edit_committee' committee.id %}" class="btn-action btn-edit" title="تعديل">
+                    <i class="fas fa-edit"></i>
+                    تعديل
+                </a>
+                <a href="{% url 'pm_delete_committee' committee.id %}" class="btn-action btn-delete" title="حذف">
+                    <i class="fas fa-trash"></i>
+                    حذف
+                </a>
+            </div>
+        </div>
+        {% endfor %}
     </div>
     {% else %}
     <div class="empty-state">
         <i class="fas fa-users-slash"></i>
         <h5>لا توجد لجان بعد</h5>
         <p>ابدأ بإضافة لجنة جديدة لإدارة طلاب البرنامج</p>
-        <a href="{% url 'pm_add_committee' %}" class="btn btn-primary mt-3">
-            <i class="fas fa-plus ms-2"></i>
+        <a href="{% url 'pm_add_committee' %}" class="btn-add-committee">
+            <i class="fas fa-plus"></i>
             إضافة لجنة الآن
         </a>
     </div>
     {% endif %}
+
 </div>
 {% endblock %}

@@ -1,11 +1,34 @@
 {% extends 'director_base.html' %}
 
-{% block title %}{{ title }} - منصة التحفيظ{% endblock %}
+{% block title %}{{ title }} - منصة مداد{% endblock %}
 
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
 <style>
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .page-header h2 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .page-header h2 i {
+        color: var(--blue-primary);
+        margin-left: 12px;
+    }
+
     /* Form Card Styling - Matching Dashboard Design */
     .form-card {
         background: var(--white);
@@ -14,14 +37,27 @@
         border: 1px solid var(--border-light);
         overflow: hidden;
         transition: all 0.3s ease;
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .form-card:hover {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
+        transform: translateY(-2px);
     }
 
     .form-header {
-        background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
         padding: 2rem;
         color: var(--white);
         text-align: center;
@@ -62,8 +98,8 @@
     }
 
     .form-control:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
         background: var(--white);
     }
 
@@ -81,38 +117,63 @@
     }
 
     /* Buttons - Matching Dashboard Design */
-    .btn-primary {
-        background: var(--primary-green);
-        border: none;
+    .btn {
         border-radius: 8px;
         padding: 0.8rem 1.5rem;
         font-weight: 600;
         transition: all 0.3s ease;
-        color: var(--white);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
         font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+    }
+
     .btn-primary:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        color: var(--white);
     }
 
     .btn-outline-secondary {
         border: 2px solid var(--border-light);
         background: transparent;
         color: var(--text-dark);
-        border-radius: 8px;
-        padding: 0.8rem 1.5rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 
     .btn-outline-secondary:hover {
-        background: var(--border-light);
-        color: var(--text-dark);
+        background: var(--text-gray);
+        border-color: var(--text-gray);
+        color: var(--white);
         transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
     }
 
     /* File Input Custom Styling */
@@ -144,13 +205,13 @@
     }
 
     .file-input-custom:hover {
-        border-color: var(--primary-green);
-        background: rgba(134, 184, 23, 0.05);
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
     }
 
     .file-input-custom i {
         font-size: 2rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-bottom: 1rem;
     }
 
@@ -177,14 +238,45 @@
     }
 
     .form-select:focus {
-        border-color: var(--primary-green);
-        box-shadow: 0 0 0 0.2rem rgba(134, 184, 23, 0.25);
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
     }
 
     /* Textarea Styling */
     textarea.form-control {
         min-height: 120px;
         resize: vertical;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+    }
+
+    /* Alert Messages */
+    .alert {
+        border: none;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border-right: 4px solid;
+    }
+
+    .alert-success {
+        background: rgba(0, 132, 171, 0.1);
+        border-right-color: var(--blue-primary);
+        color: var(--text-dark);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        border-right-color: #dc3545;
+        color: #721c24;
     }
 
     /* Animations */
@@ -204,7 +296,19 @@
     }
 
     /* Responsive Design */
-    @media (max-width: 767px) {
+    @media (max-width: 991px) {
+        .page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+
         .form-header {
             padding: 1.5rem;
         }
@@ -217,23 +321,72 @@
             font-size: 1.3rem;
         }
 
-        .btn-primary,
-        .btn-outline-secondary {
-            padding: 0.7rem 1.2rem;
-            font-size: 0.9rem;
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header {
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .form-body {
+            padding: 1rem;
+        }
+
+        .file-input-custom {
+            padding: 1.5rem;
+        }
+
+        .file-input-custom i {
+            font-size: 1.5rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center fade-in-up">
+<!-- Page Header -->
+<div class="page-header fade-in-up">
+    <h2>
+        <i class="fas fa-file-upload"></i>
+        {{ title }}
+    </h2>
+    <a href="{% url 'file_library' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-right me-2"></i>
+        العودة إلى المكتبة
+    </a>
+</div>
+
+<!-- Alert Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show fade-in-up" role="alert" style="animation-delay: 0.1s;">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %} me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<!-- Form Card -->
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.2s;">
     <div class="col-lg-8">
         <div class="form-card">
             <!-- Form Header -->
             <div class="form-header">
                 <h4>
-                    <i class="fas fa-file-upload ms-2"></i>
+                    <i class="fas fa-file-upload me-2"></i>
                     {{ title }}
                 </h4>
             </div>
@@ -273,7 +426,7 @@
 
                         {% for error in field.errors %}
                         <div class="text-danger small mt-1">
-                            <i class="fas fa-exclamation-circle ms-2"></i>
+                            <i class="fas fa-exclamation-circle me-2"></i>
                             {{ error }}
                         </div>
                         {% endfor %}
@@ -281,13 +434,13 @@
                     {% endfor %}
 
                     <!-- Form Actions -->
-                    <div class="d-flex gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary flex-fill">
-                            <i class="fas fa-upload ms-2"></i>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>
                             {{ submit_text|default:"رفع الملف" }}
                         </button>
-                        <a href="{% url 'file_library' %}" class="btn btn-outline-secondary flex-fill">
-                            <i class="fas fa-times ms-2"></i>
+                        <a href="{% url 'file_library' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>
                             إلغاء
                         </a>
                     </div>
@@ -310,8 +463,8 @@
                 const fileText = customDisplay.querySelector('.file-text');
 
                 fileText.textContent = fileName;
-                customDisplay.style.borderColor = 'var(--primary-green)';
-                customDisplay.style.background = 'rgba(134, 184, 23, 0.1)';
+                customDisplay.style.borderColor = 'var(--blue-primary)';
+                customDisplay.style.background = 'rgba(0, 132, 171, 0.1)';
             });
 
             // Add drag and drop functionality
@@ -319,8 +472,8 @@
 
             customDisplay.addEventListener('dragover', function(e) {
                 e.preventDefault();
-                this.style.borderColor = 'var(--primary-green)';
-                this.style.background = 'rgba(134, 184, 23, 0.1)';
+                this.style.borderColor = 'var(--blue-primary)';
+                this.style.background = 'rgba(0, 132, 171, 0.1)';
             });
 
             customDisplay.addEventListener('dragleave', function(e) {

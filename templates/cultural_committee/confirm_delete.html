@@ -4,30 +4,337 @@
 
 {% block page_title %}تأكيد الحذف{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Delete Confirmation Card Styling */
+    .delete-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 0;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .delete-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #dc3545, #c82333);
+    }
+
+    .delete-card-header {
+        background: linear-gradient(135deg, #fff5f5 0%, #fef7f7 100%);
+        border-bottom: 1px solid rgba(220, 53, 69, 0.1);
+        border-radius: 20px 20px 0 0;
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .delete-card-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle at top right, rgba(220, 53, 69, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .alert-icon {
+        animation: pulse 2s ease-in-out infinite;
+        margin-bottom: 1.5rem;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .delete-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #dc3545;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .delete-subtitle {
+        color: var(--text-gray);
+        font-size: 1.1rem;
+    }
+
+    .delete-card-body {
+        padding: 2.5rem;
+        text-align: center;
+    }
+
+    /* Warning Message Styling */
+    .warning-message {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff5e6 100%);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .warning-message::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #ffc107, #ffb300);
+    }
+
+    .warning-icon {
+        color: #ffc107;
+        font-size: 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    /* Content Styling */
+    .lead {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--blue-dark);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .object-title {
+        color: #dc3545;
+        background: rgba(220, 53, 69, 0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 8px;
+        display: inline-block;
+        margin: 0 0.3rem;
+    }
+
+    .info-text {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Button Styling */
+    .btn {
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        font-size: 1rem;
+        min-width: 140px;
+    }
+
+    .btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn:hover {
+        transform: translateY(-3px);
+        color: var(--white);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-danger:hover {
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        color: var(--white);
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 2px solid var(--text-gray);
+        color: var(--text-gray);
+    }
+
+    .btn-outline-secondary:hover {
+        background: var(--text-gray);
+        color: var(--white);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    /* Actions Container */
+    .actions-container {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 2.5rem 0;
+    }
+
+    /* Object Info Styling */
+    .object-info {
+        background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: right;
+    }
+
+    .object-info h6 {
+        color: var(--blue-dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .object-info h6 i {
+        color: var(--blue-primary);
+    }
+
+    .info-item {
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.3rem 0;
+    }
+
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--blue-dark);
+        margin-left: 1rem;
+    }
+
+    .info-value {
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    /* Animation */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .delete-card-header,
+        .delete-card-body {
+            padding: 1.5rem;
+        }
+
+        .delete-title {
+            font-size: 1.5rem;
+        }
+
+        .actions-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .object-info {
+            text-align: center;
+        }
+
+        .info-item {
+            flex-direction: column;
+            gap: 0.3rem;
+            text-align: center;
+        }
+
+        .info-label {
+            margin-left: 0;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-6">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white text-center border-0">
-                <div class="alert-icon mb-3">
-                    <i class="fas fa-exclamation-triangle fa-3x text-warning"></i>
+    <div class="col-lg-8 col-xl-6">
+        <!-- Delete Confirmation Card -->
+        <div class="delete-card fade-in-up">
+            <div class="delete-card-header">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle fa-3x" style="color: #dc3545;"></i>
                 </div>
-                <h4 class="text-danger mb-2">تأكيد الحذف</h4>
+                <h1 class="delete-title">تأكيد الحذف</h1>
+                <p class="delete-subtitle">إجراء دائم لا يمكن التراجع عنه</p>
             </div>
-            <div class="card-body text-center p-4">
-                <p class="lead mb-4">
+
+            <div class="delete-card-body">
+                <p class="lead">
                     هل أنت متأكد من أنك تريد حذف
-                    <strong class="text-danger">"{{ object.title }}"</strong>؟
-                </p>
-                <p class="text-muted mb-4">
-                    <i class="fas fa-info-circle ms-2"></i>
-                    هذا الإجراء لا يمكن التراجع عنه وسيتم حذف {{ type }} بشكل دائم.
+                    <strong class="object-title">"{{ object.title }}"</strong>؟
                 </p>
 
-                <div class="d-flex justify-content-center gap-3">
+                <div class="info-text">
+                    <i class="fas fa-info-circle"></i>
+                    هذا الإجراء لا يمكن التراجع عنه وسيتم حذف {{ type }} بشكل دائم.
+                </div>
+
+                <!-- Actions -->
+                <div class="actions-container">
                     <form method="post" class="d-inline">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-lg">
+                        <button type="submit" class="btn btn-danger">
                             <i class="fas fa-trash ms-2"></i>
                             نعم، احذف
                         </button>
@@ -36,69 +343,69 @@
                             {% elif type == 'ملف' %}{% url 'cultural_file_library' %}
                             {% elif type == 'عضو' %}{% url 'cultural_member_management' %}
                             {% else %}{% url 'cultural_dashboard' %}{% endif %}"
-                       class="btn btn-outline-secondary btn-lg">
+                       class="btn btn-outline-secondary">
                         <i class="fas fa-times ms-2"></i>
                         إلغاء
                     </a>
                 </div>
 
+                <!-- Object Information -->
                 {% if type == 'ملف' and object.file %}
-                <div class="mt-4 p-3 bg-light rounded">
-                    <h6 class="text-muted mb-2">معلومات الملف:</h6>
-                    <p class="mb-1"><strong>اسم الملف:</strong> {{ object.title }}</p>
-                    <p class="mb-1"><strong>النوع:</strong> {{ object.get_file_type_display }}</p>
-                    <p class="mb-0"><strong>الحجم:</strong> {{ object.file.size|filesizeformat }}</p>
+                <div class="object-info">
+                    <h6>
+                        <i class="fas fa-file-alt"></i>
+                        معلومات الملف
+                    </h6>
+                    <div class="info-item">
+                        <span class="info-label">اسم الملف:</span>
+                        <span class="info-value">{{ object.title }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">النوع:</span>
+                        <span class="info-value">{{ object.get_file_type_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الحجم:</span>
+                        <span class="info-value">{{ object.file.size|filesizeformat }}</span>
+                    </div>
                 </div>
                 {% endif %}
 
                 {% if type == 'مهمة' %}
-                <div class="mt-4 p-3 bg-light rounded">
-                    <h6 class="text-muted mb-2">معلومات المهمة:</h6>
-                    <p class="mb-1"><strong>العنوان:</strong> {{ object.title }}</p>
-                    <p class="mb-1"><strong>النوع:</strong> {{ object.get_task_type_display }}</p>
-                    <p class="mb-1"><strong>الحالة:</strong> {{ object.get_status_display }}</p>
-                    <p class="mb-0"><strong>تاريخ الاستحقاق:</strong> {{ object.due_date }}</p>
+                <div class="object-info">
+                    <h6>
+                        <i class="fas fa-tasks"></i>
+                        معلومات المهمة
+                    </h6>
+                    <div class="info-item">
+                        <span class="info-label">العنوان:</span>
+                        <span class="info-value">{{ object.title }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">النوع:</span>
+                        <span class="info-value">{{ object.get_task_type_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الحالة:</span>
+                        <span class="info-value">{{ object.get_status_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">تاريخ الاستحقاق:</span>
+                        <span class="info-value">{{ object.due_date }}</span>
+                    </div>
                 </div>
                 {% endif %}
             </div>
         </div>
 
         <!-- Warning Message -->
-        <div class="alert alert-warning mt-4 text-center">
+        <div class="warning-message fade-in-up" style="animation-delay: 0.2s;">
             <div class="d-flex align-items-center justify-content-center">
-                <i class="fas fa-exclamation-circle ms-2"></i>
-                <span class="fw-bold">تنبيه:</span>
-                <span class="me-2">لا يمكن استعادة البيانات المحذوفة</span>
+                <i class="fas fa-exclamation-circle warning-icon"></i>
+                <span class="fw-bold" style="color: var(--blue-dark);">تنبيه:</span>
+                <span class="me-2" style="color: var(--text-dark);">لا يمكن استعادة البيانات المحذوفة</span>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-.alert-icon {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-.btn-danger {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    border: none;
-    padding: 0.8rem 2rem;
-}
-
-.btn-danger:hover {
-    background: linear-gradient(135deg, #c82333, #a71e2a);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
-}
-
-.card {
-    border: 2px solid #ffc107 !important;
-}
-</style>
 {% endblock %}

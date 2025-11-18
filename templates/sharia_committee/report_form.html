@@ -1,13 +1,314 @@
 {% extends 'sharia_committee/base.html' %}
+{% load static %}
 
 {% block title %}{{ title }} - {{ committee.name }}{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        text-align: center;
+    }
+
+    .form-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-right: 4px;
+    }
+
+    .form-control, .form-select, .form-textarea {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .form-control:focus, .form-select:focus, .form-textarea:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .form-textarea {
+        min-height: 200px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-cancel {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-cancel:hover {
+        background: var(--border-light);
+        color: var(--text-dark);
+        border-color: var(--blue-primary);
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Form Section Styling */
+    .form-section {
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .form-section-title {
+        color: var(--blue-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.1rem;
+    }
+
+    /* Progress Input Styling */
+    .progress-input-wrapper {
+        position: relative;
+    }
+
+    .progress-input-wrapper .form-control {
+        padding-right: 3rem;
+    }
+
+    .progress-percentage {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--blue-primary);
+        font-weight: 600;
+        background: rgba(0, 132, 171, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+    }
+
+    /* File Input Styling */
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-custom {
+        background: var(--white);
+        border: 2px dashed var(--border-light);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-input-custom:hover {
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .file-input-custom i {
+        font-size: 2rem;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .file-input-text {
+        color: var(--text-gray);
+        font-weight: 500;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .file-name {
+        margin-top: 0.5rem;
+        color: var(--blue-primary);
+        font-weight: 600;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Textarea Character Count */
+    .textarea-wrapper {
+        position: relative;
+    }
+
+    .char-counter {
+        position: absolute;
+        bottom: 10px;
+        left: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        color: var(--text-gray);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .btn-group-actions {
+            flex-direction: column;
+        }
+
+        .form-header {
+            text-align: right;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .row {
+            flex-direction: column;
+        }
+
+        .col-md-4, .col-md-6, .col-md-8 {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="form-card" style="background: var(--white); border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 900px; margin: 0 auto;">
-    <div class="form-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-light);">
-        <h3 style="color: var(--text-dark); font-weight: 700;">
-            <i class="fas fa-chart-bar ms-2" style="color: var(--primary-green);"></i>
+<div class="form-card fade-in-up">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-chart-bar me-2" style="color: var(--blue-primary);"></i>
             {{ title }}
         </h3>
     </div>
@@ -15,52 +316,249 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <div class="row">
-            <div class="col-md-8 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.title.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.title }}
-                {% if form.title.errors %}<div class="text-danger mt-1">{{ form.title.errors }}</div>{% endif %}
-            </div>
+        <!-- Report Basic Information Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-info-circle me-2"></i>
+                المعلومات الأساسية للتقرير
+            </h5>
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.report_type.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.report_type }}
-                {% if form.report_type.errors %}<div class="text-danger mt-1">{{ form.report_type.errors }}</div>{% endif %}
-            </div>
-        </div>
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label">
+                        {{ form.title.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">أدخل عنواناً واضحاً ومعبراً للتقرير</small>
+                </div>
 
-        <div class="mb-3">
-            <label class="form-label" style="font-weight: 600;">{{ form.content.label }} <span style="color: #dc3545;">*</span></label>
-            {{ form.content }}
-            {% if form.content.errors %}<div class="text-danger mt-1">{{ form.content.errors }}</div>{% endif %}
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.interaction_rate.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.interaction_rate }}
-                {% if form.interaction_rate.errors %}<div class="text-danger mt-1">{{ form.interaction_rate.errors }}</div>{% endif %}
-                <small class="form-text text-muted">أدخل نسبة التفاعل من 0 إلى 100</small>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.file.label }}</label>
-                {{ form.file }}
-                {% if form.file.errors %}<div class="text-danger mt-1">{{ form.file.errors }}</div>{% endif %}
-                <small class="form-text text-muted">يمكنك رفع ملفات PDF, DOC, DOCX, XLS, XLSX</small>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        {{ form.report_type.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.report_type }}
+                    {% if form.report_type.errors %}
+                        <div class="text-danger mt-1">{{ form.report_type.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">اختر نوع التقرير المناسب</small>
+                </div>
             </div>
         </div>
 
-        <div class="btn-group-actions" style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+        <!-- Report Content Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-edit me-2"></i>
+                محتوى التقرير
+            </h5>
+
+            <div class="mb-3">
+                <div class="textarea-wrapper">
+                    <label class="form-label">
+                        {{ form.content.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.content }}
+                    <div class="char-counter" id="charCounter">0 حرف</div>
+                </div>
+                {% if form.content.errors %}
+                    <div class="text-danger mt-1">{{ form.content.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">اكتب المحتوى الكامل للتقرير مع التفاصيل والإحصائيات</small>
+            </div>
+        </div>
+
+        <!-- Report Metrics & Files Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-chart-line me-2"></i>
+                مقاييس التقرير والمرفقات
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="progress-input-wrapper">
+                        <label class="form-label">
+                            {{ form.interaction_rate.label }}
+                            <span class="required-star">*</span>
+                        </label>
+                        {{ form.interaction_rate }}
+
+                        {% if form.interaction_rate.errors %}
+                            <div class="text-danger mt-1">{{ form.interaction_rate.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <small class="form-text text-muted">نسبة التفاعل مع التقرير من 0 إلى 100</small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">{{ form.file.label }}</label>
+
+                    <div class="file-input-wrapper">
+                        <div class="file-input-custom">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div class="file-input-text">انقر لرفع الملف أو اسحب وأفلت الملف هنا</div>
+                            <div class="file-name" id="fileName">لم يتم اختيار أي ملف</div>
+                            {{ form.file }}
+                        </div>
+                    </div>
+
+                    {% if form.file.errors %}
+                        <div class="text-danger mt-1">{{ form.file.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">يمكنك رفع ملفات PDF, DOC, DOCX, XLS, XLSX - الحجم الأقصى: 10MB</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group-actions">
             <button type="submit" class="btn btn-primary flex-fill">
-                <i class="fas fa-save ms-2"></i>
+                <i class="fas fa-save me-2"></i>
                 حفظ التقرير
             </button>
-            <a href="{% url 'sharia_reports' %}" class="btn btn-cancel flex-fill" style="background: var(--border-light); color: var(--text-dark);">
-                <i class="fas fa-times ms-2"></i>
+            <a href="{% url 'sharia_reports' %}" class="btn btn-cancel flex-fill">
+                <i class="fas fa-times me-2"></i>
                 إلغاء
             </a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character counter for content textarea
+        const contentTextarea = document.querySelector('textarea[name="content"]');
+        const charCounter = document.getElementById('charCounter');
+
+        if (contentTextarea && charCounter) {
+            // Update counter on page load
+            updateCharCounter();
+
+            // Update counter on input
+            contentTextarea.addEventListener('input', updateCharCounter);
+
+            function updateCharCounter() {
+                const length = contentTextarea.value.length;
+                charCounter.textContent = length + ' حرف';
+
+                // Change color based on length
+                if (length > 500) {
+                    charCounter.style.color = '#28a745'; // Green for good length
+                } else if (length > 200) {
+                    charCounter.style.color = '#ffc107'; // Yellow for medium length
+                } else {
+                    charCounter.style.color = '#dc3545'; // Red for short length
+                }
+            }
+        }
+
+        // File input handling
+        const fileInput = document.querySelector('input[type="file"]');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        if (fileInput && fileNameDisplay) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileNameDisplay.textContent = this.files[0].name;
+                    fileNameDisplay.style.color = 'var(--blue-primary)';
+                } else {
+                    fileNameDisplay.textContent = 'لم يتم اختيار أي ملف';
+                    fileNameDisplay.style.color = 'var(--text-gray)';
+                }
+            });
+
+            // Initialize file name on page load
+            if (fileInput.files && fileInput.files[0]) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+                fileNameDisplay.style.color = 'var(--blue-primary)';
+            }
+        }
+
+        // Interaction rate input enhancement
+        const interactionInput = document.querySelector('input[name="interaction_rate"]');
+        if (interactionInput) {
+            interactionInput.addEventListener('input', function() {
+                let value = parseInt(this.value) || 0;
+                if (value < 0) this.value = 0;
+                if (value > 100) this.value = 100;
+
+                // Visual feedback
+                if (value >= 80) {
+                    this.style.borderColor = '#28a745';
+                } else if (value >= 50) {
+                    this.style.borderColor = '#ffc107';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+
+            // Set default value if empty
+            if (!interactionInput.value) {
+                interactionInput.value = 0;
+            }
+        }
+
+        // Report type change effect
+        const reportTypeSelect = document.querySelector('select[name="report_type"]');
+        if (reportTypeSelect) {
+            reportTypeSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                this.style.borderLeft = '4px solid var(--blue-primary)';
+
+                // Add animation effect
+                this.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        // Form field focus effects
+        const formInputs = document.querySelectorAll('.form-control, .form-select, .form-textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+
+        // Auto-save draft functionality (optional)
+        let autoSaveTimer;
+        const form = document.querySelector('form');
+
+        form.addEventListener('input', function() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                // Show auto-save notification
+                const saveIndicator = document.createElement('div');
+                saveIndicator.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--blue-primary);
+                    color: white;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    font-family: 'Cairo', sans-serif;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                saveIndicator.textContent = '💾 تم الحفظ التلقائي';
+                document.body.appendChild(saveIndicator);
+
+                setTimeout(() => {
+                    saveIndicator.remove();
+                }, 2000);
+            }, 2000);
+        });
+    });
+</script>
 {% endblock %}

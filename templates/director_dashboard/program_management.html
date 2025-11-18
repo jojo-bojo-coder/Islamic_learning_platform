@@ -17,7 +17,7 @@
     }
 
     .page-header h2 {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-family: 'Cairo', sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
@@ -25,7 +25,7 @@
     }
 
     .page-header h2 i {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-left: 12px;
     }
 
@@ -40,8 +40,8 @@
     }
 
     .alert-success {
-        background: rgba(134, 184, 23, 0.1);
-        border-right-color: var(--primary-green);
+        background: rgba(0, 132, 171, 0.1);
+        border-right-color: var(--blue-primary);
         color: var(--text-dark);
     }
 
@@ -59,6 +59,18 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         border: 1px solid var(--border-light);
         margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .programs-table-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     /* Enhanced Table */
@@ -73,11 +85,11 @@
     }
 
     .table thead {
-        background: rgba(134, 184, 23, 0.1);
+        background: rgba(0, 132, 171, 0.1);
     }
 
     .table thead th {
-        color: var(--text-dark);
+        color: var(--blue-dark);
         font-weight: 600;
         padding: 1rem;
         border: none;
@@ -91,7 +103,7 @@
     }
 
     .table tbody tr:hover {
-        background: rgba(134, 184, 23, 0.05);
+        background: rgba(0, 132, 171, 0.05);
     }
 
     .table tbody td {
@@ -116,9 +128,9 @@
     }
 
     .status-badge.active {
-        background: rgba(134, 184, 23, 0.1);
-        color: var(--primary-green);
-        border: 1px solid rgba(134, 184, 23, 0.2);
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.2);
     }
 
     .status-badge.inactive {
@@ -131,11 +143,11 @@
     .progress {
         height: 8px;
         border-radius: 4px;
-        background-color: rgba(134, 184, 23, 0.1);
+        background-color: rgba(0, 132, 171, 0.1);
     }
 
     .progress-bar {
-        background-color: var(--primary-green);
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
         border-radius: 4px;
     }
 
@@ -150,16 +162,16 @@
     }
 
     .btn-outline-primary {
-        color: var(--primary-green);
+        color: var(--blue-primary);
         border-color: var(--border-light);
     }
 
     .btn-outline-primary:hover {
-        background: var(--primary-green);
-        border-color: var(--primary-green);
+        background: var(--blue-primary);
+        border-color: var(--blue-primary);
         color: var(--white);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 132, 171, 0.3);
     }
 
     .btn-outline-danger {
@@ -189,17 +201,29 @@
         border: 1px solid var(--border-light);
         transition: all 0.3s ease;
         height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mini-stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .mini-stat-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.15);
     }
 
     .mini-stat-number {
         font-size: 2rem;
         font-weight: 700;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         margin-bottom: 0.5rem;
     }
 
@@ -211,24 +235,44 @@
 
     /* Add Program Button */
     .btn-add-program {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         border: none;
         border-radius: 8px;
         padding: 0.8rem 1.5rem;
         font-weight: 600;
         color: var(--white);
-        box-shadow: 0 5px 15px rgba(134, 184, 23, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-add-program::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-add-program:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-add-program:hover {
-        background: #75a015;
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(134, 184, 23, 0.4);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
         color: var(--white);
     }
 
@@ -240,7 +284,7 @@
 
     .empty-state i {
         font-size: 4rem;
-        color: var(--primary-green);
+        color: var(--blue-primary);
         opacity: 0.2;
         margin-bottom: 1rem;
     }
@@ -260,7 +304,7 @@
     }
 
     .modal-header {
-        background: var(--primary-green);
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
         color: var(--white);
         border-radius: 15px 15px 0 0;
         padding: 1.25rem 1.5rem;
@@ -513,7 +557,7 @@
                 {% for program in programs %}
                 <tr>
                     <td>
-                        <i class="fas fa-book ms-2" style="color: var(--primary-green);"></i>
+                        <i class="fas fa-book ms-2" style="color: var(--blue-primary);"></i>
                         <strong>{{ program.name }}</strong>
                         {% if program.description %}
                         <br>
@@ -556,7 +600,7 @@
                         </span>
                     </td>
                     <td>
-                        <div class="btn-group btn-group-sm">
+                        <div class="btn-group btn-group-sm d-flex flex-row-reverse">
                             <a href="{% url 'edit_program' program.id %}" class="btn btn-outline-primary" title="تعديل">
                                 <i class="fas fa-edit"></i>
                                 <span class="d-none d-sm-inline">تعديل</span>

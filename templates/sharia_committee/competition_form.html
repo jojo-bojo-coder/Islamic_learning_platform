@@ -1,13 +1,279 @@
 {% extends 'sharia_committee/base.html' %}
+{% load static %}
 
 {% block title %}{{ title }} - {{ committee.name }}{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .form-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+        text-align: center;
+    }
+
+    .form-header h3 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .required-star {
+        color: #dc3545;
+        margin-right: 4px;
+    }
+
+    .form-control, .form-select, .form-textarea {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .form-control:focus, .form-select:focus, .form-textarea:focus {
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-cancel {
+        background: var(--light-bg);
+        color: var(--text-dark);
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-cancel:hover {
+        background: var(--border-light);
+        color: var(--text-dark);
+        border-color: var(--blue-primary);
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        font-weight: 500;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Form Section Styling */
+    .form-section {
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .form-section-title {
+        color: var(--blue-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.1rem;
+    }
+
+    /* File Input Styling */
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-custom {
+        background: var(--white);
+        border: 2px dashed var(--border-light);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-input-custom:hover {
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .file-input-custom i {
+        font-size: 2rem;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .file-input-text {
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .file-name {
+        margin-top: 0.5rem;
+        color: var(--blue-primary);
+        font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 1.5rem;
+            margin: 0 1rem;
+        }
+
+        .btn-group-actions {
+            flex-direction: column;
+        }
+
+        .form-header {
+            text-align: right;
+        }
+
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .row {
+            flex-direction: column;
+        }
+
+        .col-md-4, .col-md-6 {
+            width: 100%;
+        }
+    }
+
+    /* Date Input Styling */
+    input[type="date"].form-control {
+        direction: ltr;
+        text-align: right;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="form-card" style="background: var(--white); border-radius: 15px; padding: 2rem; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); max-width: 900px; margin: 0 auto;">
-    <div class="form-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border-light);">
-        <h3 style="color: var(--text-dark); font-weight: 700;">
-            <i class="fas fa-trophy ms-2" style="color: var(--primary-green);"></i>
+<div class="form-card fade-in-up">
+    <div class="form-header">
+        <h3>
+            <i class="fas fa-trophy me-2" style="color: var(--blue-primary);"></i>
             {{ title }}
         </h3>
     </div>
@@ -15,55 +281,192 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <div class="mb-3">
-            <label class="form-label" style="font-weight: 600;">{{ form.title.label }} <span style="color: #dc3545;">*</span></label>
-            {{ form.title }}
-            {% if form.title.errors %}<div class="text-danger mt-1">{{ form.title.errors }}</div>{% endif %}
-        </div>
+        <!-- Competition Basic Information Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-info-circle me-2"></i>
+                المعلومات الأساسية للمسابقة
+            </h5>
 
-        <div class="mb-3">
-            <label class="form-label" style="font-weight: 600;">{{ form.description.label }} <span style="color: #dc3545;">*</span></label>
-            {{ form.description }}
-            {% if form.description.errors %}<div class="text-danger mt-1">{{ form.description.errors }}</div>{% endif %}
-        </div>
-
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.start_date.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.start_date }}
-                {% if form.start_date.errors %}<div class="text-danger mt-1">{{ form.start_date.errors }}</div>{% endif %}
+            <div class="mb-3">
+                <label class="form-label">
+                    {{ form.title.label }}
+                    <span class="required-star">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger mt-1">{{ form.title.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">أدخل عنواناً واضحاً وجذاباً للمسابقة</small>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.end_date.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.end_date }}
-                {% if form.end_date.errors %}<div class="text-danger mt-1">{{ form.end_date.errors }}</div>{% endif %}
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <label class="form-label" style="font-weight: 600;">{{ form.status.label }} <span style="color: #dc3545;">*</span></label>
-                {{ form.status }}
-                {% if form.status.errors %}<div class="text-danger mt-1">{{ form.status.errors }}</div>{% endif %}
+            <div class="mb-3">
+                <label class="form-label">
+                    {{ form.description.label }}
+                    <span class="required-star">*</span>
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">صف تفاصيل المسابقة وشروط المشاركة فيها</small>
             </div>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label" style="font-weight: 600;">{{ form.file.label }}</label>
-            {{ form.file }}
-            {% if form.file.errors %}<div class="text-danger mt-1">{{ form.file.errors }}</div>{% endif %}
-            <small class="form-text text-muted">يمكنك رفع ملفات PDF, DOC, DOCX, PPT, PPTX</small>
+        <!-- Competition Schedule Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-calendar-alt me-2"></i>
+                جدول المسابقة
+            </h5>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        {{ form.start_date.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.start_date }}
+                    {% if form.start_date.errors %}
+                        <div class="text-danger mt-1">{{ form.start_date.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">تاريخ بداية المسابقة</small>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        {{ form.end_date.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.end_date }}
+                    {% if form.end_date.errors %}
+                        <div class="text-danger mt-1">{{ form.end_date.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">تاريخ نهاية المسابقة</small>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">
+                        {{ form.status.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                    {% endif %}
+                    <small class="form-text text-muted">الحالة الحالية للمسابقة</small>
+                </div>
+            </div>
         </div>
 
-        <div class="btn-group-actions" style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-light);">
+        <!-- File Attachment Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-paperclip me-2"></i>
+                المرفقات
+            </h5>
+
+            <div class="mb-3">
+                <label class="form-label">{{ form.file.label }}</label>
+
+                <div class="file-input-wrapper">
+                    <div class="file-input-custom">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div class="file-input-text">انقر لرفع الملف أو اسحب وأفلت الملف هنا</div>
+                        <div class="file-name" id="fileName">لم يتم اختيار أي ملف</div>
+                        {{ form.file }}
+                    </div>
+                </div>
+
+                {% if form.file.errors %}
+                    <div class="text-danger mt-1">{{ form.file.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">يمكنك رفع ملفات PDF, DOC, DOCX, PPT, PPTX - الحجم الأقصى: 10MB</small>
+            </div>
+        </div>
+
+        <div class="btn-group-actions">
             <button type="submit" class="btn btn-primary flex-fill">
-                <i class="fas fa-save ms-2"></i>
+                <i class="fas fa-save me-2"></i>
                 حفظ المسابقة
             </button>
-            <a href="{% url 'sharia_competition_management' %}" class="btn btn-cancel flex-fill" style="background: var(--border-light); color: var(--text-dark);">
-                <i class="fas fa-times ms-2"></i>
+            <a href="{% url 'sharia_competition_management' %}" class="btn btn-cancel flex-fill">
+                <i class="fas fa-times me-2"></i>
                 إلغاء
             </a>
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File input handling
+        const fileInput = document.querySelector('input[type="file"]');
+        const fileNameDisplay = document.getElementById('fileName');
+
+        if (fileInput && fileNameDisplay) {
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileNameDisplay.textContent = this.files[0].name;
+                    fileNameDisplay.style.color = 'var(--blue-primary)';
+                } else {
+                    fileNameDisplay.textContent = 'لم يتم اختيار أي ملف';
+                    fileNameDisplay.style.color = 'var(--text-gray)';
+                }
+            });
+
+            // Initialize file name on page load
+            if (fileInput.files && fileInput.files[0]) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+                fileNameDisplay.style.color = 'var(--blue-primary)';
+            }
+        }
+
+        // Date input enhancement
+        const startDateInput = document.querySelector('input[name="start_date"]');
+        const endDateInput = document.querySelector('input[name="end_date"]');
+
+        if (startDateInput) {
+            // Set min date to today for start date
+            const today = new Date().toISOString().split('T')[0];
+            startDateInput.min = today;
+
+            // If no value is set, set it to today by default
+            if (!startDateInput.value) {
+                startDateInput.value = today;
+            }
+        }
+
+        if (endDateInput && startDateInput) {
+            // Set min date to start date for end date
+            startDateInput.addEventListener('change', function() {
+                endDateInput.min = this.value;
+            });
+
+            // Initialize end date min value
+            if (startDateInput.value) {
+                endDateInput.min = startDateInput.value;
+            }
+
+            // If no value is set for end date, set it to start date + 7 days
+            if (!endDateInput.value && startDateInput.value) {
+                const endDate = new Date(startDateInput.value);
+                endDate.setDate(endDate.getDate() + 7);
+                endDateInput.value = endDate.toISOString().split('T')[0];
+            }
+        }
+
+        // Form field focus effects
+        const formInputs = document.querySelectorAll('.form-control, .form-select, .form-textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('focused');
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('focused');
+            });
+        });
+    });
+</script>
 {% endblock %}
