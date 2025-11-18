@@ -763,3 +763,32 @@ def create_director_alert(title, message, alert_type, priority='medium',
         action_url=action_url
     )
     return alert
+
+
+@login_required
+def debug_images(request):
+    """Debug view to check image paths"""
+    if request.user.role != 'director':
+        return redirect('home')
+
+    from django.conf import settings
+    import os
+
+    photos = AlbumPhoto.objects.all()[:5]
+
+    debug_info = {
+        'MEDIA_ROOT': settings.MEDIA_ROOT,
+        'MEDIA_URL': settings.MEDIA_URL,
+        'BASE_DIR': settings.BASE_DIR,
+        'photos': []
+    }
+
+    for photo in photos:
+        debug_info['photos'].append({
+            'title': photo.title,
+            'image_path': photo.image.path if photo.image else 'No image',
+            'image_url': photo.image.url if photo.image else 'No URL',
+            'exists': os.path.exists(photo.image.path) if photo.image else False,
+        })
+
+    return JsonResponse(debug_info)
