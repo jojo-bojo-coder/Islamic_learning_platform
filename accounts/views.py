@@ -7,32 +7,83 @@ from .forms import LoginForm, RegisterForm
 
 
 def login_view(request):
+    print(f"=== LOGIN VIEW STARTED ===")
+    print(f"Request method: {request.method}")
+
     if request.method == 'POST':
+        print("POST request detected")
         form = LoginForm(request.POST)
+        print(f"Form created with POST data: {request.POST}")
+
         if form.is_valid():
-            username = form.cleaned_data['username']
+            print("Form is valid")
+            username_or_email = form.cleaned_data['username_or_email']  # Updated field name
             password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
+            print(f"Attempting authentication for: {username_or_email}")
+
+            # Try to authenticate with both username and email
+            user = None
+
+            # First, try to authenticate directly (will work for username)
+            user = authenticate(request, username=username_or_email, password=password)
+            print(f"Direct authentication result: {user}")
+
+            # If direct authentication failed, try with email
+            if user is None:
+                print("Direct authentication failed, trying with email...")
+                try:
+                    user_obj = User.objects.get(email=username_or_email)
+                    print(f"User found by email: {user_obj.username}")
+                    user = authenticate(request, username=user_obj.username, password=password)
+                    print(f"Email authentication result: {user}")
+                except User.DoesNotExist:
+                    user = None
+                    print("No user found with this email or username")
+
+            print(f"Final authentication result - User: {user}")
 
             if user is not None:
+                print(
+                    f"User authenticated successfully: {user.username}, Role: {getattr(user, 'role', 'No role attribute')}")
                 login(request, user)
-                UserActivity.objects.create(
-                    user=user,
-                    action='تسجيل الدخول',
-                    ip_address=get_client_ip(request)
-                )
+                print("User logged in successfully")
+
+                # Log user activity
+                try:
+                    ip_address = get_client_ip(request)
+                    print(f"IP Address: {ip_address}")
+                    UserActivity.objects.create(
+                        user=user,
+                        action='تسجيل الدخول',
+                        ip_address=ip_address
+                    )
+                    print("User activity logged successfully")
+                except Exception as e:
+                    print(f"Error logging user activity: {e}")
+
                 messages.success(request, 'تم تسجيل الدخول بنجاح!')
+                print("Success message added")
 
                 # Redirect based on user role
+                print(f"Checking user role: {user.role}")
                 if user.role == 'program_manager':
+                    print("Redirecting to program manager dashboard")
                     return redirect('pm_dashboard')
                 else:
+                    print("Redirecting to regular dashboard")
                     return redirect('dashboard')
             else:
-                messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
+                print("Authentication failed - user is None")
+                messages.error(request, 'اسم المستخدم/البريد الإلكتروني أو كلمة المرور غير صحيحة')
+                print("Error message added")
+        else:
+            print("Form is invalid")
+            print(f"Form errors: {form.errors}")
     else:
+        print("GET request detected - creating empty form")
         form = LoginForm()
 
+    print("Rendering login template")
     return render(request, 'accounts/login.html', {'form': form})
 
 

@@ -380,7 +380,7 @@
             {% if form.errors %}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-circle me-2"></i>
-                    اسم المستخدم أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.
+                    اسم المستخدم/البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مرة أخرى.
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endif %}
@@ -389,15 +389,15 @@
                 {% csrf_token %}
 
                 <div class="form-group">
-                    <label for="id_email" class="form-label">
-                        <i class="fas fa-envelope me-2"></i>البريد الإلكتروني
+                    <label for="id_username_or_email" class="form-label">
+                        <i class="fas fa-user me-2"></i>اسم المستخدم أو البريد الإلكتروني
                     </label>
-                    <input type="email"
-                           name="email"
-                           id="id_email"
+                    <input type="text"
+                           name="username_or_email"
+                           id="id_username_or_email"
                            class="form-control"
-                           placeholder="أدخل بريدك الإلكتروني"
-                           value="{{ email|default_if_none:'' }}"
+                           placeholder="أدخل اسم المستخدم أو البريد الإلكتروني"
+                           value="{{ username_or_email|default_if_none:'' }}"
                            required
                            autofocus>
                 </div>

@@ -4,14 +4,26 @@ from .models import User
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(
-        label='اسم المستخدم',
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'أدخل اسم المستخدم'})
+    username_or_email = forms.CharField(
+        label='اسم المستخدم أو البريد الإلكتروني',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'أدخل اسم المستخدم أو البريد الإلكتروني'
+        })
     )
     password = forms.CharField(
         label='كلمة المرور',
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'أدخل كلمة المرور'})
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'أدخل كلمة المرور'
+        })
     )
+
+    def clean_username_or_email(self):
+        username_or_email = self.cleaned_data.get('username_or_email')
+        if not username_or_email:
+            raise forms.ValidationError('يرجى إدخال اسم المستخدم أو البريد الإلكتروني')
+        return username_or_email
 
 
 class RegisterForm(UserCreationForm):
