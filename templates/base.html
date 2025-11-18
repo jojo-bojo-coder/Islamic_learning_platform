@@ -437,17 +437,24 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--light-bg);
-        }
+    background: #f1f1f1;
+    border-radius: 6px;
+}
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-green);
-            border-radius: 6px;
-        }
+    background: #0084AB;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
+}
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #75a015;
-        }
+::-webkit-scrollbar-thumb:hover {
+    background: #006d8c;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #0084AB #f1f1f1;
+}
 
         /* Selection */
         ::selection {
