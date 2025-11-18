@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تقارير وإحصائيات - منصة مداد</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #0084ab;
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #0084ab;
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-right: 4px solid #0084ab;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: #00576f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th {
+            background-color: #e9ecef;
+            padding: 10px;
+            text-align: right;
+            border: 1px solid #dee2e6;
+            font-weight: 700;
+        }
+
+        td {
+            padding: 8px 10px;
+            border: 1px solid #dee2e6;
+            text-align: right;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0084ab;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-bar {
+            background-color: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-value {
+            background-color: #0084ab;
+            height: 100%;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success { background-color: #d4edda; color: #155724; }
+        .badge-warning { background-color: #fff3cd; color: #856404; }
+        .badge-info { background-color: #d1ecf1; color: #0c5460; }
+        .badge-primary { background-color: #cce7ff; color: #004085; }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media print {
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>التقارير والإحصائيات - منصة مداد</h1>
+        <div class="subtitle">تم التصدير في: {{ export_date }}</div>
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="section">
+        <div class="section-title">الإحصائيات العامة</div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ programs.count }}</div>
+                <div class="stat-label">إجمالي البرامج</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ active_committees.count }}</div>
+                <div class="stat-label">اللجان النشطة</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ best_students.count }}</div>
+                <div class="stat-label">الطلاب المتميزين</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    {% with total=programs.count %}
+                        {% if total > 0 %}
+                            {% widthratio programs.count programs.count 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="stat-label">متوسط الإنجاز</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Programs Report -->
+    <div class="section">
+        <div class="section-title">إنجاز البرامج</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم البرنامج</th>
+                    <th>مدير البرنامج</th>
+                    <th>عدد الطلاب</th>
+                    <th>متوسط التقدم</th>
+                    <th>تاريخ البدء</th>
+                    <th>تاريخ الانتهاء</th>
+                    <th>الحالة</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for program in programs %}
+                <tr>
+                    <td>{{ program.name }}</td>
+                    <td>
+                        {% if program.manager %}
+                            {{ program.manager.get_full_name|default:program.manager.username }}
+                        {% else %}
+                            غير معين
+                        {% endif %}
+                    </td>
+                    <td>{{ program.student_count }}</td>
+                    <td>{{ program.avg_progress|default:0|floatformat:1 }}%</td>
+                    <td>{{ program.start_date }}</td>
+                    <td>{{ program.end_date }}</td>
+                    <td>
+                        {% if program.is_active %}
+                            <span class="badge badge-success">نشط</span>
+                        {% else %}
+                            <span class="badge badge-warning">منتهي</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">لا توجد برامج مضافة حتى الآن</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Active Committees -->
+    <div class="section">
+        <div class="section-title">اللجان النشطة</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم اللجنة</th>
+                    <th>البرنامج</th>
+                    <th>عدد الأعضاء</th>
+                    <th>متوسط التقدم</th>
+                    <th>المشرف</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for committee in active_committees %}
+                <tr>
+                    <td>{{ committee.name }}</td>
+                    <td>{{ committee.program.name }}</td>
+                    <td>{{ committee.student_count }}</td>
+                    <td>{{ committee.avg_progress|default:0|floatformat:1 }}%</td>
+                    <td>
+                        {% if committee.supervisor %}
+                            {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
+                        {% else %}
+                            غير معين
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">لا توجد لجان نشطة حتى الآن</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Best Students -->
+    <div class="section">
+        <div class="section-title">أفضل الطلاب أداءً</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم الطالب</th>
+                    <th>البرنامج</th>
+                    <th>اللجنة</th>
+                    <th>مستوى الحفظ</th>
+                    <th>نسبة التقدم</th>
+                    <th>تاريخ الانضمام</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in best_students %}
+                <tr>
+                    <td>{{ student.user.get_full_name|default:student.user.username }}</td>
+                    <td>{{ student.program.name }}</td>
+                    <td>
+                        {% if student.committee %}
+                            {{ student.committee.name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ student.memorization_level|default:"غير محدد" }}</td>
+                    <td>{{ student.progress }}%</td>
+                    <td>{{ student.joined_date }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">لا توجد بيانات للطلاب حتى الآن</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        تم إنشاء هذا التقرير تلقائياً من نظام منصة مداد - جميع الحقوق محفوظة
+    </div>
+</body>
+</html>

@@ -37,4 +37,7 @@ urlpatterns = [
     path('alerts/mark-read/<int:alert_id>/', views.mark_alert_read, name='mark_alert_read'),
     path('alerts/mark-all-read/', views.mark_all_alerts_read, name='mark_all_alerts_read'),
     path('alerts/delete/<int:alert_id>/', views.delete_alert, name='delete_alert'),
+
+    path('reports/export-pdf/', views.export_reports_pdf, name='export_reports_pdf'),
+    path('reports/export-excel/', views.export_reports_excel, name='export_reports_excel'),
 ]

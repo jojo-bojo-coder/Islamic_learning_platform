@@ -7,6 +7,7 @@ from accounts.models import User, UserActivity
 from .forms import ProgramForm, UserForm
 
 
+from cultural_committee_dashboard.models import DailyPhrase
 @login_required
 def dashboard(request):
     if request.user.role != 'director':
@@ -28,6 +29,25 @@ def dashboard(request):
     # Recent activities
     recent_activities = UserActivity.objects.select_related('user').order_by('-timestamp')[:5]
 
+    # Get daily phrase from cultural committee of the first program
+    daily_phrase = None
+    try:
+        first_program = Program.objects.first()
+        if first_program:
+            cultural_committee = Committee.objects.filter(
+                program=first_program,
+            ).first()
+
+            if cultural_committee:
+                from datetime import date
+                daily_phrase = DailyPhrase.objects.filter(
+                    display_date=date.today(),
+                    is_active=True
+                ).first()
+    except Exception as e:
+        # Log the error but don't break the dashboard
+        print(f"Error fetching daily phrase: {e}")
+
     context = {
         'total_programs': total_programs,
         'total_committees': total_committees,
@@ -35,6 +55,7 @@ def dashboard(request):
         'total_users': total_users,
         'overall_completion': round(overall_completion, 1),
         'recent_activities': recent_activities,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'director_dashboard/dashboard.html', context)
 
@@ -765,30 +786,161 @@ def create_director_alert(title, message, alert_type, priority='medium',
     return alert
 
 
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import pandas as pd
+from datetime import datetime
+import tempfile
+from django.db.models import Count, Avg
+
+
 @login_required
-def debug_images(request):
-    """Debug view to check image paths"""
+def export_reports_pdf(request):
+    """Export reports as PDF"""
     if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
         return redirect('home')
 
-    from django.conf import settings
-    import os
+    try:
+        # Get the same data as reports view
+        programs = Program.objects.annotate(
+            student_count=Count('student'),
+            avg_progress=Avg('student__progress')
+        )
 
-    photos = AlbumPhoto.objects.all()[:5]
+        active_committees = Committee.objects.annotate(
+            student_count=Count('student'),
+            avg_progress=Avg('student__progress')
+        ).order_by('-student_count', '-avg_progress')[:5]
 
-    debug_info = {
-        'MEDIA_ROOT': settings.MEDIA_ROOT,
-        'MEDIA_URL': settings.MEDIA_URL,
-        'BASE_DIR': settings.BASE_DIR,
-        'photos': []
-    }
+        best_students = Student.objects.select_related('user', 'program').order_by('-progress')[:10]
 
-    for photo in photos:
-        debug_info['photos'].append({
-            'title': photo.title,
-            'image_path': photo.image.path if photo.image else 'No image',
-            'image_url': photo.image.url if photo.image else 'No URL',
-            'exists': os.path.exists(photo.image.path) if photo.image else False,
-        })
+        context = {
+            'programs': programs,
+            'active_committees': active_committees,
+            'best_students': best_students,
+            'export_date': datetime.now().strftime('%Y-%m-%d %H:%M'),
+        }
 
-    return JsonResponse(debug_info)
+        # Render HTML template
+        html_string = render_to_string('director_dashboard/reports_pdf.html', context)
+
+        # Create PDF
+        html = HTML(string=html_string, base_url=request.build_absolute_uri())
+        pdf_file = html.write_pdf()
+
+        # Create response
+        response = HttpResponse(pdf_file, content_type='application/pdf')
+        filename = f'reports_export_{datetime.now().strftime("%Y%m%d_%H%M")}.pdf'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        # Log activity
+        UserActivity.objects.create(
+            user=request.user,
+            action='تصدير تقارير PDF',
+            ip_address=get_client_ip(request)
+        )
+
+        return response
+
+    except Exception as e:
+        messages.error(request, f'حدث خطأ أثناء تصدير PDF: {str(e)}')
+        return redirect('reports')
+
+
+@login_required
+def export_reports_excel(request):
+    """Export reports as Excel"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        # Get data
+        programs = Program.objects.annotate(
+            student_count=Count('student'),
+            avg_progress=Avg('student__progress')
+        )
+
+        active_committees = Committee.objects.annotate(
+            student_count=Count('student'),
+            avg_progress=Avg('student__progress')
+        ).order_by('-student_count', '-avg_progress')[:5]
+
+        best_students = Student.objects.select_related('user', 'program').order_by('-progress')[:10]
+
+        # Create Excel file with multiple sheets
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
+            with pd.ExcelWriter(tmp_file.name, engine='openpyxl') as writer:
+
+                # Programs Sheet
+                programs_data = []
+                for program in programs:
+                    programs_data.append({
+                        'اسم البرنامج': program.name,
+                        'مدير البرنامج': program.manager.get_full_name() if program.manager else 'غير معين',
+                        'عدد الطلاب': program.student_count,
+                        'متوسط التقدم %': round(program.avg_progress or 0, 1),
+                        'تاريخ البدء': program.start_date,
+                        'تاريخ الانتهاء': program.end_date,
+                        'الحالة': 'نشط' if program.is_active else 'منتهي'
+                    })
+
+                if programs_data:
+                    df_programs = pd.DataFrame(programs_data)
+                    df_programs.to_excel(writer, sheet_name='البرامج', index=False)
+
+                # Active Committees Sheet
+                committees_data = []
+                for committee in active_committees:
+                    committees_data.append({
+                        'اسم اللجنة': committee.name,
+                        'البرنامج': committee.program.name,
+                        'عدد الأعضاء': committee.student_count,
+                        'متوسط التقدم %': round(committee.avg_progress or 0, 1),
+                        'المشرف': committee.supervisor.get_full_name() if committee.supervisor else 'غير معين'
+                    })
+
+                if committees_data:
+                    df_committees = pd.DataFrame(committees_data)
+                    df_committees.to_excel(writer, sheet_name='اللجان النشطة', index=False)
+
+                # Best Students Sheet
+                students_data = []
+                for student in best_students:
+                    students_data.append({
+                        'اسم الطالب': student.user.get_full_name() or student.user.username,
+                        'البرنامج': student.program.name,
+                        'اللجنة': student.committee.name if student.committee else '-',
+                        'مستوى الحفظ': student.memorization_level or 'غير محدد',
+                        'نسبة التقدم %': student.progress,
+                        'تاريخ الانضمام': student.joined_date
+                    })
+
+                if students_data:
+                    df_students = pd.DataFrame(students_data)
+                    df_students.to_excel(writer, sheet_name='أفضل الطلاب', index=False)
+
+            # Read the file and create response
+            with open(tmp_file.name, 'rb') as f:
+                excel_data = f.read()
+
+        # Create response
+        response = HttpResponse(excel_data,
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        filename = f'reports_export_{datetime.now().strftime("%Y%m%d_%H%M")}.xlsx'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        # Log activity
+        UserActivity.objects.create(
+            user=request.user,
+            action='تصدير تقارير Excel',
+            ip_address=get_client_ip(request)
+        )
+
+        return response
+
+    except Exception as e:
+        messages.error(request, f'حدث خطأ أثناء تصدير Excel: {str(e)}')
+        return redirect('reports')
