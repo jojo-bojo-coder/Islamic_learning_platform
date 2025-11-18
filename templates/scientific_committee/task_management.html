@@ -1,200 +1,51 @@
 {% extends 'scientific_committee/base.html' %}
+{% load static %}
 
 {% block title %}إدارة المهام - اللجنة العلمية{% endblock %}
-
 {% block page_title %}إدارة المهام العلمية{% endblock %}
 
-{% block content %}
-<!-- Header Section -->
-<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
-    <div class="col-12">
-        <div class="dashboard-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <h4 style="color: var(--blue-dark);">
-                    <i class="fas fa-tasks ms-2"></i>
-                    المهام العلمية
-                </h4>
-                <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem;">
-                    <i class="fas fa-plus ms-1"></i>
-                    إضافة مهمة جديدة
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+{% block extra_css %}
 
-<!-- Filters -->
-<div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
-    <div class="col-12">
-        <div class="dashboard-card">
-            <form method="get" class="row g-3">
-                <div class="col-md-4">
-                    <label for="type" class="form-label" style="color: var(--blue-dark); font-weight: 600;">نوع المهمة</label>
-                    <select name="type" id="type" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
-                        <option value="">جميع الأنواع</option>
-                        {% for task_type in task_types %}
-                        <option value="{{ task_type.0 }}" {% if task_type_filter == task_type.0 %}selected{% endif %}>
-                            {{ task_type.1 }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="status" class="form-label" style="color: var(--blue-dark); font-weight: 600;">الحالة</label>
-                    <select name="status" id="status" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
-                        <option value="">جميع الحالات</option>
-                        {% for status in status_choices %}
-                        <option value="{{ status.0 }}" {% if status_filter == status.0 %}selected{% endif %}>
-                            {{ status.1 }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="action-btn action-btn-info w-100" style="padding: 0.8rem 1.5rem;">
-                        <i class="fas fa-filter ms-1"></i>
-                        تصفية
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Tasks Table -->
-<div class="row fade-in-up" style="animation-delay: 0.3s;">
-    <div class="col-12">
-        <div class="dashboard-card">
-            {% if tasks %}
-            <div class="table-responsive">
-                <table class="table table-hover custom-table">
-                    <thead>
-                        <tr>
-                            <th>العنوان</th>
-                            <th>نوع المهمة</th>
-                            <th>المسؤول</th>
-                            <th>تاريخ الاستحقاق</th>
-                            <th>الحالة</th>
-                            <th>نسبة الإنجاز</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for task in tasks %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
-                                    <div>
-                                        <strong style="color: var(--blue-dark);">{{ task.title }}</strong>
-                                        {% if task.description %}
-                                        <br>
-                                        <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary);">
-                                    {{ task.get_task_type_display }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if task.assigned_to %}
-                                <div class="d-flex align-items-center">
-                                    <div class="member-avatar-small me-2">
-                                        {{ task.assigned_to.first_name|first }}{{ task.assigned_to.last_name|first }}
-                                    </div>
-                                    {{ task.assigned_to.get_full_name }}
-                                </div>
-                                {% else %}
-                                <span class="text-muted">غير معين</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span style="color: var(--blue-dark); font-weight: 500;">{{ task.due_date }}</span>
-                            </td>
-                            <td>
-                                <span class="status-badge status-{{ task.status }}">
-                                    {{ task.get_status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="progress ms-2" style="width: 80px; height: 8px; background-color: rgba(0, 132, 171, 0.1);">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%; background-color: var(--blue-primary);"></div>
-                                    </div>
-                                    <span style="color: var(--blue-dark); font-weight: 600; margin-right: 8px;">{{ task.completion_percentage }}%</span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm d-flex flex-row-reverse">
-                                    <a href="{% url 'scientific_edit_task' task.id %}" class="btn btn-outline-primary" title="تعديل" style="border-color: var(--blue-primary); color: var(--blue-primary);">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}" title="حذف" style="border-color: #dc3545; color: #dc3545;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
-                                                <h5 class="modal-title">تأكيد الحذف</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>هل أنت متأكد من حذف المهمة "{{ task.title }}"؟</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <form method="post" action="{% url 'scientific_delete_task' task.id %}">
-                                                    {% csrf_token %}
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
-                                                    <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-tasks fa-3x text-muted mb-3" style="color: var(--blue-primary) !important; opacity: 0.3;"></i>
-                <h5 class="text-muted" style="color: var(--blue-dark) !important;">لا توجد مهام</h5>
-                <p class="text-muted">لم يتم إضافة أي مهام بعد</p>
-                <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
-                    <i class="fas fa-plus me-1"></i>
-                    إضافة أول مهمة
-                </a>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
 {% endblock %}
 
-{% block extra_js %}
+{% block content %}
 <style>
-    /* Task Management Specific Styles */
-    .dashboard-card {
-        background: var(--white);
-        border-radius: 15px;
+    .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
         padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
-        height: 100%;
+    }
+
+    .takween {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .takween h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .takween p {
+        font-size: 1.1rem;
+        color: var(--text-gray);
+    }
+
+    .progress-container {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
         position: relative;
         overflow: hidden;
     }
 
-    .dashboard-card::before {
+    .progress-container::before {
         content: "";
         position: absolute;
         top: 0;
@@ -204,204 +55,674 @@
         background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
-    .dashboard-card h4 {
-        color: var(--blue-dark);
-        font-family: 'Cairo', sans-serif;
+    .progress-container label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
         font-weight: 700;
-        font-size: 1.3rem;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
     }
 
-    .dashboard-card h4 i {
+    .progress-container label span {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1.5rem;
+    }
+
+    .progress-bar-main {
+        background: rgba(255, 255, 255, 0.5);
+        height: 30px;
+        border-radius: 50px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 50px;
+        transition: width 1s ease;
+        width: 0;
+        box-shadow: 0 2px 10px rgba(0, 132, 171, 0.5);
+    }
+
+    .progress-container p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-encouragement {
+        font-style: italic;
         color: var(--blue-primary);
-        margin-left: 8px;
+        font-weight: 600;
     }
 
-    /* Action Buttons */
-    .action-btn {
-        border: none;
-        border-radius: 12px;
-        padding: 1.2rem 1.5rem;
-        font-weight: 600;
+    /* Filter buttons as cards */
+    .filter-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
-        color: var(--white);
+        cursor: pointer;
+        text-decoration: none;
+        border: 2px solid transparent;
+        text-align: center;
+    }
+
+    .filter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        border-color: var(--blue-primary);
+    }
+
+    .filter-card.active {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        border-color: var(--blue-primary);
+    }
+
+    .filter-card i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .filter-card:not(.active) i {
+        color: var(--blue-primary);
+    }
+
+    .filter-card.active i {
+        color: white;
+    }
+
+    .filter-card span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: block;
+    }
+
+    .filter-card:not(.active) span {
+        color: var(--text-dark);
+    }
+
+    /* Task cards grid */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.2);
+    }
+
+    .card-header-custom {
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header-custom h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin: 0 0 0.5rem 0;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .card-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: var(--text-dark);
+    }
+
+    .status-in_progress {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .status-cancelled {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .type-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.3);
+    }
+
+    .card-description {
+        color: var(--text-gray);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+        margin-bottom: 1rem;
+    }
+
+    .card-meta-item {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 0.5rem;
-        width: 100%;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .card-meta-item i {
+        color: var(--blue-primary);
+        width: 20px;
+    }
+
+    /* Progress section in card */
+    .card-progress {
+        margin-bottom: 1rem;
+    }
+
+    .card-progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        font-weight: 600;
+    }
+
+    .card-progress-bar {
+        background: rgba(0, 132, 171, 0.1);
+        height: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .card-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn-action {
+        padding: 0.6rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #138496, #117a8b);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        color: white;
+    }
+
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #c82333, #a71e2a);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        color: white;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .add-task-btn, .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        border: none;
+        cursor: pointer;
+    }
+
+    .add-task-btn:hover, .back-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 25px rgba(0, 132, 171, 0.4);
+        color: white;
+    }
+
+    .empty-state {
+        background: white;
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
         position: relative;
         overflow: hidden;
     }
 
-    .action-btn::before {
+    .empty-state::before {
         content: "";
         position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.6s ease, height 0.6s ease;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
-    .action-btn:hover::before {
-        width: 300px;
-        height: 300px;
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
     }
 
-    .action-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
-        color: var(--white);
-    }
-
-    .action-btn-primary {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
-    }
-
-    .action-btn-info {
-        background: linear-gradient(135deg, #0084AB, #61bcd7);
-    }
-
-    /* Table Styling */
-    .custom-table {
-        background: var(--white);
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    }
-
-    .table th {
-        background: rgba(0, 132, 171, 0.1);
+    .empty-state h5 {
+        font-weight: 700;
+        margin-bottom: 1rem;
         color: var(--blue-dark);
-        font-weight: 600;
-        padding: 1rem;
-        border: none;
-        text-align: right;
+        font-size: 1.5rem;
     }
 
-    .table td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-color: var(--border-light);
-    }
-
-    .table tbody tr {
-        transition: all 0.3s ease;
-        border-bottom: 1px solid var(--border-light);
-    }
-
-    .table tbody tr:hover {
-        background: rgba(0, 132, 171, 0.05);
-    }
-
-    /* Status Badges */
-    .status-badge {
-        padding: 0.35rem 0.75rem;
-        border-radius: 50px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-    .status-pending {
-        background: rgba(255, 193, 7, 0.15);
-        color: #856404;
-    }
-
-    .status-in-progress {
-        background: rgba(0, 123, 255, 0.15);
-        color: #004085;
-    }
-
-    .status-completed {
-        background: rgba(40, 167, 69, 0.15);
-        color: #155724;
-    }
-
-    .status-cancelled {
-        background: rgba(220, 53, 69, 0.15);
-        color: #721c24;
-    }
-
-    /* Member Avatar */
-    .member-avatar-small {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: var(--blue-primary);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-
-    /* Form Styling */
-    .form-label {
-        color: var(--blue-dark);
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-select {
-        border-radius: 8px;
-        border: 1px solid var(--border-light);
-        padding: 0.5rem 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-select:focus {
-        border-color: var(--blue-primary);
-        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
-    }
-
-    /* Progress Bar */
-    .progress {
-        background-color: rgba(0, 132, 171, 0.1);
-        border-radius: 0.375rem;
-    }
-
-    .progress-bar {
-        background-color: var(--blue-primary);
-        border-radius: 0.375rem;
-    }
-
-    /* Animations */
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.6s ease forwards;
+    .empty-state p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
         to {
             opacity: 1;
             transform: translateY(0);
         }
     }
 
+    /* Stagger animation for cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+    .card:nth-child(n+7) { animation-delay: 0.7s; }
+
     /* Responsive Design */
     @media (max-width: 768px) {
-        .dashboard-card {
+        .dashboard {
+            padding: 1rem;
+        }
+
+        .takween h2 {
+            font-size: 2rem;
+        }
+
+        .filter-cards {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .cards {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
             padding: 1.5rem;
         }
 
-        .action-btn {
-            padding: 1rem 1.2rem;
-            font-size: 0.9rem;
-        }
-
-        .table-responsive {
-            font-size: 0.875rem;
-        }
-
-        .btn-group-sm .btn {
-            padding: 0.25rem 0.5rem;
+        .card-actions {
+            justify-content: center;
         }
     }
 </style>
+<div class="dashboard">
+    <!-- Header Section -->
+    <div class="takween">
+        <h2>إدارة المهام العلمية</h2>
+        <p>متابعة وإدارة المهام العلمية بفعالية وإتقان</p>
+    </div>
+
+    <!-- Progress Container -->
+    <div class="progress-container">
+        <label>
+            إنجازك في المهام العلمية
+            <span id="percentageText">0%</span>
+        </label>
+        <div class="progress-bar-main">
+            <div class="progress-fill" id="mainProgress"></div>
+        </div>
+        <p id="mainText">
+            {% if tasks %}
+                عرض {{ tasks|length }} مهمة
+            {% else %}
+                لا توجد مهام حالياً
+            {% endif %}
+        </p>
+        <p class="progress-encouragement">واصل المسيرة وحقق المزيد من الإنجازات!</p>
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <div id="taskData" style="display: none;">
+        {% for task in tasks %}
+            <span data-percentage="{{ task.completion_percentage }}"></span>
+        {% endfor %}
+    </div>
+
+    <!-- Filter Cards -->
+    <div class="filter-cards">
+        <a href="{% url 'scientific_task_management' %}" class="filter-card {% if not status_filter and not task_type_filter %}active{% endif %}">
+            <i class="fas fa-list"></i>
+            <span>الكل</span>
+        </a>
+        <a href="?status=pending{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'pending' %}active{% endif %}">
+            <i class="fas fa-clock"></i>
+            <span>قيد التنفيذ</span>
+        </a>
+        <a href="?status=in_progress{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'in_progress' %}active{% endif %}">
+            <i class="fas fa-spinner"></i>
+            <span>جاري العمل</span>
+        </a>
+        <a href="?status=completed{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'completed' %}active{% endif %}">
+            <i class="fas fa-check-circle"></i>
+            <span>مكتملة</span>
+        </a>
+        <a href="?status=cancelled{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'cancelled' %}active{% endif %}">
+            <i class="fas fa-times-circle"></i>
+            <span>ملغاة</span>
+        </a>
+    </div>
+
+    <!-- Additional Type Filter -->
+    <div class="filter-cards">
+        {% for task_type in task_types %}
+        <a href="?type={{ task_type.0 }}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="filter-card {% if task_type_filter == task_type.0 %}active{% endif %}">
+            <i class="fas fa-tag"></i>
+            <span>{{ task_type.1 }}</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Tasks Grid -->
+    {% if tasks %}
+        <div class="cards">
+            {% for task in tasks %}
+            <div class="card">
+                <div class="card-header-custom">
+                    <h4>{{ task.title }}</h4>
+
+                    <div class="card-badges">
+                        <span class="status-badge status-{{ task.status }}">
+                            <i class="fas {% if task.status == 'pending' %}fa-clock{% elif task.status == 'in_progress' %}fa-spinner{% elif task.status == 'completed' %}fa-check{% else %}fa-times{% endif %}"></i>
+                            {{ task.get_status_display }}
+                        </span>
+                        <span class="type-badge">
+                            <i class="fas fa-tag"></i>
+                            {{ task.get_task_type_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-description">
+                    {{ task.description|truncatewords:20 }}
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="card-progress">
+                    <div class="card-progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ task.completion_percentage }}%</span>
+                    </div>
+                    <div class="card-progress-bar">
+                        <div class="card-progress-fill" style="width: {{ task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+
+                <div class="card-meta">
+                    <div class="card-meta-item">
+                        <i class="fas fa-user-tie"></i>
+                        <span>{{ task.assigned_to_name|default:"غير محدد" }}</span>
+                    </div>
+                    <div class="card-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>تاريخ الاستحقاق: {{ task.due_date }}</span>
+                    </div>
+                    <div class="card-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>تم الإنشاء: {{ task.created_at|date:"Y-m-d" }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="{% url 'scientific_edit_task' task.id %}" class="btn-action btn-edit" title="تعديل">
+                        <i class="fas fa-edit"></i>
+                        تعديل
+                    </a>
+                    <button type="button" class="btn-action btn-delete" title="حذف" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}">
+                        <i class="fas fa-trash"></i>
+                        حذف
+                    </button>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
+                            <h5 class="modal-title">تأكيد الحذف</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>هل أنت متأكد من حذف المهمة "{{ task.title }}"؟</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form method="post" action="{% url 'scientific_delete_task' task.id %}">
+                                {% csrf_token %}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
+                                <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-tasks"></i>
+            <h5>لا توجد مهام</h5>
+            <p>لم يتم إنشاء أي مهام بعد. ابدأ بإضافة مهمة جديدة.</p>
+            <a href="{% url 'scientific_add_task' %}" class="add-task-btn">
+                <i class="fas fa-plus ms-2"></i>
+                إضافة مهمة الآن
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="button-container">
+        <a href="{% url 'scientific_add_task' %}" class="add-task-btn" style="margin-left: 1rem;">
+            <i class="fas fa-plus ms-2"></i>
+            <span class="btn-text">إضافة مهمة جديدة</span>
+        </a>
+    </div>
+</div>
+
+<script>
+// Function to determine color based on percentage
+function getColor(percentage) {
+    if (percentage <= 30) return "#dc3545"; // red
+    if (percentage <= 70) return "#ffc107"; // orange
+    return "#28a745"; // green
+}
+
+// Calculate dynamic progress based on task completion percentages
+function calculateProgress() {
+    const taskDataDiv = document.getElementById('taskData');
+    if (!taskDataDiv) return 0;
+
+    const taskElements = taskDataDiv.querySelectorAll('[data-percentage]');
+    if (taskElements.length === 0) return 0;
+
+    let totalProgress = 0;
+
+    taskElements.forEach(task => {
+        const percentage = parseInt(task.dataset.percentage) || 0;
+        totalProgress += percentage;
+    });
+
+    const averageProgress = Math.round(totalProgress / taskElements.length);
+
+    // Update the text to show breakdown
+    const mainText = document.getElementById('mainText');
+    mainText.innerHTML = `عرض ${taskElements.length} مهمة - متوسط الإنجاز: ${averageProgress}%`;
+
+    return averageProgress;
+}
+
+// Animate progress bars on load
+window.addEventListener('load', function() {
+    // Main progress bar
+    setTimeout(() => {
+        const mainProgress = document.getElementById('mainProgress');
+        const percentageText = document.getElementById('percentageText');
+        const percent = calculateProgress();
+
+        mainProgress.style.width = percent + '%';
+        mainProgress.style.background = `linear-gradient(90deg, ${getColor(percent)}, ${getColor(percent)})`;
+        percentageText.textContent = percent + '%';
+    }, 800);
+
+    // Animate individual card progress bars
+    setTimeout(() => {
+        const cardProgressFills = document.querySelectorAll('.card-progress-fill');
+        cardProgressFills.forEach((fill, index) => {
+            setTimeout(() => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 50);
+            }, index * 100);
+        });
+    }, 1000);
+});
+
+// Intersection observer for card animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.card').forEach(card => {
+    observer.observe(card);
+});
+</script>
 {% endblock %}

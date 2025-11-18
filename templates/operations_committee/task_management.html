@@ -2,97 +2,46 @@
 {% load static %}
 
 {% block title %}إدارة المهام - اللجنة التشغيلية - منصة مداد{% endblock %}
-
-{% block page_title %}إدارة المهام{% endblock %}
+{% block page_title %}إدارة المهام التشغيلية{% endblock %}
 
 {% block extra_css %}
 <style>
-    .page-header {
-        background: var(--white);
-        border-radius: 20px;
-        padding: 2.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
-        border: 1px solid rgba(97, 188, 215, 0.3);
-        position: relative;
-        overflow: hidden;
+    .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
     }
 
-    .page-header::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    .takween {
+        text-align: center;
+        margin-bottom: 3rem;
     }
 
-    .page-header h3 {
-        color: var(--blue-dark);
+    .takween h2 {
+        font-size: 2.5rem;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
         font-family: 'Cairo', sans-serif;
-        font-size: 1.8rem;
     }
 
-    .page-header h3 i {
-        color: var(--blue-primary);
-        margin-left: 10px;
-    }
-
-    .page-header p {
-        color: var(--text-gray);
-        margin: 0;
+    .takween p {
         font-size: 1.1rem;
+        color: var(--text-gray);
     }
 
-    .btn-primary {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
-        border: none;
-        border-radius: 12px;
-        padding: 12px 25px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .btn-primary::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.6s ease, height 0.6s ease;
-    }
-
-    .btn-primary:hover::before {
-        width: 300px;
-        height: 300px;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
-    }
-
-    .filter-section {
-        background: var(--white);
+    .progress-container {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
         border-radius: 20px;
         padding: 2rem;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
         box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
         border: 1px solid rgba(97, 188, 215, 0.3);
         position: relative;
         overflow: hidden;
     }
 
-    .filter-section::before {
+    .progress-container::before {
         content: "";
         position: absolute;
         top: 0;
@@ -102,170 +51,382 @@
         background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
-    .form-label {
-        color: var(--blue-dark);
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        font-size: 1rem;
-    }
-
-    .form-select, .form-control {
-        border: 1px solid rgba(97, 188, 215, 0.3);
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .form-select:focus, .form-control:focus {
-        border-color: var(--blue-primary);
-        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
-    }
-
-    .btn-outline-secondary {
-        border: 2px solid var(--blue-primary);
-        color: var(--blue-primary);
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .btn-outline-secondary:hover {
-        background: var(--blue-primary);
-        color: var(--white);
-        transform: translateY(-2px);
-    }
-
-    .table-container {
-        background: var(--white);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
-        border: 1px solid rgba(97, 188, 215, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .table-container::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
-    }
-
-    .table {
-        margin-bottom: 0;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .table thead th {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
-        color: var(--white);
+    .progress-container label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
         font-weight: 700;
-        border: none;
-        padding: 1.2rem 1rem;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .progress-container label span {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1.5rem;
+    }
+
+    .progress-bar-main {
+        background: rgba(255, 255, 255, 0.5);
+        height: 30px;
+        border-radius: 50px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 50px;
+        transition: width 1s ease;
+        width: 0;
+        box-shadow: 0 2px 10px rgba(0, 132, 171, 0.5);
+    }
+
+    .progress-container p {
+        color: var(--text-gray);
         font-size: 1rem;
-        text-align: center;
+        margin-bottom: 0.5rem;
     }
 
-    .table tbody td {
-        padding: 1.2rem 1rem;
-        vertical-align: middle;
-        border-bottom: 1px solid rgba(97, 188, 215, 0.2);
-        text-align: center;
-        font-weight: 500;
+    .progress-encouragement {
+        font-style: italic;
+        color: var(--blue-primary);
+        font-weight: 600;
     }
 
-    .table tbody tr {
+    /* Filter buttons as cards */
+    .filter-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
+        cursor: pointer;
+        text-decoration: none;
+        border: 2px solid transparent;
+        text-align: center;
     }
 
-    .table tbody tr:hover {
-        background: rgba(0, 132, 171, 0.05);
-        transform: translateX(-5px);
+    .filter-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        border-color: var(--blue-primary);
+    }
+
+    .filter-card.active {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        border-color: var(--blue-primary);
+    }
+
+    .filter-card i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .filter-card:not(.active) i {
+        color: var(--blue-primary);
+    }
+
+    .filter-card.active i {
+        color: white;
+    }
+
+    .filter-card span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: block;
+    }
+
+    .filter-card:not(.active) span {
+        color: var(--text-dark);
+    }
+
+    /* Task cards grid */
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.2);
+    }
+
+    .card-header-custom {
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header-custom h4 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin: 0 0 0.5rem 0;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .card-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
     }
 
     .status-badge {
-        padding: 0.6rem 1.2rem;
+        padding: 0.5rem 1rem;
         border-radius: 50px;
-        font-weight: 600;
         font-size: 0.85rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .status-not_started {
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+    }
+
+    .status-in_progress {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .status-overdue {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
     }
 
     .priority-badge {
         padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-weight: 600;
+        border-radius: 8px;
         font-size: 0.8rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
     }
 
-    .action-buttons .btn {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.85rem;
-        margin-left: 0.3rem;
+    .priority-low {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+
+    .priority-medium {
+        background: rgba(255, 193, 7, 0.1);
+        color: #856404;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+
+    .priority-high {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .type-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.3);
+    }
+
+    .card-description {
+        color: var(--text-gray);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    .card-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-light);
+        margin-bottom: 1rem;
+    }
+
+    .card-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .card-meta-item i {
+        color: var(--blue-primary);
+        width: 20px;
+    }
+
+    /* Progress section in card */
+    .card-progress {
+        margin-bottom: 1rem;
+    }
+
+    .card-progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        font-weight: 600;
+    }
+
+    .card-progress-bar {
+        background: rgba(0, 132, 171, 0.1);
+        height: 12px;
         border-radius: 10px;
-        transition: all 0.3s ease;
-        border: none;
-    }
-
-    .action-buttons .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .btn-sm {
-        padding: 0.5rem 0.8rem !important;
-    }
-
-    .progress {
-        background: rgba(97, 188, 215, 0.2);
-        border-radius: 10px;
-        height: 20px;
         overflow: hidden;
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
-    .progress-bar {
+    .card-progress-fill {
+        height: 100%;
         background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
         border-radius: 10px;
+        transition: width 0.5s ease;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn-action {
+        padding: 0.6rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
         font-weight: 600;
-        font-size: 0.75rem;
-        line-height: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
     }
 
-    /* Badge Colors with Blue Theme */
-    .bg-success {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)) !important;
+    .btn-edit {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: white;
     }
 
-    .bg-danger {
-        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    .btn-edit:hover {
+        background: linear-gradient(135deg, #138496, #117a8b);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        color: white;
     }
 
-    .bg-info {
-        background: linear-gradient(135deg, #17a2b8, #138496) !important;
+    .btn-delete {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
     }
 
-    .bg-warning {
-        background: linear-gradient(135deg, #ffc107, #e0a800) !important;
-        color: var(--text-dark) !important;
+    .btn-delete:hover {
+        background: linear-gradient(135deg, #c82333, #a71e2a);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        color: white;
     }
 
-    .bg-secondary {
-        background: linear-gradient(135deg, #6c757d, #5a6268) !important;
-    }
-
-    /* Empty State */
-    .empty-state {
+    .button-container {
         text-align: center;
-        padding: 3rem 1rem;
-        color: var(--text-gray);
+        margin-top: 3rem;
+    }
+
+    .add-task-btn, .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        border: none;
+        cursor: pointer;
+    }
+
+    .add-task-btn:hover, .back-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 25px rgba(0, 132, 171, 0.4);
+        color: white;
+    }
+
+    .empty-state {
+        background: white;
+        border-radius: 20px;
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
     .empty-state i {
@@ -275,191 +436,351 @@
         margin-bottom: 1.5rem;
     }
 
-    .empty-state p {
-        font-size: 1.2rem;
-        font-weight: 500;
-        margin: 0;
+    .empty-state h5 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--blue-dark);
+        font-size: 1.5rem;
     }
 
-    /* Animations */
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.6s ease forwards;
+    .empty-state p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
         to {
             opacity: 1;
             transform: translateY(0);
         }
     }
 
+    /* Stagger animation for cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+    .card:nth-child(5) { animation-delay: 0.5s; }
+    .card:nth-child(6) { animation-delay: 0.6s; }
+    .card:nth-child(n+7) { animation-delay: 0.7s; }
+
     /* Responsive Design */
     @media (max-width: 768px) {
-        .page-header, .filter-section, .table-container {
+        .dashboard {
+            padding: 1rem;
+        }
+
+        .takween h2 {
+            font-size: 2rem;
+        }
+
+        .filter-cards {
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .cards {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .card {
             padding: 1.5rem;
-            border-radius: 15px;
         }
 
-        .page-header h3 {
-            font-size: 1.5rem;
-        }
-
-        .table-responsive {
-            border-radius: 10px;
-        }
-
-        .action-buttons .btn {
-            margin-bottom: 0.3rem;
-            display: block;
-        }
-
-        .status-badge, .priority-badge {
-            font-size: 0.75rem;
-            padding: 0.4rem 0.8rem;
+        .card-actions {
+            justify-content: center;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<div class="page-header fade-in-up">
-    <div class="d-flex justify-content-between align-items-center">
-        <div>
-            <h3>
-                <i class="fas fa-tasks"></i>
-                إدارة المهام التشغيلية
-            </h3>
-            <p>عرض وإدارة جميع المهام التشغيلية</p>
+<div class="dashboard">
+    <!-- Header Section -->
+    <div class="takween">
+        <h2>إدارة المهام التشغيلية</h2>
+        <p>متابعة وإدارة المهام التشغيلية بفعالية وإتقان</p>
+    </div>
+
+    <!-- Progress Container -->
+    <div class="progress-container">
+        <label>
+            إنجازك في المهام التشغيلية
+            <span id="percentageText">0%</span>
+        </label>
+        <div class="progress-bar-main">
+            <div class="progress-fill" id="mainProgress"></div>
         </div>
-        <a href="{% url 'operations_add_task' %}" class="btn btn-primary">
+        <p id="mainText">
+            {% if tasks %}
+                عرض {{ tasks|length }} مهمة
+            {% else %}
+                لا توجد مهام حالياً
+            {% endif %}
+        </p>
+        <p class="progress-encouragement">واصل المسيرة وحقق المزيد من الإنجازات!</p>
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <div id="taskData" style="display: none;">
+        {% for task in tasks %}
+            <span data-percentage="{{ task.completion_percentage }}"></span>
+        {% endfor %}
+    </div>
+
+    <!-- Status Filter Cards -->
+    <div class="filter-cards">
+        <a href="{% url 'operations_task_management' %}" class="filter-card {% if not status_filter and not task_type_filter %}active{% endif %}">
+            <i class="fas fa-list"></i>
+            <span>الكل</span>
+        </a>
+        <a href="?status=not_started{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'not_started' %}active{% endif %}">
+            <i class="fas fa-clock"></i>
+            <span>لم يبدأ</span>
+        </a>
+        <a href="?status=in_progress{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'in_progress' %}active{% endif %}">
+            <i class="fas fa-spinner"></i>
+            <span>جاري</span>
+        </a>
+        <a href="?status=completed{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'completed' %}active{% endif %}">
+            <i class="fas fa-check-circle"></i>
+            <span>مكتمل</span>
+        </a>
+        <a href="?status=overdue{% if task_type_filter %}&type={{ task_type_filter }}{% endif %}" class="filter-card {% if status_filter == 'overdue' %}active{% endif %}">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>متأخر</span>
+        </a>
+    </div>
+
+    <!-- Type Filter Cards -->
+    <div class="filter-cards">
+        <a href="{% url 'operations_task_management' %}" class="filter-card {% if not task_type_filter and not status_filter %}active{% endif %}">
+            <i class="fas fa-tags"></i>
+            <span>جميع الأنواع</span>
+        </a>
+        <a href="?type=operational_program{% if status_filter %}&status={{ status_filter }}{% endif %}" class="filter-card {% if task_type_filter == 'operational_program' %}active{% endif %}">
+            <i class="fas fa-cogs"></i>
+            <span>البرنامج التشغيلي</span>
+        </a>
+        <a href="?type=awards_provision{% if status_filter %}&status={{ status_filter }}{% endif %}" class="filter-card {% if task_type_filter == 'awards_provision' %}active{% endif %}">
+            <i class="fas fa-trophy"></i>
+            <span>توفير الجوائز</span>
+        </a>
+        <a href="?type=individuals_families_followup{% if status_filter %}&status={{ status_filter }}{% endif %}" class="filter-card {% if task_type_filter == 'individuals_families_followup' %}active{% endif %}">
+            <i class="fas fa-users"></i>
+            <span>متابعة الأفراد والأسر</span>
+        </a>
+        <a href="?type=public_program{% if status_filter %}&status={{ status_filter }}{% endif %}" class="filter-card {% if task_type_filter == 'public_program' %}active{% endif %}">
+            <i class="fas fa-bullhorn"></i>
+            <span>البرنامج الجماهيري</span>
+        </a>
+        <a href="?type=visits_coordination{% if status_filter %}&status={{ status_filter }}{% endif %}" class="filter-card {% if task_type_filter == 'visits_coordination' %}active{% endif %}">
+            <i class="fas fa-handshake"></i>
+            <span>معاون تنسيق الزيارات</span>
+        </a>
+    </div>
+
+    <!-- Tasks Grid -->
+    {% if tasks %}
+        <div class="cards">
+            {% for task in tasks %}
+            <div class="card">
+                <div class="card-header-custom">
+                    <h4>{{ task.title }}</h4>
+
+                    <div class="card-badges">
+                        <span class="status-badge status-{{ task.status }}">
+                            <i class="fas
+                                {% if task.status == 'not_started' %}fa-clock
+                                {% elif task.status == 'in_progress' %}fa-spinner
+                                {% elif task.status == 'completed' %}fa-check
+                                {% else %}fa-exclamation-circle{% endif %}">
+                            </i>
+                            {{ task.get_status_display }}
+                        </span>
+                        <span class="priority-badge priority-{{ task.priority }}">
+                            <i class="fas
+                                {% if task.priority == 'high' %}fa-arrow-up
+                                {% elif task.priority == 'medium' %}fa-minus
+                                {% else %}fa-arrow-down{% endif %}">
+                            </i>
+                            {{ task.get_priority_display }}
+                        </span>
+                        <span class="type-badge">
+                            <i class="fas fa-tag"></i>
+                            {{ task.get_task_type_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-description">
+                    {{ task.description|truncatewords:20 }}
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="card-progress">
+                    <div class="card-progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ task.completion_percentage }}%</span>
+                    </div>
+                    <div class="card-progress-bar">
+                        <div class="card-progress-fill" style="width: {{ task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+
+                <div class="card-meta">
+                    <div class="card-meta-item">
+                        <i class="fas fa-user-tie"></i>
+                        <span>{{ task.assigned_to_name|default:"غير محدد" }}</span>
+                    </div>
+                    <div class="card-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>الموعد النهائي: {{ task.due_date }}</span>
+                    </div>
+                    <div class="card-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>تم الإنشاء: {{ task.created_at|date:"Y-m-d" }}</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="{% url 'operations_edit_task' task.id %}" class="btn-action btn-edit" title="تعديل">
+                        <i class="fas fa-edit"></i>
+                        تعديل
+                    </a>
+                    <button type="button" class="btn-action btn-delete" title="حذف" data-bs-toggle="modal" data-bs-target="#deleteModal{{ task.id }}">
+                        <i class="fas fa-trash"></i>
+                        حذف
+                    </button>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal{{ task.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
+                            <h5 class="modal-title">تأكيد الحذف</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>هل أنت متأكد من حذف المهمة "{{ task.title }}"؟</p>
+                        </div>
+                        <div class="modal-footer">
+                            <form method="post" action="{% url 'operations_delete_task' task.id %}">
+                                {% csrf_token %}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
+                                <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-tasks"></i>
+            <h5>لا توجد مهام</h5>
+            <p>لم يتم إنشاء أي مهام بعد. ابدأ بإضافة مهمة جديدة.</p>
+            <a href="{% url 'operations_add_task' %}" class="add-task-btn">
+                <i class="fas fa-plus ms-2"></i>
+                إضافة مهمة الآن
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="button-container">
+        <a href="{% url 'operations_add_task' %}" class="add-task-btn" style="margin-left: 1rem;">
             <i class="fas fa-plus ms-2"></i>
-            إضافة مهمة جديدة
+            <span class="btn-text">إضافة مهمة جديدة</span>
         </a>
     </div>
 </div>
 
-<!-- Filter Section -->
-<div class="filter-section fade-in-up" style="animation-delay: 0.1s;">
-    <form method="get" class="row g-3">
-        <div class="col-md-4">
-            <label class="form-label">تصفية حسب النوع</label>
-            <select name="type" class="form-select" onchange="this.form.submit()">
-                <option value="">جميع الأنواع</option>
-                <option value="operational_program" {% if task_type_filter == 'operational_program' %}selected{% endif %}>البرنامج التشغيلي</option>
-                <option value="awards_provision" {% if task_type_filter == 'awards_provision' %}selected{% endif %}>توفير الجوائز</option>
-                <option value="individuals_families_followup" {% if task_type_filter == 'individuals_families_followup' %}selected{% endif %}>متابعة الأفراد والأسر</option>
-                <option value="public_program" {% if task_type_filter == 'public_program' %}selected{% endif %}>البرنامج الجماهيري</option>
-                <option value="visits_coordination" {% if task_type_filter == 'visits_coordination' %}selected{% endif %}>معاون تنسيق الزيارات</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">تصفية حسب الحالة</label>
-            <select name="status" class="form-select" onchange="this.form.submit()">
-                <option value="">جميع الحالات</option>
-                <option value="not_started" {% if status_filter == 'not_started' %}selected{% endif %}>لم يبدأ</option>
-                <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>جاري</option>
-                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>مكتمل</option>
-                <option value="overdue" {% if status_filter == 'overdue' %}selected{% endif %}>متأخر</option>
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">&nbsp;</label>
-            <a href="{% url 'operations_task_management' %}" class="btn btn-outline-secondary w-100">
-                <i class="fas fa-redo ms-2"></i>
-                إعادة تعيين
-            </a>
-        </div>
-    </form>
-</div>
+<script>
+// Function to determine color based on percentage
+function getColor(percentage) {
+    if (percentage <= 30) return "#dc3545"; // red
+    if (percentage <= 70) return "#ffc107"; // orange
+    return "#28a745"; // green
+}
 
-<!-- Tasks Table -->
-<div class="table-container fade-in-up" style="animation-delay: 0.2s;">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>المهمة</th>
-                    <th>النوع</th>
-                    <th>المسؤول</th>
-                    <th>الموعد النهائي</th>
-                    <th>الأولوية</th>
-                    <th>الحالة</th>
-                    <th>الإنجاز</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for task in tasks %}
-                <tr>
-                    <td>
-                        <strong style="color: var(--blue-dark);">{{ task.title }}</strong>
-                        <br>
-                        <small class="text-muted">{{ task.description|truncatewords:10 }}</small>
-                    </td>
-                    <td>{{ task.get_task_type_display }}</td>
-                    <td>
-                        {% if task.assigned_to %}
-                            <i class="fas fa-user ms-1" style="color: var(--blue-primary);"></i>
-                            {{ task.assigned_to.get_full_name }}
-                        {% else %}
-                            <span class="text-muted">غير محدد</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <i class="far fa-calendar ms-1" style="color: var(--blue-primary);"></i>
-                        {{ task.due_date }}
-                    </td>
-                    <td>
-                        <span class="priority-badge
-                            {% if task.priority == 'high' %}bg-danger text-white
-                            {% elif task.priority == 'medium' %}bg-warning text-dark
-                            {% else %}bg-secondary text-white{% endif %}">
-                            {{ task.get_priority_display }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="status-badge
-                            {% if task.status == 'completed' %}bg-success text-white
-                            {% elif task.status == 'overdue' %}bg-danger text-white
-                            {% elif task.status == 'in_progress' %}bg-info text-white
-                            {% else %}bg-warning text-dark{% endif %}">
-                            {{ task.get_status_display }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="progress" style="height: 20px;">
-                            <div class="progress-bar" role="progressbar"
-                                 style="width: {{ task.completion_percentage }}%;"
-                                 aria-valuenow="{{ task.completion_percentage }}"
-                                 aria-valuemin="0" aria-valuemax="100">
-                                {{ task.completion_percentage }}%
-                            </div>
-                        </div>
-                    </td>
-                    <td class="action-buttons">
-                        <a href="{% url 'operations_edit_task' task.id %}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'operations_delete_task' task.id %}" class="btn btn-sm btn-danger">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="8" class="text-center py-5">
-                        <div class="empty-state">
-                            <i class="fas fa-tasks"></i>
-                            <p>لا توجد مهام</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+// Calculate dynamic progress based on task completion percentages
+function calculateProgress() {
+    const taskDataDiv = document.getElementById('taskData');
+    if (!taskDataDiv) return 0;
+
+    const taskElements = taskDataDiv.querySelectorAll('[data-percentage]');
+    if (taskElements.length === 0) return 0;
+
+    let totalProgress = 0;
+
+    taskElements.forEach(task => {
+        const percentage = parseInt(task.dataset.percentage) || 0;
+        totalProgress += percentage;
+    });
+
+    const averageProgress = Math.round(totalProgress / taskElements.length);
+
+    // Update the text to show breakdown
+    const mainText = document.getElementById('mainText');
+    mainText.innerHTML = `عرض ${taskElements.length} مهمة - متوسط الإنجاز: ${averageProgress}%`;
+
+    return averageProgress;
+}
+
+// Animate progress bars on load
+window.addEventListener('load', function() {
+    // Main progress bar
+    setTimeout(() => {
+        const mainProgress = document.getElementById('mainProgress');
+        const percentageText = document.getElementById('percentageText');
+        const percent = calculateProgress();
+
+        mainProgress.style.width = percent + '%';
+        mainProgress.style.background = `linear-gradient(90deg, ${getColor(percent)}, ${getColor(percent)})`;
+        percentageText.textContent = percent + '%';
+    }, 800);
+
+    // Animate individual card progress bars
+    setTimeout(() => {
+        const cardProgressFills = document.querySelectorAll('.card-progress-fill');
+        cardProgressFills.forEach((fill, index) => {
+            setTimeout(() => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 50);
+            }, index * 100);
+        });
+    }, 1000);
+});
+
+// Intersection observer for card animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.card').forEach(card => {
+    observer.observe(card);
+});
+</script>
 {% endblock %}
