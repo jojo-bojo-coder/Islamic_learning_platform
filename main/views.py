@@ -777,13 +777,13 @@ def day_events(request, program_id, year, month, day):
     events = ScheduleEvent.objects.filter(
         program=program,
         start_date=date
-    ).select_related('committee', 'assigned_to', 'created_by').order_by('start_time')
+    ).select_related('committee', 'created_by').order_by('start_time')
 
     # Get other objects for this day
     tasks = Task.objects.filter(
         program=program,
         due_date=date
-    ).select_related('committee', 'assigned_to')
+    ).select_related('committee')
 
     activities = Activity.objects.filter(
         program=program,
@@ -793,7 +793,7 @@ def day_events(request, program_id, year, month, day):
     cultural_tasks = CulturalTask.objects.filter(
         committee__program=program,
         due_date=date
-    ).select_related('committee', 'assigned_to')
+    ).select_related('committee')
 
     # Filter by committee if supervisor
     if user.role == 'committee_supervisor':
