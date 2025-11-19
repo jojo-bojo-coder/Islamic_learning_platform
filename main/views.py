@@ -120,7 +120,10 @@ def schedule_calendar(request, program_id=None):
     now = timezone.now()
     year = int(request.GET.get('year', now.year))
     month = int(request.GET.get('month', now.month))
-    week_number = int(request.GET.get('week', now.isocalendar()[1]))
+
+    # Fix: Properly get week number
+    current_iso = now.isocalendar()
+    week_number = int(request.GET.get('week', current_iso[1]))
 
     # Calculate previous and next month
     if month == 1:
@@ -134,22 +137,37 @@ def schedule_calendar(request, program_id=None):
         next_month, next_year = month + 1, year
 
     if view_type == 'weekly':
-        # Weekly view logic
-        # Get the first day of the week
-        from datetime import timedelta
+        # Weekly view logic - FIXED
+        # Calculate the Monday of the specified ISO week
+        jan_4 = datetime(year, 1, 4).date()  # ISO 8601: week 1 contains Jan 4
+        week_1_monday = jan_4 - timedelta(days=jan_4.weekday())
+        week_start = week_1_monday + timedelta(weeks=week_number - 1)
 
-        # Calculate week start (Sunday)
-        jan_1 = datetime(year, 1, 1).date()
-        week_start = jan_1 + timedelta(weeks=week_number - 1)
-        # Adjust to Sunday
-        week_start = week_start - timedelta(days=(week_start.weekday() + 1) % 7)
+        # Adjust to Sunday (if you want week to start on Sunday)
+        # If you want Monday start, remove this line
+        week_start = week_start - timedelta(days=1)
         week_end = week_start + timedelta(days=6)
 
-        # Previous and next week
-        prev_week = week_number - 1 if week_number > 1 else 52
-        prev_week_year = year if week_number > 1 else year - 1
-        next_week = week_number + 1 if week_number < 52 else 1
-        next_week_year = year if week_number < 52 else year + 1
+        # Calculate max weeks in year
+        dec_28 = datetime(year, 12, 28).date()
+        max_week = dec_28.isocalendar()[1]
+
+        # Previous and next week with proper year handling
+        if week_number > 1:
+            prev_week = week_number - 1
+            prev_week_year = year
+        else:
+            # Get last week of previous year
+            dec_28_prev = datetime(year - 1, 12, 28).date()
+            prev_week = dec_28_prev.isocalendar()[1]
+            prev_week_year = year - 1
+
+        if week_number < max_week:
+            next_week = week_number + 1
+            next_week_year = year
+        else:
+            next_week = 1
+            next_week_year = year + 1
 
         # Get events for the week
         events = ScheduleEvent.objects.filter(
@@ -195,6 +213,7 @@ def schedule_calendar(request, program_id=None):
             week_days.append({
                 'date': day_date,
                 'day': day_date.day,
+                'is_current_month': True,  # Always show in weekly view
                 'is_today': day_date == now.date(),
                 'events': day_events,
                 'tasks': day_tasks,
@@ -205,11 +224,17 @@ def schedule_calendar(request, program_id=None):
 
         weeks = [week_days]  # Single week
 
-        # Month name in Arabic
+        # Month names in Arabic
         month_names = [
             'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
             'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
         ]
+
+        # Build month name for week span
+        if week_start.month != week_end.month:
+            month_name = f"{month_names[week_start.month - 1]} - {month_names[week_end.month - 1]}"
+        else:
+            month_name = month_names[week_start.month - 1]
 
         context_extra = {
             'view_type': 'weekly',
@@ -220,8 +245,7 @@ def schedule_calendar(request, program_id=None):
             'prev_week_year': prev_week_year,
             'next_week': next_week,
             'next_week_year': next_week_year,
-            'month_name': f"{month_names[week_start.month - 1]} - {month_names[week_end.month - 1]}" if week_start.month != week_end.month else
-            month_names[week_start.month - 1],
+            'month_name': month_name,
         }
 
     else:
