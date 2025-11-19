@@ -367,6 +367,8 @@ def schedule_calendar(request, program_id=None):
             base_template = 'sharia_committee/base.html'
         elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
             base_template = 'operations_committee/base.html'
+        elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+            base_template = 'scientific_committee/base.html'
         else:
             base_template = 'base.html'
 
@@ -640,6 +642,14 @@ def object_detail(request, object_type, object_id):
         base_template = 'program_manager_base.html'
     elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
         base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
     else:
         base_template = 'base.html'  # Fallback
 
@@ -813,6 +823,14 @@ def day_events(request, program_id, year, month, day):
         base_template = 'program_manager_base.html'
     elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
         base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
     else:
         base_template = 'base.html'
 
