@@ -70,7 +70,7 @@ def login_view(request):
                     return redirect('pm_dashboard')
                 else:
                     print("Redirecting to regular dashboard")
-                    return redirect('home')
+                    return redirect('dashboard')
             else:
                 print("Authentication failed - user is None")
                 messages.error(request, 'اسم المستخدم/البريد الإلكتروني أو كلمة المرور غير صحيحة')
