@@ -57,7 +57,7 @@ from accounts.models import User, UserActivity
 from director_dashboard.models import Program, Committee
 from .models import ScheduleEvent, EventAttendance
 from .forms import ScheduleEventForm, EventAttendanceForm, ProgramSelectionForm
-
+logger = logging.getLogger(__name__)
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -73,307 +73,318 @@ def schedule_calendar(request, program_id=None):
     """Main calendar view for all users with monthly/weekly toggle"""
     user = request.user
 
-    # Director selects program
-    if user.role == 'director':
-        if not program_id:
-            programs = Program.objects.all()
-            if programs.count() == 1:
-                return redirect('schedule_calendar', program_id=programs.first().id)
+    try:
+        # Director selects program
+        if user.role == 'director':
+            if not program_id:
+                programs = Program.objects.all()
+                if programs.count() == 1:
+                    return redirect('schedule_calendar', program_id=programs.first().id)
 
-            form = ProgramSelectionForm(request.GET or None)
-            if request.GET.get('program'):
-                return redirect('schedule_calendar', program_id=request.GET.get('program'))
+                form = ProgramSelectionForm(request.GET or None)
+                if request.GET.get('program'):
+                    return redirect('schedule_calendar', program_id=request.GET.get('program'))
 
-            context = {
-                'form': form,
-                'programs': programs,
+                context = {
+                    'form': form,
+                    'programs': programs,
+                }
+                return render(request, 'schedule/select_program.html', context)
+
+            program = get_object_or_404(Program, id=program_id)
+
+        # Program Manager
+        elif user.role == 'program_manager':
+            try:
+                program = Program.objects.get(manager=user)
+            except Program.DoesNotExist:
+                messages.error(request, 'لم يتم تعيين برنامج لك بعد')
+                return redirect('home')
+
+        # Committee Supervisor
+        elif user.role == 'committee_supervisor':
+            try:
+                committee = Committee.objects.get(supervisor=user)
+                program = committee.program
+            except Committee.DoesNotExist:
+                messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+                return redirect('home')
+
+        else:
+            messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+            return redirect('home')
+
+        # Get view type (monthly or weekly)
+        view_type = request.GET.get('view', 'monthly')
+
+        # Get month, year, and week from query params
+        now = timezone.now()
+        year = int(request.GET.get('year', now.year))
+        month = int(request.GET.get('month', now.month))
+
+        # Fix: Properly get week number from isocalendar
+        current_iso = now.isocalendar()
+        week_number = int(request.GET.get('week', current_iso[1]))
+
+        # Calculate previous and next month
+        if month == 1:
+            prev_month, prev_year = 12, year - 1
+        else:
+            prev_month, prev_year = month - 1, year
+
+        if month == 12:
+            next_month, next_year = 1, year + 1
+        else:
+            next_month, next_year = month + 1, year
+
+        if view_type == 'weekly':
+            # Weekly view logic - FIXED
+            logger.info(f"Weekly view requested: year={year}, week={week_number}")
+
+            # Calculate the Monday of the specified ISO week
+            # ISO 8601: week 1 is the week containing Jan 4
+            jan_4 = datetime(year, 1, 4).date()
+            week_1_monday = jan_4 - timedelta(days=jan_4.weekday())
+            week_start_monday = week_1_monday + timedelta(weeks=week_number - 1)
+
+            # Adjust to Sunday (if you want week to start on Sunday)
+            week_start = week_start_monday - timedelta(days=1)
+            week_end = week_start + timedelta(days=6)
+
+            logger.info(f"Week range: {week_start} to {week_end}")
+
+            # Calculate max weeks in year
+            dec_28 = datetime(year, 12, 28).date()
+            max_week = dec_28.isocalendar()[1]
+
+            # Previous and next week with proper year handling
+            if week_number > 1:
+                prev_week = week_number - 1
+                prev_week_year = year
+            else:
+                # Get last week of previous year
+                dec_28_prev = datetime(year - 1, 12, 28).date()
+                prev_week = dec_28_prev.isocalendar()[1]
+                prev_week_year = year - 1
+
+            if week_number < max_week:
+                next_week = week_number + 1
+                next_week_year = year
+            else:
+                next_week = 1
+                next_week_year = year + 1
+
+            # Get events for the week
+            events = ScheduleEvent.objects.filter(
+                program=program,
+                start_date__gte=week_start,
+                start_date__lte=week_end
+            ).select_related('committee', 'assigned_to', 'created_by').order_by('start_date', 'start_time')
+
+            tasks = Task.objects.filter(
+                program=program,
+                due_date__gte=week_start,
+                due_date__lte=week_end
+            ).select_related('committee', 'assigned_to')
+
+            activities = Activity.objects.filter(
+                program=program,
+                date__gte=week_start,
+                date__lte=week_end
+            ).select_related('committee', 'created_by')
+
+            cultural_tasks = CulturalTask.objects.filter(
+                committee__program=program,
+                due_date__gte=week_start,
+                due_date__lte=week_end
+            ).select_related('committee', 'assigned_to')
+
+            # Filter by committee if supervisor
+            if user.role == 'committee_supervisor':
+                events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
+                tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
+                activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
+                cultural_tasks = cultural_tasks.filter(committee=committee)
+
+            # Build week days
+            week_days = []
+            for i in range(7):
+                day_date = week_start + timedelta(days=i)
+                day_events = events.filter(start_date=day_date)
+                day_tasks = tasks.filter(due_date=day_date)
+                day_activities = activities.filter(date=day_date)
+                day_cultural_tasks = cultural_tasks.filter(due_date=day_date)
+
+                week_days.append({
+                    'date': day_date,
+                    'day': day_date.day,
+                    'is_current_month': True,  # Always show in weekly view
+                    'is_today': day_date == now.date(),
+                    'events': day_events,
+                    'tasks': day_tasks,
+                    'activities': day_activities,
+                    'cultural_tasks': day_cultural_tasks,
+                    'total_events': day_events.count() + day_tasks.count() + day_activities.count() + day_cultural_tasks.count(),
+                })
+
+            weeks = [week_days]  # Single week
+
+            # Month names in Arabic
+            month_names = [
+                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+            ]
+
+            # Build month name for week span
+            if week_start.month != week_end.month:
+                month_name = f"{month_names[week_start.month - 1]} - {month_names[week_end.month - 1]}"
+            else:
+                month_name = month_names[week_start.month - 1]
+
+            context_extra = {
+                'view_type': 'weekly',
+                'week_number': week_number,
+                'week_start': week_start,
+                'week_end': week_end,
+                'prev_week': prev_week,
+                'prev_week_year': prev_week_year,
+                'next_week': next_week,
+                'next_week_year': next_week_year,
+                'month_name': month_name,
             }
-            return render(request, 'schedule/select_program.html', context)
 
-        program = get_object_or_404(Program, id=program_id)
-
-    # Program Manager
-    elif user.role == 'program_manager':
-        try:
-            program = Program.objects.get(manager=user)
-        except Program.DoesNotExist:
-            messages.error(request, 'لم يتم تعيين برنامج لك بعد')
-            return redirect('home')
-
-    # Committee Supervisor
-    elif user.role == 'committee_supervisor':
-        try:
-            committee = Committee.objects.get(supervisor=user)
-            program = committee.program
-        except Committee.DoesNotExist:
-            messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-            return redirect('home')
-
-    else:
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
-
-    # Get view type (monthly or weekly)
-    view_type = request.GET.get('view', 'monthly')
-
-    # Get month, year, and week from query params
-    now = timezone.now()
-    year = int(request.GET.get('year', now.year))
-    month = int(request.GET.get('month', now.month))
-
-    # Fix: Properly get week number
-    current_iso = now.isocalendar()
-    week_number = int(request.GET.get('week', current_iso[1]))
-
-    # Calculate previous and next month
-    if month == 1:
-        prev_month, prev_year = 12, year - 1
-    else:
-        prev_month, prev_year = month - 1, year
-
-    if month == 12:
-        next_month, next_year = 1, year + 1
-    else:
-        next_month, next_year = month + 1, year
-
-    if view_type == 'weekly':
-        # Weekly view logic - FIXED
-        # Calculate the Monday of the specified ISO week
-        jan_4 = datetime(year, 1, 4).date()  # ISO 8601: week 1 contains Jan 4
-        week_1_monday = jan_4 - timedelta(days=jan_4.weekday())
-        week_start = week_1_monday + timedelta(weeks=week_number - 1)
-
-        # Adjust to Sunday (if you want week to start on Sunday)
-        # If you want Monday start, remove this line
-        week_start = week_start - timedelta(days=1)
-        week_end = week_start + timedelta(days=6)
-
-        # Calculate max weeks in year
-        dec_28 = datetime(year, 12, 28).date()
-        max_week = dec_28.isocalendar()[1]
-
-        # Previous and next week with proper year handling
-        if week_number > 1:
-            prev_week = week_number - 1
-            prev_week_year = year
         else:
-            # Get last week of previous year
-            dec_28_prev = datetime(year - 1, 12, 28).date()
-            prev_week = dec_28_prev.isocalendar()[1]
-            prev_week_year = year - 1
+            # Monthly view logic
+            first_day = datetime(year, month, 1).date()
+            last_day = datetime(year, month, monthrange(year, month)[1]).date()
 
-        if week_number < max_week:
-            next_week = week_number + 1
-            next_week_year = year
-        else:
-            next_week = 1
-            next_week_year = year + 1
+            events = ScheduleEvent.objects.filter(
+                program=program,
+                start_date__lte=last_day,
+                start_date__gte=first_day
+            ).select_related('committee', 'assigned_to', 'created_by').order_by('start_date', 'start_time')
 
-        # Get events for the week
-        events = ScheduleEvent.objects.filter(
-            program=program,
-            start_date__gte=week_start,
-            start_date__lte=week_end
-        ).select_related('committee', 'assigned_to', 'created_by').order_by('start_date', 'start_time')
+            tasks = Task.objects.filter(
+                program=program,
+                due_date__lte=last_day,
+                due_date__gte=first_day
+            ).select_related('committee', 'assigned_to')
 
-        tasks = Task.objects.filter(
-            program=program,
-            due_date__gte=week_start,
-            due_date__lte=week_end
-        ).select_related('committee', 'assigned_to')
+            activities = Activity.objects.filter(
+                program=program,
+                date__lte=last_day,
+                date__gte=first_day
+            ).select_related('committee', 'created_by')
 
-        activities = Activity.objects.filter(
-            program=program,
-            date__gte=week_start,
-            date__lte=week_end
-        ).select_related('committee', 'created_by')
+            cultural_tasks = CulturalTask.objects.filter(
+                committee__program=program,
+                due_date__lte=last_day,
+                due_date__gte=first_day
+            ).select_related('committee', 'assigned_to')
 
-        cultural_tasks = CulturalTask.objects.filter(
-            committee__program=program,
-            due_date__gte=week_start,
-            due_date__lte=week_end
-        ).select_related('committee', 'assigned_to')
+            if user.role == 'committee_supervisor':
+                events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
+                tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
+                activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
+                cultural_tasks = cultural_tasks.filter(committee=committee)
 
-        # Filter by committee if supervisor
-        if user.role == 'committee_supervisor':
-            events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
-            tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
-            activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
-            cultural_tasks = cultural_tasks.filter(committee=committee)
+            cal_data = []
+            first_weekday = first_day.weekday()
+            first_weekday = (first_weekday + 1) % 7
 
-        # Build week days
-        week_days = []
-        for i in range(7):
-            day_date = week_start + timedelta(days=i)
-            day_events = events.filter(start_date=day_date)
-            day_tasks = tasks.filter(due_date=day_date)
-            day_activities = activities.filter(date=day_date)
-            day_cultural_tasks = cultural_tasks.filter(due_date=day_date)
+            if first_weekday > 0:
+                prev_month_days = monthrange(prev_year, prev_month)[1]
+                for i in range(first_weekday):
+                    day = prev_month_days - first_weekday + i + 1
+                    cal_data.append({
+                        'day': day,
+                        'date': datetime(prev_year, prev_month, day).date(),
+                        'is_current_month': False,
+                        'events': []
+                    })
 
-            week_days.append({
-                'date': day_date,
-                'day': day_date.day,
-                'is_current_month': True,  # Always show in weekly view
-                'is_today': day_date == now.date(),
-                'events': day_events,
-                'tasks': day_tasks,
-                'activities': day_activities,
-                'cultural_tasks': day_cultural_tasks,
-                'total_events': day_events.count() + day_tasks.count() + day_activities.count() + day_cultural_tasks.count(),
-            })
+            days_in_month = monthrange(year, month)[1]
+            for day in range(1, days_in_month + 1):
+                date = datetime(year, month, day).date()
+                day_events = events.filter(start_date=date)
+                day_tasks = tasks.filter(due_date=date)
+                day_activities = activities.filter(date=date)
+                day_cultural_tasks = cultural_tasks.filter(due_date=date)
 
-        weeks = [week_days]  # Single week
-
-        # Month names in Arabic
-        month_names = [
-            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-        ]
-
-        # Build month name for week span
-        if week_start.month != week_end.month:
-            month_name = f"{month_names[week_start.month - 1]} - {month_names[week_end.month - 1]}"
-        else:
-            month_name = month_names[week_start.month - 1]
-
-        context_extra = {
-            'view_type': 'weekly',
-            'week_number': week_number,
-            'week_start': week_start,
-            'week_end': week_end,
-            'prev_week': prev_week,
-            'prev_week_year': prev_week_year,
-            'next_week': next_week,
-            'next_week_year': next_week_year,
-            'month_name': month_name,
-        }
-
-    else:
-        # Monthly view logic (existing code)
-        first_day = datetime(year, month, 1).date()
-        last_day = datetime(year, month, monthrange(year, month)[1]).date()
-
-        events = ScheduleEvent.objects.filter(
-            program=program,
-            start_date__lte=last_day,
-            start_date__gte=first_day
-        ).select_related('committee', 'assigned_to', 'created_by').order_by('start_date', 'start_time')
-
-        tasks = Task.objects.filter(
-            program=program,
-            due_date__lte=last_day,
-            due_date__gte=first_day
-        ).select_related('committee', 'assigned_to')
-
-        activities = Activity.objects.filter(
-            program=program,
-            date__lte=last_day,
-            date__gte=first_day
-        ).select_related('committee', 'created_by')
-
-        cultural_tasks = CulturalTask.objects.filter(
-            committee__program=program,
-            due_date__lte=last_day,
-            due_date__gte=first_day
-        ).select_related('committee', 'assigned_to')
-
-        if user.role == 'committee_supervisor':
-            events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
-            tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
-            activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
-            cultural_tasks = cultural_tasks.filter(committee=committee)
-
-        cal_data = []
-        first_weekday = first_day.weekday()
-        first_weekday = (first_weekday + 1) % 7
-
-        if first_weekday > 0:
-            prev_month_days = monthrange(prev_year, prev_month)[1]
-            for i in range(first_weekday):
-                day = prev_month_days - first_weekday + i + 1
                 cal_data.append({
                     'day': day,
-                    'date': datetime(prev_year, prev_month, day).date(),
+                    'date': date,
+                    'is_current_month': True,
+                    'is_today': date == now.date(),
+                    'events': day_events,
+                    'tasks': day_tasks,
+                    'activities': day_activities,
+                    'cultural_tasks': day_cultural_tasks,
+                    'total_events': day_events.count() + day_tasks.count() + day_activities.count() + day_cultural_tasks.count(),
+                })
+
+            remaining = 42 - len(cal_data)
+            for day in range(1, remaining + 1):
+                date = datetime(next_year, next_month, day).date()
+                cal_data.append({
+                    'day': day,
+                    'date': date,
                     'is_current_month': False,
                     'events': []
                 })
 
-        days_in_month = monthrange(year, month)[1]
-        for day in range(1, days_in_month + 1):
-            date = datetime(year, month, day).date()
-            day_events = events.filter(start_date=date)
-            day_tasks = tasks.filter(due_date=date)
-            day_activities = activities.filter(date=date)
-            day_cultural_tasks = cultural_tasks.filter(due_date=date)
+            weeks = []
+            for i in range(0, len(cal_data), 7):
+                weeks.append(cal_data[i:i + 7])
 
-            cal_data.append({
-                'day': day,
-                'date': date,
-                'is_current_month': True,
-                'is_today': date == now.date(),
-                'events': day_events,
-                'tasks': day_tasks,
-                'activities': day_activities,
-                'cultural_tasks': day_cultural_tasks,
-                'total_events': day_events.count() + day_tasks.count() + day_activities.count() + day_cultural_tasks.count(),
-            })
+            month_names = [
+                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+            ]
+            month_name = month_names[month - 1]
 
-        remaining = 42 - len(cal_data)
-        for day in range(1, remaining + 1):
-            date = datetime(next_year, next_month, day).date()
-            cal_data.append({
-                'day': day,
-                'date': date,
-                'is_current_month': False,
-                'events': []
-            })
+            context_extra = {
+                'view_type': 'monthly',
+                'month_name': month_name,
+                'prev_year': prev_year,
+                'prev_month': prev_month,
+                'next_year': next_year,
+                'next_month': next_month,
+                'week_number': week_number,  # Add this for template compatibility
+            }
 
-        weeks = []
-        for i in range(0, len(cal_data), 7):
-            weeks.append(cal_data[i:i + 7])
+        # Determine base template
+        if user.role == 'director':
+            base_template = 'director_base.html'
+        elif user.role == 'program_manager':
+            base_template = 'program_manager_base.html'
+        elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+            base_template = 'cultural_committee/base.html'
+        elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+            base_template = 'sports_committee/base.html'
+        elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+            base_template = 'sharia_committee/base.html'
+        elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+            base_template = 'operations_committee/base.html'
+        else:
+            base_template = 'base.html'
 
-        month_names = [
-            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-        ]
-        month_name = month_names[month - 1]
-
-        context_extra = {
-            'view_type': 'monthly',
-            'month_name': month_name,
-            'prev_year': prev_year,
-            'prev_month': prev_month,
-            'next_year': next_year,
-            'next_month': next_month,
+        context = {
+            'program': program,
+            'weeks': weeks,
+            'year': year,
+            'month': month,
+            'today': now.date(),
+            'base_template': base_template,
         }
+        context.update(context_extra)
 
-    # Determine base template
-    if user.role == 'director':
-        base_template = 'director_base.html'
-    elif user.role == 'program_manager':
-        base_template = 'program_manager_base.html'
-    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
-        base_template = 'cultural_committee/base.html'
-    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
-        base_template = 'sports_committee/base.html'
-    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
-        base_template = 'sharia_committee/base.html'
-    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
-        base_template = 'operations_committee/base.html'
-    else:
-        base_template = 'base.html'
+        return render(request, 'schedule/calendar.html', context)
 
-    context = {
-        'program': program,
-        'weeks': weeks,
-        'year': year,
-        'month': month,
-        'today': now.date(),
-        'base_template': base_template,
-    }
-    context.update(context_extra)
-
-    return render(request, 'schedule/calendar.html', context)
+    except Exception as e:
+        logger.error(f"Error in schedule_calendar: {str(e)}", exc_info=True)
+        messages.error(request, f'حدث خطأ في تحميل التقويم: {str(e)}')
+        return redirect('home')
 
 @login_required
 def object_list(request, object_type, program_id):

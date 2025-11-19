@@ -418,11 +418,20 @@
                     <i class="fas fa-calendar"></i>
                     شهري
                 </a>
-                <a href="?view=weekly&year={{ year }}&week={{ week_number|default:today.isocalendar.1 }}"
+                <!-- FIX: Proper week_number handling -->
+                {% if week_number %}
+                <a href="?view=weekly&year={{ year }}&week={{ week_number }}"
                    class="view-toggle-btn {% if view_type == 'weekly' %}active{% endif %}">
                     <i class="fas fa-calendar-week"></i>
                     أسبوعي
                 </a>
+                {% else %}
+                <a href="?view=weekly&year={{ year }}&week={{ today.isocalendar.1 }}"
+                   class="view-toggle-btn {% if view_type == 'weekly' %}active{% endif %}">
+                    <i class="fas fa-calendar-week"></i>
+                    أسبوعي
+                </a>
+                {% endif %}
             </div>
 
             <!-- Navigation -->
