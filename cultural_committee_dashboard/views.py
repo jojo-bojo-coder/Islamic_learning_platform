@@ -844,7 +844,10 @@ def daily_phrases(request):
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
         return redirect('home')
 
-    phrases = DailyPhrase.objects.filter(committee=committee).order_by('-display_date')
+    try:
+        phrases = DailyPhrase.objects.filter(committee=committee).order_by('-display_date')
+    except Exception as e:
+        phrases =None
 
     # Filter by active status
     is_active = request.GET.get('is_active')
