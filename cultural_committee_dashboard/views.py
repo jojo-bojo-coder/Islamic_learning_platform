@@ -455,6 +455,10 @@ def reports(request):
 
 @login_required
 def cultural_dashboard(request):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
     try:
         committee = Committee.objects.get(supervisor=request.user)
     except Committee.DoesNotExist:
