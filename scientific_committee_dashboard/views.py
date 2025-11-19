@@ -133,7 +133,7 @@ def task_management(request):
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
         return redirect('home')
 
-    tasks = ScientificTask.objects.filter(committee=committee).select_related('assigned_to').order_by('-created_at')
+    tasks = ScientificTask.objects.filter(committee=committee).order_by('-created_at')
 
     # Filters
     task_type = request.GET.get('type')
