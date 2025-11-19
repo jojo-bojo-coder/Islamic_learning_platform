@@ -255,7 +255,7 @@
                                 <div class="col-md-6">
                                     <p><strong>نوع المهمة:</strong> {{ object.get_task_type_display }}</p>
                                     <p><strong>اللجنة:</strong> {{ object.committee.name }}</p>
-                                    <p><strong>المسؤول:</strong> {{ object.assigned_to.get_full_name|default:"-" }}</p>
+                                    <p><strong>المسؤول:</strong> {{ object.assigned_to_name|default:"-" }}</p>
                                 </div>
                                 <div class="col-md-6">
                                     <p><strong>تاريخ الاستحقاق:</strong> {{ object.due_date }}</p>
