@@ -832,36 +832,60 @@ def file_library(request):
 
 from .models import DailyPhrase
 from .forms import DailyPhraseForm
+
+
 @login_required
 def daily_phrases(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
-
     try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
+        # Check user permissions
+        if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+            messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+            return redirect('home')
 
-    try:
-        phrases = DailyPhrase.objects.filter(committee=committee).order_by('-display_date')
+        try:
+            # Get user's committee
+            committee = Committee.objects.get(supervisor=request.user)
+        except Committee.DoesNotExist:
+            messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, f'حدث خطأ في تحميل بيانات اللجنة: {str(e)}')
+            return redirect('home')
+
+        try:
+            # Get daily phrases
+            phrases = DailyPhrase.objects.filter(committee=committee).order_by('-display_date')
+        except Exception as e:
+            messages.error(request, f'حدث خطأ في تحميل العبارات: {str(e)}')
+            phrases = []
+
+        # Filter by active status with error handling
+        is_active = request.GET.get('is_active')
+        try:
+            if is_active == 'true' and phrases:
+                phrases = phrases.filter(is_active=True)
+            elif is_active == 'false' and phrases:
+                phrases = phrases.filter(is_active=False)
+        except Exception as e:
+            messages.error(request, f'حدث خطأ في تطبيق الفلتر: {str(e)}')
+            # Continue with unfiltered phrases
+
+        context = {
+            'committee': committee,
+            'phrases': phrases if phrases else [],
+            'is_active_filter': is_active,
+        }
+
+        try:
+            return render(request, 'cultural_committee/daily_phrases.html', context)
+        except Exception as e:
+            messages.error(request, f'حدث خطأ في تحميل الصفحة: {str(e)}')
+            return redirect('home')
+
     except Exception as e:
-        phrases =None
-
-    # Filter by active status
-    is_active = request.GET.get('is_active')
-    if is_active == 'true':
-        phrases = phrases.filter(is_active=True)
-    elif is_active == 'false':
-        phrases = phrases.filter(is_active=False)
-
-    context = {
-        'committee': committee,
-        'phrases': phrases,
-        'is_active_filter': is_active,
-    }
-    return render(request, 'cultural_committee/daily_phrases.html', context)
+        # Global exception catch
+        messages.error(request, f'حدث خطأ غير متوقع: {str(e)}')
+        return redirect('home')
 
 
 @login_required
