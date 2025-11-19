@@ -46,6 +46,76 @@
         margin-left: 10px;
     }
 
+    .progress-container {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .progress-container label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .progress-container label span {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 1.5rem;
+    }
+
+    .progress-bar-main {
+        background: rgba(255, 255, 255, 0.5);
+        height: 30px;
+        border-radius: 50px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 50px;
+        transition: width 1s ease;
+        width: 0;
+        box-shadow: 0 2px 10px rgba(0, 132, 171, 0.5);
+    }
+
+    .progress-container p {
+        color: var(--text-gray);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-encouragement {
+        font-style: italic;
+        color: var(--blue-primary);
+        font-weight: 600;
+    }
+
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -121,19 +191,38 @@
         background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
     }
 
+    .committee-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
     .committee-name {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 700;
         color: var(--blue-dark);
-        margin-bottom: 1.5rem;
         font-family: 'Cairo', sans-serif;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.8rem;
     }
 
     .committee-name i {
         color: var(--blue-primary);
+        font-size: 1.2rem;
+    }
+
+    .completion-badge {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        padding: 0.5rem 1.2rem;
+        border-radius: 25px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        min-width: 80px;
+        text-align: center;
     }
 
     .committee-stats {
@@ -195,7 +284,34 @@
         color: var(--blue-primary);
     }
 
-    .student-rank-item {
+    .committee-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+    }
+
+    .view-details-btn {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .view-details-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 132, 171, 0.4);
+        color: var(--white);
+    }
+
+    .committee-rank-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -207,19 +323,19 @@
         transition: all 0.3s ease;
     }
 
-    .student-rank-item:hover {
+    .committee-rank-item:hover {
         border-color: var(--blue-primary);
         box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
         transform: translateY(-2px);
     }
 
-    .student-rank-info {
+    .committee-rank-info {
         display: flex;
         align-items: center;
         gap: 1.2rem;
     }
 
-    .student-rank-number {
+    .committee-rank-number {
         width: 40px;
         height: 40px;
         background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
@@ -233,13 +349,13 @@
         box-shadow: 0 4px 10px rgba(0, 132, 171, 0.3);
     }
 
-    .student-name {
+    .committee-name-small {
         font-weight: 700;
         color: var(--blue-dark);
         font-size: 1.1rem;
     }
 
-    .student-committee {
+    .committee-supervisor {
         font-size: 0.85rem;
         color: var(--text-gray);
         margin-top: 0.3rem;
@@ -248,7 +364,7 @@
         gap: 0.3rem;
     }
 
-    .student-progress {
+    .committee-progress {
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--blue-primary);
@@ -318,13 +434,18 @@
             gap: 1rem;
         }
 
-        .student-rank-item {
+        .committee-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .committee-rank-item {
             flex-direction: column;
             gap: 1rem;
             text-align: center;
         }
 
-        .student-rank-info {
+        .committee-rank-info {
             flex-direction: column;
             gap: 0.8rem;
         }
@@ -333,8 +454,34 @@
 {% endblock %}
 
 {% block content %}
+<!-- Progress Container -->
+<div class="progress-container fade-in-up">
+    <label>
+        إنجاز اللجان في البرنامج
+        <span id="percentageText">0%</span>
+    </label>
+    <div class="progress-bar-main">
+        <div class="progress-fill" id="mainProgress"></div>
+    </div>
+    <p id="mainText">
+        {% if committees %}
+            عرض {{ committees|length }} لجنة - متوسط إنجاز المهام
+        {% else %}
+            لا توجد لجان حالياً
+        {% endif %}
+    </p>
+    <p class="progress-encouragement">تابع تقدم اللجان وحفزهم على إنجاز المزيد!</p>
+</div>
+
+<!-- Hidden data for JavaScript -->
+<div id="committeeData" style="display: none;">
+    {% for committee in committees %}
+        <span data-percentage="{{ committee.avg_progress|floatformat:1 }}"></span>
+    {% endfor %}
+</div>
+
 <!-- Weekly/Monthly Statistics -->
-<div class="report-section fade-in-up">
+<div class="report-section fade-in-up" style="animation-delay: 0.1s">
     <div class="section-header">
         <h4>
             <i class="fas fa-calendar-week"></i>
@@ -363,19 +510,24 @@
 </div>
 
 <!-- Committee Reports -->
-<div class="report-section fade-in-up" style="animation-delay: 0.1s">
+<div class="report-section fade-in-up" style="animation-delay: 0.2s">
     <div class="section-header">
         <h4>
             <i class="fas fa-users"></i>
-            تقرير اللجان ونسبة الإنجاز
+            تقرير اللجان ونسبة إنجاز المهام
         </h4>
     </div>
 
     {% for committee in committees %}
     <div class="committee-report-item">
-        <div class="committee-name">
-            <i class="fas fa-users"></i>
-            {{ committee.name }}
+        <div class="committee-header">
+            <div class="committee-name">
+                <i class="fas fa-users"></i>
+                {{ committee.name }}
+            </div>
+            <div class="completion-badge" id="badge-{{ committee.id }}">
+                {{ committee.avg_progress|floatformat:1 }}%
+            </div>
         </div>
 
         <div class="committee-stats">
@@ -385,7 +537,19 @@
             </div>
             <div class="committee-stat-item">
                 <i class="fas fa-tasks"></i>
-                <span><strong>{{ committee.task_count }}</strong> مهمة</span>
+                <span><strong>{{ committee.task_count }}</strong> إجمالي المهام</span>
+            </div>
+            <div class="committee-stat-item">
+                <i class="fas fa-check-circle"></i>
+                <span><strong>{{ committee.completed_tasks }}</strong> مكتملة</span>
+            </div>
+            <div class="committee-stat-item">
+                <i class="fas fa-clock"></i>
+                <span><strong>{{ committee.pending_tasks }}</strong> قيد التنفيذ</span>
+            </div>
+            <div class="committee-stat-item">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span><strong>{{ committee.overdue_tasks }}</strong> متأخرة</span>
             </div>
             {% if committee.supervisor %}
             <div class="committee-stat-item">
@@ -397,12 +561,19 @@
 
         <div class="progress-bar-wrapper">
             <div class="progress-label">
-                <span>نسبة الإنجاز</span>
-                <span><strong>{{ committee.avg_progress|default:0|floatformat:1 }}%</strong></span>
+                <span>نسبة إنجاز المهام</span>
+                <span><strong>{{ committee.avg_progress|floatformat:1 }}%</strong></span>
             </div>
             <div class="progress">
-                <div class="progress-bar" style="width: {{ committee.avg_progress|default:0 }}%"></div>
+                <div class="progress-bar" id="progress-{{ committee.id }}" style="width: {{ committee.avg_progress }}%"></div>
             </div>
+        </div>
+
+        <div class="committee-actions">
+            <a href="{% url 'pm_committee_detail_report' committee.id %}" class="view-details-btn">
+                <i class="fas fa-eye"></i>
+                عرض التفاصيل
+            </a>
         </div>
     </div>
     {% empty %}
@@ -413,36 +584,147 @@
     {% endfor %}
 </div>
 
-<!-- Top Students -->
-<div class="report-section fade-in-up" style="animation-delay: 0.2s">
+<!-- Top Committees -->
+<div class="report-section fade-in-up" style="animation-delay: 0.3s">
     <div class="section-header">
         <h4>
             <i class="fas fa-trophy"></i>
-            أفضل الطلاب (أعلى نسبة إنجاز)
+            أفضل اللجان (أعلى نسبة إنجاز للمهام)
         </h4>
     </div>
 
-    {% for student in top_students %}
-    <div class="student-rank-item">
-        <div class="student-rank-info">
-            <div class="student-rank-number">{{ forloop.counter }}</div>
+    {% for committee in top_committees %}
+    <div class="committee-rank-item">
+        <div class="committee-rank-info">
+            <div class="committee-rank-number">{{ forloop.counter }}</div>
             <div>
-                <div class="student-name">{{ student.user.get_full_name|default:student.user.username }}</div>
-                {% if student.committee %}
-                <div class="student-committee">
-                    <i class="fas fa-users"></i>
-                    {{ student.committee.name }}
+                <div class="committee-name-small">{{ committee.name }}</div>
+                {% if committee.supervisor %}
+                <div class="committee-supervisor">
+                    <i class="fas fa-user-tie"></i>
+                    {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
                 </div>
                 {% endif %}
             </div>
         </div>
-        <div class="student-progress">{{ student.progress }}%</div>
+        <div class="committee-progress" id="rank-progress-{{ committee.id }}">
+            {{ committee.avg_progress|floatformat:1 }}%
+        </div>
     </div>
     {% empty %}
     <div class="empty-state">
-        <i class="fas fa-user-graduate"></i>
-        <p>لا يوجد طلاب مسجلين</p>
+        <i class="fas fa-users-slash"></i>
+        <p>لا توجد لجان لعرض الترتيب</p>
     </div>
     {% endfor %}
 </div>
+
+<script>
+// Function to determine color based on percentage
+function getColor(percentage) {
+    if (percentage <= 30) return "#dc3545"; // red
+    if (percentage <= 70) return "#ffc107"; // orange
+    return "#28a745"; // green
+}
+
+// Function to get gradient color based on percentage
+function getGradientColor(percentage) {
+    if (percentage <= 30) return "linear-gradient(90deg, #dc3545, #c82333)";
+    if (percentage <= 70) return "linear-gradient(90deg, #ffc107, #ffb300)";
+    return "linear-gradient(90deg, #28a745, #20c997)";
+}
+
+// Calculate dynamic progress based on committee completion percentages
+function calculateProgress() {
+    const committeeDataDiv = document.getElementById('committeeData');
+    if (!committeeDataDiv) return 0;
+
+    const committeeElements = committeeDataDiv.querySelectorAll('[data-percentage]');
+    if (committeeElements.length === 0) return 0;
+
+    let totalProgress = 0;
+    let committeesWithProgress = 0;
+
+    committeeElements.forEach(committee => {
+        const percentage = parseFloat(committee.dataset.percentage) || 0;
+        totalProgress += percentage;
+        committeesWithProgress++;
+    });
+
+    const averageProgress = committeesWithProgress > 0 ? Math.round(totalProgress / committeesWithProgress) : 0;
+
+    // Update the text to show breakdown
+    const mainText = document.getElementById('mainText');
+    mainText.innerHTML = `عرض ${committeeElements.length} لجنة - متوسط إنجاز المهام: ${averageProgress}%`;
+
+    return averageProgress;
+}
+
+// Animate progress bars on load
+window.addEventListener('load', function() {
+    // Main progress bar
+    setTimeout(() => {
+        const mainProgress = document.getElementById('mainProgress');
+        const percentageText = document.getElementById('percentageText');
+        const percent = calculateProgress();
+
+        mainProgress.style.width = percent + '%';
+        mainProgress.style.background = getGradientColor(percent);
+        percentageText.textContent = percent + '%';
+
+        // Update percentage text color based on progress
+        percentageText.style.color = getColor(percent);
+    }, 800);
+
+    // Animate individual committee progress bars
+    setTimeout(() => {
+        const committeeProgressBars = document.querySelectorAll('.progress-bar');
+        committeeProgressBars.forEach((bar, index) => {
+            setTimeout(() => {
+                const width = bar.style.width;
+                const committeeId = bar.id.replace('progress-', '');
+                const percentage = parseFloat(width);
+
+                // Set initial width to 0 and animate
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                    bar.style.background = getGradientColor(percentage);
+                }, 50);
+
+                // Update badge colors
+                const badge = document.getElementById('badge-' + committeeId);
+                if (badge) {
+                    badge.style.background = getGradientColor(percentage);
+                }
+
+                // Update rank progress colors
+                const rankProgress = document.getElementById('rank-progress-' + committeeId);
+                if (rankProgress) {
+                    rankProgress.style.background = `rgba(${percentage <= 30 ? '220, 53, 69' : percentage <= 70 ? '255, 193, 7' : '40, 167, 69'}, 0.1)`;
+                    rankProgress.style.color = getColor(percentage);
+                }
+            }, index * 100);
+        });
+    }, 1000);
+});
+
+// Intersection observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.committee-report-item, .committee-rank-item').forEach(item => {
+    observer.observe(item);
+});
+</script>
 {% endblock %}

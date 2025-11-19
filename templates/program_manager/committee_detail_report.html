@@ -1,0 +1,407 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}تفاصيل اللجنة - {{ committee.name }}{% endblock %}
+
+{% block page_title %}تفاصيل اللجنة: {{ committee.name }}{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'pm_dashboard' %}">الرئيسية</a></li>
+<li class="breadcrumb-item"><a href="{% url 'pm_reports' %}">التقارير</a></li>
+<li class="breadcrumb-item active">{{ committee.name }}</li>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-section {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .detail-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .section-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .section-header h4 {
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .section-header h4 i {
+        color: var(--blue-primary);
+        margin-left: 10px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+        border-radius: 16px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        border: 2px solid rgba(97, 188, 215, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.15);
+        border-color: var(--blue-primary);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--blue-dark);
+    }
+
+    .completion-highlight {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        padding: 2rem;
+        border-radius: 16px;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+    }
+
+    .completion-percentage {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .completion-label {
+        font-size: 1.2rem;
+        font-weight: 600;
+        opacity: 0.9;
+    }
+
+    .completion-sublabel {
+        font-size: 0.95rem;
+        opacity: 0.8;
+        margin-top: 0.5rem;
+    }
+
+    .task-item, .activity-item, .student-item {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.03), rgba(97, 188, 215, 0.03));
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .task-item:hover, .activity-item:hover, .student-item:hover {
+        border-color: var(--blue-primary);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
+    }
+
+    .task-title, .activity-title, .student-name {
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .task-meta, .activity-meta, .student-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        flex-wrap: wrap;
+    }
+
+    .status-badge {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-completed { background: #d1edff; color: var(--blue-primary); }
+    .status-overdue { background: #f8d7da; color: #721c24; }
+
+    .progress-bar {
+        height: 8px;
+        background: var(--border-light);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 0.5rem 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 10px;
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: var(--white);
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+
+    .back-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 132, 171, 0.4);
+        color: var(--white);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-gray);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .detail-section {
+            padding: 1.5rem;
+            margin: 0 1rem 2rem 1rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .completion-percentage {
+            font-size: 2.5rem;
+        }
+
+        .task-meta, .activity-meta, .student-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'pm_reports' %}" class="back-btn">
+    <i class="fas fa-arrow-right"></i>
+    العودة إلى التقارير
+</a>
+
+<!-- Task Completion Highlight -->
+<div class="completion-highlight">
+    <div class="completion-percentage">{{ committee_stats.avg_task_completion|floatformat:1 }}%</div>
+    <div class="completion-label">متوسط نسبة إنجاز المهام</div>
+    <div class="completion-sublabel">{{ committee_stats.completed_tasks }} من {{ committee_stats.total_tasks }} مهمة مكتملة</div>
+</div>
+
+<!-- Committee Overview -->
+<div class="detail-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-chart-bar"></i>
+            نظرة عامة على اللجنة
+        </h4>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ committee_stats.total_students }}</div>
+            <div class="stat-label">إجمالي الطلاب</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ committee_stats.total_tasks }}</div>
+            <div class="stat-label">إجمالي المهام</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ committee_stats.completed_tasks }}</div>
+            <div class="stat-label">المهام المكتملة</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ committee_stats.pending_tasks }}</div>
+            <div class="stat-label">المهام قيد التنفيذ</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ committee_stats.overdue_tasks }}</div>
+            <div class="stat-label">المهام المتأخرة</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ task_completion_rate|floatformat:1 }}%</div>
+            <div class="stat-label">معدل إكمال المهام</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ committee_stats.avg_student_progress|floatformat:1 }}%</div>
+            <div class="stat-label">متوسط تقدم الطلاب</div>
+        </div>
+    </div>
+
+    {% if committee.supervisor %}
+    <div style="background: rgba(0, 132, 171, 0.05); padding: 1.5rem; border-radius: 12px; border-right: 4px solid var(--blue-primary);">
+        <h5 style="color: var(--blue-dark); margin-bottom: 0.5rem;">
+            <i class="fas fa-user-tie"></i>
+            مشرف اللجنة
+        </h5>
+        <p style="margin: 0; color: var(--text-gray); font-size: 1.1rem;">
+            {{ committee.supervisor.get_full_name|default:committee.supervisor.username }}
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Recent Tasks -->
+<div class="detail-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-tasks"></i>
+            أحدث المهام
+        </h4>
+    </div>
+
+    {% for task in recent_tasks %}
+    <div class="task-item">
+        <div class="task-title">{{ task.title }}</div>
+        <div class="task-meta">
+            <span><i class="fas fa-calendar"></i> {{ task.due_date }}</span>
+            <span class="status-badge status-{{ task.status }}">
+                {{ task.get_status_display }}
+            </span>
+            <span><i class="fas fa-chart-line"></i> إنجاز: {{ task.completion_percentage }}%</span>
+            {% if task.assigned_to %}
+            <span><i class="fas fa-user"></i> {{ task.assigned_to.get_full_name|default:task.assigned_to.username }}</span>
+            {% endif %}
+        </div>
+        {% if task.description %}
+        <p style="margin: 0.5rem 0 0 0; color: var(--text-gray); font-size: 0.9rem;">
+            {{ task.description|truncatewords:20 }}
+        </p>
+        {% endif %}
+
+        <!-- Task Progress Bar -->
+        <div style="margin-top: 1rem;">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ task.completion_percentage }}%"></div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-tasks"></i>
+        <p>لا توجد مهام لهذه اللجنة</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Recent Activities -->
+<div class="detail-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-calendar-alt"></i>
+            أحدث الأنشطة
+        </h4>
+    </div>
+
+    {% for activity in recent_activities %}
+    <div class="activity-item">
+        <div class="activity-title">{{ activity.name }}</div>
+        <div class="activity-meta">
+            <span><i class="fas fa-calendar"></i> {{ activity.date }}</span>
+            {% if activity.time %}
+            <span><i class="fas fa-clock"></i> {{ activity.time }}</span>
+            {% endif %}
+            {% if activity.location %}
+            <span><i class="fas fa-map-marker-alt"></i> {{ activity.location }}</span>
+            {% endif %}
+        </div>
+        {% if activity.description %}
+        <p style="margin: 0.5rem 0 0 0; color: var(--text-gray); font-size: 0.9rem;">
+            {{ activity.description|truncatewords:20 }}
+        </p>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-calendar-alt"></i>
+        <p>لا توجد أنشطة لهذه اللجنة</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Students Progress -->
+<div class="detail-section">
+    <div class="section-header">
+        <h4>
+            <i class="fas fa-user-graduate"></i>
+            تقدم الطلاب
+        </h4>
+    </div>
+
+    {% for student in students %}
+    <div class="student-item">
+        <div class="student-name">
+            {{ student.user.get_full_name|default:student.user.username }}
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ student.progress }}%"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-gray);">
+            <span>التقدم</span>
+            <span><strong>{{ student.progress }}%</strong></span>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-user-graduate"></i>
+        <p>لا يوجد طلاب في هذه اللجنة</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

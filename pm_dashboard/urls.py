@@ -26,6 +26,7 @@ urlpatterns = [
 
     # Reports
     path('reports/', views.reports, name='pm_reports'),
+    path('reports/committee/<int:committee_id>/', views.committee_detail_report, name='pm_committee_detail_report'),
 
     # Notifications
     path('notifications/', views.notifications, name='pm_notifications'),

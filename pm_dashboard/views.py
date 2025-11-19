@@ -906,37 +906,280 @@ def reports(request):
         messages.error(request, 'لم يتم تعيين برنامج لك بعد')
         return redirect('home')
 
-    # Committee statistics
+    # Committee statistics with task counts and completion percentages
     committees = Committee.objects.filter(program=program).annotate(
-        student_count=Count('student'),
-        avg_progress=Avg('student__progress'),
-        task_count=Count('tasks')
-    ).order_by('-avg_progress')
+        student_count=Count('student')
+    ).select_related('supervisor').order_by('-student_count')
 
-    # Weekly/Monthly data
+    # Convert to list so we can modify the objects
+    committees_list = list(committees)
+
+    # Calculate statistics for each committee based on supervisor type
+    for committee in committees_list:
+        supervisor = committee.supervisor
+
+        # Default values
+        committee.task_count = 0
+        committee.completed_tasks = 0
+        committee.pending_tasks = 0
+        committee.overdue_tasks = 0
+        committee.avg_progress = 0
+
+        if supervisor and supervisor.supervisor_type:
+            # Query the appropriate task model based on supervisor type
+            if supervisor.supervisor_type == 'cultural':
+                from cultural_committee_dashboard.models import CulturalTask
+                tasks = CulturalTask.objects.filter(committee=committee)
+                committee.task_count = tasks.count()
+                committee.completed_tasks = tasks.filter(status='completed').count()
+                committee.pending_tasks = tasks.filter(status='pending').count()
+                committee.overdue_tasks = 0  # Cultural tasks don't have overdue status
+
+            elif supervisor.supervisor_type == 'sports':
+                from sports_committee_dashboard.models import SportsTask
+                tasks = SportsTask.objects.filter(committee=committee)
+                committee.task_count = tasks.count()
+                committee.completed_tasks = tasks.filter(status='completed').count()
+                committee.pending_tasks = tasks.filter(status='pending').count()
+                committee.overdue_tasks = tasks.filter(status='overdue').count()
+
+            elif supervisor.supervisor_type == 'sharia':
+                from sharia_committee_dashboard.models import ShariaTask
+                tasks = ShariaTask.objects.filter(committee=committee)
+                committee.task_count = tasks.count()
+                committee.completed_tasks = tasks.filter(status='completed').count()
+                committee.pending_tasks = tasks.filter(status='pending').count()
+                committee.overdue_tasks = 0  # Sharia tasks don't have overdue status
+
+            elif supervisor.supervisor_type == 'scientific':
+                from scientific_committee_dashboard.models import ScientificTask
+                tasks = ScientificTask.objects.filter(committee=committee)
+                committee.task_count = tasks.count()
+                committee.completed_tasks = tasks.filter(status='completed').count()
+                committee.pending_tasks = tasks.filter(status='pending').count()
+                committee.overdue_tasks = 0  # Scientific tasks don't have overdue status
+
+            elif supervisor.supervisor_type == 'operations':
+                from operations_committee_dashboard.models import OperationsTask
+                tasks = OperationsTask.objects.filter(committee=committee)
+                committee.task_count = tasks.count()
+                committee.completed_tasks = tasks.filter(status='completed').count()
+                committee.pending_tasks = tasks.filter(status__in=['not_started', 'in_progress']).count()
+                committee.overdue_tasks = tasks.filter(status='overdue').count()
+            else:
+                # Fallback to generic Task model
+                tasks = Task.objects.filter(committee=committee)
+                committee.task_count = tasks.count()
+                committee.completed_tasks = tasks.filter(status='completed').count()
+                committee.pending_tasks = tasks.filter(status='pending').count()
+                committee.overdue_tasks = tasks.filter(status='overdue').count()
+
+            # Calculate average progress based on completion_percentage
+            if tasks.exists():
+                total_completion = sum(task.completion_percentage for task in tasks)
+                committee.avg_progress = round(total_completion / tasks.count(), 1)
+            else:
+                # If no tasks, calculate based on completed vs total
+                if committee.task_count > 0:
+                    committee.avg_progress = round((committee.completed_tasks / committee.task_count) * 100, 1)
+                else:
+                    committee.avg_progress = 0
+        else:
+            # No supervisor or supervisor type - use generic Task model
+            tasks = Task.objects.filter(committee=committee)
+            committee.task_count = tasks.count()
+            committee.completed_tasks = tasks.filter(status='completed').count()
+            committee.pending_tasks = tasks.filter(status='pending').count()
+            committee.overdue_tasks = tasks.filter(status='overdue').count()
+
+            if tasks.exists():
+                total_completion = sum(task.completion_percentage for task in tasks)
+                committee.avg_progress = round(total_completion / tasks.count(), 1)
+            else:
+                if committee.task_count > 0:
+                    committee.avg_progress = round((committee.completed_tasks / committee.task_count) * 100, 1)
+                else:
+                    committee.avg_progress = 0
+
+    # Weekly/Monthly data - need to count all task types
     today = timezone.now().date()
     week_ago = today - timedelta(days=7)
     month_ago = today - timedelta(days=30)
 
-    weekly_tasks = Task.objects.filter(program=program, created_at__gte=week_ago).count()
-    monthly_tasks = Task.objects.filter(program=program, created_at__gte=month_ago).count()
+    # Count tasks from all models
+    from cultural_committee_dashboard.models import CulturalTask
+    from sports_committee_dashboard.models import SportsTask
+    from sharia_committee_dashboard.models import ShariaTask
+    from scientific_committee_dashboard.models import ScientificTask
+    from operations_committee_dashboard.models import OperationsTask
+
+    weekly_tasks = (
+            Task.objects.filter(program=program, created_at__gte=week_ago).count() +
+            CulturalTask.objects.filter(committee__program=program, created_at__gte=week_ago).count() +
+            SportsTask.objects.filter(committee__program=program, created_at__gte=week_ago).count() +
+            ShariaTask.objects.filter(committee__program=program, created_at__gte=week_ago).count() +
+            ScientificTask.objects.filter(committee__program=program, created_at__gte=week_ago).count() +
+            OperationsTask.objects.filter(committee__program=program, created_at__gte=week_ago).count()
+    )
+
+    monthly_tasks = (
+            Task.objects.filter(program=program, created_at__gte=month_ago).count() +
+            CulturalTask.objects.filter(committee__program=program, created_at__gte=month_ago).count() +
+            SportsTask.objects.filter(committee__program=program, created_at__gte=month_ago).count() +
+            ShariaTask.objects.filter(committee__program=program, created_at__gte=month_ago).count() +
+            ScientificTask.objects.filter(committee__program=program, created_at__gte=month_ago).count() +
+            OperationsTask.objects.filter(committee__program=program, created_at__gte=month_ago).count()
+    )
 
     weekly_activities = Activity.objects.filter(program=program, date__gte=week_ago).count()
     monthly_activities = Activity.objects.filter(program=program, date__gte=month_ago).count()
 
-    # Best performing students
-    top_students = Student.objects.filter(program=program).select_related('user').order_by('-progress')[:10]
+    # Top committees (best performing based on task completion)
+    top_committees = sorted(committees_list, key=lambda c: c.avg_progress, reverse=True)[:10]
+
+    # Top students (keep student progress as is)
+    top_students = Student.objects.filter(program=program).select_related('user', 'committee').order_by('-progress')[
+        :10]
 
     context = {
         'program': program,
-        'committees': committees,
+        'committees': committees_list,
         'weekly_tasks': weekly_tasks,
         'monthly_tasks': monthly_tasks,
         'weekly_activities': weekly_activities,
         'monthly_activities': monthly_activities,
+        'top_committees': top_committees,
         'top_students': top_students,
     }
     return render(request, 'program_manager/reports.html', context)
+
+
+@login_required
+def committee_detail_report(request, committee_id):
+    if request.user.role != 'program_manager':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        program = Program.objects.get(manager=request.user)
+    except Program.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين برنامج لك بعد')
+        return redirect('home')
+
+    committee = get_object_or_404(Committee, id=committee_id, program=program)
+    supervisor = committee.supervisor
+
+    # Initialize default values
+    total_tasks = 0
+    completed_tasks = 0
+    pending_tasks = 0
+    overdue_tasks = 0
+    avg_task_completion = 0
+    tasks = None
+    recent_tasks = []
+
+    # Query the appropriate task model based on supervisor type
+    if supervisor and supervisor.supervisor_type:
+        if supervisor.supervisor_type == 'cultural':
+            from cultural_committee_dashboard.models import CulturalTask
+            tasks = CulturalTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = 0  # Cultural tasks don't have overdue status
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+        elif supervisor.supervisor_type == 'sports':
+            from sports_committee_dashboard.models import SportsTask
+            tasks = SportsTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = tasks.filter(status='overdue').count()
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+        elif supervisor.supervisor_type == 'sharia':
+            from sharia_committee_dashboard.models import ShariaTask
+            tasks = ShariaTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = 0  # Sharia tasks don't have overdue status
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+        elif supervisor.supervisor_type == 'scientific':
+            from scientific_committee_dashboard.models import ScientificTask
+            tasks = ScientificTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = 0  # Scientific tasks don't have overdue status
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+        elif supervisor.supervisor_type == 'operations':
+            from operations_committee_dashboard.models import OperationsTask
+            tasks = OperationsTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status__in=['not_started', 'in_progress']).count()
+            overdue_tasks = tasks.filter(status='overdue').count()
+            recent_tasks = tasks.order_by('-created_at')[:10]
+        else:
+            # Fallback to generic Task model
+            tasks = Task.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = tasks.filter(status='overdue').count()
+            recent_tasks = tasks.order_by('-created_at')[:10]
+    else:
+        # No supervisor or supervisor type - use generic Task model
+        tasks = Task.objects.filter(committee=committee)
+        total_tasks = tasks.count()
+        completed_tasks = tasks.filter(status='completed').count()
+        pending_tasks = tasks.filter(status='pending').count()
+        overdue_tasks = tasks.filter(status='overdue').count()
+        recent_tasks = tasks.order_by('-created_at')[:10]
+
+    # Calculate average task completion percentage
+    if tasks and tasks.exists():
+        total_completion = sum(task.completion_percentage for task in tasks)
+        avg_task_completion = round(total_completion / tasks.count(), 1)
+    else:
+        avg_task_completion = 0
+
+    committee_stats = {
+        'total_students': Student.objects.filter(committee=committee).count(),
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'pending_tasks': pending_tasks,
+        'overdue_tasks': overdue_tasks,
+        'avg_student_progress': Student.objects.filter(committee=committee).aggregate(avg=Avg('progress'))['avg'] or 0,
+        'avg_task_completion': avg_task_completion,
+    }
+
+    # Recent activities
+    recent_activities = Activity.objects.filter(committee=committee).order_by('-date')[:10]
+
+    # Students progress
+    students = Student.objects.filter(committee=committee).select_related('user').order_by('-progress')
+
+    # Task completion rate (percentage of completed tasks)
+    if committee_stats['total_tasks'] > 0:
+        task_completion_rate = round((committee_stats['completed_tasks'] / committee_stats['total_tasks']) * 100, 1)
+    else:
+        task_completion_rate = 0
+
+    context = {
+        'program': program,
+        'committee': committee,
+        'committee_stats': committee_stats,
+        'recent_tasks': recent_tasks,
+        'recent_activities': recent_activities,
+        'students': students,
+        'task_completion_rate': task_completion_rate,
+    }
+    return render(request, 'program_manager/committee_detail_report.html', context)
 
 
 @login_required
