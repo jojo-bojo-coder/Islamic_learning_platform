@@ -7,9 +7,9 @@ from datetime import timedelta
 from director_dashboard.models import Committee
 from accounts.models import User, UserActivity
 from .models import (CulturalTask, CommitteeMember, FileLibrary,
-                     Discussion, DiscussionComment, CulturalReport, CulturalNotification)
+                     Discussion, DiscussionComment, CulturalReport, CulturalNotification,DailyPhrase)
 from .forms import (CulturalTaskForm, CommitteeMemberForm, FileLibraryForm,
-                    DiscussionForm, DiscussionCommentForm, CulturalReportForm)
+                    DiscussionForm, DiscussionCommentForm, CulturalReportForm,DailyPhraseForm)
 
 
 def get_client_ip(request):
