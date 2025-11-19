@@ -1,17 +1,11 @@
 [phases.setup]
-nixPkgs = [
-    "python310",
-    "postgresql",
-    "cairo",
-    "pango",
-    "gdk-pixbuf",
-    "libffi",
-    "glib",
-    "gobject-introspection"
+aptPkgs = [
+    "libcairo2-dev",
+    "libpango-1.0-0",
+    "libpangocairo-1.0-0",
+    "libgdk-pixbuf2.0-0",
+    "libffi-dev",
+    "shared-mime-info",
+    "libglib2.0-0",
+    "libgobject-2.0-0"
 ]
-
-[phases.install]
-cmds = ["pip install -r requirements.txt"]
-
-[start]
-cmd = "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn islamic_learning.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 --access-logfile - --error-logfile -"
