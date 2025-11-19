@@ -571,23 +571,40 @@ def add_competition(request):
 # Youth Books
 @login_required
 def book_management(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
-
     try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        # Check user permissions
+        if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+            messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+            return redirect('home')
+
+        # Get committee for the current user
+        try:
+            committee = Committee.objects.get(supervisor=request.user)
+        except Committee.DoesNotExist:
+            messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+            return redirect('home')
+        except Committee.MultipleObjectsReturned:
+            messages.error(request, 'تم تعيين أكثر من لجنة لك. يرجى التواصل مع الإدارة')
+            return redirect('home')
+
+        # Get books for the committee
+        try:
+            books = YouthBook.objects.filter(committee=committee).order_by('-created_at')
+        except Exception as e:
+            messages.error(request, f'حدث خطأ أثناء جلب بيانات الكتب: {str(e)}')
+            books = YouthBook.objects.none()  # Return empty queryset
+
+        context = {
+            'committee': committee,
+            'books': books,
+        }
+
+        return render(request, 'sharia_committee/book_management.html', context)
+
+    except Exception as e:
+        # Catch any unexpected errors
+        messages.error(request, f'حدث خطأ غير متوقع: {str(e)}')
         return redirect('home')
-
-    books = YouthBook.objects.filter(committee=committee).order_by('-created_at')
-
-    context = {
-        'committee': committee,
-        'books': books,
-    }
-    return render(request, 'sharia_committee/book_management.html', context)
 
 
 @login_required
