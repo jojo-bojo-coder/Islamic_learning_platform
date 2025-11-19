@@ -57,6 +57,7 @@ from accounts.models import User, UserActivity
 from director_dashboard.models import Program, Committee
 from .models import ScheduleEvent, EventAttendance
 from .forms import ScheduleEventForm, EventAttendanceForm, ProgramSelectionForm
+import logging
 logger = logging.getLogger(__name__)
 
 def get_client_ip(request):
