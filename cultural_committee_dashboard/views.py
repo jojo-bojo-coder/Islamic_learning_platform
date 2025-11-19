@@ -109,13 +109,17 @@ def mark_all_read(request):
         messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
         return redirect('home')
 
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
     if request.method == 'POST':
         CulturalNotification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         messages.success(request, 'تم تحديد جميع الإشعارات كمقروءة!')
 
     return redirect('cultural_notifications')
-    messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-    return redirect('home')
 
 
 
