@@ -200,12 +200,122 @@
         width: 100%;
         text-align: right;
         padding: 0.5rem;
-        background: rgba(0, 132, 171, 0.1);
-        border-right: 3px solid var(--blue-primary);
+        background: rgba(155, 89, 182, 0.1);
+        border-right: 3px solid #9b59b6;
         border-radius: 4px;
         margin-bottom: 0.5rem;
         cursor: pointer;
         transition: all 0.2s ease;
+    }
+
+    .weekly-view .event-item.task-item {
+        background: rgba(230, 126, 34, 0.1); /* Orange background for tasks */
+        border-right: 3px solid #e67e22;
+    }
+
+    .weekly-view .event-item.activity-item {
+        background: rgba(39, 174, 96, 0.1); /* Green background for activities */
+        border-right: 3px solid #27ae60;
+    }
+
+    .weekly-view .event-item.cultural-task-item {
+        background: rgba(231, 76, 60, 0.1); /* Red background for cultural tasks */
+        border-right: 3px solid #e74c3c;
+    }
+
+    .legend-events {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    }
+
+    .legend-tasks {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+
+    .legend-activities {
+        background: linear-gradient(135deg, #27ae60, #229954);
+    }
+
+    .legend-cultural-tasks {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+
+    .event-type-task,
+    .object-type-task {
+        background: linear-gradient(135deg, #e67e22, #d35400); /* Orange */
+    }
+
+    .event-type-activity,
+    .object-type-activity {
+        background: linear-gradient(135deg, #27ae60, #229954); /* Green */
+    }
+
+    .event-type-meeting {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple */
+    }
+
+    .event-type-exam {
+        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Red */
+    }
+
+    .event-type-other {
+        background: linear-gradient(135deg, #34495e, #2c3e50); /* Dark Gray */
+    }
+
+    .object-type-cultural_task {
+        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Red */
+    }
+
+    .event-type-schedule,
+    .object-type-schedule {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple */
+    }
+
+    .event-card:hover {
+        border-color: #9b59b6; /* Purple for events */
+    }
+
+    .event-card.task-card:hover {
+        border-color: #e67e22; /* Orange for tasks */
+    }
+
+    .event-card.activity-card:hover {
+        border-color: #27ae60; /* Green for activities */
+    }
+
+    .event-card.cultural-task-card:hover {
+        border-color: #e74c3c; /* Red for cultural tasks */
+    }
+
+    .filter-btn[data-filter="events"].active {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    }
+
+    .filter-btn[data-filter="tasks"].active {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+
+    .filter-btn[data-filter="activities"].active {
+        background: linear-gradient(135deg, #27ae60, #229954);
+    }
+
+    .filter-btn[data-filter="cultural_tasks"].active {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+
+    .event-detail i.events-icon {
+        color: #9b59b6;
+    }
+
+    .event-detail i.tasks-icon {
+        color: #e67e22;
+    }
+
+    .event-detail i.activities-icon {
+        color: #27ae60;
+    }
+
+    .event-detail i.cultural-tasks-icon {
+        color: #e74c3c;
     }
 
     .weekly-view .event-item:hover {
@@ -293,10 +403,22 @@
         font-size: 0.7rem;
     }
 
-    .count-events { background: linear-gradient(135deg, #0084AB, #61bcd7); }
-    .count-tasks { background: linear-gradient(135deg, #00576F, #0084AB); }
-    .count-activities { background: linear-gradient(135deg, #0084AB, #61bcd7); }
-    .count-cultural_tasks { background: linear-gradient(135deg, #00576F, #0084AB); }
+    .count-events {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple for Events */
+    }
+
+    .count-tasks {
+        background: linear-gradient(135deg, #e67e22, #d35400); /* Orange for Tasks */
+    }
+
+    .count-activities {
+        background: linear-gradient(135deg, #27ae60, #229954); /* Green for Activities */
+    }
+
+    .count-cultural_tasks {
+        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Red for Cultural Tasks */
+    }
+
 
     .no-events {
         color: var(--text-muted);
@@ -324,7 +446,6 @@
         width: 20px;
         height: 20px;
         border-radius: 4px;
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
     }
 
     .legend-label {
@@ -418,20 +539,11 @@
                     <i class="fas fa-calendar"></i>
                     شهري
                 </a>
-                <!-- FIX: Proper week_number handling -->
-                {% if week_number %}
-                <a href="?view=weekly&year={{ year }}&week={{ week_number }}"
+                <a href="?view=weekly&year={{ year }}&week={{ week_number|default:today.isocalendar.1 }}"
                    class="view-toggle-btn {% if view_type == 'weekly' %}active{% endif %}">
                     <i class="fas fa-calendar-week"></i>
                     أسبوعي
                 </a>
-                {% else %}
-                <a href="?view=weekly&year={{ year }}&week={{ today.isocalendar.1 }}"
-                   class="view-toggle-btn {% if view_type == 'weekly' %}active{% endif %}">
-                    <i class="fas fa-calendar-week"></i>
-                    أسبوعي
-                </a>
-                {% endif %}
             </div>
 
             <!-- Navigation -->
@@ -489,7 +601,7 @@
                             {% if view_type == 'weekly' %}
                                 <!-- Weekly View - Show event details -->
                                 {% for event in day_data.events %}
-                                <div class="event-item" onclick="location.href='{% url 'event_detail' event.id %}'">
+                                <div class="event-card" onclick="location.href='{% url 'event_detail' event.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-calendar-check"></i> {{ event.title }}
                                     </div>
@@ -500,7 +612,7 @@
                                 {% endfor %}
 
                                 {% for task in day_data.tasks %}
-                                <div class="event-item" style="border-right-color: #00576F;" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
+                                <div class="event-card task-card" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-tasks"></i> {{ task.title }}
                                     </div>
@@ -508,7 +620,7 @@
                                 {% endfor %}
 
                                 {% for activity in day_data.activities %}
-                                <div class="event-item" style="border-right-color: #61bcd7;" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
+                                <div class="event-card activity-card" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-running"></i> {{ activity.title }}
                                     </div>
@@ -519,7 +631,7 @@
                                 {% endfor %}
 
                                 {% for ctask in day_data.cultural_tasks %}
-                                <div class="event-item" style="border-right-color: #0084AB;" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
+                                <div class="event-card cultural-task-card" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-theater-masks"></i> {{ ctask.title }}
                                     </div>
@@ -580,23 +692,23 @@
         </tbody>
     </table>
 
-    <div class="legend">
+   <div class="legend">
         <div class="legend-item">
-            <div class="legend-color" style="background: linear-gradient(135deg, #0084AB, #61bcd7);"></div>
-            <span class="legend-label">أحداث</span>
+            <div class="legend-color legend-events"></div>
+            <span class="legend-label">أحداث جدولة</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color" style="background: linear-gradient(135deg, #00576F, #0084AB);"></div>
+            <div class="legend-color legend-tasks"></div>
             <span class="legend-label">مهام</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color" style="background: linear-gradient(135deg, #0084AB, #61bcd7);"></div>
+            <div class="legend-color legend-activities"></div>
             <span class="legend-label">أنشطة</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color" style="background: linear-gradient(135deg, #00576F, #0084AB);"></div>
+            <div class="legend-color legend-cultural-tasks"></div>
             <span class="legend-label">مهام ثقافية</span>
-        </div>
-    </div>
+   </div>
+</div>
 </div>
 {% endblock %}
