@@ -788,7 +788,6 @@ def create_director_alert(title, message, alert_type, priority='medium',
 
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
 import pandas as pd
 from datetime import datetime
 import tempfile
@@ -797,6 +796,13 @@ from django.db.models import Count, Avg
 
 @login_required
 def export_reports_pdf(request):
+    try:
+        # Import only when function is called
+        from weasyprint import HTML
+        # Use HTML here
+    except ImportError:
+        messages.error(request, 'WeasyPrint غير متوفر')
+        return redirect('reports')
     """Export reports as PDF"""
     if request.user.role != 'director':
         messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
