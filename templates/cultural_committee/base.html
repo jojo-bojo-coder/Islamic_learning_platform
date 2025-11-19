@@ -46,36 +46,6 @@
             min-height: 100vh;
         }
 
-        /* شاشة البداية */
-        #splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        #splash video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* إخفاء المحتوى الرئيسي في البداية */
-        .dashboard-container {
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .dashboard-container.show {
-            opacity: 1;
-        }
-
         /* Layout */
         .dashboard-container {
             display: flex;
@@ -1003,12 +973,6 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- شاشة البداية -->
-    <div id="splash">
-        <video autoplay muted playsinline>
-            <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
-        </video>
-    </div>
 
     <!-- Dashboard Layout -->
     <div class="dashboard-container">
@@ -1210,26 +1174,6 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // شاشة البداية
-        const splash = document.getElementById("splash");
-        const dashboardContainer = document.querySelector(".dashboard-container");
-        const video = splash.querySelector("video");
-
-        // عند انتهاء الفيديو
-        video.onended = () => {
-            splash.style.display = "none";
-            dashboardContainer.classList.add("show");
-            document.body.style.overflow = "auto";
-        };
-
-        // احتياطي: إخفاء شاشة البداية بعد 5 ثوانٍ كحد أقصى
-        setTimeout(() => {
-            if (splash.style.display !== "none") {
-                splash.style.display = "none";
-                dashboardContainer.classList.add("show");
-                document.body.style.overflow = "auto";
-            }
-        }, 5000);
 
         // Mobile menu functionality
         const hamburger = document.querySelector('.mobile-menu-toggle');
