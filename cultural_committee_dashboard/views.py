@@ -455,14 +455,27 @@ def reports(request):
 
 @login_required
 def cultural_dashboard(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+    print("=== CULTURAL DASHBOARD ACCESSED ===")
+    print(f"User: {request.user}")
+    print(f"User role: {getattr(request.user, 'role', 'No role')}")
+    print(f"Supervisor type: {getattr(request.user, 'supervisor_type', 'No supervisor_type')}")
+
+    if request.user.role != 'committee_supervisor' or getattr(request.user, 'supervisor_type', None) != 'cultural':
+        print("Permission denied - not cultural supervisor")
         messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
         return redirect('home')
 
     try:
+        print("Attempting to get committee...")
         committee = Committee.objects.get(supervisor=request.user)
+        print(f"Committee found: {committee.name}")
     except Committee.DoesNotExist:
+        print("Committee.DoesNotExist exception raised")
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+    except Exception as e:
+        print(f"Unexpected error getting committee: {e}")
+        messages.error(request, f'حدث خطأ: {e}')
         return redirect('home')
 
     # Statistics
@@ -496,11 +509,14 @@ def cultural_dashboard(request):
 
     # Daily phrase for today
     from django.utils import timezone
-    daily_phrase = DailyPhrase.objects.filter(
-        committee=committee,
-        display_date=timezone.now().date(),
-        is_active=True
-    ).first()
+    try:
+        daily_phrase = DailyPhrase.objects.filter(
+            committee=committee,
+            display_date=timezone.now().date(),
+            is_active=True
+        ).first()
+    except Exception as e:
+        daily_phrase = None
 
     context = {
         'committee': committee,
