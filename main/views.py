@@ -180,13 +180,13 @@ def schedule_calendar(request, program_id=None):
                 program=program,
                 start_date__gte=week_start,
                 start_date__lte=week_end
-            ).select_related('committee', 'assigned_to', 'created_by').order_by('start_date', 'start_time')
+            ).select_related('committee', 'created_by').order_by('start_date', 'start_time')
 
             tasks = Task.objects.filter(
                 program=program,
                 due_date__gte=week_start,
                 due_date__lte=week_end
-            ).select_related('committee', 'assigned_to')
+            ).select_related('committee')
 
             activities = Activity.objects.filter(
                 program=program,
@@ -198,7 +198,7 @@ def schedule_calendar(request, program_id=None):
                 committee__program=program,
                 due_date__gte=week_start,
                 due_date__lte=week_end
-            ).select_related('committee', 'assigned_to')
+            ).select_related('committee')
 
             # Filter by committee if supervisor
             if user.role == 'committee_supervisor':
@@ -263,13 +263,13 @@ def schedule_calendar(request, program_id=None):
                 program=program,
                 start_date__lte=last_day,
                 start_date__gte=first_day
-            ).select_related('committee', 'assigned_to', 'created_by').order_by('start_date', 'start_time')
+            ).select_related('committee', 'created_by').order_by('start_date', 'start_time')
 
             tasks = Task.objects.filter(
                 program=program,
                 due_date__lte=last_day,
                 due_date__gte=first_day
-            ).select_related('committee', 'assigned_to')
+            ).select_related('committee')
 
             activities = Activity.objects.filter(
                 program=program,
@@ -281,7 +281,7 @@ def schedule_calendar(request, program_id=None):
                 committee__program=program,
                 due_date__lte=last_day,
                 due_date__gte=first_day
-            ).select_related('committee', 'assigned_to')
+            ).select_related('committee')
 
             if user.role == 'committee_supervisor':
                 events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
