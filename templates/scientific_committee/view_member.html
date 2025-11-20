@@ -5,148 +5,6 @@
 {% block page_title %}عرض بيانات العضو{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
-    <div class="col-lg-8">
-        <div class="dashboard-card">
-            <!-- Header -->
-            <div class="text-center mb-4">
-                <div class="member-avatar mb-3 mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;">
-                    {{ member.user.get_full_name|slice:":1" }}
-                </div>
-                <h3 style="color: var(--blue-dark);">{{ member.user.get_full_name }}</h3>
-                <p class="text-muted">{{ member.user.username }}</p>
-            </div>
-
-            <!-- Statistics -->
-            <div class="row text-center mb-4">
-                <div class="col-md-4 mb-3">
-                    <div class="stat-card">
-                        <h4 style="color: var(--blue-primary);">{{ tasks_assigned }}</h4>
-                        <p class="text-muted mb-0">المهام الموكلة</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="stat-card">
-                        <h4 style="color: var(--blue-primary);">{{ tasks_completed }}</h4>
-                        <p class="text-muted mb-0">المهام المكتملة</p>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="stat-card">
-                        <h4 style="color: var(--blue-primary);">{{ lectures_given }}</h4>
-                        <p class="text-muted mb-0">المحاضرات المقدمة</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Member Details -->
-            <div class="member-details">
-                <div class="detail-item">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <strong style="color: var(--blue-dark);">
-                                <i class="fas fa-user-tag me-2" style="color: var(--blue-primary);"></i>
-                                الدور:
-                            </strong>
-                        </div>
-                        <div class="col-sm-8">
-                            <span>{{ member.get_role_display }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <strong style="color: var(--blue-dark);">
-                                <i class="fas fa-graduation-cap me-2" style="color: var(--blue-primary);"></i>
-                                التخصص:
-                            </strong>
-                        </div>
-                        <div class="col-sm-8">
-                            <span>{{ member.specialization|default:"غير محدد" }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <strong style="color: var(--blue-dark);">
-                                <i class="fas fa-chart-line me-2" style="color: var(--blue-primary);"></i>
-                                درجة المشاركة:
-                            </strong>
-                        </div>
-                        <div class="col-sm-8">
-                            <div class="progress" style="height: 25px; border-radius: 8px;">
-                                <div class="progress-bar" role="progressbar"
-                                     style="width: {{ member.participation_score }}%; background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));"
-                                     aria-valuenow="{{ member.participation_score }}"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100">
-                                    {{ member.participation_score }}%
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <strong style="color: var(--blue-dark);">
-                                <i class="fas fa-calendar me-2" style="color: var(--blue-primary);"></i>
-                                تاريخ الانضمام:
-                            </strong>
-                        </div>
-                        <div class="col-sm-8">
-                            <span>{{ member.joined_date }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detail-item">
-                    <div class="row">
-                        <div class="col-sm-4">
-                            <strong style="color: var(--blue-dark);">
-                                <i class="fas fa-circle me-2" style="color: var(--blue-primary);"></i>
-                                الحالة:
-                            </strong>
-                        </div>
-                        <div class="col-sm-8">
-                            {% if member.is_active %}
-                            <span class="badge bg-success">نشط</span>
-                            {% else %}
-                            <span class="badge bg-secondary">غير نشط</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex justify-content-between mt-4 pt-3" style="border-top: 1px solid var(--border-light);">
-                <a href="{% url 'scientific_member_management' %}" class="action-btn action-btn-secondary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
-                    <i class="fas fa-arrow-right ms-1"></i>
-                    رجوع للقائمة
-                </a>
-                <div class="btn-group">
-                    <a href="{% url 'scientific_edit_member' member.id %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto; margin-left: 0.5rem;">
-                        <i class="fas fa-edit ms-1"></i>
-                        تعديل
-                    </a>
-                    <a href="{% url 'scientific_delete_member' member.id %}" class="action-btn action-btn-danger" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
-                        <i class="fas fa-trash ms-1"></i>
-                        حذف
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
 <style>
     /* View Member Specific Styles - Using committee_info.html design system */
     .dashboard-card {
@@ -394,4 +252,143 @@
         }
     }
 </style>
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="member-avatar mb-3 mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                    {{ member.user.get_full_name|slice:":1" }}
+                </div>
+                <h3 style="color: var(--blue-dark);">{{ member.user.get_full_name }}</h3>
+                <p class="text-muted">{{ member.user.username }}</p>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row text-center mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <h4 style="color: var(--blue-primary);">{{ tasks_assigned }}</h4>
+                        <p class="text-muted mb-0">المهام الموكلة</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <h4 style="color: var(--blue-primary);">{{ tasks_completed }}</h4>
+                        <p class="text-muted mb-0">المهام المكتملة</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <h4 style="color: var(--blue-primary);">{{ lectures_given }}</h4>
+                        <p class="text-muted mb-0">المحاضرات المقدمة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Details -->
+            <div class="member-details">
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-user-tag me-2" style="color: var(--blue-primary);"></i>
+                                الدور:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span>{{ member.get_role_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-graduation-cap me-2" style="color: var(--blue-primary);"></i>
+                                التخصص:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span>{{ member.specialization|default:"غير محدد" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-chart-line me-2" style="color: var(--blue-primary);"></i>
+                                درجة المشاركة:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="progress" style="height: 25px; border-radius: 8px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {{ member.participation_score }}%; background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));"
+                                     aria-valuenow="{{ member.participation_score }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    {{ member.participation_score }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-calendar me-2" style="color: var(--blue-primary);"></i>
+                                تاريخ الانضمام:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span>{{ member.joined_date }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-circle me-2" style="color: var(--blue-primary);"></i>
+                                الحالة:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if member.is_active %}
+                            <span class="badge bg-success">نشط</span>
+                            {% else %}
+                            <span class="badge bg-secondary">غير نشط</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4 pt-3" style="border-top: 1px solid var(--border-light);">
+                <a href="{% url 'scientific_member_management' %}" class="action-btn action-btn-secondary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                    <i class="fas fa-arrow-right ms-1"></i>
+                    رجوع للقائمة
+                </a>
+                <div class="btn-group">
+                    <a href="{% url 'scientific_edit_member' member.id %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto; margin-left: 0.5rem;">
+                        <i class="fas fa-edit ms-1"></i>
+                        تعديل
+                    </a>
+                    <a href="{% url 'scientific_delete_member' member.id %}" class="action-btn action-btn-danger" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                        <i class="fas fa-trash ms-1"></i>
+                        حذف
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

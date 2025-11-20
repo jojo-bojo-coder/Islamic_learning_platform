@@ -5,213 +5,6 @@
 {% block page_title %}لوحة التحكم - اللجنة العلمية{% endblock %}
 
 {% block content %}
-<!-- Welcome Container -->
-<div class="welcome-container fade-in-up">
-    <div class="welcome-box">
-        <div class="user-section">
-            <div class="title">مرحباً <span>{{ request.user.first_name }} 👋</span></div>
-            <div class="team">"مشرف اللجنة العلمية"</div>
-            <div class="message">إدارة متكاملة للمهام العلمية والمحاضرات والأنشطة التعليمية</div>
-        </div>
-        <div class="quotes-section">
-            <div class="quotes-container">
-                <div class="quote active">
-                    <p class="quote-text">عبارة اليوم:</p>
-                    <p class="quote-text">{{ daily_phrase.phrase|default:"لا توجد عبارة متاحة اليوم" }}</p>
-                    {% if daily_phrase.author %}
-                    <p class="quote-text" style="font-style: italic; margin-top: 10px;">- {{ daily_phrase.author }}</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Statistics Cards -->
-<div class="row stats-row">
-    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.1s;">
-        <div class="stat-card">
-            <div class="stat-number">{{ total_members }}</div>
-            <div class="stat-label">إجمالي الأعضاء</div>
-            <i class="fas fa-users mt-3"></i>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.2s;">
-        <div class="stat-card">
-            <div class="stat-number">{{ completed_tasks }}</div>
-            <div class="stat-label">المهام المكتملة</div>
-            <i class="fas fa-tasks mt-3"></i>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.3s;">
-        <div class="stat-card">
-            <div class="stat-number">{{ upcoming_lectures }}</div>
-            <div class="stat-label">المحاضرات القادمة</div>
-            <i class="fas fa-chalkboard-teacher mt-3"></i>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.4s;">
-        <div class="stat-card">
-            <div class="stat-number">{{ unread_notifications }}</div>
-            <div class="stat-label">إشعارات جديدة</div>
-            <i class="fas fa-bell mt-3"></i>
-        </div>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-<div class="quick-actions-wrapper fade-in-up" style="animation-delay: 0.5s;">
-    <h4>
-        <i class="fas fa-bolt"></i>
-        إجراءات سريعة
-    </h4>
-    <div class="row g-3">
-        <div class="col-lg-3 col-md-6">
-            <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary">
-                <i class="fas fa-plus-circle"></i>
-                <span>إضافة مهمة جديدة</span>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-success">
-                <i class="fas fa-chalkboard-teacher"></i>
-                <span>جدولة محاضرة</span>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="{% url 'scientific_upload_file' %}" class="action-btn action-btn-info">
-                <i class="fas fa-upload"></i>
-                <span>رفع ملف علمي</span>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="{% url 'scientific_add_report' %}" class="action-btn action-btn-warning">
-                <i class="fas fa-chart-bar"></i>
-                <span>إنشاء تقرير</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-<!-- Activities and Stats -->
-<div class="row">
-    <div class="col-lg-8 mb-4 fade-in-up" style="animation-delay: 0.6s;">
-        <div class="activities-card">
-            <h4>
-                <i class="fas fa-tasks"></i>
-                أحدث المهام
-            </h4>
-            {% if recent_tasks %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>المهمة</th>
-                            <th>النوع</th>
-                            <th>الحالة</th>
-                            <th>التقدم</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for task in recent_tasks %}
-                        <tr>
-                            <td>
-                                <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
-                                {{ task.title }}
-                            </td>
-                            <td>{{ task.get_task_type_display }}</td>
-                            <td>
-                                <span class="status-badge status-{{ task.status }}">{{ task.get_status_display }}</span>
-                            </td>
-                            <td>
-                                <div class="progress" style="width: 100px; height: 6px;">
-                                    <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%"></div>
-                                </div>
-                                <small>{{ task.completion_percentage }}%</small>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <i class="fas fa-tasks"></i>
-                <p>لا توجد مهام حالياً</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="col-lg-4 mb-4 fade-in-up" style="animation-delay: 0.7s;">
-        <div class="stats-sidebar-card">
-            <h4>
-                <i class="fas fa-chart-pie"></i>
-                إحصائيات سريعة
-            </h4>
-            <div class="list-group">
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>
-                        <i class="fas fa-users me-2" style="color: var(--blue-primary);"></i>
-                        إجمالي الأعضاء
-                    </span>
-                    <span class="badge">{{ total_members }}</span>
-                </div>
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>
-                        <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
-                        إجمالي المهام
-                    </span>
-                    <span class="badge">{{ total_tasks }}</span>
-                </div>
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>
-                        <i class="fas fa-check-circle me-2" style="color: var(--blue-primary);"></i>
-                        المهام المكتملة
-                    </span>
-                    <span class="badge">{{ completed_tasks }}</span>
-                </div>
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>
-                        <i class="fas fa-chalkboard-teacher me-2" style="color: var(--blue-primary);"></i>
-                        المحاضرات القادمة
-                    </span>
-                    <span class="badge">{{ upcoming_lectures }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Task Distribution -->
-<div class="row">
-    <div class="col-12 fade-in-up" style="animation-delay: 0.8s;">
-        <div class="activities-card">
-            <h4>
-                <i class="fas fa-chart-pie"></i>
-                توزيع المهام حسب النوع
-            </h4>
-            <div class="row">
-                {% for dist in task_distribution %}
-                <div class="col-md-4 mb-3">
-                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
-                        <span>{{ dist.task_type }}</span>
-                        <span class="badge bg-primary">{{ dist.count }}</span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-state">
-                    <i class="fas fa-chart-pie"></i>
-                    <p>لا توجد بيانات للإحصائيات</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
 <style>
     /* Welcome Container Styling */
     .welcome-container {
@@ -598,4 +391,208 @@
         }
     }
 </style>
+<!-- Welcome Container -->
+<div class="welcome-container fade-in-up">
+    <div class="welcome-box">
+        <div class="user-section">
+            <div class="title">مرحباً <span>{{ request.user.first_name }} 👋</span></div>
+            <div class="team">"مشرف اللجنة العلمية"</div>
+            <div class="message">إدارة متكاملة للمهام العلمية والمحاضرات والأنشطة التعليمية</div>
+        </div>
+        <div class="quotes-section">
+            <div class="quotes-container">
+                <div class="quote active">
+                    <p class="quote-text">عبارة اليوم:</p>
+                    <p class="quote-text">{{ daily_phrase.phrase|default:"لا توجد عبارة متاحة اليوم" }}</p>
+                    {% if daily_phrase.author %}
+                    <p class="quote-text" style="font-style: italic; margin-top: 10px;">- {{ daily_phrase.author }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row stats-row">
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.1s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_members }}</div>
+            <div class="stat-label">إجمالي الأعضاء</div>
+            <i class="fas fa-users mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.2s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ completed_tasks }}</div>
+            <div class="stat-label">المهام المكتملة</div>
+            <i class="fas fa-tasks mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.3s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ upcoming_lectures }}</div>
+            <div class="stat-label">المحاضرات القادمة</div>
+            <i class="fas fa-chalkboard-teacher mt-3"></i>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4 fade-in-up" style="animation-delay: 0.4s;">
+        <div class="stat-card">
+            <div class="stat-number">{{ unread_notifications }}</div>
+            <div class="stat-label">إشعارات جديدة</div>
+            <i class="fas fa-bell mt-3"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions-wrapper fade-in-up" style="animation-delay: 0.5s;">
+    <h4>
+        <i class="fas fa-bolt"></i>
+        إجراءات سريعة
+    </h4>
+    <div class="row g-3">
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_add_task' %}" class="action-btn action-btn-primary">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة مهمة جديدة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-success">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>جدولة محاضرة</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_upload_file' %}" class="action-btn action-btn-info">
+                <i class="fas fa-upload"></i>
+                <span>رفع ملف علمي</span>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="{% url 'scientific_add_report' %}" class="action-btn action-btn-warning">
+                <i class="fas fa-chart-bar"></i>
+                <span>إنشاء تقرير</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Activities and Stats -->
+<div class="row">
+    <div class="col-lg-8 mb-4 fade-in-up" style="animation-delay: 0.6s;">
+        <div class="activities-card">
+            <h4>
+                <i class="fas fa-tasks"></i>
+                أحدث المهام
+            </h4>
+            {% if recent_tasks %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>المهمة</th>
+                            <th>النوع</th>
+                            <th>الحالة</th>
+                            <th>التقدم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in recent_tasks %}
+                        <tr>
+                            <td>
+                                <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
+                                {{ task.title }}
+                            </td>
+                            <td>{{ task.get_task_type_display }}</td>
+                            <td>
+                                <span class="status-badge status-{{ task.status }}">{{ task.get_status_display }}</span>
+                            </td>
+                            <td>
+                                <div class="progress" style="width: 100px; height: 6px;">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ task.completion_percentage }}%"></div>
+                                </div>
+                                <small>{{ task.completion_percentage }}%</small>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-tasks"></i>
+                <p>لا توجد مهام حالياً</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4 fade-in-up" style="animation-delay: 0.7s;">
+        <div class="stats-sidebar-card">
+            <h4>
+                <i class="fas fa-chart-pie"></i>
+                إحصائيات سريعة
+            </h4>
+            <div class="list-group">
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-users me-2" style="color: var(--blue-primary);"></i>
+                        إجمالي الأعضاء
+                    </span>
+                    <span class="badge">{{ total_members }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-tasks me-2" style="color: var(--blue-primary);"></i>
+                        إجمالي المهام
+                    </span>
+                    <span class="badge">{{ total_tasks }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-check-circle me-2" style="color: var(--blue-primary);"></i>
+                        المهام المكتملة
+                    </span>
+                    <span class="badge">{{ completed_tasks }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fas fa-chalkboard-teacher me-2" style="color: var(--blue-primary);"></i>
+                        المحاضرات القادمة
+                    </span>
+                    <span class="badge">{{ upcoming_lectures }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Task Distribution -->
+<div class="row">
+    <div class="col-12 fade-in-up" style="animation-delay: 0.8s;">
+        <div class="activities-card">
+            <h4>
+                <i class="fas fa-chart-pie"></i>
+                توزيع المهام حسب النوع
+            </h4>
+            <div class="row">
+                {% for dist in task_distribution %}
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex justify-content-between align-items-center p-3 border rounded">
+                        <span>{{ dist.task_type }}</span>
+                        <span class="badge bg-primary">{{ dist.count }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-chart-pie"></i>
+                    <p>لا توجد بيانات للإحصائيات</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

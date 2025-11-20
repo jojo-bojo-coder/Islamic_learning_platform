@@ -5,203 +5,6 @@
 {% block page_title %}إدارة المحاضرات والورش{% endblock %}
 
 {% block content %}
-<!-- Header Section -->
-<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
-    <div class="col-12">
-        <div class="dashboard-card">
-            <div class="d-flex justify-content-between align-items-center">
-                <h4 style="color: var(--blue-dark);">
-                    <i class="fas fa-chalkboard-teacher ms-2"></i>
-                    المحاضرات والورش
-                </h4>
-                <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem;">
-                    <i class="fas fa-plus ms-1"></i>
-                    إضافة محاضرة جديدة
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Filters -->
-<div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
-    <div class="col-12">
-        <div class="dashboard-card">
-            <form method="get" class="row g-3">
-                <div class="col-md-4">
-                    <label for="type" class="form-label" style="color: var(--blue-dark); font-weight: 600;">
-                        <i class="fas fa-tag me-2" style="color: var(--blue-primary);"></i>
-                        نوع المحاضرة
-                    </label>
-                    <select name="type" id="type" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
-                        <option value="">جميع الأنواع</option>
-                        {% for lecture_type in lecture_types %}
-                        <option value="{{ lecture_type.0 }}" {% if lecture_type_filter == lecture_type.0 %}selected{% endif %}>
-                            {{ lecture_type.1 }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="status" class="form-label" style="color: var(--blue-dark); font-weight: 600;">
-                        <i class="fas fa-circle me-2" style="color: var(--blue-primary);"></i>
-                        الحالة
-                    </label>
-                    <select name="status" id="status" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
-                        <option value="">جميع الحالات</option>
-                        {% for status in status_choices %}
-                        <option value="{{ status.0 }}" {% if status_filter == status.0 %}selected{% endif %}>
-                            {{ status.1 }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="action-btn action-btn-info w-100" style="padding: 0.8rem 1.5rem;">
-                        <i class="fas fa-filter ms-1"></i>
-                        تصفية
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Lectures Table -->
-<div class="row fade-in-up" style="animation-delay: 0.3s;">
-    <div class="col-12">
-        <div class="dashboard-card">
-            {% if lectures %}
-            <div class="table-responsive">
-                <table class="table table-hover custom-table">
-                    <thead>
-                        <tr>
-                            <th>العنوان</th>
-                            <th>النوع</th>
-                            <th>المحاضر</th>
-                            <th>التاريخ</th>
-                            <th>الوقت</th>
-                            <th>المكان</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for lecture in lectures %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-chalkboard-teacher me-2" style="color: var(--blue-primary);"></i>
-                                    <div>
-                                        <strong style="color: var(--blue-dark);">{{ lecture.title }}</strong>
-                                        {% if lecture.description %}
-                                        <br>
-                                        <small class="text-muted">{{ lecture.description|truncatewords:10 }}</small>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary);">
-                                    {{ lecture.get_lecture_type_display }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if lecture.lecturer %}
-                                <div class="d-flex align-items-center">
-                                    <div class="member-avatar-small me-2">
-                                        {{ lecture.lecturer.first_name|first }}{{ lecture.lecturer.last_name|first }}
-                                    </div>
-                                    {{ lecture.lecturer.get_full_name }}
-                                </div>
-                                {% elif lecture.guest_lecturer %}
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-user-tie me-2" style="color: var(--blue-primary);"></i>
-                                    {{ lecture.guest_lecturer }}
-                                </div>
-                                {% else %}
-                                <span class="text-muted">غير محدد</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span style="color: var(--blue-dark); font-weight: 500;">{{ lecture.date }}</span>
-                            </td>
-                            <td>
-                                <span style="color: var(--blue-dark); font-weight: 500;">{{ lecture.time }}</span>
-                            </td>
-                            <td>
-                                {% if lecture.location %}
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-map-marker-alt me-2" style="color: var(--blue-primary); font-size: 0.8rem;"></i>
-                                    <span>{{ lecture.location }}</span>
-                                </div>
-                                {% else %}
-                                <span class="text-muted">غير محدد</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="status-badge status-{{ lecture.status }}">
-                                    {{ lecture.get_status_display }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <a href="{% url 'scientific_edit_lecture' lecture.id %}" class="btn btn-outline-primary" title="تعديل" style="border-color: var(--blue-primary); color: var(--blue-primary);">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="{% url 'scientific_lecture_attendance' lecture.id %}" class="btn btn-outline-success" title="الحضور" style="border-color: #28a745; color: #28a745;">
-                                        <i class="fas fa-users"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ lecture.id }}" title="حذف" style="border-color: #dc3545; color: #dc3545;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Delete Modal -->
-                                <div class="modal fade" id="deleteModal{{ lecture.id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
-                                                <h5 class="modal-title">تأكيد الحذف</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>هل أنت متأكد من حذف المحاضرة "{{ lecture.title }}"؟</p>
-                                                <small class="text-muted">لا يمكن التراجع عن هذا الإجراء.</small>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <form method="post" action="{% url 'scientific_delete_lecture' lecture.id %}">
-                                                    {% csrf_token %}
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
-                                                    <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center py-5 empty-state">
-                <i class="fas fa-chalkboard-teacher fa-3x mb-3" style="color: var(--blue-primary); opacity: 0.3;"></i>
-                <h5 style="color: var(--blue-dark);">لا توجد محاضرات</h5>
-                <p class="text-muted">لم يتم إضافة أي محاضرات بعد</p>
-                <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
-                    <i class="fas fa-plus ms-1"></i>
-                    إضافة أول محاضرة
-                </a>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
 <style>
     /* Lecture Management Specific Styles */
     .dashboard-card {
@@ -497,6 +300,244 @@
         }
     }
 </style>
+<!-- Header Section -->
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.1s;">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 style="color: var(--blue-dark);">
+                    <i class="fas fa-chalkboard-teacher ms-2"></i>
+                    المحاضرات والورش
+                </h4>
+                <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem;">
+                    <i class="fas fa-plus ms-1"></i>
+                    إضافة محاضرة جديدة
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4 fade-in-up" style="animation-delay: 0.2s;">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="type" class="form-label" style="color: var(--blue-dark); font-weight: 600;">
+                        <i class="fas fa-tag me-2" style="color: var(--blue-primary);"></i>
+                        نوع المحاضرة
+                    </label>
+                    <select name="type" id="type" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
+                        <option value="">جميع الأنواع</option>
+                        {% for lecture_type in lecture_types %}
+                        <option value="{{ lecture_type.0 }}" {% if lecture_type_filter == lecture_type.0 %}selected{% endif %}>
+                            {{ lecture_type.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="status" class="form-label" style="color: var(--blue-dark); font-weight: 600;">
+                        <i class="fas fa-circle me-2" style="color: var(--blue-primary);"></i>
+                        الحالة
+                    </label>
+                    <select name="status" id="status" class="form-select" style="border-radius: 8px; border: 1px solid var(--border-light);">
+                        <option value="">جميع الحالات</option>
+                        {% for status in status_choices %}
+                        <option value="{{ status.0 }}" {% if status_filter == status.0 %}selected{% endif %}>
+                            {{ status.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="action-btn action-btn-info w-100" style="padding: 0.8rem 1.5rem;">
+                        <i class="fas fa-filter ms-1"></i>
+                        تصفية
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Lectures Table -->
+<div class="row fade-in-up" style="animation-delay: 0.3s;">
+    <div class="col-12">
+        <div class="dashboard-card">
+            {% if lectures %}
+            <div class="table-responsive">
+                <table class="table table-hover custom-table">
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>النوع</th>
+                            <th>المحاضر</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                            <th>المكان</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lecture in lectures %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-chalkboard-teacher me-2" style="color: var(--blue-primary);"></i>
+                                    <div>
+                                        <strong style="color: var(--blue-dark);">{{ lecture.title }}</strong>
+                                        {% if lecture.description %}
+                                        <br>
+                                        <small class="text-muted">{{ lecture.description|truncatewords:10 }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary);">
+                                    {{ lecture.get_lecture_type_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if lecture.lecturer %}
+                                <div class="d-flex align-items-center">
+                                    <div class="member-avatar-small me-2">
+                                        {{ lecture.lecturer.first_name|first }}{{ lecture.lecturer.last_name|first }}
+                                    </div>
+                                    {{ lecture.lecturer.get_full_name }}
+                                </div>
+                                {% elif lecture.guest_lecturer %}
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-user-tie me-2" style="color: var(--blue-primary);"></i>
+                                    {{ lecture.guest_lecturer }}
+                                </div>
+                                {% else %}
+                                <span class="text-muted">غير محدد</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span style="color: var(--blue-dark); font-weight: 500;">{{ lecture.date }}</span>
+                            </td>
+                            <td>
+                                <span style="color: var(--blue-dark); font-weight: 500;">{{ lecture.time }}</span>
+                            </td>
+                            <td>
+                                {% if lecture.location %}
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt me-2" style="color: var(--blue-primary); font-size: 0.8rem;"></i>
+                                    <span>{{ lecture.location }}</span>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">غير محدد</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ lecture.status }}">
+                                    {{ lecture.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'scientific_edit_lecture' lecture.id %}" class="btn btn-outline-primary" title="تعديل" style="border-color: var(--blue-primary); color: var(--blue-primary);">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'scientific_lecture_attendance' lecture.id %}" class="btn btn-outline-success" title="الحضور" style="border-color: #28a745; color: #28a745;">
+                                        <i class="fas fa-users"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ lecture.id }}" title="حذف" style="border-color: #dc3545; color: #dc3545;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ lecture.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header" style="background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient)); color: white;">
+                                                <h5 class="modal-title">تأكيد الحذف</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>هل أنت متأكد من حذف المحاضرة "{{ lecture.title }}"؟</p>
+                                                <small class="text-muted">لا يمكن التراجع عن هذا الإجراء.</small>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="post" action="{% url 'scientific_delete_lecture' lecture.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background: var(--text-gray); border: none;">إلغاء</button>
+                                                    <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, #dc3545, #c82333); border: none;">حذف</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 empty-state">
+                <i class="fas fa-chalkboard-teacher fa-3x mb-3" style="color: var(--blue-primary); opacity: 0.3;"></i>
+                <h5 style="color: var(--blue-dark);">لا توجد محاضرات</h5>
+                <p class="text-muted">لم يتم إضافة أي محاضرات بعد</p>
+                <a href="{% url 'scientific_add_lecture' %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                    <i class="fas fa-plus ms-1"></i>
+                    إضافة أول محاضرة
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Statistics -->
+{% if lectures %}
+<div class="row mt-4 fade-in-up" style="animation-delay: 0.4s;">
+    <div class="col-12">
+        <div class="dashboard-card">
+            <h5 class="mb-4" style="color: var(--blue-dark);">
+                <i class="fas fa-chart-bar ms-2"></i>
+                إحصائيات المحاضرات
+            </h5>
+            <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ total_lectures }}</h3>
+                        <p class="text-muted mb-0">إجمالي المحاضرات</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ upcoming_lectures }}</h3>
+                        <p class="text-muted mb-0">محاضرات قادمة</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ completed_lectures }}</h3>
+                        <p class="text-muted mb-0">محاضرات منتهية</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="stat-card">
+                        <h3 style="color: var(--blue-primary);">{{ cancelled_lectures }}</h3>
+                        <p class="text-muted mb-0">محاضرات ملغاة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+
 
 <script>
     // Add focus effects to form elements
