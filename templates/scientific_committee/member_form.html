@@ -5,159 +5,6 @@
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
-    <div class="col-lg-8">
-        <div class="dashboard-card">
-            <div class="form-header mb-4">
-                <h4 style="color: var(--blue-dark);">
-                    <i class="fas fa-user-plus ms-2"></i>
-                    {{ title }}
-                </h4>
-                <p class="text-muted">أدخل معلومات العضو الجديد في اللجنة العلمية</p>
-            </div>
-
-            <form method="post" novalidate>
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-                <div class="alert alert-danger" style="background: rgba(220, 53, 69, 0.1); color: #721c24; border: none; border-right: 4px solid #dc3545;">
-                    {% for error in form.non_field_errors %}
-                    <p class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>{{ error }}</p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                <!-- عرض معلومات المستخدم عند التحرير -->
-                {% if member %}
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="info-box" style="background: rgba(0, 132, 171, 0.05); border-radius: 8px; padding: 1rem; border-right: 4px solid var(--blue-primary);">
-                            <h6 style="color: var(--blue-dark); margin-bottom: 0.5rem;">
-                                <i class="fas fa-user me-2"></i>معلومات العضو
-                            </h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p class="mb-1"><strong>الاسم:</strong> {{ member.user.get_full_name }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="mb-1"><strong>اسم المستخدم:</strong> {{ member.user.username }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-
-                <div class="row">
-                    <!-- عرض حقل المستخدم فقط عند الإضافة -->
-                    {% if not member %}
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ form.user.id_for_label }}" class="form-label">
-                            <i class="fas fa-user me-2" style="color: var(--blue-primary);"></i>
-                            المستخدم
-                        </label>
-                        {{ form.user }}
-                        {% if form.user.errors %}
-                        <div class="text-danger small mt-2">
-                            <i class="fas fa-exclamation-triangle me-1"></i>
-                            {% for error in form.user.errors %}
-                            {{ error }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <!-- حقل مخفي لحفظ معرف المستخدم عند التحرير -->
-                    <input type="hidden" name="user" value="{{ member.user.id }}">
-                    {% endif %}
-
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ form.role.id_for_label }}" class="form-label">
-                            <i class="fas fa-user-tag me-2" style="color: var(--blue-primary);"></i>
-                            الدور
-                        </label>
-                        {{ form.role }}
-                        {% if form.role.errors %}
-                        <div class="text-danger small mt-2">
-                            <i class="fas fa-exclamation-triangle me-1"></i>
-                            {% for error in form.role.errors %}
-                            {{ error }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- باقي الحقول تبقى كما هي -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ form.specialization.id_for_label }}" class="form-label">
-                            <i class="fas fa-graduation-cap me-2" style="color: var(--blue-primary);"></i>
-                            التخصص
-                        </label>
-                        {{ form.specialization }}
-                        {% if form.specialization.errors %}
-                        <div class="text-danger small mt-2">
-                            <i class="fas fa-exclamation-triangle me-1"></i>
-                            {% for error in form.specialization.errors %}
-                            {{ error }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="{{ form.participation_score.id_for_label }}" class="form-label">
-                            <i class="fas fa-chart-line me-2" style="color: var(--blue-primary);"></i>
-                            درجة المشاركة
-                        </label>
-                        <div class="input-group">
-                            {{ form.participation_score }}
-                            <span class="input-group-text" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary); border-color: var(--border-light);">من 100</span>
-                        </div>
-                        {% if form.participation_score.errors %}
-                        <div class="text-danger small mt-2">
-                            <i class="fas fa-exclamation-triangle me-1"></i>
-                            {% for error in form.participation_score.errors %}
-                            {{ error }}
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="form-check custom-checkbox">
-                        {{ form.is_active }}
-                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}" style="color: var(--blue-dark); font-weight: 500;">
-                            <i class="fas fa-check-circle me-2" style="color: var(--blue-primary);"></i>
-                            عضو نشط
-                        </label>
-                    </div>
-                    {% if form.is_active.errors %}
-                    <div class="text-danger small mt-2">
-                        <i class="fas fa-exclamation-triangle me-1"></i>
-                        {% for error in form.is_active.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="d-flex justify-content-between mt-4 pt-3" style="border-top: 1px solid var(--border-light);">
-                    <a href="{% url 'scientific_member_management' %}" class="btn btn-secondary" style="background: var(--text-gray); border: none; padding: 0.8rem 1.5rem; border-radius: 8px;">
-                        <i class="fas fa-arrow-right ms-1"></i>
-                        رجوع
-                    </a>
-                    <button type="submit" class="btn btn-primary action-btn-primary" style="padding: 0.8rem 1.5rem; border: none;">
-                        <i class="fas fa-save ms-1"></i>
-                        {% if member %}تحديث العضو{% else %}حفظ العضو{% endif %}
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <style>
     /* Form Specific Styles */
     .dashboard-card {
@@ -403,4 +250,158 @@
         padding-left: 2.5rem;
     }
 </style>
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <div class="form-header mb-4">
+                <h4 style="color: var(--blue-dark);">
+                    <i class="fas fa-user-plus ms-2"></i>
+                    {{ title }}
+                </h4>
+                <p class="text-muted">أدخل معلومات العضو الجديد في اللجنة العلمية</p>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" style="background: rgba(220, 53, 69, 0.1); color: #721c24; border: none; border-right: 4px solid #dc3545;">
+                    {% for error in form.non_field_errors %}
+                    <p class="mb-0"><i class="fas fa-exclamation-circle me-2"></i>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- عرض معلومات المستخدم عند التحرير -->
+                {% if member %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="info-box" style="background: rgba(0, 132, 171, 0.05); border-radius: 8px; padding: 1rem; border-right: 4px solid var(--blue-primary);">
+                            <h6 style="color: var(--blue-dark); margin-bottom: 0.5rem;">
+                                <i class="fas fa-user me-2"></i>معلومات العضو
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>الاسم:</strong> {{ member.user.get_full_name }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>اسم المستخدم:</strong> {{ member.user.username }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <!-- عرض حقل المستخدم فقط عند الإضافة -->
+                    {% if not member %}
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.user.id_for_label }}" class="form-label">
+                            <i class="fas fa-user me-2" style="color: var(--blue-primary);"></i>
+                            المستخدم
+                        </label>
+                        {{ form.user }}
+                        {% if form.user.errors %}
+                        <div class="text-danger small mt-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            {% for error in form.user.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <!-- حقل مخفي لحفظ معرف المستخدم عند التحرير -->
+                    <input type="hidden" name="user" value="{{ member.user.id }}">
+                    {% endif %}
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.role.id_for_label }}" class="form-label">
+                            <i class="fas fa-user-tag me-2" style="color: var(--blue-primary);"></i>
+                            الدور
+                        </label>
+                        {{ form.role }}
+                        {% if form.role.errors %}
+                        <div class="text-danger small mt-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            {% for error in form.role.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- باقي الحقول تبقى كما هي -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.specialization.id_for_label }}" class="form-label">
+                            <i class="fas fa-graduation-cap me-2" style="color: var(--blue-primary);"></i>
+                            التخصص
+                        </label>
+                        {{ form.specialization }}
+                        {% if form.specialization.errors %}
+                        <div class="text-danger small mt-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            {% for error in form.specialization.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.participation_score.id_for_label }}" class="form-label">
+                            <i class="fas fa-chart-line me-2" style="color: var(--blue-primary);"></i>
+                            درجة المشاركة
+                        </label>
+                        <div class="input-group">
+                            {{ form.participation_score }}
+                            <span class="input-group-text" style="background: rgba(0, 132, 171, 0.1); color: var(--blue-primary); border-color: var(--border-light);">من 100</span>
+                        </div>
+                        {% if form.participation_score.errors %}
+                        <div class="text-danger small mt-2">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            {% for error in form.participation_score.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check custom-checkbox">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}" style="color: var(--blue-dark); font-weight: 500;">
+                            <i class="fas fa-check-circle me-2" style="color: var(--blue-primary);"></i>
+                            عضو نشط
+                        </label>
+                    </div>
+                    {% if form.is_active.errors %}
+                    <div class="text-danger small mt-2">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        {% for error in form.is_active.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4 pt-3" style="border-top: 1px solid var(--border-light);">
+                    <a href="{% url 'scientific_member_management' %}" class="btn btn-secondary" style="background: var(--text-gray); border: none; padding: 0.8rem 1.5rem; border-radius: 8px;">
+                        <i class="fas fa-arrow-right ms-1"></i>
+                        رجوع
+                    </a>
+                    <button type="submit" class="btn btn-primary action-btn-primary" style="padding: 0.8rem 1.5rem; border: none;">
+                        <i class="fas fa-save ms-1"></i>
+                        {% if member %}تحديث العضو{% else %}حفظ العضو{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
