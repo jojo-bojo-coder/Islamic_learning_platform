@@ -446,7 +446,7 @@
         <tbody>
             {% for stat in task_stats %}
             <tr>
-                <td><strong>{{ stat.get_task_type_display }}</strong></td>
+                <td><strong>{{ stat.task_type }}</strong></td>
                 <td>{{ stat.total }}</td>
                 <td>{{ stat.completed }}</td>
                 <td>
