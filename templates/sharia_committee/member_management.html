@@ -248,6 +248,45 @@
             text-align: center;
         }
     }
+
+    .member-actions {
+    margin-top: 1rem;
+}
+
+.btn-group-sm > .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-outline-primary {
+    border-color: var(--blue-primary);
+    color: var(--blue-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--blue-primary);
+    color: var(--white);
+}
+
+.btn-outline-warning {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    color: var(--white);
+}
+
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: var(--white);
+}
 </style>
 {% endblock %}
 
@@ -301,6 +340,19 @@
                     <i class="fas fa-envelope"></i>
                     {{ member.user.email|default:"لا يوجد بريد" }}
                 </span>
+            </div>
+            <div class="member-actions mt-3">
+                <div class="btn-group btn-group-sm w-100">
+                    <a href="{% url 'sharia_view_member' member.id %}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{% url 'sharia_edit_member' member.id %}" class="btn btn-outline-warning">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'sharia_delete_member' member.id %}" class="btn btn-outline-danger">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
             </div>
         </div>
         {% endfor %}

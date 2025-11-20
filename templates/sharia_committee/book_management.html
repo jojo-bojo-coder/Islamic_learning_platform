@@ -6,6 +6,16 @@
 
 {% block extra_css %}
 <style>
+    .book-actions .btn {
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.book-actions .btn:hover {
+    transform: translateY(-2px);
+}
     .book-card {
         background: var(--white);
         border-radius: 15px;
@@ -347,6 +357,17 @@
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" style="width: {{ book.progress_percentage }}%"></div>
                     </div>
+                </div>
+                <div class="book-actions mt-3" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                    <a href="{% url 'sharia_view_book' book.id %}" class="btn btn-sm btn-outline-primary" title="عرض التفاصيل">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{% url 'sharia_edit_book' book.id %}" class="btn btn-sm btn-outline-warning" title="تعديل">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{% url 'sharia_delete_book' book.id %}" class="btn btn-sm btn-outline-danger" title="حذف">
+                        <i class="fas fa-trash"></i>
+                    </a>
                 </div>
             </div>
         </div>

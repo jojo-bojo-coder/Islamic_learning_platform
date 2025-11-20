@@ -27,7 +27,30 @@
                 </div>
                 {% endif %}
 
+                <!-- عرض معلومات المستخدم عند التحرير -->
+                {% if member %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="info-box" style="background: rgba(0, 132, 171, 0.05); border-radius: 8px; padding: 1rem; border-right: 4px solid var(--blue-primary);">
+                            <h6 style="color: var(--blue-dark); margin-bottom: 0.5rem;">
+                                <i class="fas fa-user me-2"></i>معلومات العضو
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>الاسم:</strong> {{ member.user.get_full_name }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>اسم المستخدم:</strong> {{ member.user.username }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <div class="row">
+                    <!-- عرض حقل المستخدم فقط عند الإضافة -->
+                    {% if not member %}
                     <div class="col-md-6 mb-3">
                         <label for="{{ form.user.id_for_label }}" class="form-label">
                             <i class="fas fa-user me-2" style="color: var(--blue-primary);"></i>
@@ -43,6 +66,10 @@
                         </div>
                         {% endif %}
                     </div>
+                    {% else %}
+                    <!-- حقل مخفي لحفظ معرف المستخدم عند التحرير -->
+                    <input type="hidden" name="user" value="{{ member.user.id }}">
+                    {% endif %}
 
                     <div class="col-md-6 mb-3">
                         <label for="{{ form.role.id_for_label }}" class="form-label">
@@ -61,6 +88,7 @@
                     </div>
                 </div>
 
+                <!-- باقي الحقول تبقى كما هي -->
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="{{ form.specialization.id_for_label }}" class="form-label">
@@ -123,101 +151,13 @@
                     </a>
                     <button type="submit" class="btn btn-primary action-btn-primary" style="padding: 0.8rem 1.5rem; border: none;">
                         <i class="fas fa-save ms-1"></i>
-                        حفظ العضو
+                        {% if member %}تحديث العضو{% else %}حفظ العضو{% endif %}
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Add Bootstrap classes to form elements and enhance styling
-    document.addEventListener('DOMContentLoaded', function() {
-        const inputs = document.querySelectorAll('input, select, textarea');
-        inputs.forEach(input => {
-            if (input.type !== 'checkbox') {
-                input.classList.add('form-control');
-                input.style.borderRadius = '8px';
-                input.style.border = '1px solid var(--border-light)';
-                input.style.padding = '0.75rem 1rem';
-                input.style.transition = 'all 0.3s ease';
-            }
-        });
-
-        // Make sure select elements have the correct class
-        const selects = document.querySelectorAll('select');
-        selects.forEach(select => {
-            select.classList.add('form-select');
-        });
-
-        // Style checkboxes
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.classList.add('form-check-input');
-            checkbox.style.marginLeft = '0.5rem';
-            checkbox.style.marginRight = '0';
-            checkbox.style.width = '1.2em';
-            checkbox.style.height = '1.2em';
-        });
-
-        // Add focus effects
-        inputs.forEach(input => {
-            if (input.type !== 'checkbox') {
-                input.addEventListener('focus', function() {
-                    this.style.borderColor = 'var(--blue-primary)';
-                    this.style.boxShadow = '0 0 0 0.2rem rgba(0, 132, 171, 0.25)';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.style.borderColor = 'var(--border-light)';
-                    this.style.boxShadow = 'none';
-                });
-            }
-        });
-
-        // Style the participation score input specifically
-        const participationInput = document.getElementById('{{ form.participation_score.id_for_label }}');
-        if (participationInput) {
-            participationInput.style.textAlign = 'center';
-            participationInput.style.maxWidth = '120px';
-        }
-
-        // Add real-time validation for participation score
-        if (participationInput) {
-            participationInput.addEventListener('input', function() {
-                const value = parseInt(this.value);
-                if (value > 100) {
-                    this.value = 100;
-                } else if (value < 0) {
-                    this.value = 0;
-                }
-            });
-        }
-
-        // Add character counter for specialization if it's a textarea
-        const specializationField = document.getElementById('{{ form.specialization.id_for_label }}');
-        if (specializationField && specializationField.tagName === 'TEXTAREA') {
-            const counter = document.createElement('div');
-            counter.className = 'form-text text-end';
-            counter.style.color = 'var(--text-gray)';
-            counter.style.fontSize = '0.8rem';
-            counter.style.marginTop = '0.25rem';
-            specializationField.parentNode.appendChild(counter);
-
-            function updateCounter() {
-                const length = specializationField.value.length;
-                counter.textContent = `${length} حرف`;
-            }
-
-            specializationField.addEventListener('input', updateCounter);
-            updateCounter();
-        }
-    });
-</script>
-
 <style>
     /* Form Specific Styles */
     .dashboard-card {

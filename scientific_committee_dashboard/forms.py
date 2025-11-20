@@ -65,9 +65,6 @@ class ScientificMemberForm(forms.ModelForm):
         model = ScientificMember
         fields = ['user', 'role', 'specialization', 'is_active', 'participation_score']
         widgets = {
-            'user': forms.Select(attrs={
-                'class': 'form-select'
-            }),
             'role': forms.Select(attrs={
                 'class': 'form-select'
             }),
@@ -94,15 +91,24 @@ class ScientificMemberForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         committee = kwargs.pop('committee', None)
+        instance = kwargs.get('instance')
         super().__init__(*args, **kwargs)
 
-        if committee:
+        if instance:
+            # في حالة التحرير، إزالة حقل المستخدم من النموذج
+            # وسنعرض المعلومات في القالب بدلاً من ذلك
+            del self.fields['user']
+        elif committee:
+            # في حالة الإضافة، احتفظ بالسلوك الأصلي
             existing_members = ScientificMember.objects.filter(
                 committee=committee
             ).values_list('user', flat=True)
             self.fields['user'].queryset = User.objects.filter(
                 role='student'
             ).exclude(id__in=existing_members)
+            self.fields['user'].widget.attrs.update({
+                'class': 'form-select'
+            })
 
 
 class ScientificFileForm(forms.ModelForm):

@@ -17,6 +17,9 @@ urlpatterns = [
     # Member Management
     path('members/', views.member_management, name='scientific_member_management'),
     path('members/add/', views.add_member, name='scientific_add_member'),
+    path('members/view/<int:member_id>/', views.view_member, name='scientific_view_member'),
+    path('members/edit/<int:member_id>/', views.edit_member, name='scientific_edit_member'),
+    path('members/delete/<int:member_id>/', views.delete_member, name='scientific_delete_member'),
 
     # File Library
     path('files/', views.file_library, name='scientific_file_library'),

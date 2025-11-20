@@ -4,7 +4,7 @@
 
 {% block page_title %}جدول الأحداث - {{ program.name }}{% endblock %}
 
-{% block extra_css %}
+{% block content %}
 <style>
     .calendar-wrapper {
         background: var(--white);
@@ -186,7 +186,6 @@
         cursor: pointer;
     }
 
-    /* Weekly view - larger day cells */
     .weekly-view .calendar-day {
         min-height: 200px;
         padding: 1rem;
@@ -206,116 +205,6 @@
         margin-bottom: 0.5rem;
         cursor: pointer;
         transition: all 0.2s ease;
-    }
-
-    .weekly-view .event-item.task-item {
-        background: rgba(230, 126, 34, 0.1); /* Orange background for tasks */
-        border-right: 3px solid #e67e22;
-    }
-
-    .weekly-view .event-item.activity-item {
-        background: rgba(39, 174, 96, 0.1); /* Green background for activities */
-        border-right: 3px solid #27ae60;
-    }
-
-    .weekly-view .event-item.cultural-task-item {
-        background: rgba(231, 76, 60, 0.1); /* Red background for cultural tasks */
-        border-right: 3px solid #e74c3c;
-    }
-
-    .legend-events {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    }
-
-    .legend-tasks {
-        background: linear-gradient(135deg, #e67e22, #d35400);
-    }
-
-    .legend-activities {
-        background: linear-gradient(135deg, #27ae60, #229954);
-    }
-
-    .legend-cultural-tasks {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-    }
-
-    .event-type-task,
-    .object-type-task {
-        background: linear-gradient(135deg, #e67e22, #d35400); /* Orange */
-    }
-
-    .event-type-activity,
-    .object-type-activity {
-        background: linear-gradient(135deg, #27ae60, #229954); /* Green */
-    }
-
-    .event-type-meeting {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple */
-    }
-
-    .event-type-exam {
-        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Red */
-    }
-
-    .event-type-other {
-        background: linear-gradient(135deg, #34495e, #2c3e50); /* Dark Gray */
-    }
-
-    .object-type-cultural_task {
-        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Red */
-    }
-
-    .event-type-schedule,
-    .object-type-schedule {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple */
-    }
-
-    .event-card:hover {
-        border-color: #9b59b6; /* Purple for events */
-    }
-
-    .event-card.task-card:hover {
-        border-color: #e67e22; /* Orange for tasks */
-    }
-
-    .event-card.activity-card:hover {
-        border-color: #27ae60; /* Green for activities */
-    }
-
-    .event-card.cultural-task-card:hover {
-        border-color: #e74c3c; /* Red for cultural tasks */
-    }
-
-    .filter-btn[data-filter="events"].active {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    }
-
-    .filter-btn[data-filter="tasks"].active {
-        background: linear-gradient(135deg, #e67e22, #d35400);
-    }
-
-    .filter-btn[data-filter="activities"].active {
-        background: linear-gradient(135deg, #27ae60, #229954);
-    }
-
-    .filter-btn[data-filter="cultural_tasks"].active {
-        background: linear-gradient(135deg, #e74c3c, #c0392b);
-    }
-
-    .event-detail i.events-icon {
-        color: #9b59b6;
-    }
-
-    .event-detail i.tasks-icon {
-        color: #e67e22;
-    }
-
-    .event-detail i.activities-icon {
-        color: #27ae60;
-    }
-
-    .event-detail i.cultural-tasks-icon {
-        color: #e74c3c;
     }
 
     .weekly-view .event-item:hover {
@@ -403,22 +292,18 @@
         font-size: 0.7rem;
     }
 
-    .count-events {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple for Events */
-    }
-
-    .count-tasks {
-        background: linear-gradient(135deg, #e67e22, #d35400); /* Orange for Tasks */
-    }
-
-    .count-activities {
-        background: linear-gradient(135deg, #27ae60, #229954); /* Green for Activities */
-    }
-
-    .count-cultural_tasks {
-        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Red for Cultural Tasks */
-    }
-
+    /* Colors for different event types */
+    .count-events { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+    .count-tasks { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .count-activities { background: linear-gradient(135deg, #27ae60, #229954); }
+    .count-cultural_tasks { background: linear-gradient(135deg, #e67e22, #d35400); }
+    .count-operations_tasks { background: linear-gradient(135deg, #16a085, #138d75); }
+    .count-scientific_tasks { background: linear-gradient(135deg, #2c3e50, #34495e); }
+    .count-lectures { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+    .count-sharia_tasks { background: linear-gradient(135deg, #c0392b, #922b21); }
+    .count-family_competitions { background: linear-gradient(135deg, #d35400, #ba4a00); }
+    .count-sports_tasks { background: linear-gradient(135deg, #f39c12, #d68910); }
+    .count-matches { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
     .no-events {
         color: var(--text-muted);
@@ -429,11 +314,12 @@
 
     .legend {
         display: flex;
-        gap: 1.5rem;
+        gap: 1rem;
         margin-top: 2rem;
         padding-top: 1.5rem;
         border-top: 2px solid var(--border-light);
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     .legend-item {
@@ -449,12 +335,12 @@
     }
 
     .legend-label {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 500;
         color: var(--text-dark);
     }
 
-    /* Animations */
+    /* Animation */
     .fade-in-up {
         opacity: 0;
         transform: translateY(20px);
@@ -520,9 +406,6 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
 <div class="calendar-wrapper fade-in-up {% if view_type == 'weekly' %}weekly-view{% endif %}">
     <div class="calendar-header">
         <div>
@@ -601,7 +484,7 @@
                             {% if view_type == 'weekly' %}
                                 <!-- Weekly View - Show event details -->
                                 {% for event in day_data.events %}
-                                <div class="event-card" onclick="location.href='{% url 'event_detail' event.id %}'">
+                                <div class="event-item" style="border-right-color: #9b59b6;" onclick="location.href='{% url 'event_detail' event.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-calendar-check"></i> {{ event.title }}
                                     </div>
@@ -612,7 +495,7 @@
                                 {% endfor %}
 
                                 {% for task in day_data.tasks %}
-                                <div class="event-card task-card" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
+                                <div class="event-item" style="border-right-color: #3498db;" onclick="location.href='{% url 'object_detail' 'task' task.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-tasks"></i> {{ task.title }}
                                     </div>
@@ -620,9 +503,9 @@
                                 {% endfor %}
 
                                 {% for activity in day_data.activities %}
-                                <div class="event-card activity-card" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
+                                <div class="event-item" style="border-right-color: #27ae60;" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
                                     <div class="event-title">
-                                        <i class="fas fa-running"></i> {{ activity.title }}
+                                        <i class="fas fa-running"></i> {{ activity.name }}
                                     </div>
                                     {% if activity.time %}
                                     <div class="event-time">{{ activity.time|time:"H:i" }}</div>
@@ -631,10 +514,72 @@
                                 {% endfor %}
 
                                 {% for ctask in day_data.cultural_tasks %}
-                                <div class="event-card cultural-task-card" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
+                                <div class="event-item" style="border-right-color: #e67e22;" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
                                     <div class="event-title">
                                         <i class="fas fa-theater-masks"></i> {{ ctask.title }}
                                     </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for otask in day_data.operations_tasks %}
+                                <div class="event-item" style="border-right-color: #16a085;" onclick="location.href='{% url 'object_detail' 'operations_task' otask.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-cogs"></i> {{ otask.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for stask in day_data.scientific_tasks %}
+                                <div class="event-item" style="border-right-color: #2c3e50;" onclick="location.href='{% url 'object_detail' 'scientific_task' stask.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-flask"></i> {{ stask.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for lecture in day_data.lectures %}
+                                <div class="event-item" style="border-right-color: #8e44ad;" onclick="location.href='{% url 'object_detail' 'lecture' lecture.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-chalkboard-teacher"></i> {{ lecture.title }}
+                                    </div>
+                                    {% if lecture.time %}
+                                    <div class="event-time">{{ lecture.time|time:"H:i" }}</div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+
+                                {% for shtask in day_data.sharia_tasks %}
+                                <div class="event-item" style="border-right-color: #c0392b;" onclick="location.href='{% url 'object_detail' 'sharia_task' shtask.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-mosque"></i> {{ shtask.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for comp in day_data.family_competitions %}
+                                <div class="event-item" style="border-right-color: #d35400;" onclick="location.href='{% url 'object_detail' 'family_competition' comp.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-trophy"></i> {{ comp.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for sptask in day_data.sports_tasks %}
+                                <div class="event-item" style="border-right-color: #f39c12;" onclick="location.href='{% url 'object_detail' 'sports_task' sptask.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-futbol"></i> {{ sptask.title }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                {% for match in day_data.matches %}
+                                <div class="event-item" style="border-right-color: #e74c3c;" onclick="location.href='{% url 'object_detail' 'match' match.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-trophy"></i> {{ match.title }}
+                                    </div>
+                                    {% if match.time %}
+                                    <div class="event-time">{{ match.time|time:"H:i" }}</div>
+                                    {% endif %}
                                 </div>
                                 {% endfor %}
 
@@ -673,6 +618,55 @@
                                 </div>
                                 {% endif %}
 
+                                {% if day_data.operations_tasks.count > 0 %}
+                                <div class="event-count count-operations_tasks">
+                                    <i class="fas fa-cogs"></i>
+                                    {{ day_data.operations_tasks.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.scientific_tasks.count > 0 %}
+                                <div class="event-count count-scientific_tasks">
+                                    <i class="fas fa-flask"></i>
+                                    {{ day_data.scientific_tasks.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.lectures.count > 0 %}
+                                <div class="event-count count-lectures">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    {{ day_data.lectures.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.sharia_tasks.count > 0 %}
+                                <div class="event-count count-sharia_tasks">
+                                    <i class="fas fa-mosque"></i>
+                                    {{ day_data.sharia_tasks.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.family_competitions.count > 0 %}
+                                <div class="event-count count-family_competitions">
+                                    <i class="fas fa-trophy"></i>
+                                    {{ day_data.family_competitions.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.sports_tasks.count > 0 %}
+                                <div class="event-count count-sports_tasks">
+                                    <i class="fas fa-futbol"></i>
+                                    {{ day_data.sports_tasks.count }}
+                                </div>
+                                {% endif %}
+
+                                {% if day_data.matches.count > 0 %}
+                                <div class="event-count count-matches">
+                                    <i class="fas fa-trophy"></i>
+                                    {{ day_data.matches.count }}
+                                </div>
+                                {% endif %}
+
                                 {% if day_data.total_events == 0 %}
                                 <div class="no-events">
                                     لا توجد أحداث
@@ -694,21 +688,49 @@
 
    <div class="legend">
         <div class="legend-item">
-            <div class="legend-color legend-events"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);"></div>
             <span class="legend-label">أحداث جدولة</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color legend-tasks"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #3498db, #2980b9);"></div>
             <span class="legend-label">مهام</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color legend-activities"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #27ae60, #229954);"></div>
             <span class="legend-label">أنشطة</span>
         </div>
         <div class="legend-item">
-            <div class="legend-color legend-cultural-tasks"></div>
+            <div class="legend-color" style="background: linear-gradient(135deg, #e67e22, #d35400);"></div>
             <span class="legend-label">مهام ثقافية</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #16a085, #138d75);"></div>
+            <span class="legend-label">مهام تشغيلية</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #2c3e50, #34495e);"></div>
+            <span class="legend-label">مهام علمية</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #8e44ad, #6c3483);"></div>
+            <span class="legend-label">محاضرات</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #c0392b, #922b21);"></div>
+            <span class="legend-label">مهام شرعية</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #d35400, #ba4a00);"></div>
+            <span class="legend-label">مسابقات أسرية</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #f39c12, #d68910);"></div>
+            <span class="legend-label">مهام رياضية</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #e74c3c, #c0392b);"></div>
+            <span class="legend-label">مباريات</span>
+        </div>
    </div>
-</div>
 </div>
 {% endblock %}

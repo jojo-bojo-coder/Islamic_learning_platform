@@ -66,7 +66,8 @@ class ShariaMemberForm(forms.ModelForm):
         fields = ['user', 'role', 'is_active']
         widgets = {
             'user': forms.Select(attrs={
-                'class': 'form-select'
+                'class': 'form-select',
+                'disabled': 'disabled'
             }),
             'role': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -86,13 +87,23 @@ class ShariaMemberForm(forms.ModelForm):
         committee = kwargs.pop('committee', None)
         super().__init__(*args, **kwargs)
 
+        # إذا كان النموذج في وضع التعديل (لديه instance)
+        if self.instance and self.instance.pk:
+            # جعل حقل المستخدم غير قابل للتعديل
+            self.fields['user'].disabled = True
+            # إضافة نص مساعد للإيضاح
+            self.fields['user'].help_text = 'لا يمكن تغيير المستخدم عند التعديل'
+
         if committee:
             existing_members = ShariaMember.objects.filter(
                 committee=committee
             ).values_list('user', flat=True)
-            self.fields['user'].queryset = User.objects.filter(
-                role='student'
-            ).exclude(id__in=existing_members)
+
+            # إذا كان في وضع الإضافة، قم بتصفية المستخدمين
+            if not (self.instance and self.instance.pk):
+                self.fields['user'].queryset = User.objects.filter(
+                    role='student'
+                ).exclude(id__in=existing_members)
 
 
 class ShariaFileForm(forms.ModelForm):

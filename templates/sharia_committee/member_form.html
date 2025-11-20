@@ -68,6 +68,13 @@
         transform: translateY(-2px);
     }
 
+    .form-control:disabled, .form-select:disabled {
+        background-color: #f8f9fa;
+        opacity: 1;
+        border-color: #e9ecef;
+        color: #6c757d;
+    }
+
     .form-group {
         margin-bottom: 1.5rem;
     }
@@ -183,6 +190,13 @@
         font-weight: 500;
     }
 
+    .help-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+        font-style: italic;
+    }
+
     /* Animations */
     .fade-in-up {
         opacity: 0;
@@ -266,6 +280,9 @@
                     <span class="required-star">*</span>
                 </label>
                 {{ form.user }}
+                {% if form.user.help_text %}
+                    <div class="help-text">{{ form.user.help_text }}</div>
+                {% endif %}
                 {% if form.user.errors %}
                     <div class="text-danger mt-1">{{ form.user.errors }}</div>
                 {% endif %}
@@ -313,4 +330,21 @@
         </div>
     </form>
 </div>
+
+<!-- JavaScript لإضافة حقل مخفي للمستخدم في حالة التعديل -->
+{% if member %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // إنشاء حقل مخفي يحمل قيمة المستخدم
+        const userField = document.querySelector('#{{ form.user.id_for_label }}');
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'user';
+        hiddenInput.value = '{{ member.user.id }}';
+
+        // إضافة الحقل المخفي للنموذج
+        userField.parentNode.appendChild(hiddenInput);
+    });
+</script>
+{% endif %}
 {% endblock %}

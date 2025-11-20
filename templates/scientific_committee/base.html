@@ -1233,6 +1233,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{% url 'schedule_calendar' %}" class="navbar-link {% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
+                            <i class="fas fa-calendar-alt"></i>الجدول
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'scientific_notifications' %}" class="navbar-link {% if 'notification' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-bell"></i>
                             {% if request.user.scientific_notifications.filter.is_read.count > 0 %}
@@ -1299,6 +1304,11 @@
                     <a href="{% url 'scientific_reports' %}" class="{% if 'report' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-chart-bar"></i> التقارير
                     </a>
+                </li>
+                <li>
+                        <a href="{% url 'schedule_calendar' %}" class="{% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
+                            <i class="fas fa-calendar-alt"></i>الجدول
+                        </a>
                 </li>
                 <li>
                     <a href="{% url 'scientific_notifications' %}" class="{% if 'notification' in request.resolver_match.url_name %}active{% endif %}">

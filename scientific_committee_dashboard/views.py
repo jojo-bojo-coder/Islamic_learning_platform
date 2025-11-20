@@ -303,13 +303,142 @@ def member_management(request):
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
         return redirect('home')
 
-    members = ScientificMember.objects.filter(committee=committee).select_related('user').order_by('-participation_score')
+    members = ScientificMember.objects.filter(committee=committee).select_related('user').order_by(
+        '-participation_score')
+
+    # Calculate statistics
+    active_members_count = members.filter(is_active=True).count()
+    avg_participation = members.aggregate(avg=Avg('participation_score'))['avg'] or 0
+    top_member = members.first()
 
     context = {
         'committee': committee,
         'members': members,
+        'active_members_count': active_members_count,
+        'avg_participation': round(avg_participation, 1),
+        'top_member': top_member,
     }
     return render(request, 'scientific_committee/member_management.html', context)
+
+
+@login_required
+def view_member(request, member_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'scientific':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    member = get_object_or_404(ScientificMember, id=member_id, committee=committee)
+
+    # Get member statistics
+    tasks_assigned = ScientificTask.objects.filter(
+        committee=committee,
+        assigned_to_name__icontains=member.user.get_full_name()
+    ).count()
+
+    tasks_completed = ScientificTask.objects.filter(
+        committee=committee,
+        assigned_to_name__icontains=member.user.get_full_name(),
+        status='completed'
+    ).count()
+
+    lectures_given = Lecture.objects.filter(
+        committee=committee,
+        lecturer=member.user
+    ).count()
+
+    context = {
+        'committee': committee,
+        'member': member,
+        'tasks_assigned': tasks_assigned,
+        'tasks_completed': tasks_completed,
+        'lectures_given': lectures_given,
+    }
+    return render(request, 'scientific_committee/view_member.html', context)
+
+
+@login_required
+def edit_member(request, member_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'scientific':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    member = get_object_or_404(ScientificMember, id=member_id, committee=committee)
+
+    if request.method == 'POST':
+        form = ScientificMemberForm(request.POST, instance=member, committee=committee)
+        if form.is_valid():
+            # تأكد من أن المستخدم لم يتغير
+            updated_member = form.save(commit=False)
+            # الحفاظ على المستخدم الأصلي (لضمان الأمان)
+            updated_member.user = member.user
+            updated_member.save()
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل عضو: {member.user.get_full_name()}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تعديل بيانات العضو بنجاح!')
+            return redirect('scientific_member_management')
+    else:
+        form = ScientificMemberForm(instance=member, committee=committee)
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'member': member,
+        'title': f'تعديل العضو: {member.user.get_full_name()}'
+    }
+    return render(request, 'scientific_committee/member_form.html', context)
+
+
+@login_required
+def delete_member(request, member_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'scientific':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    member = get_object_or_404(ScientificMember, id=member_id, committee=committee)
+
+    if request.method == 'POST':
+        member_name = member.user.get_full_name()
+        member.delete()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف عضو: {member_name}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف العضو بنجاح!')
+        return redirect('scientific_member_management')
+
+    context = {
+        'committee': committee,
+        'object': member,
+        'type': 'عضو',
+        'object_name': member.user.get_full_name()
+    }
+    return render(request, 'scientific_committee/confirm_delete.html', context)
 
 
 @login_required

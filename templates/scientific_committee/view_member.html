@@ -1,0 +1,397 @@
+{% extends 'scientific_committee/base.html' %}
+
+{% block title %}عرض العضو - اللجنة العلمية{% endblock %}
+
+{% block page_title %}عرض بيانات العضو{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in-up" style="animation-delay: 0.1s;">
+    <div class="col-lg-8">
+        <div class="dashboard-card">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="member-avatar mb-3 mx-auto" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                    {{ member.user.get_full_name|slice:":1" }}
+                </div>
+                <h3 style="color: var(--blue-dark);">{{ member.user.get_full_name }}</h3>
+                <p class="text-muted">{{ member.user.username }}</p>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row text-center mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <h4 style="color: var(--blue-primary);">{{ tasks_assigned }}</h4>
+                        <p class="text-muted mb-0">المهام الموكلة</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <h4 style="color: var(--blue-primary);">{{ tasks_completed }}</h4>
+                        <p class="text-muted mb-0">المهام المكتملة</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card">
+                        <h4 style="color: var(--blue-primary);">{{ lectures_given }}</h4>
+                        <p class="text-muted mb-0">المحاضرات المقدمة</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Details -->
+            <div class="member-details">
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-user-tag me-2" style="color: var(--blue-primary);"></i>
+                                الدور:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span>{{ member.get_role_display }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-graduation-cap me-2" style="color: var(--blue-primary);"></i>
+                                التخصص:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span>{{ member.specialization|default:"غير محدد" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-chart-line me-2" style="color: var(--blue-primary);"></i>
+                                درجة المشاركة:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="progress" style="height: 25px; border-radius: 8px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: {{ member.participation_score }}%; background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));"
+                                     aria-valuenow="{{ member.participation_score }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                    {{ member.participation_score }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-calendar me-2" style="color: var(--blue-primary);"></i>
+                                تاريخ الانضمام:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <span>{{ member.joined_date }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <strong style="color: var(--blue-dark);">
+                                <i class="fas fa-circle me-2" style="color: var(--blue-primary);"></i>
+                                الحالة:
+                            </strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {% if member.is_active %}
+                            <span class="badge bg-success">نشط</span>
+                            {% else %}
+                            <span class="badge bg-secondary">غير نشط</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4 pt-3" style="border-top: 1px solid var(--border-light);">
+                <a href="{% url 'scientific_member_management' %}" class="action-btn action-btn-secondary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                    <i class="fas fa-arrow-right ms-1"></i>
+                    رجوع للقائمة
+                </a>
+                <div class="btn-group">
+                    <a href="{% url 'scientific_edit_member' member.id %}" class="action-btn action-btn-primary" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto; margin-left: 0.5rem;">
+                        <i class="fas fa-edit ms-1"></i>
+                        تعديل
+                    </a>
+                    <a href="{% url 'scientific_delete_member' member.id %}" class="action-btn action-btn-danger" style="padding: 0.8rem 1.5rem; display: inline-flex; width: auto;">
+                        <i class="fas fa-trash ms-1"></i>
+                        حذف
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* View Member Specific Styles - Using committee_info.html design system */
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .dashboard-card h3, .dashboard-card h4 {
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        font-weight: 700;
+    }
+
+    /* Member Avatar */
+    .member-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    /* Statistics Cards - Using committee_info.html style */
+    .stat-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .stat-card h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    /* Detail Items */
+    .detail-item {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: rgba(0, 132, 171, 0.05);
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+    }
+
+    .detail-item:hover {
+        background: rgba(0, 132, 171, 0.08);
+        transform: translateX(-5px);
+    }
+
+    .detail-item:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Progress Bar */
+    .progress {
+        background: rgba(0, 132, 171, 0.1);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        border-radius: 8px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    /* Action Buttons - Using committee_info.html colors */
+    .action-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .action-btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    .action-btn-secondary {
+        background: linear-gradient(135deg, var(--text-gray), #8a8a8a);
+    }
+
+    .action-btn-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+
+    /* Button Group */
+    .btn-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+
+        .action-btn {
+            padding: 1rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .member-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .stat-card h4 {
+            font-size: 1.5rem;
+        }
+
+        .detail-item .row .col-sm-4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .btn-group {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .row.text-center .col-md-4 {
+            margin-bottom: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.8rem 1rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}

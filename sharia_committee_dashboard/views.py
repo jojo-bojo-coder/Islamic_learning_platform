@@ -288,6 +288,118 @@ def member_management(request):
 
 
 @login_required
+def view_member(request, member_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    member = get_object_or_404(ShariaMember, id=member_id, committee=committee)
+
+    # Get member statistics
+    assigned_tasks = ShariaTask.objects.filter(
+        committee=committee,
+        assigned_to_name__icontains=member.user.get_full_name()
+    )
+    completed_tasks = assigned_tasks.filter(status='completed').count()
+    total_assigned_tasks = assigned_tasks.count()
+
+    context = {
+        'committee': committee,
+        'member': member,
+        'assigned_tasks': assigned_tasks,
+        'completed_tasks': completed_tasks,
+        'total_assigned_tasks': total_assigned_tasks,
+    }
+    return render(request, 'sharia_committee/view_member.html', context)
+
+
+@login_required
+def edit_member(request, member_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    member = get_object_or_404(ShariaMember, id=member_id, committee=committee)
+
+    if request.method == 'POST':
+        # نسخ البيانات من request.POST وتعديلها
+        post_data = request.POST.copy()
+        # التأكد من أن قيمة المستخدم تبقى كما هي
+        post_data['user'] = member.user.id
+
+        form = ShariaMemberForm(post_data, instance=member, committee=committee)
+        if form.is_valid():
+            form.save()
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل عضو: {member.user.get_full_name()}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تعديل بيانات العضو بنجاح!')
+            return redirect('sharia_member_management')
+    else:
+        form = ShariaMemberForm(instance=member, committee=committee)
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'member': member,
+        'title': f'تعديل العضو: {member.user.get_full_name()}'
+    }
+    return render(request, 'sharia_committee/member_form.html', context)
+
+
+@login_required
+def delete_member(request, member_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    member = get_object_or_404(ShariaMember, id=member_id, committee=committee)
+
+    if request.method == 'POST':
+        member_name = member.user.get_full_name()
+        member.delete()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف عضو: {member_name}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف العضو بنجاح!')
+        return redirect('sharia_member_management')
+
+    context = {
+        'committee': committee,
+        'object': member,
+        'type': 'عضو',
+        'object_name': member.user.get_full_name()
+    }
+    return render(request, 'sharia_committee/confirm_delete.html', context)
+
+
+@login_required
 def add_member(request):
     if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
         messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
@@ -512,7 +624,111 @@ def add_message(request):
     }
     return render(request, 'sharia_committee/message_form.html', context)
 
+@login_required
+def view_message(request, message_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
 
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    message = get_object_or_404(DailyMessage, id=message_id, committee=committee)
+
+    context = {
+        'committee': committee,
+        'message': message,
+    }
+    return render(request, 'sharia_committee/view_message.html', context)
+
+
+@login_required
+def edit_message(request, message_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    message = get_object_or_404(DailyMessage, id=message_id, committee=committee)
+
+    if request.method == 'POST':
+        form = DailyMessageForm(request.POST, instance=message)
+        if form.is_valid():
+            form.save()
+
+            # Send notifications to members
+            members = ShariaMember.objects.filter(committee=committee, is_active=True)
+            for member in members:
+                ShariaNotification.objects.create(
+                    user=member.user,
+                    committee=committee,
+                    notification_type='message_sent',
+                    title='تم تعديل رسالة',
+                    message=f'تم تعديل الرسالة: {message.title}'
+                )
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل رسالة: {message.title}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تعديل الرسالة بنجاح!')
+            return redirect('sharia_message_management')
+    else:
+        form = DailyMessageForm(instance=message)
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'message': message,
+        'title': f'تعديل الرسالة: {message.title}'
+    }
+    return render(request, 'sharia_committee/message_form.html', context)
+
+
+@login_required
+def delete_message(request, message_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    message = get_object_or_404(DailyMessage, id=message_id, committee=committee)
+
+    if request.method == 'POST':
+        message_title = message.title
+        message.delete()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف رسالة: {message_title}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف الرسالة بنجاح!')
+        return redirect('sharia_message_management')
+
+    context = {
+        'committee': committee,
+        'object': message,
+        'type': 'رسالة',
+        'object_name': message.title
+    }
+    return render(request, 'sharia_committee/confirm_delete.html', context)
 # Family Competitions
 @login_required
 def competition_management(request):
@@ -534,6 +750,112 @@ def competition_management(request):
     }
     return render(request, 'sharia_committee/competition_management.html', context)
 
+@login_required
+def view_competition(request, competition_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    competition = get_object_or_404(FamilyCompetition, id=competition_id, committee=committee)
+
+    context = {
+        'committee': committee,
+        'competition': competition,
+    }
+    return render(request, 'sharia_committee/view_competition.html', context)
+
+
+@login_required
+def edit_competition(request, competition_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    competition = get_object_or_404(FamilyCompetition, id=competition_id, committee=committee)
+
+    if request.method == 'POST':
+        form = FamilyCompetitionForm(request.POST, request.FILES, instance=competition)
+        if form.is_valid():
+            form.save()
+
+            # Send notifications to members
+            members = ShariaMember.objects.filter(committee=committee, is_active=True)
+            for member in members:
+                ShariaNotification.objects.create(
+                    user=member.user,
+                    committee=committee,
+                    notification_type='competition_uploaded',
+                    title='تم تعديل مسابقة',
+                    message=f'تم تعديل المسابقة: {competition.title}',
+                    related_competition=competition
+                )
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل مسابقة: {competition.title}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تعديل المسابقة بنجاح!')
+            return redirect('sharia_competition_management')
+    else:
+        form = FamilyCompetitionForm(instance=competition)
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'competition': competition,
+        'title': f'تعديل المسابقة: {competition.title}'
+    }
+    return render(request, 'sharia_committee/competition_form.html', context)
+
+
+@login_required
+def delete_competition(request, competition_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    competition = get_object_or_404(FamilyCompetition, id=competition_id, committee=committee)
+
+    if request.method == 'POST':
+        competition_title = competition.title
+        competition.delete()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف مسابقة: {competition_title}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف المسابقة بنجاح!')
+        return redirect('sharia_competition_management')
+
+    context = {
+        'committee': committee,
+        'object': competition,
+        'type': 'مسابقة',
+        'object_name': competition.title
+    }
+    return render(request, 'sharia_committee/confirm_delete.html', context)
 
 @login_required
 def add_competition(request):
@@ -662,6 +984,100 @@ def add_book(request):
     }
     return render(request, 'sharia_committee/book_form.html', context)
 
+@login_required
+def view_book(request, book_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    book = get_object_or_404(YouthBook, id=book_id, committee=committee)
+
+    context = {
+        'committee': committee,
+        'book': book,
+    }
+    return render(request, 'sharia_committee/view_book.html', context)
+
+
+@login_required
+def edit_book(request, book_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    book = get_object_or_404(YouthBook, id=book_id, committee=committee)
+
+    if request.method == 'POST':
+        form = YouthBookForm(request.POST, instance=book, committee=committee)
+        if form.is_valid():
+            form.save()
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل كتاب: {book.title}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تعديل الكتاب بنجاح!')
+            return redirect('sharia_book_management')
+    else:
+        form = YouthBookForm(instance=book, committee=committee)
+
+    context = {
+        'committee': committee,
+        'form': form,
+        'book': book,
+        'title': f'تعديل الكتاب: {book.title}'
+    }
+    return render(request, 'sharia_committee/book_form.html', context)
+
+
+@login_required
+def delete_book(request, book_id):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
+
+    book = get_object_or_404(YouthBook, id=book_id, committee=committee)
+
+    if request.method == 'POST':
+        book_title = book.title
+        book.delete()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف كتاب: {book_title}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف الكتاب بنجاح!')
+        return redirect('sharia_book_management')
+
+    context = {
+        'committee': committee,
+        'object': book,
+        'type': 'كتاب',
+        'object_name': book.title
+    }
+    return render(request, 'sharia_committee/confirm_delete.html', context)
 
 # Reports
 @login_required

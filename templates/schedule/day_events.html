@@ -4,7 +4,8 @@
 
 {% block page_title %}أحداث {{ date|date:"Y-m-d" }} - {{ program.name }}{% endblock %}
 
-{% block extra_css %}
+
+{% block content %}
 <style>
     .events-wrapper {
         background: var(--white);
@@ -289,33 +290,18 @@
         display: block;
     }
 
-    /* Event type specific colors */
-    .event-type-task {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-    }
-    .event-type-activity {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
-    }
-    .event-type-meeting {
-        background: linear-gradient(135deg, #e67e22, #d35400);
-    }
-    .event-type-exam {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-    }
-    .event-type-other {
-        background: linear-gradient(135deg, #6c757d, #5a6268);
-    }
-
-    /* Object type specific colors */
-    .object-type-task {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-    }
-    .object-type-activity {
-        background: linear-gradient(135deg, #9b59b6, #8e44ad);
-    }
-    .object-type-cultural_task {
-        background: linear-gradient(135deg, #e67e22, #d35400);
-    }
+    /* Event type colors */
+    .type-events { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+    .type-tasks { background: linear-gradient(135deg, #3498db, #2980b9); }
+    .type-activities { background: linear-gradient(135deg, #27ae60, #229954); }
+    .type-cultural_tasks { background: linear-gradient(135deg, #e67e22, #d35400); }
+    .type-operations_tasks { background: linear-gradient(135deg, #16a085, #138d75); }
+    .type-scientific_tasks { background: linear-gradient(135deg, #2c3e50, #34495e); }
+    .type-lectures { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+    .type-sharia_tasks { background: linear-gradient(135deg, #c0392b, #922b21); }
+    .type-family_competitions { background: linear-gradient(135deg, #d35400, #ba4a00); }
+    .type-sports_tasks { background: linear-gradient(135deg, #f39c12, #d68910); }
+    .type-matches { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
     .fade-in-up {
         opacity: 0;
@@ -379,9 +365,6 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
 <div class="events-wrapper fade-in-up">
     <a href="{% url 'schedule_calendar' program.id %}?year={{ date.year }}&month={{ date.month }}" class="back-link">
         <i class="fas fa-arrow-right"></i>
@@ -405,7 +388,7 @@
             <button class="filter-btn active" data-filter="all">
                 <i class="fas fa-layer-group"></i>
                 الكل
-                <span class="count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count }}</span>
+                <span class="count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks.count|add:matches.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
                 <i class="fas fa-calendar-check"></i>
@@ -427,6 +410,41 @@
                 المهام الثقافية
                 <span class="count">{{ cultural_tasks.count }}</span>
             </button>
+            <button class="filter-btn" data-filter="operations_tasks">
+                <i class="fas fa-cogs"></i>
+                المهام التشغيلية
+                <span class="count">{{ operations_tasks.count }}</span>
+            </button>
+            <button class="filter-btn" data-filter="scientific_tasks">
+                <i class="fas fa-flask"></i>
+                المهام العلمية
+                <span class="count">{{ scientific_tasks.count }}</span>
+            </button>
+            <button class="filter-btn" data-filter="lectures">
+                <i class="fas fa-chalkboard-teacher"></i>
+                المحاضرات
+                <span class="count">{{ lectures.count }}</span>
+            </button>
+            <button class="filter-btn" data-filter="sharia_tasks">
+                <i class="fas fa-mosque"></i>
+                المهام الشرعية
+                <span class="count">{{ sharia_tasks.count }}</span>
+            </button>
+            <button class="filter-btn" data-filter="family_competitions">
+                <i class="fas fa-trophy"></i>
+                المسابقات الأسرية
+                <span class="count">{{ family_competitions.count }}</span>
+            </button>
+            <button class="filter-btn" data-filter="sports_tasks">
+                <i class="fas fa-futbol"></i>
+                المهام الرياضية
+                <span class="count">{{ sports_tasks.count }}</span>
+            </button>
+            <button class="filter-btn" data-filter="matches">
+                <i class="fas fa-trophy"></i>
+                المباريات
+                <span class="count">{{ matches.count }}</span>
+            </button>
         </div>
     </div>
 
@@ -441,7 +459,7 @@
             <a href="{% url 'event_detail' event.id %}" class="event-card">
                 <div class="event-header">
                     <h5 class="event-title">{{ event.title }}</h5>
-                    <span class="event-type event-type-{{ event.event_type }}">
+                    <span class="event-type type-events">
                         <i class="fas fa-calendar-check"></i>
                         {{ event.get_event_type_display }}
                     </span>
@@ -490,7 +508,7 @@
             <a href="{% url 'object_detail' 'task' task.id %}" class="event-card">
                 <div class="event-header">
                     <h5 class="event-title">{{ task.title }}</h5>
-                    <span class="event-type object-type-task">
+                    <span class="event-type type-tasks">
                         <i class="fas fa-tasks"></i>
                         مهمة
                     </span>
@@ -536,8 +554,8 @@
             {% for activity in activities %}
             <a href="{% url 'object_detail' 'activity' activity.id %}" class="event-card">
                 <div class="event-header">
-                    <h5 class="event-title">{{ activity.title }}</h5>
-                    <span class="event-type object-type-activity">
+                    <h5 class="event-title">{{ activity.name }}</h5>
+                    <span class="event-type type-activities">
                         <i class="fas fa-running"></i>
                         نشاط
                     </span>
@@ -580,7 +598,7 @@
             <a href="{% url 'object_detail' 'cultural_task' cultural_task.id %}" class="event-card">
                 <div class="event-header">
                     <h5 class="event-title">{{ cultural_task.title }}</h5>
-                    <span class="event-type object-type-cultural_task">
+                    <span class="event-type type-cultural_tasks">
                         <i class="fas fa-theater-masks"></i>
                         مهمة ثقافية
                     </span>
@@ -592,10 +610,10 @@
                         <span>{{ cultural_task.committee.name }}</span>
                     </div>
                     {% endif %}
-                    {% if cultural_task.assigned_to %}
+                    {% if cultural_task.assigned_to_name %}
                     <div class="event-detail">
                         <i class="fas fa-user"></i>
-                        <span>{{ cultural_task.assigned_to.get_full_name }}</span>
+                        <span>{{ cultural_task.assigned_to_name }}</span>
                     </div>
                     {% endif %}
                 </div>
@@ -607,6 +625,318 @@
             <div class="no-events">
                 <i class="fas fa-theater-masks"></i>
                 <h5>لا توجد مهام ثقافية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Operations Tasks -->
+    <div class="events-section active" id="operations_tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-cogs"></i>
+            المهام التشغيلية
+        </h4>
+        <div class="events-grid">
+            {% for operations_task in operations_tasks %}
+            <a href="{% url 'object_detail' 'operations_task' operations_task.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ operations_task.title }}</h5>
+                    <span class="event-type type-operations_tasks">
+                        <i class="fas fa-cogs"></i>
+                        مهمة تشغيلية
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if operations_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ operations_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if operations_task.assigned_to_name %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ operations_task.assigned_to_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if operations_task.description %}
+                <p class="event-description">{{ operations_task.description|truncatewords:20 }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-cogs"></i>
+                <h5>لا توجد مهام تشغيلية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Scientific Tasks -->
+    <div class="events-section active" id="scientific_tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-flask"></i>
+            المهام العلمية
+        </h4>
+        <div class="events-grid">
+            {% for scientific_task in scientific_tasks %}
+            <a href="{% url 'object_detail' 'scientific_task' scientific_task.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ scientific_task.title }}</h5>
+                    <span class="event-type type-scientific_tasks">
+                        <i class="fas fa-flask"></i>
+                        مهمة علمية
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if scientific_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ scientific_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if scientific_task.assigned_to_name %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ scientific_task.assigned_to_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if scientific_task.description %}
+                <p class="event-description">{{ scientific_task.description|truncatewords:20 }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-flask"></i>
+                <h5>لا توجد مهام علمية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Lectures -->
+    <div class="events-section active" id="lectures-section">
+        <h4 class="section-title">
+            <i class="fas fa-chalkboard-teacher"></i>
+            المحاضرات
+        </h4>
+        <div class="events-grid">
+            {% for lecture in lectures %}
+            <a href="{% url 'object_detail' 'lecture' lecture.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ lecture.title }}</h5>
+                    <span class="event-type type-lectures">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        محاضرة
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if lecture.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ lecture.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if lecture.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ lecture.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if lecture.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ lecture.location }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if lecture.description %}
+                <p class="event-description">{{ lecture.description|truncatewords:20 }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h5>لا توجد محاضرات</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sharia Tasks -->
+    <div class="events-section active" id="sharia_tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-mosque"></i>
+            المهام الشرعية
+        </h4>
+        <div class="events-grid">
+            {% for sharia_task in sharia_tasks %}
+            <a href="{% url 'object_detail' 'sharia_task' sharia_task.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ sharia_task.title }}</h5>
+                    <span class="event-type type-sharia_tasks">
+                        <i class="fas fa-mosque"></i>
+                        مهمة شرعية
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if sharia_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ sharia_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if sharia_task.assigned_to_name %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ sharia_task.assigned_to_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if sharia_task.description %}
+                <p class="event-description">{{ sharia_task.description|truncatewords:20 }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-mosque"></i>
+                <h5>لا توجد مهام شرعية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Family Competitions -->
+    <div class="events-section active" id="family_competitions-section">
+        <h4 class="section-title">
+            <i class="fas fa-trophy"></i>
+            المسابقات الأسرية
+        </h4>
+        <div class="events-grid">
+            {% for competition in family_competitions %}
+            <a href="{% url 'object_detail' 'family_competition' competition.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ competition.title }}</h5>
+                    <span class="event-type type-family_competitions">
+                        <i class="fas fa-trophy"></i>
+                        مسابقة أسرية
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if competition.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ competition.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ competition.start_date|date:"Y/m/d" }} - {{ competition.end_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if competition.description %}
+                <p class="event-description">{{ competition.description|truncatewords:20 }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-trophy"></i>
+                <h5>لا توجد مسابقات أسرية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sports Tasks -->
+    <div class="events-section active" id="sports_tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-futbol"></i>
+            المهام الرياضية
+        </h4>
+        <div class="events-grid">
+            {% for sports_task in sports_tasks %}
+            <a href="{% url 'object_detail' 'sports_task' sports_task.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ sports_task.title }}</h5>
+                    <span class="event-type type-sports_tasks">
+                        <i class="fas fa-futbol"></i>
+                        مهمة رياضية
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if sports_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ sports_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if sports_task.assigned_to_name %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ sports_task.assigned_to_name }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if sports_task.description %}
+                <p class="event-description">{{ sports_task.description|truncatewords:20 }}</p>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-futbol"></i>
+                <h5>لا توجد مهام رياضية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Matches -->
+    <div class="events-section active" id="matches-section">
+        <h4 class="section-title">
+            <i class="fas fa-trophy"></i>
+            المباريات
+        </h4>
+        <div class="events-grid">
+            {% for match in matches %}
+            <a href="{% url 'object_detail' 'match' match.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ match.title }}</h5>
+                    <span class="event-type type-matches">
+                        <i class="fas fa-trophy"></i>
+                        مباراة
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if match.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ match.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if match.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ match.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if match.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ match.location }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ match.team1 }} vs {{ match.team2 }}</span>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-trophy"></i>
+                <h5>لا توجد مباريات</h5>
             </div>
             {% endfor %}
         </div>

@@ -1,0 +1,355 @@
+{% extends 'sharia_committee/base.html' %}
+{% load static %}
+
+{% block title %}{{ competition.title }} - {{ committee.name }}{% endblock %}
+{% block page_title %}تفاصيل المسابقة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .competition-detail-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .competition-detail-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .competition-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+
+    .competition-title {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+    }
+
+    .competition-badge {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .badge-upcoming {
+        background: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+        border: 1px solid rgba(23, 162, 184, 0.2);
+    }
+
+    .badge-active {
+        background: rgba(0, 132, 171, 0.1);
+        color: var(--blue-primary);
+        border: 1px solid rgba(0, 132, 171, 0.2);
+    }
+
+    .badge-completed {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        border: 1px solid rgba(108, 117, 125, 0.2);
+    }
+
+    .info-section {
+        background: var(--light-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-light);
+    }
+
+    .info-section-title {
+        color: var(--blue-primary);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.1rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--white);
+        border-radius: 8px;
+        border: 1px solid var(--border-light);
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .info-content {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .description-content {
+        line-height: 1.8;
+        color: var(--text-dark);
+        font-size: 1.05rem;
+    }
+
+    .file-download-card {
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .file-download-card i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .file-download-card .btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .file-download-card .btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid var(--border-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        color: var(--white);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        color: var(--white);
+    }
+
+    .btn-outline-primary {
+        border: 1px solid var(--blue-primary);
+        color: var(--blue-primary);
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--blue-primary);
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-danger {
+        border: 1px solid #dc3545;
+        color: #dc3545;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .btn-outline-danger:hover {
+        background: #dc3545;
+        color: var(--white);
+        transform: translateY(-2px);
+    }
+
+    /* Animations */
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .competition-detail-card {
+            padding: 1.5rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .competition-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="competition-detail-card fade-in-up">
+    <div class="competition-header">
+        <span class="competition-badge badge-{{ competition.status }}">
+            <i class="fas fa-{% if competition.status == 'active' %}play-circle{% elif competition.status == 'upcoming' %}clock{% else %}check-circle{% endif %} ms-1"></i>
+            {{ competition.get_status_display }}
+        </span>
+        <h1 class="competition-title">{{ competition.title }}</h1>
+        <p class="text-muted mb-0">
+            <i class="fas fa-calendar-alt ms-2"></i>
+            تم الإنشاء في: {{ competition.created_at|date:"Y-m-d" }}
+        </p>
+    </div>
+
+    <div class="info-grid">
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="info-content">
+                <div class="info-label">تاريخ البداية</div>
+                <div class="info-value">{{ competition.start_date|date:"Y-m-d" }}</div>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-flag-checkered"></i>
+            </div>
+            <div class="info-content">
+                <div class="info-label">تاريخ النهاية</div>
+                <div class="info-value">{{ competition.end_date|date:"Y-m-d" }}</div>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="info-content">
+                <div class="info-label">عدد المشاركين</div>
+                <div class="info-value">{{ competition.participants_count|default:"0" }} مشارك</div>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <div class="info-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="info-content">
+                <div class="info-label">أنشأ بواسطة</div>
+                <div class="info-value">{{ competition.created_by.get_full_name|default:"غير معروف" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h5 class="info-section-title">
+            <i class="fas fa-align-left me-2"></i>
+            وصف المسابقة
+        </h5>
+        <div class="description-content">
+            {{ competition.description|linebreaks }}
+        </div>
+    </div>
+
+    {% if competition.file %}
+    <div class="info-section">
+        <h5 class="info-section-title">
+            <i class="fas fa-paperclip me-2"></i>
+            المرفقات
+        </h5>
+        <div class="file-download-card">
+            <i class="fas fa-file-download"></i>
+            <h5>ملف المسابقة</h5>
+            <p>يمكنك تحميل ملف المسابقة للمشاركة أو الاطلاع</p>
+            <a href="{{ competition.file.url }}" target="_blank" class="btn">
+                <i class="fas fa-download me-2"></i>
+                تحميل الملف
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="{% url 'sharia_edit_competition' competition.id %}" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i>
+            تعديل المسابقة
+        </a>
+        <a href="{% url 'sharia_competition_management' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-right me-2"></i>
+            العودة إلى القائمة
+        </a>
+        <form method="post" action="{% url 'sharia_delete_competition' competition.id %}" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذه المسابقة؟')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="fas fa-trash me-2"></i>
+                حذف المسابقة
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
