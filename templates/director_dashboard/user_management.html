@@ -124,7 +124,7 @@
         font-weight: 600;
     }
 
-    /* Role Badges */
+    /* Role Badges - UPDATED COLORS */
     .role-badge {
         padding: 0.4rem 0.8rem;
         border-radius: 50px;
@@ -136,19 +136,19 @@
     }
 
     .role-badge.director {
-        background: linear-gradient(135deg, var(--blue-dark), #00576F);
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
     }
 
     .role-badge.program-manager {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
     }
 
     .role-badge.supervisor {
-        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        background: linear-gradient(135deg, #27ae60, #229954);
     }
 
     .role-badge.student {
-        background: linear-gradient(135deg, #00576F, #0084AB);
+        background: linear-gradient(135deg, #3498db, #2980b9);
     }
 
     /* Status Badge */
@@ -221,7 +221,7 @@
         box-shadow: 0 4px 12px rgba(0, 87, 111, 0.3);
     }
 
-    /* Statistics Grid */
+    /* Statistics Grid - UPDATED COLORS */
     .stats-grid {
         margin-bottom: 2rem;
     }
@@ -246,7 +246,31 @@
         left: 0;
         width: 100%;
         height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    /* Different colors for each stat card */
+    .mini-stat-card:nth-child(1)::before {
+        background: linear-gradient(90deg, #3498db, #2980b9); /* Total Users - Blue */
+    }
+
+    .mini-stat-card:nth-child(2)::before {
+        background: linear-gradient(90deg, #27ae60, #229954); /* Active Users - Green */
+    }
+
+    .mini-stat-card:nth-child(3)::before {
+        background: linear-gradient(90deg, #9b59b6, #8e44ad); /* Program Managers - Purple */
+    }
+
+    .mini-stat-card:nth-child(4)::before {
+        background: linear-gradient(90deg, #e74c3c, #c0392b); /* Supervisors - Red */
+    }
+
+    .mini-stat-card:nth-child(5)::before {
+        background: linear-gradient(90deg, #3498db, #2980b9); /* Students - Blue */
+    }
+
+    .mini-stat-card:nth-child(6)::before {
+        background: linear-gradient(90deg, #e74c3c, #c0392b); /* Directors - Red */
     }
 
     .mini-stat-card:hover {
@@ -257,8 +281,32 @@
     .mini-stat-number {
         font-size: 2rem;
         font-weight: 700;
-        color: var(--blue-primary);
         margin-bottom: 0.5rem;
+    }
+
+    /* Different colors for numbers to match the role colors */
+    .mini-stat-card:nth-child(1) .mini-stat-number {
+        color: #3498db; /* Total Users - Blue */
+    }
+
+    .mini-stat-card:nth-child(2) .mini-stat-number {
+        color: #27ae60; /* Active Users - Green */
+    }
+
+    .mini-stat-card:nth-child(3) .mini-stat-number {
+        color: #9b59b6; /* Program Managers - Purple */
+    }
+
+    .mini-stat-card:nth-child(4) .mini-stat-number {
+        color: #e74c3c; /* Supervisors - Red */
+    }
+
+    .mini-stat-card:nth-child(5) .mini-stat-number {
+        color: #3498db; /* Students - Blue */
+    }
+
+    .mini-stat-card:nth-child(6) .mini-stat-number {
+        color: #e74c3c; /* Directors - Red */
     }
 
     .mini-stat-label {
