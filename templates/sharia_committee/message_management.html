@@ -333,18 +333,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="message-actions">
-                <a href="{% url 'sharia_edit_message' message.id %}" class="btn btn-outline-primary btn-sm" title="تعديل">
-                    <i class="fas fa-edit"></i>
-                </a>
-                <form method="post" action="{% url 'sharia_delete_message' message.id %}" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذه الرسالة؟')">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger btn-sm" title="حذف">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </form>
-            </div>
         </div>
     </div>
     {% endfor %}
