@@ -428,23 +428,40 @@ def delete_file(request, file_id):
 # Daily Messages
 @login_required
 def message_management(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
-
     try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        # Check user permissions
+        if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
+            messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+            return redirect('home')
+
+        # Get committee for the current user
+        try:
+            committee = Committee.objects.get(supervisor=request.user)
+        except Committee.DoesNotExist:
+            messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+            return redirect('home')
+        except Committee.MultipleObjectsReturned:
+            messages.error(request, 'تم تعيين أكثر من لجنة لك. يرجى التواصل مع الإدارة')
+            return redirect('home')
+
+        # Get messages for the committee
+        try:
+            messages_list = DailyMessage.objects.filter(committee=committee).order_by('-scheduled_date')
+        except Exception as e:
+            messages.error(request, f'حدث خطأ في جلب الرسائل: {str(e)}')
+            messages_list = []
+
+        context = {
+            'committee': committee,
+            'messages_list': messages_list,
+        }
+
+        return render(request, 'sharia_committee/message_management.html', context)
+
+    except Exception as e:
+        # Catch any unexpected errors
+        messages.error(request, f'حدث خطأ غير متوقع: {str(e)}')
         return redirect('home')
-
-    messages_list = DailyMessage.objects.filter(committee=committee).order_by('-scheduled_date')
-
-    context = {
-        'committee': committee,
-        'messages_list': messages_list,
-    }
-    return render(request, 'sharia_committee/message_management.html', context)
 
 
 @login_required
