@@ -35,6 +35,7 @@ urlpatterns = [
     # Supervisor Management
     path('supervisors/', views.supervisor_management, name='pm_supervisor_management'),
     path('supervisors/add/', views.add_supervisor, name='pm_add_supervisor'),
+    path('supervisors/<int:supervisor_id>/', views.supervisor_detail, name='pm_supervisor_detail'),
     path('supervisors/delete/<int:supervisor_id>/', views.delete_supervisor, name='pm_delete_supervisor'),
 
 ]

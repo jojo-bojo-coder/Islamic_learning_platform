@@ -1227,6 +1227,7 @@ from accounts.models import ProgramSupervisor
 from .forms import AddSupervisorForm
 @login_required
 def supervisor_management(request):
+    """Display all supervisors in card layout"""
     if request.user.role != 'program_manager':
         messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
         return redirect('home')
@@ -1241,13 +1242,118 @@ def supervisor_management(request):
     supervisors = User.objects.filter(
         role='committee_supervisor',
         programsupervisor__program=program
-    ).distinct()
+    ).distinct().order_by('-date_joined')
 
     context = {
         'program': program,
         'supervisors': supervisors,
     }
     return render(request, 'program_manager/supervisor_management.html', context)
+
+
+@login_required
+def supervisor_detail(request, supervisor_id):
+    """Display detailed information about a supervisor and their committees"""
+    if request.user.role != 'program_manager':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        program = Program.objects.get(manager=request.user)
+    except Program.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين برنامج لك بعد')
+        return redirect('home')
+
+    # Get supervisor
+    supervisor = get_object_or_404(User, id=supervisor_id, role='committee_supervisor')
+
+    # Verify supervisor is linked to this program
+    if not ProgramSupervisor.objects.filter(program=program, supervisor=supervisor).exists():
+        messages.error(request, 'هذا المشرف غير مرتبط بالبرنامج الخاص بك')
+        return redirect('pm_supervisor_management')
+
+    # Get committees supervised by this supervisor in this program
+    committees = Committee.objects.filter(
+        program=program,
+        supervisor=supervisor
+    ).annotate(
+        student_count=Count('student'),
+        avg_progress=Avg('student__progress')
+    )
+
+    # Initialize stats
+    stats = {
+        'total_tasks': 0,
+        'completed_tasks': 0,
+        'pending_tasks': 0,
+        'overdue_tasks': 0,
+    }
+
+    recent_tasks = []
+
+    # Get tasks based on supervisor type
+    if supervisor.supervisor_type == 'cultural':
+        from cultural_committee_dashboard.models import CulturalTask
+        all_tasks = CulturalTask.objects.filter(committee__in=committees)
+        stats['total_tasks'] = all_tasks.count()
+        stats['completed_tasks'] = all_tasks.filter(status='completed').count()
+        stats['pending_tasks'] = all_tasks.filter(status='pending').count()
+        stats['overdue_tasks'] = all_tasks.filter(status='cancelled').count()
+        recent_tasks = all_tasks.order_by('-created_at')[:10]
+
+    elif supervisor.supervisor_type == 'sports':
+        from sports_committee_dashboard.models import SportsTask
+        all_tasks = SportsTask.objects.filter(committee__in=committees)
+        stats['total_tasks'] = all_tasks.count()
+        stats['completed_tasks'] = all_tasks.filter(status='completed').count()
+        stats['pending_tasks'] = all_tasks.filter(status='pending').count()
+        stats['overdue_tasks'] = all_tasks.filter(status='cancelled').count()
+        recent_tasks = all_tasks.order_by('-created_at')[:10]
+
+    elif supervisor.supervisor_type == 'sharia':
+        from sharia_committee_dashboard.models import ShariaTask
+        all_tasks = ShariaTask.objects.filter(committee__in=committees)
+        stats['total_tasks'] = all_tasks.count()
+        stats['completed_tasks'] = all_tasks.filter(status='completed').count()
+        stats['pending_tasks'] = all_tasks.filter(status='pending').count()
+        stats['overdue_tasks'] = all_tasks.filter(status='cancelled').count()
+        recent_tasks = all_tasks.order_by('-created_at')[:10]
+
+    elif supervisor.supervisor_type == 'scientific':
+        from scientific_committee_dashboard.models import ScientificTask
+        all_tasks = ScientificTask.objects.filter(committee__in=committees)
+        stats['total_tasks'] = all_tasks.count()
+        stats['completed_tasks'] = all_tasks.filter(status='completed').count()
+        stats['pending_tasks'] = all_tasks.filter(status='pending').count()
+        stats['overdue_tasks'] = all_tasks.filter(status='cancelled').count()
+        recent_tasks = all_tasks.order_by('-created_at')[:10]
+
+    elif supervisor.supervisor_type == 'operations':
+        from operations_committee_dashboard.models import OperationsTask
+        all_tasks = OperationsTask.objects.filter(committee__in=committees)
+        stats['total_tasks'] = all_tasks.count()
+        stats['completed_tasks'] = all_tasks.filter(status='completed').count()
+        stats['pending_tasks'] = all_tasks.filter(status__in=['not_started', 'in_progress']).count()
+        stats['overdue_tasks'] = all_tasks.filter(status='overdue').count()
+        recent_tasks = all_tasks.order_by('-created_at')[:10]
+
+    else:
+        # Fallback to generic Task model
+        all_tasks = Task.objects.filter(committee__in=committees)
+        stats['total_tasks'] = all_tasks.count()
+        stats['completed_tasks'] = all_tasks.filter(status='completed').count()
+        stats['pending_tasks'] = all_tasks.filter(status='pending').count()
+        stats['overdue_tasks'] = all_tasks.filter(status='overdue').count()
+        recent_tasks = all_tasks.order_by('-created_at')[:10]
+
+    context = {
+        'program': program,
+        'supervisor': supervisor,
+        'committees': committees,
+        'stats': stats,
+        'recent_tasks': recent_tasks,
+    }
+    return render(request, 'program_manager/supervisor_detail.html', context)
 
 from django.db import IntegrityError
 @login_required

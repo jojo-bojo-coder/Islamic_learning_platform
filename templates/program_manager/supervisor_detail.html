@@ -1,0 +1,718 @@
+{% extends 'program_manager_base.html' %}
+
+{% block title %}تفاصيل المشرف - {{ supervisor.get_full_name|default:supervisor.username }}{% endblock %}
+
+{% block page_title %}تفاصيل المشرف{% endblock %}
+
+{% block extra_css %}
+<style>
+    .supervisor-detail-wrapper {
+        padding: 2rem 0;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--blue-primary);
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        padding: 0.8rem 1.5rem;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+        background: rgba(0, 132, 171, 0.2);
+        color: var(--blue-primary);
+        transform: translateX(5px);
+    }
+
+    .supervisor-header {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 20px;
+        padding: 3rem;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 132, 171, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .supervisor-header::before {
+        content: "";
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .supervisor-header-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .supervisor-avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .supervisor-avatar-large i {
+        font-size: 4rem;
+        color: var(--blue-primary);
+    }
+
+    .supervisor-info {
+        flex: 1;
+        color: var(--white);
+    }
+
+    .supervisor-info h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .supervisor-info .username {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+    }
+
+    .supervisor-type-badge-large {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        background: var(--white);
+    }
+
+    .badge-cultural { color: var(--blue-primary); }
+    .badge-sports { color: var(--blue-dark); }
+    .badge-sharia { color: #4B0082; }
+    .badge-scientific { color: #1E90FF; }
+    .badge-operations { color: #FF8C00; }
+    .badge-secondary { color: #6c757d; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 132, 171, 0.2);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-icon.blue {
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
+        color: var(--blue-primary);
+    }
+
+    .stat-icon.green {
+        background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(72, 199, 116, 0.1));
+        color: #28a745;
+    }
+
+    .stat-icon.orange {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+        color: #ffc107;
+    }
+
+    .stat-icon.red {
+        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(200, 35, 51, 0.1));
+        color: #dc3545;
+    }
+
+    .stat-label {
+        font-size: 0.95rem;
+        color: var(--text-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .section-title i {
+        color: var(--blue-primary);
+    }
+
+    .committees-section,
+    .tasks-section,
+    .activities-section,
+    .contact-section {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+    }
+
+    .committee-item {
+        background: rgba(0, 132, 171, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--blue-primary);
+    }
+
+    .committee-item:hover {
+        background: rgba(0, 132, 171, 0.1);
+        transform: translateX(-5px);
+    }
+
+    .committee-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .committee-description {
+        color: var(--text-gray);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .committee-stats {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .committee-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .committee-stat i {
+        color: var(--blue-primary);
+    }
+
+    .task-item {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .task-item:hover {
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .task-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 0.3rem;
+    }
+
+    .task-description {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .task-status {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: var(--white);
+    }
+
+    .status-in-progress {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+        color: var(--white);
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: var(--white);
+    }
+
+    .status-overdue {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: var(--white);
+    }
+
+    .task-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .task-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-gray);
+        font-size: 0.9rem;
+    }
+
+    .task-meta-item i {
+        color: var(--blue-primary);
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue-primary), var(--blue-gradient));
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+
+    .contact-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: rgba(0, 132, 171, 0.05);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .contact-item:hover {
+        background: rgba(0, 132, 171, 0.1);
+        transform: translateX(-5px);
+    }
+
+    .contact-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 1.3rem;
+    }
+
+    .contact-details {
+        flex: 1;
+    }
+
+    .contact-label {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        margin-bottom: 0.3rem;
+    }
+
+    .contact-value {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--blue-dark);
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-gray);
+    }
+
+    .empty-message i {
+        font-size: 3rem;
+        color: var(--blue-primary);
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .supervisor-detail-wrapper {
+            padding: 1rem;
+        }
+
+        .supervisor-header {
+            padding: 2rem 1.5rem;
+        }
+
+        .supervisor-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .supervisor-info h2 {
+            font-size: 1.8rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+        }
+
+        .committees-section,
+        .tasks-section,
+        .activities-section,
+        .contact-section {
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+        }
+
+        .contact-info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="supervisor-detail-wrapper">
+    <a href="{% url 'pm_supervisor_management' %}" class="back-button fade-in-up">
+        <i class="fas fa-arrow-right"></i>
+        العودة إلى قائمة المشرفين
+    </a>
+
+    <!-- Supervisor Header -->
+    <div class="supervisor-header fade-in-up">
+        <div class="supervisor-header-content">
+            <div class="supervisor-avatar-large">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <div class="supervisor-info">
+                <h2>{{ supervisor.get_full_name|default:supervisor.username }}</h2>
+                <p class="username">@{{ supervisor.username }}</p>
+
+                {% if supervisor.supervisor_type == 'cultural' %}
+                <span class="supervisor-type-badge-large badge-cultural">
+                    <i class="fas fa-book-reader"></i>
+                    مشرف ثقافي
+                </span>
+                {% elif supervisor.supervisor_type == 'sports' %}
+                <span class="supervisor-type-badge-large badge-sports">
+                    <i class="fas fa-running"></i>
+                    مشرف رياضي
+                </span>
+                {% elif supervisor.supervisor_type == 'sharia' %}
+                <span class="supervisor-type-badge-large badge-sharia">
+                    <i class="fas fa-quran"></i>
+                    مشرف اللجنة الشرعية
+                </span>
+                {% elif supervisor.supervisor_type == 'scientific' %}
+                <span class="supervisor-type-badge-large badge-scientific">
+                    <i class="fas fa-flask"></i>
+                    مشرف اللجنة العلمية
+                </span>
+                {% elif supervisor.supervisor_type == 'operations' %}
+                <span class="supervisor-type-badge-large badge-operations">
+                    <i class="fas fa-cogs"></i>
+                    مشرف اللجنة التشغيلية
+                </span>
+                {% else %}
+                <span class="supervisor-type-badge-large badge-secondary">
+                    <i class="fas fa-question"></i>
+                    غير محدد
+                </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid fade-in-up">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-label">إجمالي المهام</div>
+            <div class="stat-value">{{ stats.total_tasks }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-label">المهام المكتملة</div>
+            <div class="stat-value">{{ stats.completed_tasks }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-label">المهام قيد التنفيذ</div>
+            <div class="stat-value">{{ stats.pending_tasks }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-label">المهام المتأخرة</div>
+            <div class="stat-value">{{ stats.overdue_tasks }}</div>
+        </div>
+    </div>
+
+    <!-- Committees Section -->
+    <div class="committees-section fade-in-up">
+        <h3 class="section-title">
+            <i class="fas fa-layer-group"></i>
+            اللجان المشرف عليها
+        </h3>
+
+        {% if committees %}
+            {% for committee in committees %}
+            <div class="committee-item">
+                <div class="committee-name">{{ committee.name }}</div>
+                <p class="committee-description">{{ committee.description|truncatewords:20 }}</p>
+                <div class="committee-stats">
+                    <div class="committee-stat">
+                        <i class="fas fa-users"></i>
+                        <span>{{ committee.student_count }} طالب</span>
+                    </div>
+                    <div class="committee-stat">
+                        <i class="fas fa-chart-line"></i>
+                        <span>متوسط التقدم: {{ committee.avg_progress|floatformat:1|default:"0" }}%</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-message">
+                <i class="fas fa-layer-group"></i>
+                <p>لا توجد لجان مسندة لهذا المشرف حالياً</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Tasks Section -->
+    <div class="tasks-section fade-in-up">
+        <h3 class="section-title">
+            <i class="fas fa-tasks"></i>
+            المهام الأخيرة (آخر 10 مهام)
+        </h3>
+
+        {% if recent_tasks %}
+            {% for task in recent_tasks %}
+            <div class="task-item">
+                <div class="task-header">
+                    <div>
+                        <div class="task-title">{{ task.title }}</div>
+                        <p class="task-description">{{ task.description|truncatewords:15 }}</p>
+                    </div>
+
+                    {% if task.status == 'pending' %}
+                    <span class="task-status status-pending">
+                        <i class="fas fa-clock"></i> قيد التنفيذ
+                    </span>
+                    {% elif task.status == 'in_progress' %}
+                    <span class="task-status status-in-progress">
+                        <i class="fas fa-spinner"></i> جاري العمل
+                    </span>
+                    {% elif task.status == 'completed' %}
+                    <span class="task-status status-completed">
+                        <i class="fas fa-check"></i> مكتملة
+                    </span>
+                    {% elif task.status == 'overdue' or task.status == 'cancelled' %}
+                    <span class="task-status status-overdue">
+                        <i class="fas fa-exclamation-triangle"></i> متأخرة
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.85rem; color: var(--text-gray);">نسبة الإنجاز</span>
+                        <span style="font-weight: 700; color: var(--blue-primary);">{{ task.completion_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+
+                <div class="task-meta">
+                    {% if task.assigned_to_name %}
+                    <div class="task-meta-item">
+                        <i class="fas fa-user"></i>
+                        <span>{{ task.assigned_to_name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="task-meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                    <div class="task-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>أُنشئت في {{ task.created_at|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-message">
+                <i class="fas fa-tasks"></i>
+                <p>لا توجد مهام مسجلة حتى الآن</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Contact Information -->
+    <div class="contact-section fade-in-up">
+        <h3 class="section-title">
+            <i class="fas fa-address-card"></i>
+            معلومات الاتصال
+        </h3>
+
+        <div class="contact-info-grid">
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-details">
+                    <div class="contact-label">البريد الإلكتروني</div>
+                    <div class="contact-value">{{ supervisor.email|default:"غير محدد" }}</div>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-details">
+                    <div class="contact-label">رقم الهاتف</div>
+                    <div class="contact-value">{{ supervisor.phone|default:"غير محدد" }}</div>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="contact-details">
+                    <div class="contact-label">العنوان</div>
+                    <div class="contact-value">{{ supervisor.address|default:"غير محدد" }}</div>
+                </div>
+            </div>
+
+            <div class="contact-item">
+                <div class="contact-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <div class="contact-details">
+                    <div class="contact-label">تاريخ الانضمام</div>
+                    <div class="contact-value">{{ supervisor.date_joined|date:"Y/m/d" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
