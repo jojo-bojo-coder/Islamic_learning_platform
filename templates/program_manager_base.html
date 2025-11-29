@@ -1059,7 +1059,7 @@
                     </li>
                     <li>
                         <a href="{% url 'pm_program_info' %}" class="navbar-link {% if request.resolver_match.url_name == 'pm_program_info' %}active{% endif %}">
-                            <i class="fas fa-info-circle"></i>البرنامج
+                            <i class="fas fa-info-circle"></i>برامجي
                         </a>
                     </li>
                     <li>
@@ -1069,24 +1069,24 @@
                     </li>
                     <li>
                         <a href="{% url 'pm_supervisor_management' %}" class="navbar-link {% if 'supervisor' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-user-tie"></i>مشرفين اللجان
+                            <i class="fas fa-user-tie"></i>تكوين
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'pm_task_management' %}" class="navbar-link {% if 'task' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-tasks"></i>المهام
+                            <i class="fas fa-tasks"></i>التحفيزي
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'pm_activity_management' %}" class="navbar-link {% if 'activity' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-calendar-check"></i>الأنشطة
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'pm_reports' %}" class="navbar-link {% if request.resolver_match.url_name == 'pm_reports' %}active{% endif %}">
-                            <i class="fas fa-chart-bar"></i>التقارير
-                        </a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="{% url 'pm_activity_management' %}" class="navbar-link {% if 'activity' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                            <i class="fas fa-calendar-check"></i>التحفيزي-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="{% url 'pm_reports' %}" class="navbar-link {% if request.resolver_match.url_name == 'pm_reports' %}active{% endif %}">-->
+<!--                            <i class="fas fa-chart-bar"></i>التقارير-->
+<!--                        </a>-->
+<!--                    </li>-->
                     <li>
                         <a href="{% url 'schedule_calendar' %}" class="navbar-link {% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-calendar-alt"></i>الجدول
@@ -1124,7 +1124,7 @@
                 </li>
                 <li>
                     <a href="{% url 'pm_program_info' %}" class="{% if request.resolver_match.url_name == 'pm_program_info' %}active{% endif %}">
-                        <i class="fas fa-info-circle"></i> البرنامج
+                        <i class="fas fa-info-circle"></i> برامجي
                     </a>
                 </li>
                 <li>
@@ -1134,24 +1134,24 @@
                 </li>
                 <li>
                     <a href="{% url 'pm_supervisor_management' %}" class="{% if 'supervisor' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-user-tie"></i> مشرفين اللجان
+                        <i class="fas fa-user-tie"></i> تكوين
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'pm_task_management' %}" class="{% if 'task' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-tasks"></i> المهام
+                        <i class="fas fa-tasks"></i> التحفيزي
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'pm_activity_management' %}" class="{% if 'activity' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-calendar-check"></i> الأنشطة
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'pm_reports' %}" class="{% if request.resolver_match.url_name == 'pm_reports' %}active{% endif %}">
-                        <i class="fas fa-chart-bar"></i> التقارير
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="{% url 'pm_activity_management' %}" class="{% if 'activity' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                        <i class="fas fa-calendar-check"></i> التحفيزي-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a href="{% url 'pm_reports' %}" class="{% if request.resolver_match.url_name == 'pm_reports' %}active{% endif %}">-->
+<!--                        <i class="fas fa-chart-bar"></i> التقارير-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="{% url 'schedule_calendar' %}" class="{% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-calendar-alt"></i> الجدول
@@ -1178,6 +1178,15 @@
 
             <!-- Content Wrapper -->
             <div class="content-wrapper">
+                <!-- Messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
 
                 {% block content %}
                 {% endblock %}
