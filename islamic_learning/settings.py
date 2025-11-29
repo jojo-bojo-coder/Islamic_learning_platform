@@ -91,25 +91,19 @@ import dj_database_url
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
-    # Production - Use PostgreSQL from Railway
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-    print("✅ Connected to PostgreSQL via DATABASE_URL")
-else:
-    # Local development - Use SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-    print("✅ Using SQLite for local development")
+if not DATABASE_URL:
+    raise ValueError("❌ DATABASE_URL is not set! Make sure it's added in Railway Variables.")
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+
+# Print for debugging
+print("✅ Connected to PostgreSQL via DATABASE_URL")
 
 
 # Password validation
