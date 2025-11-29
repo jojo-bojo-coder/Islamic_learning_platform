@@ -995,11 +995,11 @@
                             <i class="fas fa-tachometer-alt"></i>الرئيسية
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'cultural_committee_info' %}" class="navbar-link {% if request.resolver_match.url_name == 'cultural_committee_info' %}active{% endif %}">
-                            <i class="fas fa-info-circle"></i>بيانات اللجنة
-                        </a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="{% url 'cultural_committee_info' %}" class="navbar-link {% if request.resolver_match.url_name == 'cultural_committee_info' %}active{% endif %}">-->
+<!--                            <i class="fas fa-info-circle"></i>بيانات اللجنة-->
+<!--                        </a>-->
+<!--                    </li>-->
                     <li>
                         <a href="{% url 'cultural_daily_phrases' %}" class="navbar-link {% if 'daily_phrase' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-quote-right"></i>عبارات اليوم
@@ -1007,12 +1007,12 @@
                     </li>
                     <li>
                         <a href="{% url 'cultural_task_management' %}" class="navbar-link {% if 'task' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-tasks"></i>المهام
+                            <i class="fas fa-tasks"></i>برامجي
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'cultural_member_management' %}" class="navbar-link {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-users"></i>الأعضاء
+                            <i class="fas fa-users"></i>التكوين
                         </a>
                     </li>
                     <li>
@@ -1020,16 +1020,16 @@
                             <i class="fas fa-folder-open"></i>المكتبة
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'cultural_discussions' %}" class="navbar-link {% if 'discussion' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-comments"></i>النقاشات
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'cultural_reports' %}" class="navbar-link {% if request.resolver_match.url_name == 'cultural_reports' %}active{% endif %}">
-                            <i class="fas fa-chart-bar"></i>التقارير
-                        </a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="{% url 'cultural_discussions' %}" class="navbar-link {% if 'discussion' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                            <i class="fas fa-comments"></i>النقاشات-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="{% url 'cultural_reports' %}" class="navbar-link {% if request.resolver_match.url_name == 'cultural_reports' %}active{% endif %}">-->
+<!--                            <i class="fas fa-chart-bar"></i>التقارير-->
+<!--                        </a>-->
+<!--                    </li>-->
                     <li>
                         <a href="{% url 'schedule_calendar' %}" class="navbar-link {% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-calendar-alt"></i>الجدول
@@ -1073,11 +1073,11 @@
                         <i class="fas fa-tachometer-alt"></i> الرئيسية
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'cultural_committee_info' %}" class="{% if request.resolver_match.url_name == 'cultural_committee_info' %}active{% endif %}">
-                        <i class="fas fa-info-circle"></i> بيانات اللجنة
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="{% url 'cultural_committee_info' %}" class="{% if request.resolver_match.url_name == 'cultural_committee_info' %}active{% endif %}">-->
+<!--                        <i class="fas fa-info-circle"></i> بيانات اللجنة-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="{% url 'cultural_daily_phrases' %}" class="{% if 'daily_phrase' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-quote-right"></i> عبارات اليوم
@@ -1085,12 +1085,12 @@
                 </li>
                 <li>
                     <a href="{% url 'cultural_task_management' %}" class="{% if 'task' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-tasks"></i> المهام
+                        <i class="fas fa-tasks"></i> برامجي
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'cultural_member_management' %}" class="{% if 'member' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-users"></i> الأعضاء
+                        <i class="fas fa-users"></i> التكوين
                     </a>
                 </li>
                 <li>
@@ -1098,16 +1098,16 @@
                         <i class="fas fa-folder-open"></i> المكتبة
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'cultural_discussions' %}" class="{% if 'discussion' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-comments"></i>النقاشات
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'cultural_reports' %}" class="{% if request.resolver_match.url_name == 'cultural_reports' %}active{% endif %}">
-                        <i class="fas fa-chart-bar"></i> التقارير
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="{% url 'cultural_discussions' %}" class="{% if 'discussion' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                        <i class="fas fa-comments"></i>النقاشات-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a href="{% url 'cultural_reports' %}" class="{% if request.resolver_match.url_name == 'cultural_reports' %}active{% endif %}">-->
+<!--                        <i class="fas fa-chart-bar"></i> التقارير-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="{% url 'schedule_calendar' %}" class="{% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-calendar-alt"></i> الجدول
