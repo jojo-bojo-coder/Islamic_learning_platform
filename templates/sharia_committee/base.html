@@ -1050,19 +1050,19 @@
                             <i class="fas fa-tachometer-alt"></i>الرئيسية
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'sharia_committee_info' %}" class="navbar-link {% if request.resolver_match.url_name == 'sharia_committee_info' %}active{% endif %}">
-                            <i class="fas fa-info-circle"></i>اللجنة
-                        </a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="{% url 'sharia_committee_info' %}" class="navbar-link {% if request.resolver_match.url_name == 'sharia_committee_info' %}active{% endif %}">-->
+<!--                            <i class="fas fa-info-circle"></i>اللجنة-->
+<!--                        </a>-->
+<!--                    </li>-->
                     <li>
                         <a href="{% url 'sharia_task_management' %}" class="navbar-link {% if 'task' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-tasks"></i>المهام
+                            <i class="fas fa-tasks"></i>برامجي
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'sharia_member_management' %}" class="navbar-link {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-users"></i>الأعضاء
+                            <i class="fas fa-users"></i>التكوين
                         </a>
                     </li>
                     <li>
@@ -1070,26 +1070,26 @@
                             <i class="fas fa-folder-open"></i>المكتبة
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'sharia_message_management' %}" class="navbar-link {% if 'message' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-envelope"></i>الرسائل
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'sharia_competition_management' %}" class="navbar-link {% if 'competition' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-trophy"></i>المسابقات
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'sharia_book_management' %}" class="navbar-link {% if 'book' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-book"></i>الكتب
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{% url 'sharia_reports' %}" class="navbar-link {% if request.resolver_match.url_name == 'sharia_reports' %}active{% endif %}">
-                            <i class="fas fa-chart-bar"></i>التقارير
-                        </a>
-                    </li>
+<!--                    <li>-->
+<!--                        <a href="{% url 'sharia_message_management' %}" class="navbar-link {% if 'message' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                            <i class="fas fa-envelope"></i>الرسائل-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="{% url 'sharia_competition_management' %}" class="navbar-link {% if 'competition' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                            <i class="fas fa-trophy"></i>المسابقات-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="{% url 'sharia_book_management' %}" class="navbar-link {% if 'book' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                            <i class="fas fa-book"></i>الكتب-->
+<!--                        </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <a href="{% url 'sharia_reports' %}" class="navbar-link {% if request.resolver_match.url_name == 'sharia_reports' %}active{% endif %}">-->
+<!--                            <i class="fas fa-chart-bar"></i>التقارير-->
+<!--                        </a>-->
+<!--                    </li>-->
                     <li>
                         <a href="{% url 'schedule_calendar' %}" class="navbar-link {% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-calendar-alt"></i>الجدول
@@ -1133,19 +1133,19 @@
                         <i class="fas fa-tachometer-alt"></i> الرئيسية
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'sharia_committee_info' %}" class="{% if request.resolver_match.url_name == 'sharia_committee_info' %}active{% endif %}">
-                        <i class="fas fa-info-circle"></i> اللجنة
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="{% url 'sharia_committee_info' %}" class="{% if request.resolver_match.url_name == 'sharia_committee_info' %}active{% endif %}">-->
+<!--                        <i class="fas fa-info-circle"></i> اللجنة-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="{% url 'sharia_task_management' %}" class="{% if 'task' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-tasks"></i> المهام
+                        <i class="fas fa-tasks"></i> برامجي
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'sharia_member_management' %}" class="{% if 'member' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-users"></i> الأعضاء
+                        <i class="fas fa-users"></i> التكوين
                     </a>
                 </li>
                 <li>
@@ -1153,26 +1153,26 @@
                         <i class="fas fa-folder-open"></i> المكتبة
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'sharia_message_management' %}" class="{% if 'message' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-envelope"></i> الرسائل
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'sharia_competition_management' %}" class="{% if 'competition' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-trophy"></i> المسابقات
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'sharia_book_management' %}" class="{% if 'book' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-book"></i> الكتب
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'sharia_reports' %}" class="{% if request.resolver_match.url_name == 'sharia_reports' %}active{% endif %}">
-                        <i class="fas fa-chart-bar"></i> التقارير
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="{% url 'sharia_message_management' %}" class="{% if 'message' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                        <i class="fas fa-envelope"></i> الرسائل-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a href="{% url 'sharia_competition_management' %}" class="{% if 'competition' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                        <i class="fas fa-trophy"></i> المسابقات-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a href="{% url 'sharia_book_management' %}" class="{% if 'book' in request.resolver_match.url_name %}active{% endif %}">-->
+<!--                        <i class="fas fa-book"></i> الكتب-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a href="{% url 'sharia_reports' %}" class="{% if request.resolver_match.url_name == 'sharia_reports' %}active{% endif %}">-->
+<!--                        <i class="fas fa-chart-bar"></i> التقارير-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="{% url 'schedule_calendar' %}" class="{% if 'schedule' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-calendar-alt"></i> الجدول
