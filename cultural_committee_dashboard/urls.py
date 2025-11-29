@@ -13,6 +13,8 @@ urlpatterns = [
     path('tasks/add/', views.add_task, name='cultural_add_task'),
     path('tasks/edit/<int:task_id>/', views.edit_task, name='cultural_edit_task'),
     path('tasks/delete/<int:task_id>/', views.delete_task, name='cultural_delete_task'),
+    path('tasks/<int:task_id>/sessions/', views.view_task_sessions, name='cultural_view_task_sessions'),
+    path('sessions/<int:session_id>/toggle-completion/', views.toggle_session_completion, name='cultural_toggle_session_completion'),
 
     # Member Management
     path('members/', views.member_management, name='cultural_member_management'),

@@ -561,173 +561,235 @@ def committee_info(request):
 
 @login_required
 def task_management(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
+    """View for displaying all tasks with filtering"""
 
-    try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
+    committee = get_object_or_404(Committee, supervisor=request.user)
 
-    tasks = CulturalTask.objects.filter(committee=committee).order_by('-created_at')
+    # Get filter parameter
+    status_filter = request.GET.get('status')
 
-    # Filter by type
-    task_type = request.GET.get('type')
-    if task_type:
-        tasks = tasks.filter(task_type=task_type)
+    # Query tasks
+    tasks = CulturalTask.objects.filter(committee=committee)
 
-    # Filter by status
-    status = request.GET.get('status')
-    if status:
-        tasks = tasks.filter(status=status)
+    if status_filter:
+        tasks = tasks.filter(status=status_filter)
 
     context = {
         'committee': committee,
         'tasks': tasks,
-        'task_type_filter': task_type,
-        'status_filter': status,
+        'status_filter': status_filter,
     }
+
     return render(request, 'cultural_committee/task_management.html', context)
 
 
 @login_required
-def add_task(request):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
+def view_task_sessions(request, task_id):
+    """View for displaying all sessions of a specific task"""
 
-    try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
+    task = get_object_or_404(CulturalTask, id=task_id)
 
-    if request.method == 'POST':
-        form = CulturalTaskForm(request.POST, committee=committee)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.committee = committee
-            task.created_by = request.user
-            task.save()
+    # Ensure user has permission to view this task
+    if task.committee.supervisor != request.user:
+        messages.error(request, 'ليس لديك صلاحية لعرض هذه المهمة.')
+        return redirect('cultural_task_management')
 
-            # Create notification
-            members = CommitteeMember.objects.filter(committee=committee, is_active=True)
-            for member in members:
-                CulturalNotification.objects.create(
-                    user=member.user,  # Send to each member individually
-                    committee=committee,
-                    notification_type='task_added',
-                    title='مهمة جديدة',
-                    message=f'تم إضافة مهمة جديدة: {task.title}' + (
-                        f' للمسؤول: {task.assigned_to_name}' if task.assigned_to_name else ''),
-                    related_task=task
-                )
-
-            UserActivity.objects.create(
-                user=request.user,
-                action=f'إضافة مهمة ثقافية: {task.title}',
-                ip_address=get_client_ip(request)
-            )
-
-            messages.success(request, 'تم إضافة المهمة بنجاح!')
-            return redirect('cultural_task_management')
-    else:
-        form = CulturalTaskForm(committee=committee)
+    sessions = task.sessions.all()
 
     context = {
-        'committee': committee,
-        'form': form,
-        'title': 'إضافة مهمة جديدة'
+        'task': task,
+        'sessions': sessions,
+        'committee': task.committee,
     }
+
+    return render(request, 'cultural_committee/task_sessions.html', context)
+
+
+from .models import TaskSession
+from .forms import TaskSessionForm
+from django.http import JsonResponse
+import json
+@login_required
+def toggle_session_completion(request, session_id):
+    """AJAX view to toggle session completion status"""
+
+    if request.method == 'POST':
+        session = get_object_or_404(TaskSession, id=session_id)
+
+        # Ensure user has permission
+        if session.task.committee.supervisor != request.user:
+            return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+        session.is_completed = not session.is_completed
+        session.save()
+
+        return JsonResponse({
+            'success': True,
+            'is_completed': session.is_completed,
+            'session_id': session.id
+        })
+
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+from datetime import datetime
+@login_required
+def add_task(request):
+    """View for adding a new cultural task with optional sessions"""
+
+    # Get the user's committee (adjust this based on your user-committee relationship)
+    committee = get_object_or_404(Committee, supervisor=request.user)
+
+    if request.method == 'POST':
+        form = CulturalTaskForm(request.POST)
+
+        if form.is_valid():
+            # Create the task
+            task = form.save(commit=False)
+            task.committee = committee
+
+            # Check if sessions are included
+            sessions_data = request.POST.get('sessions_data', '[]')
+
+            try:
+                sessions = json.loads(sessions_data)
+                task.has_sessions = len(sessions) > 0
+                task.save()
+
+                # Create sessions if provided
+                if sessions:
+                    for session_data in sessions:
+                        TaskSession.objects.create(
+                            task=task,
+                            name=session_data.get('name', ''),
+                            date=datetime.strptime(session_data.get('date'), '%Y-%m-%d').date(),
+                            time=datetime.strptime(session_data.get('time'), '%H:%M').time(),
+                            session_order=session_data.get('id', 1)
+                        )
+
+                    messages.success(
+                        request,
+                        f'تم إضافة المهمة "{task.title}" بنجاح مع {len(sessions)} جلسة/جلسات!'
+                    )
+                else:
+                    messages.success(request, f'تم إضافة المهمة "{task.title}" بنجاح!')
+
+                return redirect('cultural_task_management')
+
+            except (ValueError, json.JSONDecodeError) as e:
+                messages.error(request, 'حدث خطأ في معالجة بيانات الجلسات. الرجاء المحاولة مرة أخرى.')
+                task.delete()  # Rollback task creation
+        else:
+            messages.error(request, 'الرجاء تصحيح الأخطاء في النموذج.')
+    else:
+        form = CulturalTaskForm()
+
+    context = {
+        'form': form,
+        'title': 'إضافة مهمة جديدة',
+        'committee': committee,
+    }
+
     return render(request, 'cultural_committee/task_form.html', context)
 
 
 @login_required
 def edit_task(request, task_id):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
+    """View for editing an existing cultural task and its sessions"""
 
-    try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
+    task = get_object_or_404(CulturalTask, id=task_id)
 
-    task = get_object_or_404(CulturalTask, id=task_id, committee=committee)
+    # Ensure user has permission to edit this task
+    if task.committee.supervisor != request.user:
+        messages.error(request, 'ليس لديك صلاحية لتعديل هذه المهمة.')
+        return redirect('cultural_task_management')
 
     if request.method == 'POST':
-        form = CulturalTaskForm(request.POST, instance=task, committee=committee)
+        form = CulturalTaskForm(request.POST, instance=task)
+
         if form.is_valid():
-            task = form.save()
+            task = form.save(commit=False)
 
-            # Create notification
-            members = CommitteeMember.objects.filter(committee=committee, is_active=True)
-            for member in members:
-                CulturalNotification.objects.create(
-                    user=member.user,
-                    committee=committee,
-                    notification_type='task_updated',
-                    title='تعديل مهمة',
-                    message=f'تم تعديل المهمة: {task.title}' + (
-                        f' للمسؤول: {task.assigned_to_name}' if task.assigned_to_name else ''),
-                    related_task=task
-                )
+            # Handle sessions data
+            sessions_data = request.POST.get('sessions_data', '[]')
 
-            UserActivity.objects.create(
-                user=request.user,
-                action=f'تعديل مهمة ثقافية: {task.title}',
-                ip_address=get_client_ip(request)
-            )
+            try:
+                sessions = json.loads(sessions_data)
+                task.has_sessions = len(sessions) > 0
+                task.save()
 
-            messages.success(request, 'تم تعديل المهمة بنجاح!')
-            return redirect('cultural_task_management')
+                # Delete existing sessions and create new ones
+                task.sessions.all().delete()
+
+                if sessions:
+                    for session_data in sessions:
+                        TaskSession.objects.create(
+                            task=task,
+                            name=session_data.get('name', ''),
+                            date=datetime.strptime(session_data.get('date'), '%Y-%m-%d').date(),
+                            time=datetime.strptime(session_data.get('time'), '%H:%M').time(),
+                            session_order=session_data.get('id', 1)
+                        )
+
+                    messages.success(
+                        request,
+                        f'تم تحديث المهمة "{task.title}" بنجاح مع {len(sessions)} جلسة/جلسات!'
+                    )
+                else:
+                    messages.success(request, f'تم تحديث المهمة "{task.title}" بنجاح!')
+
+                return redirect('cultural_task_management')
+
+            except (ValueError, json.JSONDecodeError) as e:
+                messages.error(request, 'حدث خطأ في معالجة بيانات الجلسات.')
+        else:
+            messages.error(request, 'الرجاء تصحيح الأخطاء في النموذج.')
     else:
-        form = CulturalTaskForm(instance=task, committee=committee)
+        form = CulturalTaskForm(instance=task)
+
+    # Get existing sessions for pre-population
+    existing_sessions = []
+    for idx, session in enumerate(task.sessions.all(), 1):
+        existing_sessions.append({
+            'id': idx,
+            'name': session.name,
+            'date': session.date.strftime('%Y-%m-%d'),
+            'time': session.time.strftime('%H:%M'),
+        })
 
     context = {
-        'committee': committee,
         'form': form,
+        'title': 'تعديل المهمة',
+        'committee': task.committee,
         'task': task,
-        'title': 'تعديل المهمة'
+        'existing_sessions': json.dumps(existing_sessions),
+        'has_sessions': task.has_sessions,
     }
+
     return render(request, 'cultural_committee/task_form.html', context)
 
 
 @login_required
 def delete_task(request, task_id):
-    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-        return redirect('home')
+    """View for deleting a cultural task"""
 
-    try:
-        committee = Committee.objects.get(supervisor=request.user)
-    except Committee.DoesNotExist:
-        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-        return redirect('home')
+    task = get_object_or_404(CulturalTask, id=task_id)
 
-    task = get_object_or_404(CulturalTask, id=task_id, committee=committee)
+    # Ensure user has permission to delete this task
+    if task.committee.supervisor != request.user:
+        messages.error(request, 'ليس لديك صلاحية لحذف هذه المهمة.')
+        return redirect('cultural_task_management')
 
     if request.method == 'POST':
         task_title = task.title
-        task.delete()
-
-        UserActivity.objects.create(
-            user=request.user,
-            action=f'حذف مهمة ثقافية: {task_title}',
-            ip_address=get_client_ip(request)
-        )
-
-        messages.success(request, 'تم حذف المهمة بنجاح!')
+        task.delete()  # This will also cascade delete all associated sessions
+        messages.success(request, f'تم حذف المهمة "{task_title}" بنجاح!')
         return redirect('cultural_task_management')
 
     context = {
-        'committee': committee,
-        'object': task,
-        'type': 'مهمة'
+        'task': task,
+        'committee': task.committee,
     }
+
     return render(request, 'cultural_committee/confirm_delete.html', context)
 
 from django.db import models

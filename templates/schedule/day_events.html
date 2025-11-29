@@ -7,6 +7,41 @@
 
 {% block content %}
 <style>
+    .count-task_sessions {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.type-task_sessions {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.status-badge.completed {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.status-badge.upcoming {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.status-badge.past {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
     .events-wrapper {
         background: var(--white);
         border-radius: 20px;
@@ -410,6 +445,11 @@
                 المهام الثقافية
                 <span class="count">{{ cultural_tasks.count }}</span>
             </button>
+            <button class="filter-btn" data-filter="task_sessions">
+                <i class="fas fa-clock"></i>
+                جلسات المهام
+                <span class="count">{{ task_sessions.count }}</span>
+            </button>
             <button class="filter-btn" data-filter="operations_tasks">
                 <i class="fas fa-cogs"></i>
                 المهام التشغيلية
@@ -625,6 +665,65 @@
             <div class="no-events">
                 <i class="fas fa-theater-masks"></i>
                 <h5>لا توجد مهام ثقافية</h5>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <!-- Task Sessions -->
+    <div class="events-section active" id="task_sessions-section">
+        <h4 class="section-title">
+            <i class="fas fa-clock"></i>
+            جلسات المهام الثقافية
+        </h4>
+        <div class="events-grid">
+            {% for session in task_sessions %}
+            <a href="{% url 'object_detail' 'cultural_task' session.task.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ session.name }}</h5>
+                    <span class="event-type type-task_sessions">
+                        <i class="fas fa-clock"></i>
+                        جلسة مهمة
+                    </span>
+                </div>
+                <div class="event-details">
+                    <div class="event-detail">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ session.date|date:"Y/m/d" }}</span>
+                    </div>
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ session.time|time:"H:i" }}</span>
+                    </div>
+                    <div class="event-detail">
+                        <i class="fas fa-tasks"></i>
+                        <span>{{ session.task.title }}</span>
+                    </div>
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ session.task.committee.name }}</span>
+                    </div>
+                </div>
+                {% if session.notes %}
+                <p class="event-description">{{ session.notes|truncatewords:20 }}</p>
+                {% endif %}
+                <div class="event-status">
+                    <span class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
+                        {% if session.is_completed %}
+                        <i class="fas fa-check-circle"></i> مكتملة
+                        {% elif session.is_past %}
+                        <i class="fas fa-exclamation-circle"></i> منتهية
+                        {% else %}
+                        <i class="fas fa-clock"></i> قادمة
+                        {% endif %}
+                    </span>
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-clock"></i>
+                <h5>لا توجد جلسات مهام</h5>
             </div>
             {% endfor %}
         </div>

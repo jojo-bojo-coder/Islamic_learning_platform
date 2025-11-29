@@ -1,45 +1,180 @@
 from django.db import models
 from accounts.models import User
 from director_dashboard.models import Program, Committee
-
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext_lazy as _
 
 class CulturalTask(models.Model):
-    """Main cultural tasks for the committee"""
-    TASK_TYPES = [
-        ('cultural_data', 'بيانات ومسابقات ثقافية'),
-        ('weekly_program', 'البرنامج الثقافي الأسبوعي'),
-        ('reading_followup', 'متابعة القراءة النافعة'),
-        ('friday_lesson', 'دروس لقاء دوري (عصر الجمعة)'),
-        ('courses_coordination', 'تنسيق الدورات الهادفة'),
+    """Model representing a cultural committee task"""
+
+    TASK_TYPE_CHOICES = [
+        ('event', 'فعالية ثقافية'),
+        ('workshop', 'ورشة عمل'),
+        ('lecture', 'محاضرة'),
+        ('competition', 'مسابقة'),
+        ('exhibition', 'معرض'),
+        ('activity', 'نشاط'),
+        ('other', 'أخرى'),
     ]
 
     STATUS_CHOICES = [
-        ('pending', 'قيد التنفيذ'),
-        ('in_progress', 'جاري العمل'),
+        ('pending', 'قيد الانتظار'),
+        ('in_progress', 'قيد التنفيذ'),
         ('completed', 'مكتملة'),
         ('cancelled', 'ملغاة'),
     ]
 
-    committee = models.ForeignKey(Committee, on_delete=models.CASCADE, related_name='cultural_tasks')
-    task_type = models.CharField(max_length=50, choices=TASK_TYPES, verbose_name='نوع المهمة')
-    title = models.CharField(max_length=255, verbose_name='العنوان')
-    description = models.TextField(verbose_name='الوصف')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='الحالة')
-    assigned_to_name = models.CharField(max_length=255, blank=True, verbose_name='اسم المسؤول')
-    due_date = models.DateField(verbose_name='تاريخ الاستحقاق')
-    completion_percentage = models.IntegerField(default=0, verbose_name='نسبة الإنجاز')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
-                                   related_name='cultural_tasks_created')
+    committee = models.ForeignKey(
+        Committee,
+        on_delete=models.CASCADE,
+        related_name='cultural_tasks',
+        verbose_name=_('اللجنة الثقافية')
+    )
+
+    task_type = models.CharField(
+        max_length=20,
+        choices=TASK_TYPE_CHOICES,
+        verbose_name=_('نوع المهمة')
+    )
+
+    title = models.CharField(
+        max_length=200,
+        verbose_name=_('عنوان المهمة')
+    )
+
+    description = models.TextField(
+        verbose_name=_('وصف المهمة')
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        verbose_name=_('الحالة')
+    )
+
+    assigned_to_name = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        verbose_name=_('اسم المسؤول')
+    )
+
+    due_date = models.DateField(
+        verbose_name=_('تاريخ الاستحقاق')
+    )
+
+    completion_percentage = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        verbose_name=_('نسبة الإنجاز'),
+        help_text=_('أدخل رقماً بين 0 و 100')
+    )
+
+    has_sessions = models.BooleanField(
+        default=False,
+        verbose_name=_('يحتوي على جلسات')
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('تاريخ الإنشاء')
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_('تاريخ التحديث')
+    )
 
     class Meta:
+        verbose_name = _('مهمة ثقافية')
+        verbose_name_plural = _('المهام الثقافية')
         ordering = ['-created_at']
-        verbose_name = 'مهمة ثقافية'
-        verbose_name_plural = 'المهام الثقافية'
 
     def __str__(self):
-        return self.title
+        return f"{self.title} - {self.get_task_type_display()}"
+
+    @property
+    def is_overdue(self):
+        """Check if task is overdue"""
+        from django.utils import timezone
+        return self.due_date < timezone.now().date() and self.status != 'completed'
+
+    @property
+    def sessions_count(self):
+        """Get the number of sessions associated with this task"""
+        return self.sessions.count()
+
+from django.utils import timezone
+from datetime import datetime
+class TaskSession(models.Model):
+    """Model representing a session within a cultural task"""
+
+    task = models.ForeignKey(
+        CulturalTask,
+        on_delete=models.CASCADE,
+        related_name='sessions',
+        verbose_name=_('المهمة')
+    )
+
+    name = models.CharField(
+        max_length=200,
+        verbose_name=_('اسم الجلسة')
+    )
+
+    date = models.DateField(
+        verbose_name=_('تاريخ الجلسة')
+    )
+
+    time = models.TimeField(
+        verbose_name=_('وقت الجلسة')
+    )
+
+    session_order = models.IntegerField(
+        default=1,
+        verbose_name=_('ترتيب الجلسة')
+    )
+
+    is_completed = models.BooleanField(
+        default=False,
+        verbose_name=_('مكتملة')
+    )
+
+    notes = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_('ملاحظات')
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('تاريخ الإنشاء')
+    )
+
+    class Meta:
+        verbose_name = _('جلسة')
+        verbose_name_plural = _('الجلسات')
+        ordering = ['date', 'time', 'session_order']
+        unique_together = ['task', 'session_order']
+
+    def __str__(self):
+        return f"{self.name} - {self.date} {self.time}"
+
+    @property
+    def is_upcoming(self):
+        """Check if session is upcoming"""
+        # Make both datetimes timezone-aware
+        session_datetime = datetime.combine(self.date, self.time)
+        session_datetime = timezone.make_aware(session_datetime)
+        return session_datetime > timezone.now() and not self.is_completed
+
+    @property
+    def is_past(self):
+        """Check if session has passed"""
+        # Make both datetimes timezone-aware
+        session_datetime = datetime.combine(self.date, self.time)
+        session_datetime = timezone.make_aware(session_datetime)
+        return session_datetime < timezone.now()
 
 
 class CommitteeMember(models.Model):

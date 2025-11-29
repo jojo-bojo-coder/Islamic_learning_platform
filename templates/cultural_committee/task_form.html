@@ -101,6 +101,212 @@
         resize: vertical;
     }
 
+    /* Session Management Section */
+    .session-section {
+        margin-top: 2.5rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+        border-radius: 15px;
+        border: 2px dashed rgba(0, 132, 171, 0.3);
+    }
+
+    .session-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(0, 132, 171, 0.2);
+    }
+
+    .session-section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .session-section-title i {
+        color: var(--blue-primary);
+    }
+
+    /* Toggle Switch */
+    .session-toggle {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .toggle-label {
+        font-weight: 600;
+        color: var(--blue-dark);
+        font-size: 1rem;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+
+    /* Session Count Selection */
+    .session-count-container {
+        display: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .session-count-container.active {
+        display: block;
+        animation: fadeInDown 0.4s ease;
+    }
+
+    .count-selector {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .count-option {
+        flex: 1;
+        min-width: 80px;
+        max-width: 120px;
+        padding: 1rem;
+        text-align: center;
+        border: 2px solid rgba(0, 132, 171, 0.3);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        font-weight: 600;
+        color: var(--text-gray);
+    }
+
+    .count-option:hover {
+        border-color: var(--blue-primary);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.2);
+    }
+
+    .count-option.selected {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        border-color: var(--blue-primary);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .count-option i {
+        display: block;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Sessions Container */
+    .sessions-container {
+        display: none;
+        margin-top: 1.5rem;
+    }
+
+    .sessions-container.active {
+        display: block;
+        animation: fadeInDown 0.4s ease;
+    }
+
+    .session-item {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 2px solid rgba(0, 132, 171, 0.2);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .session-item:hover {
+        border-color: var(--blue-primary);
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.15);
+    }
+
+    .session-item-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(0, 132, 171, 0.1);
+    }
+
+    .session-number {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .remove-session-btn {
+        background: transparent;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .remove-session-btn:hover {
+        background: #dc3545;
+        color: white;
+    }
+
     /* Error Styling */
     .text-danger {
         font-size: 0.875rem;
@@ -200,6 +406,17 @@
         }
     }
 
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .form-card-body {
@@ -217,13 +434,37 @@
         .btn {
             width: 100%;
         }
+
+        .count-selector {
+            justify-content: center;
+        }
+
+        .count-option {
+            min-width: 70px;
+            max-width: 90px;
+            padding: 0.75rem;
+        }
+
+        .session-section {
+            padding: 1.5rem;
+        }
+
+        .session-item-header {
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .remove-session-btn {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-lg-8 mx-auto">
+    <div class="col-lg-10 mx-auto">
         <div class="form-card fade-in-up">
             <div class="form-card-header">
                 <h1 class="form-card-title">
@@ -232,9 +473,10 @@
                 </h1>
             </div>
             <div class="form-card-body">
-                <form method="post">
+                <form method="post" id="taskForm">
                     {% csrf_token %}
 
+                    <!-- Basic Task Information -->
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label class="form-label">{{ form.task_type.label }}</label>
@@ -298,6 +540,60 @@
                         {% endif %}
                     </div>
 
+                    <!-- Session Management Section -->
+                    <div class="session-section">
+                        <div class="session-section-header">
+                            <div class="session-section-title">
+                                <i class="fas fa-calendar-plus"></i>
+                                إدارة الجلسات
+                            </div>
+                        </div>
+
+                        <!-- Toggle for adding sessions -->
+                        <div class="session-toggle">
+                            <span class="toggle-label">هل تريد إضافة جلسات لهذه المهمة؟</span>
+                            <label class="switch">
+                                <input type="checkbox" id="sessionToggle" {% if has_sessions %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Session Count Selection -->
+                        <div class="session-count-container" id="sessionCountContainer">
+                            <label class="form-label">كم عدد الجلسات التي تريد إضافتها؟</label>
+                            <div class="count-selector">
+                                <div class="count-option" data-count="1">
+                                    <i class="fas fa-calendar-day"></i>
+                                    <div>جلسة واحدة</div>
+                                </div>
+                                <div class="count-option" data-count="2">
+                                    <i class="fas fa-calendar-week"></i>
+                                    <div>جلستان</div>
+                                </div>
+                                <div class="count-option" data-count="3">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <div>3 جلسات</div>
+                                </div>
+                                <div class="count-option" data-count="4">
+                                    <i class="fas fa-calendar"></i>
+                                    <div>4 جلسات</div>
+                                </div>
+                                <div class="count-option" data-count="5">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <div>5 جلسات</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sessions Container -->
+                        <div class="sessions-container" id="sessionsContainer">
+                            <!-- Sessions will be dynamically added here -->
+                        </div>
+                    </div>
+
+                    <!-- Hidden input to store session data -->
+                    <input type="hidden" name="sessions_data" id="sessionsData">
+
                     <div class="form-actions">
                         <a href="{% url 'cultural_task_management' %}" class="btn btn-outline-secondary">
                             <i class="fas fa-times ms-2"></i>
@@ -313,4 +609,214 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Session management functionality
+    let sessionCount = 0;
+    let sessions = [];
+
+    const sessionToggle = document.getElementById('sessionToggle');
+    const sessionCountContainer = document.getElementById('sessionCountContainer');
+    const sessionsContainer = document.getElementById('sessionsContainer');
+    const countOptions = document.querySelectorAll('.count-option');
+    const sessionsDataInput = document.getElementById('sessionsData');
+
+    // Load existing sessions if editing
+    {% if existing_sessions %}
+    const existingSessions = {{ existing_sessions|safe }};
+    if (existingSessions && existingSessions.length > 0) {
+        sessions = existingSessions;
+        sessionCount = sessions.length;
+
+        // Auto-show session containers
+        setTimeout(() => {
+            sessionCountContainer.classList.add('active');
+
+            // Select the appropriate count option
+            const matchingOption = document.querySelector(`[data-count="${sessionCount}"]`);
+            if (matchingOption) {
+                matchingOption.classList.add('selected');
+            }
+
+            // Generate session fields with existing data
+            generateSessionFieldsWithData(existingSessions);
+        }, 100);
+    }
+    {% endif %}
+
+    // Toggle session section
+    sessionToggle.addEventListener('change', function() {
+        if (this.checked) {
+            sessionCountContainer.classList.add('active');
+        } else {
+            sessionCountContainer.classList.remove('active');
+            sessionsContainer.classList.remove('active');
+            sessionsContainer.innerHTML = '';
+            sessions = [];
+            sessionCount = 0;
+            countOptions.forEach(opt => opt.classList.remove('selected'));
+            updateSessionsData();
+        }
+    });
+
+    // Handle count selection
+    countOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            countOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            sessionCount = parseInt(this.dataset.count);
+            generateSessionFields();
+        });
+    });
+
+    // Generate session input fields
+    function generateSessionFields() {
+        sessionsContainer.innerHTML = '';
+        sessions = [];
+
+        for (let i = 0; i < sessionCount; i++) {
+            const sessionItem = createSessionItem(i + 1);
+            sessionsContainer.appendChild(sessionItem);
+            sessions.push({
+                id: i + 1,
+                name: '',
+                date: '',
+                time: ''
+            });
+        }
+
+        sessionsContainer.classList.add('active');
+        updateSessionsData();
+    }
+
+    // Generate session fields with existing data
+    function generateSessionFieldsWithData(existingData) {
+        sessionsContainer.innerHTML = '';
+        sessions = [];
+
+        existingData.forEach((sessionData, idx) => {
+            const sessionItem = createSessionItem(idx + 1, sessionData);
+            sessionsContainer.appendChild(sessionItem);
+            sessions.push(sessionData);
+        });
+
+        sessionsContainer.classList.add('active');
+        updateSessionsData();
+    }
+
+    // Create individual session item
+    function createSessionItem(number, data = null) {
+        const sessionDiv = document.createElement('div');
+        sessionDiv.className = 'session-item';
+        sessionDiv.innerHTML = `
+            <div class="session-item-header">
+                <span class="session-number">
+                    <i class="fas fa-calendar"></i>
+                    الجلسة ${number}
+                </span>
+                <button type="button" class="remove-session-btn" onclick="removeSession(${number})">
+                    <i class="fas fa-trash"></i>
+                    حذف
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">اسم الجلسة</label>
+                    <input type="text" class="form-control"
+                           placeholder="مثال: محاضرة تعريفية، ورشة عمل، ندوة..."
+                           data-session="${number}"
+                           data-field="name"
+                           value="${data ? data.name : ''}"
+                           required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">تاريخ الجلسة</label>
+                    <input type="date" class="form-control"
+                           data-session="${number}"
+                           data-field="date"
+                           value="${data ? data.date : ''}"
+                           required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">وقت الجلسة</label>
+                    <input type="time" class="form-control"
+                           data-session="${number}"
+                           data-field="time"
+                           value="${data ? data.time : ''}"
+                           required>
+                </div>
+            </div>
+        `;
+
+        // Add event listeners to inputs
+        const inputs = sessionDiv.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', updateSessionData);
+        });
+
+        return sessionDiv;
+    }
+
+    // Remove session
+    function removeSession(number) {
+        const index = sessions.findIndex(s => s.id === number);
+        if (index > -1) {
+            sessions.splice(index, 1);
+            sessionCount--;
+
+            // Re-render sessions
+            sessionsContainer.innerHTML = '';
+            sessions.forEach((session, idx) => {
+                session.id = idx + 1;
+                const sessionItem = createSessionItem(idx + 1, session);
+                sessionsContainer.appendChild(sessionItem);
+            });
+
+            updateSessionsData();
+
+            // Update count selection if needed
+            if (sessionCount === 0) {
+                sessionsContainer.classList.remove('active');
+                countOptions.forEach(opt => opt.classList.remove('selected'));
+            } else {
+                const matchingOption = document.querySelector(`[data-count="${sessionCount}"]`);
+                if (matchingOption) {
+                    countOptions.forEach(opt => opt.classList.remove('selected'));
+                    matchingOption.classList.add('selected');
+                }
+            }
+        }
+    }
+
+    // Update session data when input changes
+    function updateSessionData(event) {
+        const sessionNum = parseInt(event.target.dataset.session);
+        const field = event.target.dataset.field;
+        const value = event.target.value;
+
+        const session = sessions.find(s => s.id === sessionNum);
+        if (session) {
+            session[field] = value;
+            updateSessionsData();
+        }
+    }
+
+    // Update hidden input with sessions data
+    function updateSessionsData() {
+        sessionsDataInput.value = JSON.stringify(sessions);
+    }
+
+    // Form submission validation
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+        if (sessionToggle.checked && sessions.length > 0) {
+            // Validate that all sessions have required data
+            const incompleteSession = sessions.find(s => !s.name || !s.date || !s.time);
+            if (incompleteSession) {
+                e.preventDefault();
+                alert('الرجاء إكمال جميع بيانات الجلسات المضافة');
+                return false;
+            }
+        }
+    });
+</script>
 {% endblock %}

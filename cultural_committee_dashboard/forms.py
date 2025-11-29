@@ -1,61 +1,119 @@
 from django import forms
 from django.utils import timezone
 from .models import (CulturalTask, CommitteeMember, FileLibrary,
-                     Discussion, DiscussionComment, CulturalReport,DailyPhrase)
+                     Discussion, DiscussionComment, CulturalReport,DailyPhrase,TaskSession)
 from accounts.models import User
 
 
 class CulturalTaskForm(forms.ModelForm):
+    """Form for creating and editing cultural tasks"""
+
     class Meta:
         model = CulturalTask
-        fields = ['task_type', 'title', 'description', 'assigned_to_name',
-                  'due_date', 'status', 'completion_percentage']
+        fields = [
+            'task_type',
+            'title',
+            'description',
+            'status',
+            'assigned_to_name',
+            'due_date',
+            'completion_percentage',
+        ]
         widgets = {
             'task_type': forms.Select(attrs={
                 'class': 'form-select',
+                'required': True,
             }),
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'أدخل عنوان المهمة'
+                'placeholder': 'أدخل عنوان المهمة',
+                'required': True,
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'أدخل وصف المهمة',
-                'rows': 4
+                'placeholder': 'أدخل وصفاً تفصيلياً للمهمة',
+                'rows': 5,
+                'required': True,
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True,
             }),
             'assigned_to_name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'أدخل اسم المسؤول (اختياري)'
+                'placeholder': 'اسم الشخص المسؤول عن المهمة',
             }),
             'due_date': forms.DateInput(attrs={
                 'class': 'form-control',
                 'type': 'date',
-                'min': timezone.now().date().isoformat()
-            }),
-            'status': forms.Select(attrs={
-                'class': 'form-select'
+                'required': True,
             }),
             'completion_percentage': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'min': '0',
-                'max': '100',
-                'step': '5'
+                'min': 0,
+                'max': 100,
+                'value': 0,
+                'required': True,
             }),
-        }
-        labels = {
-            'task_type': 'نوع المهمة',
-            'title': 'العنوان',
-            'description': 'الوصف',
-            'assigned_to_name': 'اسم المسؤول (اختياري)',
-            'due_date': 'تاريخ الاستحقاق',
-            'status': 'الحالة',
-            'completion_percentage': 'نسبة الإنجاز',
         }
 
     def __init__(self, *args, **kwargs):
-        committee = kwargs.pop('committee', None)
         super().__init__(*args, **kwargs)
-        self.fields['assigned_to_name'].required = False
+
+        # Customize field labels
+        self.fields['task_type'].label = 'نوع المهمة'
+        self.fields['title'].label = 'عنوان المهمة'
+        self.fields['description'].label = 'وصف المهمة'
+        self.fields['status'].label = 'حالة المهمة'
+        self.fields['assigned_to_name'].label = 'المسؤول عن المهمة'
+        self.fields['due_date'].label = 'تاريخ الاستحقاق'
+        self.fields['completion_percentage'].label = 'نسبة الإنجاز (%)'
+
+    def clean_completion_percentage(self):
+        """Validate completion percentage"""
+        percentage = self.cleaned_data.get('completion_percentage')
+        if percentage < 0 or percentage > 100:
+            raise forms.ValidationError(_('يجب أن تكون نسبة الإنجاز بين 0 و 100'))
+        return percentage
+
+
+class TaskSessionForm(forms.ModelForm):
+    """Form for individual task sessions"""
+
+    class Meta:
+        model = TaskSession
+        fields = ['name', 'date', 'time', 'session_order', 'notes']
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'مثال: محاضرة تعريفية، ورشة عمل، ندوة...',
+                'required': True,
+            }),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
+                'required': True,
+            }),
+            'time': forms.TimeInput(attrs={
+                'class': 'form-control',
+                'type': 'time',
+                'required': True,
+            }),
+            'session_order': forms.HiddenInput(),
+            'notes': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'ملاحظات إضافية (اختياري)',
+                'rows': 3,
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].label = 'اسم الجلسة'
+        self.fields['date'].label = 'تاريخ الجلسة'
+        self.fields['time'].label = 'وقت الجلسة'
+        self.fields['notes'].label = 'ملاحظات'
+        self.fields['notes'].required = False
 
 
 

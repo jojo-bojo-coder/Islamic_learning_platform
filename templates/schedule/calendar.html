@@ -6,6 +6,41 @@
 
 {% block content %}
 <style>
+    .count-task_sessions {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.type-task_sessions {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.status-badge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.status-badge.completed {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.status-badge.upcoming {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.status-badge.past {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
     .calendar-wrapper {
         background: var(--white);
         border-radius: 20px;
@@ -521,6 +556,17 @@
                                 </div>
                                 {% endfor %}
 
+                                {% for session in day_data.task_sessions %}
+                                <div class="event-item" style="border-right-color: #9C27B0;" onclick="location.href='{% url 'object_detail' 'cultural_task' session.task.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-clock"></i> {{ session.name }}
+                                    </div>
+                                    <div class="event-time">
+                                        جلسة: {{ session.time|time:"H:i" }}
+                                    </div>
+                                </div>
+                                {% endfor %}
+
                                 {% for otask in day_data.operations_tasks %}
                                 <div class="event-item" style="border-right-color: #16a085;" onclick="location.href='{% url 'object_detail' 'operations_task' otask.id %}'">
                                     <div class="event-title">
@@ -618,6 +664,13 @@
                                 </div>
                                 {% endif %}
 
+                                {% if day_data.task_sessions.count > 0 %}
+                                <div class="event-count count-task_sessions">
+                                    <i class="fas fa-clock"></i>
+                                    {{ day_data.task_sessions.count }}
+                                </div>
+                                {% endif %}
+
                                 {% if day_data.operations_tasks.count > 0 %}
                                 <div class="event-count count-operations_tasks">
                                     <i class="fas fa-cogs"></i>
@@ -702,6 +755,10 @@
         <div class="legend-item">
             <div class="legend-color" style="background: linear-gradient(135deg, #e67e22, #d35400);"></div>
             <span class="legend-label">مهام ثقافية</span>
+        </div>
+       <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(135deg, #9C27B0, #7B1FA2);"></div>
+            <span class="legend-label">جلسات المهام الثقافية</span>
         </div>
         <div class="legend-item">
             <div class="legend-color" style="background: linear-gradient(135deg, #16a085, #138d75);"></div>

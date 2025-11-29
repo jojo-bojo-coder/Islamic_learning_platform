@@ -190,6 +190,12 @@ def schedule_calendar(request, program_id=None):
             due_date__lte=week_end
         ).select_related('committee')
 
+        task_sessions = TaskSession.objects.filter(
+            task__committee__program=program,
+            date__gte=week_start,
+            date__lte=week_end
+        ).select_related('task', 'task__committee')
+
         operations_tasks = OperationsTask.objects.filter(
             committee__program=program,
             due_date__gte=week_start,
@@ -238,6 +244,7 @@ def schedule_calendar(request, program_id=None):
             tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
             activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
             cultural_tasks = cultural_tasks.filter(committee=committee)
+            task_sessions = task_sessions.filter(task__committee=committee)
             operations_tasks = operations_tasks.filter(committee=committee)
             scientific_tasks = scientific_tasks.filter(committee=committee)
             lectures = lectures.filter(committee=committee)
@@ -254,6 +261,7 @@ def schedule_calendar(request, program_id=None):
             day_tasks = tasks.filter(due_date=day_date)
             day_activities = activities.filter(date=day_date)
             day_cultural_tasks = cultural_tasks.filter(due_date=day_date)
+            day_task_sessions = task_sessions.filter(date=day_date)
             day_operations_tasks = operations_tasks.filter(due_date=day_date)
             day_scientific_tasks = scientific_tasks.filter(due_date=day_date)
             day_lectures = lectures.filter(date=day_date)
@@ -267,7 +275,7 @@ def schedule_calendar(request, program_id=None):
 
             total_count = (
                 day_events.count() + day_tasks.count() + day_activities.count() +
-                day_cultural_tasks.count() + day_operations_tasks.count() +
+                day_cultural_tasks.count() + day_task_sessions.count() + day_operations_tasks.count() +
                 day_scientific_tasks.count() + day_lectures.count() +
                 day_sharia_tasks.count() + day_family_competitions.count() +
                 day_sports_tasks.count() + day_matches.count()
@@ -282,6 +290,7 @@ def schedule_calendar(request, program_id=None):
                 'activities': day_activities,
                 'cultural_tasks': day_cultural_tasks,
                 'operations_tasks': day_operations_tasks,
+                'task_sessions': day_task_sessions,
                 'scientific_tasks': day_scientific_tasks,
                 'lectures': day_lectures,
                 'sharia_tasks': day_sharia_tasks,
@@ -339,6 +348,12 @@ def schedule_calendar(request, program_id=None):
             due_date__gte=first_day
         ).select_related('committee')
 
+        task_sessions = TaskSession.objects.filter(
+            task__committee__program=program,
+            date__lte=last_day,
+            date__gte=first_day
+        ).select_related('task', 'task__committee')
+
         operations_tasks = OperationsTask.objects.filter(
             committee__program=program,
             due_date__lte=last_day,
@@ -386,6 +401,7 @@ def schedule_calendar(request, program_id=None):
             tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
             activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
             cultural_tasks = cultural_tasks.filter(committee=committee)
+            task_sessions = task_sessions.filter(task__committee=committee)
             operations_tasks = operations_tasks.filter(committee=committee)
             scientific_tasks = scientific_tasks.filter(committee=committee)
             lectures = lectures.filter(committee=committee)
@@ -416,6 +432,7 @@ def schedule_calendar(request, program_id=None):
             day_tasks = tasks.filter(due_date=date)
             day_activities = activities.filter(date=date)
             day_cultural_tasks = cultural_tasks.filter(due_date=date)
+            day_task_sessions = task_sessions.filter(date=date)
             day_operations_tasks = operations_tasks.filter(due_date=date)
             day_scientific_tasks = scientific_tasks.filter(due_date=date)
             day_lectures = lectures.filter(date=date)
@@ -429,7 +446,7 @@ def schedule_calendar(request, program_id=None):
 
             total_count = (
                 day_events.count() + day_tasks.count() + day_activities.count() +
-                day_cultural_tasks.count() + day_operations_tasks.count() +
+                day_cultural_tasks.count() + day_task_sessions.count() + day_operations_tasks.count() +
                 day_scientific_tasks.count() + day_lectures.count() +
                 day_sharia_tasks.count() + day_family_competitions.count() +
                 day_sports_tasks.count() + day_matches.count()
@@ -446,6 +463,7 @@ def schedule_calendar(request, program_id=None):
                 'cultural_tasks': day_cultural_tasks,
                 'operations_tasks': day_operations_tasks,
                 'scientific_tasks': day_scientific_tasks,
+                'task_sessions':day_task_sessions,
                 'lectures': day_lectures,
                 'sharia_tasks': day_sharia_tasks,
                 'family_competitions': day_family_competitions,
@@ -548,6 +566,11 @@ def day_events(request, program_id, year, month, day):
         due_date=date
     ).select_related('committee')
 
+    task_sessions = TaskSession.objects.filter(
+        task__committee__program=program,
+        date=date
+    ).select_related('task', 'task__committee')
+
     operations_tasks = OperationsTask.objects.filter(
         committee__program=program,
         due_date=date
@@ -592,6 +615,7 @@ def day_events(request, program_id, year, month, day):
             tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
             activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
             cultural_tasks = cultural_tasks.filter(committee=committee)
+            task_sessions = task_sessions.filter(task__committee=committee)
             operations_tasks = operations_tasks.filter(committee=committee)
             scientific_tasks = scientific_tasks.filter(committee=committee)
             lectures = lectures.filter(committee=committee)
@@ -627,6 +651,7 @@ def day_events(request, program_id, year, month, day):
         'tasks': tasks,
         'activities': activities,
         'cultural_tasks': cultural_tasks,
+        'task_sessions': task_sessions,
         'operations_tasks': operations_tasks,
         'scientific_tasks': scientific_tasks,
         'lectures': lectures,
