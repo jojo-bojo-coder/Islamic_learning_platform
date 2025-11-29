@@ -72,7 +72,7 @@ from director_dashboard.models import Program, Committee
 from .models import ScheduleEvent, EventAttendance
 from .forms import ScheduleEventForm, EventAttendanceForm, ProgramSelectionForm
 from pm_dashboard.models import Task, Activity, StudentAttendance
-from cultural_committee_dashboard.models import CulturalTask, CulturalReport
+from cultural_committee_dashboard.models import CulturalTask, CulturalReport,TaskSession
 from operations_committee_dashboard.models import OperationsTask
 from scientific_committee_dashboard.models import ScientificTask, Lecture
 from sharia_committee_dashboard.models import ShariaTask, FamilyCompetition
