@@ -64,6 +64,12 @@ def pm_dashboard(request):
         avg_progress=Avg('student__progress')
     )
 
+    from django.utils import timezone
+    from cultural_committee_dashboard.models import DailyPhrase
+
+    today = timezone.now().date()
+    daily_phrase = DailyPhrase.get_today_phrase()
+
     context = {
         'program': program,
         'total_committees': total_committees,
@@ -74,6 +80,7 @@ def pm_dashboard(request):
         'recent_activities': recent_activities,
         'unread_notifications': unread_notifications,
         'committees': committees,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'program_manager/dashboard.html', context)
 
