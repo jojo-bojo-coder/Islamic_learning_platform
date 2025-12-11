@@ -21,6 +21,7 @@ def get_client_ip(request):
     return ip
 
 
+from cultural_committee_dashboard.models import DailyPhrase
 @login_required
 def scientific_dashboard(request):
     if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'scientific':
@@ -32,6 +33,22 @@ def scientific_dashboard(request):
     except Committee.DoesNotExist:
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
         return redirect('home')
+
+    # الحصول على البرنامج الذي تنتمي إليه اللجنة
+    program = committee.program
+
+    # الحصول على اللجنة الثقافية لنفس البرنامج
+    try:
+        cultural_committee = Committee.objects.get(
+            program=program,
+            supervisor__supervisor_type='cultural'
+        )
+
+        # الحصول على عبارة اليوم للجنة الثقافية
+        today = timezone.now().date()
+        daily_phrase = DailyPhrase.get_today_phrase()
+    except Committee.DoesNotExist:
+        daily_phrase = None
 
     # Statistics
     total_members = ScientificMember.objects.filter(committee=committee, is_active=True).count()
@@ -87,6 +104,7 @@ def scientific_dashboard(request):
         'unread_notifications': unread_notifications,
         'top_members': top_members,
         'task_distribution': task_distribution,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'scientific_committee/dashboard.html', context)
 
