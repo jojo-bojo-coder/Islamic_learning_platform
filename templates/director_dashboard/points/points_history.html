@@ -1,0 +1,501 @@
+{% extends 'director_base.html' %}
+{% load static %}
+
+{% block title %}نقاط الطلاب السابقة - منصة مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    .points-calculator-container {
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .calculator-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .calculator-header h1 {
+        color: white;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .calculator-header p {
+        color: white;
+        font-size: 1.2em;
+        opacity: 0.95;
+    }
+
+    .dashboard-section {
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9ff 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.1);
+    }
+
+    .dashboard-title {
+        color: var(--blue-dark);
+        font-size: 2em;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid var(--blue-gradient);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+        background: var(--white);
+        border-radius: 15px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 3px 15px rgba(0, 132, 171, 0.1);
+        transition: all 0.3s ease;
+        border-right: 4px solid transparent;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 25px rgba(0, 132, 171, 0.2);
+    }
+
+    .dashboard-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2em;
+        flex-shrink: 0;
+    }
+
+    .dashboard-content {
+        flex: 1;
+    }
+
+    .dashboard-value {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 5px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .dashboard-label {
+        font-size: 1em;
+        color: var(--text-gray);
+        font-weight: 500;
+    }
+
+    .week-section {
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9ff 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.1);
+    }
+
+    .week-title {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid var(--blue-gradient);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .result-card {
+        background: var(--white);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 3px 15px rgba(0, 132, 171, 0.1);
+        transition: all 0.3s ease;
+        border-right: 4px solid var(--blue-primary);
+    }
+
+    .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 25px rgba(0, 132, 171, 0.2);
+    }
+
+    .result-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .result-card-header h3 {
+        color: var(--blue-primary);
+        font-size: 1.3em;
+        margin: 0;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .result-date {
+        color: var(--text-gray);
+        font-size: 0.9em;
+    }
+
+    .result-card-stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dark);
+        font-weight: 600;
+    }
+
+    .stat-item i {
+        color: var(--blue-primary);
+    }
+
+    .result-card-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-view, .btn-delete {
+        flex: 1;
+        padding: 10px 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95em;
+    }
+
+    .btn-view {
+        background: var(--blue-primary);
+        color: var(--white);
+    }
+
+    .btn-view:hover {
+        background: var(--blue-gradient);
+        transform: translateY(-2px);
+        color: var(--white);
+    }
+
+    .btn-delete {
+        background: #e74c3c;
+        color: var(--white);
+    }
+
+    .btn-delete:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .empty-state i {
+        font-size: 5em;
+        color: #e0e0e0;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        color: var(--blue-primary);
+        font-size: 2em;
+        margin-bottom: 15px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .empty-state p {
+        color: var(--text-gray);
+        font-size: 1.2em;
+        margin-bottom: 30px;
+    }
+
+    .btn-submit {
+        padding: 15px 40px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .result-card-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="points-calculator-container fade-in-up">
+    <div class="calculator-header">
+        <h1><i class="fas fa-history"></i> نقاط الطلاب السابقة</h1>
+        <p>عرض جميع النتائج المحفوظة لكل أسبوع</p>
+    </div>
+
+    <!-- داشبورد الإحصائيات الشاملة -->
+    {% if dashboard_stats.total_weeks > 0 %}
+    <div class="dashboard-section">
+        <h2 class="dashboard-title">
+            <i class="fas fa-chart-pie"></i> ملخص النقاط الشامل
+        </h2>
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="dashboard-icon" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                    <i class="fas fa-calendar-week"></i>
+                </div>
+                <div class="dashboard-content">
+                    <div class="dashboard-value">{{ dashboard_stats.total_weeks }}</div>
+                    <div class="dashboard-label">عدد الأسابيع</div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon" style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="dashboard-content">
+                    <div class="dashboard-value">{{ dashboard_stats.total_points_all_weeks }}</div>
+                    <div class="dashboard-label">مجموع النقاط (جميع الأسابيع)</div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="dashboard-content">
+                    <div class="dashboard-value">{{ dashboard_stats.unique_students_count }}</div>
+                    <div class="dashboard-label">عدد الطلاب</div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-icon" style="background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="dashboard-content">
+                    <div class="dashboard-value">{{ dashboard_stats.average_points_per_week }}</div>
+                    <div class="dashboard-label">متوسط النقاط لكل أسبوع</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="calculator-content">
+        {% if weeks_data %}
+            {% for week, result in weeks_data.items %}
+            <div class="week-section">
+                <h2 class="week-title">
+                    <i class="fas fa-calendar-week"></i> الأسبوع {{ week }}
+                </h2>
+
+                <div class="results-grid">
+                    <div class="result-card" id="result-card-{{ result.id }}">
+                        <div class="result-card-header">
+                            <h3>{{ result.program_name }}</h3>
+                            <span class="result-date">{{ result.created_at|date:"Y/m/d" }}</span>
+                        </div>
+
+                        <div class="result-card-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-users"></i>
+                                <span>{{ result.summary_data.total_students }} {% if result.program_name == "نقاط الإسري" %}أسرة{% else %}طالب{% endif %}</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-star"></i>
+                                <span>{{ result.summary_data.total_points }} نقطة</span>
+                            </div>
+                        </div>
+
+                        <div class="result-card-actions">
+                            <a href="{% url 'points_result_detail' result.id %}" class="btn-view">
+                                <i class="fas fa-eye"></i> عرض
+                            </a>
+                            <button class="btn-delete" onclick="deleteResult('{{ result.id }}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>لا توجد نتائج محفوظة</h3>
+                <p>ابدأ بحساب النقاط الأسبوعية لحفظ النتائج هنا</p>
+                <a href="{% url 'points_calculator' %}" class="btn-submit">
+                    <i class="fas fa-calculator"></i> ابدأ الآن
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteResult(resultId) {
+    if (!confirm('هل أنت متأكد من حذف هذه النتيجة؟ لا يمكن التراجع عن هذا الإجراء.')) {
+        return;
+    }
+
+    const card = document.getElementById('result-card-' + resultId);
+    if (card) {
+        card.style.opacity = '0.5';
+        card.style.pointerEvents = 'none';
+    }
+
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch(`/director_dashboard/points/delete/${resultId}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message || 'تم حذف النتيجة بنجاح ✅', 'success');
+            if (card) {
+                card.style.transition = 'all 0.3s ease';
+                card.style.transform = 'scale(0)';
+                setTimeout(() => {
+                    card.remove();
+                    const remainingCards = document.querySelectorAll('.result-card');
+                    if (remainingCards.length === 0) {
+                        window.location.reload();
+                    }
+                }, 300);
+            } else {
+                window.location.reload();
+            }
+        } else {
+            if (card) {
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'auto';
+            }
+            showNotification(data.error || 'حدث خطأ أثناء حذف النتيجة ❌', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (card) {
+            card.style.opacity = '1';
+            card.style.pointerEvents = 'auto';
+        }
+        showNotification('حدث خطأ في الاتصال بالخادم ❌', 'error');
+    });
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)' : 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

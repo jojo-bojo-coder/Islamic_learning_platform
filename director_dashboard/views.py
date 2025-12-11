@@ -950,3 +950,603 @@ def export_reports_excel(request):
     except Exception as e:
         messages.error(request, f'حدث خطأ أثناء تصدير Excel: {str(e)}')
         return redirect('reports')
+
+
+# ============================================
+# حاسبة النقاط - Points Calculator
+# ============================================
+from .models import PointsCalculatorSettings,PointsResult
+def convert_arabic_to_english_number(text):
+    """تحويل الأرقام العربية إلى إنجليزية"""
+    if not text:
+        return text
+
+    arabic_to_english = {
+        '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+        '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
+        '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+        '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
+    }
+
+    result = ''
+    for char in text:
+        if char in arabic_to_english:
+            result += arabic_to_english[char]
+        else:
+            result += char
+
+    return result
+
+
+def normalize_week_number(week_number_str):
+    """تحويل رقم الأسبوع إلى إنجليزية والتحقق من صحته"""
+    if not week_number_str:
+        return None
+
+    normalized = convert_arabic_to_english_number(week_number_str.strip())
+
+    if not normalized.isdigit():
+        return None
+
+    try:
+        week_num = int(normalized)
+        if 1 <= week_num <= 52:
+            return week_num
+    except ValueError:
+        pass
+
+    return None
+
+
+def get_user_settings(user):
+    """الحصول على إعدادات المستخدم أو الإعدادات الافتراضية"""
+    try:
+        settings = PointsCalculatorSettings.objects.get(user=user)
+        if not settings.batches:
+            default_settings = PointsCalculatorSettings.get_default_settings()
+            return {
+                'program_name': settings.program_name,
+                'committees': settings.committees if settings.committees else default_settings['committees'],
+                'batches': default_settings['batches'],
+                'default_committee_name': settings.default_committee_name,
+                'current_week': settings.current_week
+            }
+        else:
+            return {
+                'program_name': settings.program_name,
+                'committees': settings.committees if settings.committees else [],
+                'batches': settings.batches,
+                'default_committee_name': settings.default_committee_name,
+                'current_week': settings.current_week
+            }
+    except PointsCalculatorSettings.DoesNotExist:
+        return PointsCalculatorSettings.get_default_settings()
+
+
+def generate_template_message(settings):
+    """إنشاء القالب المفرغ بناءً على الإعدادات"""
+    lines = []
+
+    lines.append(f"📌 اسم البرنامج: {settings['program_name']}")
+    lines.append("")
+    lines.append(f"📋 اسم اللجنة: {settings['default_committee_name']}")
+    lines.append("")
+    week_num = settings.get('current_week', 1)
+    lines.append(f"🗓 نقاط الأسبوع الـ({week_num})")
+    lines.append("")
+    lines.append("✨ رصد نقاط الترم ✨")
+    lines.append("")
+    lines.append("⸻")
+    lines.append("")
+
+    for batch in settings['batches']:
+        batch_name = batch.get('name', '')
+        emoji = batch.get('emoji', '👨‍🎓')
+        students = batch.get('students', [])
+
+        lines.append(f"👨‍🎓 دفعة {batch_name}:")
+        lines.append("")
+
+        if students:
+            for student_name in students:
+                if student_name.strip():
+                    lines.append(f"▫ {student_name.strip()} {emoji} (0)")
+        else:
+            student_count = batch.get('student_count', 0)
+            for i in range(student_count):
+                lines.append(f"▫ [اسم الطالب {i + 1}] {emoji} (0)")
+
+        lines.append("")
+        lines.append("⸻")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+@login_required(login_url="/accounts/login/")
+def points_main(request):
+    """الصفحة الرئيسية للنقاط"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    return render(request, 'director_dashboard/points/points_main.html')
+
+
+@login_required(login_url="/accounts/login/")
+def points_calculator(request):
+    """عرض واجهة حاسبة النقاط مع القالب المفرغ"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    settings = get_user_settings(request.user)
+    template_message = generate_template_message(settings)
+
+    return render(request, 'director_dashboard/points/points_calculator.html', {
+        "template_message": template_message,
+        "settings": settings
+    })
+
+
+@login_required(login_url="/accounts/login/")
+def process_points(request):
+    """معالجة الرسائل المجمعة وحساب النقاط"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    if request.method == "POST":
+        combined_messages = request.POST.get("combined_messages", "").strip()
+        week_number_str = request.POST.get("week_number", "").strip()
+
+        if not combined_messages:
+            return render(request, "director_dashboard/points/points_calculator.html", {
+                "error": "الرجاء إدخال الرسائل المجمعة",
+                "template_message": request.POST.get("template_message", ""),
+                "combined_messages": combined_messages
+            })
+
+        week_number = normalize_week_number(week_number_str)
+        if week_number is None:
+            return render(request, "director_dashboard/points/points_calculator.html", {
+                "error": "الرجاء إدخال رقم أسبوع صحيح (بين 1 و 52)",
+                "template_message": request.POST.get("template_message", ""),
+                "combined_messages": combined_messages
+            })
+
+        # هنا تحتاج لمكتبة parse_report_text من main app
+        # يمكنك نسخها أو استيرادها
+
+        try:
+            # مؤقتاً - يمكنك إضافة المنطق هنا لاحقاً
+            summary = {'rankings': [], 'total_students': 0, 'total_points': 0}
+
+            return render(request, "director_dashboard/points/points_result.html", {
+                "summary": summary,
+                "week_number": week_number,
+                "is_saved": False
+            })
+
+        except Exception as e:
+            return render(request, "director_dashboard/points/points_calculator.html", {
+                "error": f"حدث خطأ: {str(e)}",
+                "template_message": request.POST.get("template_message", ""),
+                "combined_messages": combined_messages
+            })
+
+    return redirect("points_calculator")
+
+
+@login_required(login_url="/accounts/login/")
+def points_settings(request):
+    """واجهة تخصيص إعدادات حاسبة النقاط"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    try:
+        settings_obj = PointsCalculatorSettings.objects.get(user=request.user)
+    except PointsCalculatorSettings.DoesNotExist:
+        default_settings = PointsCalculatorSettings.get_default_settings()
+        settings_obj = PointsCalculatorSettings.objects.create(
+            user=request.user,
+            program_name=default_settings['program_name'],
+            committees=default_settings['committees'],
+            batches=[],
+            default_committee_name=default_settings['default_committee_name'],
+            current_week=default_settings.get('current_week', 1)
+        )
+
+    if request.method == "POST":
+        settings_obj.program_name = request.POST.get("program_name", "")
+        settings_obj.default_committee_name = request.POST.get("default_committee_name", "")
+
+        try:
+            settings_obj.current_week = int(request.POST.get("current_week", 1))
+        except:
+            settings_obj.current_week = 1
+
+        batches = []
+        batch_names = request.POST.getlist("batch_name")
+        batch_counts = request.POST.getlist("batch_student_count")
+        batch_emojis = request.POST.getlist("batch_emoji")
+        batch_students = request.POST.getlist("batch_students")
+
+        for i in range(len(batch_names)):
+            if batch_names[i].strip():
+                try:
+                    count = int(batch_counts[i]) if batch_counts[i] else 0
+                except:
+                    count = 0
+
+                students_text = batch_students[i] if i < len(batch_students) else ""
+                students_list = []
+                if students_text.strip():
+                    for line in students_text.strip().split('\n'):
+                        for name in line.split(','):
+                            name = name.strip()
+                            if name:
+                                students_list.append(name)
+
+                batches.append({
+                    'name': batch_names[i].strip(),
+                    'student_count': count,
+                    'emoji': batch_emojis[i] if i < len(batch_emojis) else '👨‍🎓',
+                    'students': students_list
+                })
+
+        settings_obj.batches = batches
+        settings_obj.save()
+
+        UserActivity.objects.create(
+            user=request.user,
+            action='تحديث إعدادات حاسبة النقاط',
+            ip_address=get_client_ip(request)
+        )
+
+        return render(request, "director_dashboard/points/points_settings.html", {
+            "settings": settings_obj,
+            "success_message": "تم حفظ الإعدادات بنجاح ✅"
+        })
+
+    if not settings_obj.batches:
+        default_settings = PointsCalculatorSettings.get_default_settings()
+        display_settings = {
+            'program_name': settings_obj.program_name,
+            'committees': settings_obj.committees if settings_obj.committees else default_settings['committees'],
+            'batches': default_settings['batches'],
+            'default_committee_name': settings_obj.default_committee_name,
+            'current_week': settings_obj.current_week
+        }
+    else:
+        display_settings = {
+            'program_name': settings_obj.program_name,
+            'committees': settings_obj.committees if settings_obj.committees else [],
+            'batches': settings_obj.batches,
+            'default_committee_name': settings_obj.default_committee_name,
+            'current_week': settings_obj.current_week
+        }
+
+    return render(request, "director_dashboard/points/points_settings.html", {
+        "settings": display_settings
+    })
+
+
+@login_required(login_url="/accounts/login/")
+def points_history(request):
+    """عرض نقاط الطلاب السابقة"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    all_results = PointsResult.objects.filter(
+        user=request.user
+    ).exclude(program_name="نقاط الإسري").order_by('-created_at')
+
+    weeks_data = {}
+    for result in all_results:
+        week = result.week_number or 'غير محدد'
+        if week not in weeks_data:
+            weeks_data[week] = result
+
+    dashboard_stats = {
+        'total_weeks': len(weeks_data),
+        'total_points_all_weeks': 0,
+        'unique_students_count': 0,
+        'average_points_per_week': 0,
+        'students_summary': {}
+    }
+
+    for result in all_results:
+        summary = result.summary_data
+        if summary and summary.get('total_points'):
+            dashboard_stats['total_points_all_weeks'] += summary.get('total_points', 0)
+
+        if summary and summary.get('rankings'):
+            for student in summary['rankings']:
+                student_name = student.get('student_name', '')
+                student_points = student.get('total_points', 0)
+
+                if student_name:
+                    if student_name not in dashboard_stats['students_summary']:
+                        dashboard_stats['students_summary'][student_name] = 0
+                    dashboard_stats['students_summary'][student_name] += student_points
+
+    dashboard_stats['unique_students_count'] = len(dashboard_stats['students_summary'])
+
+    if dashboard_stats['total_weeks'] > 0:
+        dashboard_stats['average_points_per_week'] = round(
+            dashboard_stats['total_points_all_weeks'] / dashboard_stats['total_weeks'],
+            2
+        )
+
+    return render(request, "director_dashboard/points/points_history.html", {
+        "weeks_data": weeks_data,
+        "results": all_results,
+        "dashboard_stats": dashboard_stats
+    })
+
+
+from django.http import JsonResponse
+from datetime import timedelta
+from django.utils import timezone
+
+
+@login_required(login_url="/accounts/login/")
+def points_family_calculator(request):
+    """حساب نقاط الإسري - واجهة بسيطة لإضافة/خصم النقاط مباشرة"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    # جلب النتائج المحفوظة لنقاط الإسري
+    saved_results = PointsResult.objects.filter(
+        user=request.user,
+        program_name="نقاط الإسري"
+    ).order_by('-created_at')
+
+    latest_result = saved_results.first() if saved_results.exists() else None
+
+    return render(request, "director_dashboard/points/points_family_calculator.html", {
+        "saved_results": saved_results,
+        "latest_result": latest_result
+    })
+
+
+@login_required(login_url="/accounts/login/")
+def load_family_result(request, result_id):
+    """تحميل نتيجة محفوظة لنقاط الإسري للتعديل"""
+    if request.user.role != 'director':
+        return JsonResponse({'success': False, 'error': 'غير مصرح'}, status=403)
+
+    try:
+        result = PointsResult.objects.get(id=result_id, user=request.user, program_name="نقاط الإسري")
+
+        summary = result.summary_data
+        rankings = summary.get('rankings', [])
+
+        families_data = []
+        for rank_item in rankings:
+            families_data.append({
+                'name': rank_item.get('student_name', ''),
+                'points': rank_item.get('total_points', 0)
+            })
+
+        return JsonResponse({
+            'success': True,
+            'families': families_data,
+            'week_number': result.week_number,
+            'result_id': str(result.id)
+        })
+
+    except PointsResult.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'النتيجة غير موجودة'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'حدث خطأ: {str(e)}'}, status=500)
+
+
+@login_required(login_url="/accounts/login/")
+def save_family_result(request):
+    """حفظ نتائج نقاط الإسري"""
+    if request.user.role != 'director':
+        return JsonResponse({'success': False, 'error': 'غير مصرح'}, status=403)
+
+    if request.method == "POST":
+        try:
+            import json
+            summary_data = json.loads(request.POST.get("summary_data", "{}"))
+            week_number_str = request.POST.get("week_number", "").strip()
+            program_name = request.POST.get("program_name", "نقاط الإسري")
+            result_id = request.POST.get("result_id", "").strip()
+
+            week_number = None
+            if week_number_str:
+                week_number = normalize_week_number(week_number_str)
+
+            if not summary_data or not summary_data.get('rankings'):
+                return JsonResponse({'success': False, 'error': 'لا توجد بيانات لحفظها'}, status=400)
+
+            # إذا كان هناك result_id، قم بتحديث النتيجة الموجودة
+            if result_id:
+                try:
+                    existing_result = PointsResult.objects.get(id=result_id, user=request.user,
+                                                               program_name=program_name)
+                    existing_result.summary_data = summary_data
+                    if week_number:
+                        existing_result.week_number = week_number
+                    existing_result.expires_at = timezone.now() + timedelta(days=30)
+                    existing_result.save()
+
+                    from django.urls import reverse
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'تم تحديث النتائج بنجاح',
+                        'result_id': str(existing_result.id),
+                        'redirect_url': reverse('points_result_detail', args=[str(existing_result.id)])
+                    })
+                except PointsResult.DoesNotExist:
+                    pass
+
+            # إذا كان هناك week_number، تحقق من وجود نتيجة لنفس الأسبوع
+            if week_number:
+                existing_result = PointsResult.objects.filter(
+                    user=request.user,
+                    week_number=week_number,
+                    program_name=program_name
+                ).first()
+
+                if existing_result:
+                    existing_result.summary_data = summary_data
+                    existing_result.expires_at = timezone.now() + timedelta(days=30)
+                    existing_result.save()
+
+                    from django.urls import reverse
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'تم تحديث النتائج بنجاح',
+                        'result_id': str(existing_result.id),
+                        'redirect_url': reverse('points_result_detail', args=[str(existing_result.id)])
+                    })
+
+            # إنشاء نتيجة جديدة
+            points_result = PointsResult.objects.create(
+                user=request.user,
+                summary_data=summary_data,
+                week_number=week_number,
+                program_name=program_name,
+                expires_at=timezone.now() + timedelta(days=30)
+            )
+
+            from django.urls import reverse
+            return JsonResponse({
+                'success': True,
+                'message': 'تم حفظ النتائج بنجاح',
+                'result_id': str(points_result.id),
+                'redirect_url': reverse('points_result_detail', args=[str(points_result.id)])
+            })
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'حدث خطأ: {str(e)}'}, status=500)
+
+    return JsonResponse({'success': False, 'error': 'طريقة الطلب غير صحيحة'}, status=405)
+
+
+@login_required(login_url="/accounts/login/")
+def save_points_result(request):
+    """حفظ النتيجة بعد موافقة المستخدم"""
+    if request.user.role != 'director':
+        return JsonResponse({'success': False, 'error': 'غير مصرح'}, status=403)
+
+    if request.method == "POST":
+        save_choice = request.POST.get("save_choice", "").strip()
+
+        if not save_choice or save_choice not in ['yes', 'no']:
+            return JsonResponse({'success': False, 'error': 'يرجى اختيار خيار الحفظ'}, status=400)
+
+        if save_choice == 'no':
+            if 'pending_points_result' in request.session:
+                del request.session['pending_points_result']
+            return JsonResponse({'success': True, 'saved': False, 'message': 'لم يتم حفظ النتيجة'})
+
+        if save_choice == 'yes':
+            if 'pending_points_result' not in request.session:
+                return JsonResponse({'success': False, 'error': 'لا توجد بيانات لحفظها'}, status=400)
+
+            pending_data = request.session['pending_points_result']
+            week_number = pending_data.get('week_number')
+
+            if week_number:
+                existing_result = PointsResult.objects.filter(
+                    user=request.user,
+                    week_number=week_number
+                ).first()
+
+                if existing_result:
+                    existing_result.summary_data = pending_data['summary_data']
+                    existing_result.program_name = pending_data['program_name']
+                    existing_result.expires_at = timezone.now() + timedelta(days=30)
+                    existing_result.save()
+                    del request.session['pending_points_result']
+
+                    from django.urls import reverse
+                    return JsonResponse({
+                        'success': True,
+                        'saved': True,
+                        'message': 'تم تحديث النتيجة بنجاح',
+                        'redirect_url': reverse('points_result_detail', args=[str(existing_result.id)])
+                    })
+
+            points_result = PointsResult.objects.create(
+                user=request.user,
+                summary_data=pending_data['summary_data'],
+                week_number=pending_data.get('week_number'),
+                program_name=pending_data.get('program_name', 'عشائر آل سلطان'),
+                expires_at=timezone.now() + timedelta(days=30)
+            )
+
+            del request.session['pending_points_result']
+
+            from django.urls import reverse
+            return JsonResponse({
+                'success': True,
+                'saved': True,
+                'message': 'تم حفظ النتيجة بنجاح',
+                'redirect_url': reverse('points_result_detail', args=[str(points_result.id)])
+            })
+
+    return JsonResponse({'success': False, 'error': 'طريقة الطلب غير صحيحة'}, status=405)
+
+
+@login_required(login_url="/accounts/login/")
+def points_result_detail(request, result_id):
+    """عرض نتيجة محفوظة من قاعدة البيانات"""
+    if request.user.role != 'director':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('dashboard')
+
+    try:
+        result = PointsResult.objects.get(id=result_id, user=request.user)
+
+        summary = result.summary_data
+        user_settings = get_user_settings(request.user)
+        program_name = result.program_name or user_settings.get('program_name', 'عشائر آل سلطان')
+
+        is_family_points = program_name == "نقاط الإسري"
+
+        return render(request, "director_dashboard/points/points_result.html", {
+            "summary": summary,
+            "week_number": result.week_number,
+            "result_id": str(result.id),
+            "is_saved": True,
+            "is_family_points": is_family_points,
+            "share_url": request.build_absolute_uri(f'/points/share/{result.share_url}/')
+        })
+
+    except PointsResult.DoesNotExist:
+        messages.error(request, 'النتيجة غير موجودة')
+        return redirect("points_history")
+
+
+@login_required(login_url="/accounts/login/")
+def delete_points_result(request, result_id):
+    """حذف نتيجة محفوظة"""
+    if request.user.role != 'director':
+        return JsonResponse({'success': False, 'error': 'غير مصرح'}, status=403)
+
+    if request.method == "POST":
+        try:
+            result = PointsResult.objects.get(id=result_id, user=request.user)
+            result.delete()
+
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'حذف نتيجة نقاط: الأسبوع {result.week_number or "غير محدد"}',
+                ip_address=get_client_ip(request)
+            )
+
+            return JsonResponse({'success': True, 'message': 'تم حذف النتيجة بنجاح'})
+        except PointsResult.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'النتيجة غير موجودة'}, status=404)
+
+    return JsonResponse({'success': False, 'error': 'طريقة الطلب غير صحيحة'}, status=405)

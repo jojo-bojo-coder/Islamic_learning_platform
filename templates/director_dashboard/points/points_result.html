@@ -1,0 +1,643 @@
+{% extends 'director_base.html' %}
+{% load static %}
+
+{% block title %}ملخص النقاط - منصة مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    .points-result-container {
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .result-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .result-header h1 {
+        color: white;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .week-info {
+        color: white;
+        font-size: 1.3em;
+        opacity: 0.95;
+        margin-top: 10px;
+    }
+
+    .ranking-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .ranking-section h2 {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(97, 188, 215, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .rankings-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .rank-item {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-right: 4px solid var(--blue-primary);
+        transition: all 0.3s ease;
+    }
+
+    .rank-item:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
+    }
+
+    .rank-item.top-three {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
+        border-right-color: #FFD700;
+    }
+
+    .rank-number {
+        font-size: 2em;
+        font-weight: 700;
+        margin-left: 20px;
+        min-width: 60px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .rank-number i {
+        font-size: 1.2em;
+    }
+
+    .rank-number i.gold {
+        color: #FFD700;
+    }
+
+    .rank-number i.silver {
+        color: #C0C0C0;
+    }
+
+    .rank-number i.bronze {
+        color: #CD7F32;
+    }
+
+    .rank-number .rank-num {
+        color: var(--blue-primary);
+    }
+
+    .rank-info {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    .student-name {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: var(--blue-dark);
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .student-group {
+        font-size: 0.9em;
+        color: var(--text-gray);
+    }
+
+    .rank-points {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .points-value {
+        font-size: 1.8em;
+        font-weight: 700;
+        color: var(--blue-primary);
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .points-label {
+        font-size: 0.9em;
+        color: var(--text-gray);
+    }
+
+    .stats-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .stats-section h2 {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(97, 188, 215, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 3px 15px rgba(0, 132, 171, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.4);
+    }
+
+    .stat-icon {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        opacity: 0.9;
+    }
+
+    .stat-value {
+        font-size: 2.5em;
+        font-weight: 700;
+        margin-bottom: 5px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .stat-label {
+        font-size: 1em;
+        opacity: 0.9;
+    }
+
+    .result-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .btn-back {
+        padding: 15px 40px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+        text-decoration: none;
+    }
+
+    .btn-back:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        color: white;
+    }
+
+    .save-result-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .save-result-card {
+        text-align: center;
+    }
+
+    .save-result-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        color: var(--blue-dark);
+        font-size: 2em;
+        margin-bottom: 20px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .save-result-header i {
+        color: var(--blue-primary);
+    }
+
+    .save-result-description {
+        color: var(--text-gray);
+        font-size: 1.1em;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .save-result-options {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .save-option-label {
+        display: flex;
+        align-items: center;
+        padding: 15px 25px;
+        background: #f8f9fa;
+        border: 2px solid rgba(97, 188, 215, 0.3);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .save-option-label:hover {
+        background: rgba(97, 188, 215, 0.1);
+        border-color: var(--blue-primary);
+    }
+
+    .save-option-label input {
+        margin-left: 10px;
+        cursor: pointer;
+    }
+
+    .save-option-label input:checked + .save-option-text {
+        color: var(--blue-primary);
+        font-weight: 700;
+    }
+
+    .save-option-text {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.1em;
+        color: var(--text-dark);
+        transition: all 0.3s ease;
+    }
+
+    .btn-save-confirm {
+        padding: 15px 50px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+        opacity: 0.5;
+    }
+
+    .btn-save-confirm:not(:disabled) {
+        opacity: 1;
+    }
+
+    .btn-save-confirm:not(:disabled):hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+    }
+
+    .save-result-note {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e8f4f8;
+        border-radius: 8px;
+        color: var(--text-gray);
+        font-size: 0.95em;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        text-align: right;
+    }
+
+    .save-result-note i {
+        color: var(--blue-primary);
+        margin-top: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .result-header h1 {
+            font-size: 1.8em;
+        }
+
+        .rank-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .rank-number {
+            margin: 0;
+        }
+
+        .rank-info {
+            margin: 0;
+        }
+
+        .rank-points {
+            align-items: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .save-result-options {
+            flex-direction: column;
+        }
+
+        .save-option-label {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="points-result-container fade-in-up">
+    <div class="result-header">
+        <h1><i class="fas fa-trophy"></i> ملخص النقاط</h1>
+        {% if week_number %}
+        <p class="week-info">الأسبوع {{ week_number }}</p>
+        {% endif %}
+    </div>
+
+    <div class="result-content">
+        <!-- الترتيب العام -->
+        <div class="ranking-section">
+            <h2><i class="fas fa-medal"></i> الترتيب العام</h2>
+            <div class="rankings-list">
+                {% for student in summary.rankings %}
+                <div class="rank-item {% if forloop.counter <= 3 %}top-three{% endif %}">
+                    <div class="rank-number">
+                        {% if forloop.counter == 1 %}
+                            <i class="fas fa-trophy gold"></i>
+                        {% elif forloop.counter == 2 %}
+                            <i class="fas fa-trophy silver"></i>
+                        {% elif forloop.counter == 3 %}
+                            <i class="fas fa-trophy bronze"></i>
+                        {% else %}
+                            <span class="rank-num">{{ forloop.counter }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="rank-info">
+                        <span class="student-name">{{ student.student_name }}</span>
+                        <span class="student-group">{{ student.group|default:"" }}</span>
+                    </div>
+                    <div class="rank-points">
+                        <span class="points-value">{{ student.total_points }}</span>
+                        <span class="points-label">نقطة</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- الإحصائيات -->
+        <div class="stats-section">
+            <h2><i class="fas fa-chart-bar"></i> إحصائيات عامة</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-value">{{ summary.total_students }}</div>
+                    <div class="stat-label">{% if is_family_points %}عدد الأسر{% else %}عدد الطلاب{% endif %}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-value">{{ summary.total_points }}</div>
+                    <div class="stat-label">مجموع النقاط</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="stat-value">{{ summary.average_points }}</div>
+                    <div class="stat-label">متوسط النقاط</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- قسم حفظ النتيجة -->
+    {% if not is_saved %}
+    <div class="save-result-section" id="save-result-section">
+        <div class="save-result-card">
+            <div class="save-result-header">
+                <i class="fas fa-save"></i>
+                <h2>حفظ النتيجة</h2>
+            </div>
+            <p class="save-result-description">
+                هل تريد حفظ هذه النتيجة في قاعدة البيانات؟ يمكنك الوصول إليها لاحقاً من صفحة "نقاط الطلاب السابقة".
+            </p>
+            <div class="save-result-options">
+                <label class="save-option-label">
+                    <input type="radio" name="save_choice" value="yes" required>
+                    <span class="save-option-text">
+                        <i class="fas fa-check-circle"></i>
+                        نعم، احفظ النتيجة
+                    </span>
+                </label>
+                <label class="save-option-label">
+                    <input type="radio" name="save_choice" value="no" required>
+                    <span class="save-option-text">
+                        <i class="fas fa-times-circle"></i>
+                        لا، لا أحتاج لحفظها
+                    </span>
+                </label>
+            </div>
+            <div class="save-result-actions">
+                <button type="button" class="btn-save-confirm" onclick="handleSaveResult()" disabled id="save-confirm-btn">
+                    <i class="fas fa-check"></i> تأكيد
+                </button>
+            </div>
+            <div class="save-result-note">
+                <i class="fas fa-info-circle"></i>
+                <span>ملاحظة: إذا كان لديك نتيجة محفوظة لنفس الأسبوع، سيتم تحديثها بدلاً من إنشاء نتيجة جديدة.</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="result-actions">
+        {% if is_family_points %}
+        <a href="{% url 'points_family_calculator' %}" class="btn-back">
+            <i class="fas fa-arrow-right"></i> العودة لحساب نقاط الإسري
+        </a>
+        {% else %}
+        <a href="{% url 'points_calculator' %}" class="btn-back">
+            <i class="fas fa-arrow-right"></i> العودة لحاسبة النقاط
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// تفعيل/تعطيل زر التأكيد عند اختيار خيار
+document.addEventListener('DOMContentLoaded', function() {
+    const saveOptions = document.querySelectorAll('input[name="save_choice"]');
+    const confirmBtn = document.getElementById('save-confirm-btn');
+
+    if (saveOptions.length > 0 && confirmBtn) {
+        saveOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                confirmBtn.disabled = false;
+                confirmBtn.style.opacity = '1';
+                confirmBtn.style.cursor = 'pointer';
+            });
+        });
+    }
+});
+
+// معالجة حفظ النتيجة
+function handleSaveResult() {
+    const selectedOption = document.querySelector('input[name="save_choice"]:checked');
+
+    if (!selectedOption) {
+        showNotification('يرجى اختيار خيار الحفظ أولاً', 'error');
+        return;
+    }
+
+    const saveChoice = selectedOption.value;
+    const confirmBtn = document.getElementById('save-confirm-btn');
+
+    // تعطيل الزر أثناء المعالجة
+    confirmBtn.disabled = true;
+    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المعالجة...';
+
+    // إرسال الطلب
+    const formData = new FormData();
+    formData.append('save_choice', saveChoice);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+    fetch('{% url "save_points_result" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.saved) {
+                showNotification(data.message || 'تم حفظ النتيجة بنجاح ✅', 'success');
+
+                // إعادة توجيه إلى صفحة النتيجة المحفوظة
+                if (data.redirect_url) {
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            } else {
+                showNotification(data.message || 'لم يتم حفظ النتيجة', 'info');
+
+                // إخفاء قسم الحفظ
+                const saveSection = document.getElementById('save-result-section');
+                if (saveSection) {
+                    saveSection.style.display = 'none';
+                }
+            }
+        } else {
+            showNotification(data.error || 'حدث خطأ أثناء حفظ النتيجة ❌', 'error');
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-check"></i> تأكيد';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('حدث خطأ في الاتصال بالخادم ❌', 'error');
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<i class="fas fa-check"></i> تأكيد';
+    });
+}
+
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        font-weight: 600;
+        color: white;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+    `;
+
+    if (type === 'error') {
+        notification.style.background = 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)';
+    } else if (type === 'info') {
+        notification.style.background = 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+    } else {
+        notification.style.background = 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)';
+    }
+
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

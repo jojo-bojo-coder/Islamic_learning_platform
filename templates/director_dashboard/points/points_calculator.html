@@ -1,0 +1,423 @@
+{% extends 'director_base.html' %}
+{% load static %}
+
+{% block title %}حاسبة النقاط - منصة مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    .points-calculator-container {
+        max-width: 1400px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .calculator-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .calculator-header h1 {
+        color: white;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .calculator-header p {
+        color: white;
+        font-size: 1.2em;
+        opacity: 0.95;
+        margin-bottom: 15px;
+    }
+
+    .calculator-header .copy-btn {
+        background: white;
+        color: var(--blue-primary);
+        padding: 10px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+
+    .calculator-header .copy-btn:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .calculator-content {
+        display: grid;
+        gap: 30px;
+    }
+
+    .template-section, .input-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(97, 188, 215, 0.3);
+    }
+
+    .section-header h2 {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .copy-btn {
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 3px 10px rgba(0, 132, 171, 0.3);
+    }
+
+    .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.4);
+    }
+
+    .template-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .template-box textarea {
+        width: 100%;
+        min-height: 400px;
+        border: none;
+        background: transparent;
+        font-family: 'IBM Plex Sans Arabic', monospace;
+        font-size: 0.95em;
+        line-height: 1.8;
+        resize: vertical;
+        direction: rtl;
+        color: var(--blue-dark);
+    }
+
+    .template-box textarea:focus {
+        outline: none;
+    }
+
+    .help-text {
+        color: var(--text-gray);
+        font-size: 0.95em;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .help-text i {
+        color: var(--blue-primary);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group label i {
+        color: var(--blue-primary);
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid rgba(97, 188, 215, 0.3);
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        direction: rtl;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 3px rgba(97, 188, 215, 0.1);
+    }
+
+    .form-group textarea {
+        min-height: 300px;
+        resize: vertical;
+        line-height: 1.8;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .btn-submit, .btn-reset {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+    }
+
+    .btn-reset {
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    .btn-reset:hover {
+        background: #d0d0d0;
+        transform: translateY(-2px);
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+    }
+
+    .alert-error {
+        background: #ffe5e5;
+        color: #c0392b;
+        border-right: 4px solid #e74c3c;
+    }
+
+    @media (max-width: 768px) {
+        .calculator-header h1 {
+            font-size: 1.8em;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-submit, .btn-reset {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="points-calculator-container fade-in-up">
+    <div class="calculator-header">
+        <h1><i class="fas fa-calculator"></i> حاسبة النقاط الأسبوعية</h1>
+        <p>انسخ القالب المفرغ أدناه وأرسله للمشرفين لملء النقاط</p>
+        <a href="{% url 'points_settings' %}" class="copy-btn">
+            <i class="fas fa-cog"></i> تخصيص الإعدادات
+        </a>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="calculator-content">
+        <!-- قسم القالب المفرغ -->
+        <div class="template-section">
+            <div class="section-header">
+                <h2><i class="fas fa-copy"></i> القالب المفرغ</h2>
+                <button class="copy-btn" onclick="copyTemplate()">
+                    <i class="fas fa-clipboard"></i> نسخ القالب
+                </button>
+            </div>
+            <div class="template-box">
+                <textarea id="template-text" readonly>{{ template_message }}</textarea>
+            </div>
+            <p class="help-text">
+                <i class="fas fa-info-circle"></i>
+                انسخ هذا القالب وأرسله للمشرفين. بعد ملء النقاط، اجمع كل الرسائل والصقها في الحقل أدناه.
+            </p>
+        </div>
+
+        <!-- قسم إدخال الرسائل المجمعة -->
+        <div class="input-section">
+            <div class="section-header">
+                <h2><i class="fas fa-paste"></i> الرسائل المجمعة</h2>
+            </div>
+
+            <form method="POST" action="{% url 'process_points' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="week_number">
+                        <i class="fas fa-calendar-week"></i> رقم الأسبوع <span style="color: #e74c3c;">*</span>
+                    </label>
+                    <input type="number" id="week_number" name="week_number"
+                           placeholder="مثال: 5" min="1" max="52" required>
+                    <p class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        رقم الأسبوع مطلوب لعرض النتائج في الليدر بورد وحفظها بشكل صحيح.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="combined_messages">
+                        <i class="fas fa-comments"></i> الصق الرسائل المجمعة هنا
+                    </label>
+                    <textarea id="combined_messages" name="combined_messages"
+                              placeholder="الصق هنا جميع الرسائل المجمعة من المشرفين..."
+                              required>{% if combined_messages %}{{ combined_messages }}{% endif %}</textarea>
+                    <p class="help-text">
+                        <i class="fas fa-lightbulb"></i>
+                        يمكنك لصق عدة رسائل معاً. النظام سيجمع النقاط تلقائياً.
+                    </p>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-calculator"></i> حساب النقاط
+                    </button>
+                    <button type="reset" class="btn-reset">
+                        <i class="fas fa-redo"></i> مسح
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// تحويل الأرقام العربية إلى إنجليزية
+function convertArabicToEnglishNumber(text) {
+    if (!text) return text;
+
+    const arabicToEnglish = {
+        '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+        '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
+        '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+        '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9',
+    };
+
+    let result = '';
+    for (let char of text) {
+        result += arabicToEnglish[char] || char;
+    }
+    return result;
+}
+
+// تحويل رقم الأسبوع قبل الإرسال
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form[action="{% url "process_points" %}"]');
+    const weekNumberInput = document.getElementById('week_number');
+
+    if (form && weekNumberInput) {
+        form.addEventListener('submit', function(e) {
+            const originalValue = weekNumberInput.value;
+            const convertedValue = convertArabicToEnglishNumber(originalValue);
+
+            if (originalValue !== convertedValue) {
+                weekNumberInput.value = convertedValue;
+            }
+        });
+
+        weekNumberInput.addEventListener('input', function(e) {
+            const originalValue = e.target.value;
+            const convertedValue = convertArabicToEnglishNumber(originalValue);
+
+            if (originalValue !== convertedValue) {
+                e.target.value = convertedValue;
+            }
+        });
+    }
+});
+
+function copyTemplate() {
+    const templateText = document.getElementById('template-text');
+    templateText.select();
+    templateText.setSelectionRange(0, 99999);
+
+    try {
+        document.execCommand('copy');
+
+        const btn = event.target.closest('.copy-btn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> تم النسخ!';
+        btn.style.backgroundColor = '#27ae60';
+
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.backgroundColor = '';
+        }, 2000);
+    } catch (err) {
+        alert('فشل النسخ. يرجى نسخ النص يدوياً');
+    }
+}
+</script>
+{% endblock %}

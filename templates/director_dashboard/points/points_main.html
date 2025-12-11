@@ -1,0 +1,193 @@
+{% extends 'director_base.html' %}
+{% load static %}
+
+{% block title %}النقاط - منصة مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    .points-main-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .points-main-header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.3);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .points-main-header:hover {
+        box-shadow: 0 15px 40px rgba(0, 132, 171, 0.4);
+        transform: translateY(-5px);
+    }
+
+    .points-main-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 1s ease;
+    }
+
+    .points-main-header:hover::before {
+        left: 100%;
+    }
+
+    .points-main-header h1 {
+        font-size: 3em;
+        margin-bottom: 15px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .points-main-header h1 i {
+        font-size: 1.2em;
+        transition: transform 0.3s ease;
+    }
+
+    .points-main-header:hover h1 i {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .points-main-header p {
+        font-size: 1.3em;
+        opacity: 0.95;
+        color: white;
+    }
+
+    .service-card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .service-card {
+        background: white;
+        border-radius: 15px;
+        padding: 40px 30px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 400px;
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.2);
+        border-color: var(--blue-primary);
+    }
+
+    .service-icon {
+        font-size: 4em;
+        color: var(--blue-primary);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .service-card:hover .service-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .service-card h3 {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        margin-bottom: 15px;
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .service-card p {
+        color: var(--text-gray);
+        font-size: 1.1em;
+        margin-bottom: 25px;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+
+    .service-btn {
+        display: inline-block;
+        padding: 15px 40px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1em;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+        margin-top: auto;
+        align-self: center;
+        width: fit-content;
+    }
+
+    .service-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+        background: linear-gradient(135deg, var(--blue-gradient) 0%, var(--blue-primary) 100%);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .points-main-header h1 {
+            font-size: 2em;
+        }
+
+        .service-card-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="points-main-container fade-in-up">
+    <div class="points-main-header">
+        <h1><i class="fas fa-chart-line"></i> النقاط</h1>
+        <p>اختر الخدمة التي تريد استخدامها</p>
+    </div>
+
+    <section class="main-services">
+        <div class="service-card-container">
+            <div class="service-card">
+                <i class="fas fa-calculator service-icon"></i>
+                <h3>حاسبة النقاط</h3>
+                <p>احسب النقاط الأسبوعية من الرسائل المجمعة</p>
+                <a href="{% url 'points_calculator' %}" class="service-btn">ابدأ الآن</a>
+            </div>
+
+            <div class="service-card">
+                <i class="fas fa-history service-icon"></i>
+                <h3>نقاط الطلاب السابقة</h3>
+                <p>عرض جميع النتائج المحفوظة لكل أسبوع</p>
+                <a href="{% url 'points_history' %}" class="service-btn">عرض النتائج</a>
+            </div>
+
+            <div class="service-card">
+                <i class="fas fa-users service-icon"></i>
+                <h3>حساب نقاط الإسري</h3>
+                <p>احسب نقاط الإسري للمجموعات من الرسائل المجمعة</p>
+                <a href="{% url 'points_family_calculator' %}" class="service-btn">ابدأ الآن</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

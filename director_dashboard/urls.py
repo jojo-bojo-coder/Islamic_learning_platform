@@ -40,4 +40,17 @@ urlpatterns = [
 
     path('reports/export-pdf/', views.export_reports_pdf, name='export_reports_pdf'),
     path('reports/export-excel/', views.export_reports_excel, name='export_reports_excel'),
+
+    # Points URLs
+    path('points/', views.points_main, name='points_main'),
+    path('points/calculator/', views.points_calculator, name='points_calculator'),
+    path('points/process/', views.process_points, name='process_points'),
+    path('points/settings/', views.points_settings, name='points_settings'),
+    path('points/history/', views.points_history, name='points_history'),
+    path('points/family/', views.points_family_calculator, name='points_family_calculator'),
+    path('points/family/load/<uuid:result_id>/', views.load_family_result, name='load_family_result'),
+    path('points/family/save/', views.save_family_result, name='save_family_result'),
+    path('points/save_result/', views.save_points_result, name='save_points_result'),
+    path('points/result/<uuid:result_id>/', views.points_result_detail, name='points_result_detail'),
+    path('points/delete/<uuid:result_id>/', views.delete_points_result, name='delete_points_result'),
 ]

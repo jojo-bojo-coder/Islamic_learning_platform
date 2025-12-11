@@ -1074,6 +1074,11 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{% url 'points_main' %}" class="navbar-link {% if 'points' in request.resolver_match.url_name %}active{% endif %}">
+                            <i class="fas fa-chart-line"></i>النقاط
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'album_management' %}" class="navbar-link {% if 'album' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-images"></i>الألبومات
                         </a>
@@ -1134,6 +1139,11 @@
                     <a href="{% url 'user_management' %}" class="{% if 'user' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-users"></i> التكوين
                     </a>
+                </li>
+                <li>
+                        <a href="{% url 'points_main' %}" class="{% if 'points' in request.resolver_match.url_name %}active{% endif %}">
+                            <i class="fas fa-chart-line"></i>النقاط
+                        </a>
                 </li>
                 <li>
                     <a href="{% url 'album_management' %}" class="{% if 'album' in request.resolver_match.url_name %}active{% endif %}">

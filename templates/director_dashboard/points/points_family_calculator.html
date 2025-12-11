@@ -1,0 +1,526 @@
+{% extends 'director_base.html' %}
+{% load static %}
+
+{% block title %}حساب نقاط الإسري - منصة مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    .family-calculator-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .calculator-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .calculator-header h1 {
+        color: white;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .calculator-header p {
+        color: white;
+        font-size: 1.2em;
+        opacity: 0.95;
+    }
+
+    .setup-section, .points-control-section, .results-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .setup-section h2, .points-control-section h2, .results-section h2 {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        margin-bottom: 20px;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group input {
+        padding: 12px 15px;
+        border: 2px solid rgba(97, 188, 215, 0.3);
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        direction: rtl;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 3px rgba(97, 188, 215, 0.1);
+    }
+
+    .family-card {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(97, 188, 215, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .family-card:hover {
+        border-color: var(--blue-primary);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
+    }
+
+    .family-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .family-name {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: var(--blue-primary);
+    }
+
+    .family-points {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #27ae60;
+    }
+
+    .points-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .points-input {
+        width: 100px;
+        padding: 10px;
+        border: 2px solid rgba(97, 188, 215, 0.3);
+        border-radius: 8px;
+        text-align: center;
+        font-size: 1.1em;
+    }
+
+    .btn-points {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1em;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    .btn-subtract {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+
+    .btn-subtract:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-generate {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2em;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-generate:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .rankings-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .rank-item {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border-right: 5px solid var(--blue-primary);
+        transition: all 0.3s ease;
+    }
+
+    .rank-item:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
+    }
+
+    .rank-item.top-three {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
+        border-right-color: #FFD700;
+    }
+
+    .rank-number {
+        font-size: 2em;
+        font-weight: 700;
+        color: var(--blue-primary);
+        margin-left: 20px;
+        min-width: 50px;
+    }
+
+    .rank-medal {
+        font-size: 2.5em;
+        margin-left: 15px;
+    }
+
+    .rank-info {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    .rank-name {
+        font-size: 1.3em;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .rank-points {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #27ae60;
+    }
+
+    @media (max-width: 768px) {
+        .family-calculator-container {
+            margin: 20px auto;
+            padding: 15px;
+        }
+
+        .calculator-header h1 {
+            font-size: 1.8em;
+        }
+
+        .family-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .points-controls {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .points-input {
+            width: 80px;
+        }
+
+        .btn-points {
+            flex: 1;
+            min-width: 100px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="family-calculator-container fade-in-up">
+    <div class="calculator-header">
+        <h1><i class="fas fa-users"></i> حساب نقاط الإسري</h1>
+        <p>أدخل عدد الأسر وأسمائها، ثم أضف أو اخصم النقاط مباشرة</p>
+    </div>
+
+    <!-- قسم تحميل نتيجة محفوظة (مخفي) -->
+    {% if saved_results %}
+    <select id="load_result_select" style="display: none;">
+        {% for result in saved_results %}
+        <option value="{{ result.id }}" {% if result.id == latest_result.id %}selected{% endif %}></option>
+        {% endfor %}
+    </select>
+    {% endif %}
+
+    <!-- قسم إعداد الأسر -->
+    <div class="setup-section">
+        <h2><i class="fas fa-cog"></i> إعداد الأسر</h2>
+
+        <div class="form-group">
+            <label for="families_count">
+                <i class="fas fa-hashtag"></i> عدد الأسر
+            </label>
+            <input type="number" id="families_count" min="1" max="50" value="5"
+                   onchange="generateFamilyInputs()" style="width: 100px;">
+        </div>
+
+        <div class="families-input-section" id="families-input-section">
+            <!-- سيتم إنشاء حقول الأسر هنا ديناميكياً -->
+        </div>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <button onclick="addNewFamily()" style="
+                padding: 12px 25px;
+                background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-size: 1em;
+            ">
+                <i class="fas fa-plus"></i> إضافة أسرة جديدة
+            </button>
+        </div>
+    </div>
+
+    <!-- قسم إضافة/خصم النقاط -->
+    <div class="points-control-section" id="points-control-section" style="display: none;">
+        <h2><i class="fas fa-calculator"></i> إدارة النقاط</h2>
+        <div id="families-cards">
+            <!-- سيتم إنشاء بطاقات الأسر هنا ديناميكياً -->
+        </div>
+    </div>
+
+    <!-- قسم النتائج -->
+    <div class="results-section" id="results-section" style="display: none;">
+        <div class="results-header" style="text-align: center; margin-bottom: 30px;">
+            <h2><i class="fas fa-trophy"></i> الترتيب النهائي</h2>
+        </div>
+
+        <ul class="rankings-list" id="rankings-list">
+            <!-- سيتم عرض الترتيب هنا -->
+        </ul>
+
+        <div style="margin-top: 30px;">
+            <button class="btn-generate" onclick="saveFamilyResults()">
+                <i class="fas fa-eye"></i> عرض النتائج المحفوظة
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let families = [];
+let currentResultId = null;
+let autoSaveTimer = null;
+let isSaving = false;
+
+function generateFamilyInputs() {
+    const count = parseInt(document.getElementById('families_count').value) || 0;
+    const section = document.getElementById('families-input-section');
+    const pointsSection = document.getElementById('points-control-section');
+    const resultsSection = document.getElementById('results-section');
+
+    if (count < 1) {
+        section.innerHTML = '';
+        pointsSection.style.display = 'none';
+        resultsSection.style.display = 'none';
+        return;
+    }
+
+    while (families.length < count) {
+        const newId = families.length > 0 ? Math.max(...families.map(f => f.id)) + 1 : 1;
+        families.push({ id: newId, name: `أسرة ${newId}`, points: 0 });
+    }
+
+    if (families.length > count) {
+        families = families.slice(0, count);
+    }
+
+    section.innerHTML = '';
+    families.forEach((family, index) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'display: flex; gap: 10px; margin-bottom: 15px; align-items: center;';
+        div.innerHTML = `
+            <label style="min-width: 80px; font-weight: 600;">أسرة ${index + 1}:</label>
+            <input type="text" id="family-${family.id}" placeholder="أدخل اسم الأسرة"
+                   onchange="updateFamilyName(${family.id})" value="${family.name}" style="flex: 1;">
+        `;
+        section.appendChild(div);
+    });
+
+    document.getElementById('families_count').value = families.length;
+    generateFamilyCards();
+    pointsSection.style.display = 'block';
+}
+
+function addNewFamily() {
+    const newId = families.length > 0 ? Math.max(...families.map(f => f.id)) + 1 : 1;
+    families.push({ id: newId, name: `أسرة ${newId}`, points: 0 });
+    document.getElementById('families_count').value = families.length;
+    generateFamilyInputs();
+}
+
+function updateFamilyName(id) {
+    const input = document.getElementById(`family-${id}`);
+    const family = families.find(f => f.id === id);
+    if (family) {
+        family.name = input.value || `أسرة ${id}`;
+        generateFamilyCards();
+        updateRankings();
+    }
+}
+
+function generateFamilyCards() {
+    const container = document.getElementById('families-cards');
+    container.innerHTML = '';
+
+    families.forEach(family => {
+        const card = document.createElement('div');
+        card.className = 'family-card';
+        card.innerHTML = `
+            <div class="family-header">
+                <div class="family-name">${family.name}</div>
+                <div class="family-points" id="points-${family.id}">${family.points} نقطة</div>
+            </div>
+            <div class="points-controls">
+                <input type="number" class="points-input" id="input-${family.id}"
+                       placeholder="النقاط" min="0" value="1">
+                <button class="btn-points btn-add" onclick="addPoints(${family.id})">
+                    <i class="fas fa-plus"></i> إضافة
+                </button>
+                <button class="btn-points btn-subtract" onclick="subtractPoints(${family.id})">
+                    <i class="fas fa-minus"></i> خصم
+                </button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    updateRankings();
+}
+
+function addPoints(id) {
+    const input = document.getElementById(`input-${id}`);
+    const points = parseInt(input.value) || 0;
+    const family = families.find(f => f.id === id);
+
+    if (family && points > 0) {
+        family.points += points;
+        updateFamilyPoints(id);
+        updateRankings();
+        input.value = 1;
+    }
+}
+
+function subtractPoints(id) {
+    const input = document.getElementById(`input-${id}`);
+    const points = parseInt(input.value) || 0;
+    const family = families.find(f => f.id === id);
+
+    if (family && points > 0) {
+        family.points = Math.max(0, family.points - points);
+        updateFamilyPoints(id);
+        updateRankings();
+        input.value = 1;
+    }
+}
+
+function updateFamilyPoints(id) {
+    const family = families.find(f => f.id === id);
+    if (family) {
+        const pointsElement = document.getElementById(`points-${id}`);
+        if (pointsElement) {
+            pointsElement.textContent = `${family.points} نقطة`;
+        }
+    }
+}
+
+function updateRankings() {
+    const sortedFamilies = [...families].sort((a, b) => b.points - a.points);
+    const resultsSection = document.getElementById('results-section');
+    const rankingsList = document.getElementById('rankings-list');
+
+    if (sortedFamilies.length === 0) {
+        resultsSection.style.display = 'none';
+        return;
+    }
+
+    resultsSection.style.display = 'block';
+    rankingsList.innerHTML = '';
+
+    sortedFamilies.forEach((family, index) => {
+        const rank = index + 1;
+        const li = document.createElement('li');
+        li.className = `rank-item ${rank <= 3 ? 'top-three' : ''}`;
+
+        let medal = '';
+        if (rank === 1) medal = '<span class="rank-medal">🥇</span>';
+        else if (rank === 2) medal = '<span class="rank-medal">🥈</span>';
+        else if (rank === 3) medal = '<span class="rank-medal">🥉</span>';
+
+        li.innerHTML = `
+            ${medal}
+            <div class="rank-number">${rank}</div>
+            <div class="rank-info">
+                <div class="rank-name">${family.name}</div>
+            </div>
+            <div class="rank-points">${family.points} نقطة</div>
+        `;
+        rankingsList.appendChild(li);
+    });
+}
+
+function saveFamilyResults() {
+    console.log('Saving results...');
+    alert('يتم حفظ النتائج...');
+}
+
+// تهيئة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    generateFamilyInputs();
+});
+</script>
+{% endblock %}

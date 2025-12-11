@@ -180,3 +180,178 @@ class DirectorAlert(models.Model):
         self.is_read = True
         self.save()
 
+# ============================================
+# نماذج حاسبة النقاط - Points Calculator
+# ============================================
+
+class PointsCalculatorSettings(models.Model):
+    """
+    إعدادات حاسبة النقاط - يمكن تخصيصها لكل مستخدم
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="points_settings",
+        verbose_name="المستخدم",
+        null=True,
+        blank=True
+    )
+
+    # إعدادات عامة
+    program_name = models.CharField(
+        max_length=200,
+        default="عشائر آل سلطان",
+        verbose_name="اسم البرنامج"
+    )
+
+    # اللجان (JSON)
+    committees = models.JSONField(
+        default=list,
+        verbose_name="اللجان",
+        help_text="قائمة بأسماء اللجان، مثال: ['الثقافية', 'الإعلامية', 'العلمية']"
+    )
+
+    # الدفعات (JSON) - كل دفعة لها اسم وعدد طلاب وأسماء الطلاب
+    batches = models.JSONField(
+        default=list,
+        verbose_name="الدفعات",
+        help_text="قائمة بالدفعات، مثال: [{'name': 'ثالث', 'student_count': 8, 'emoji': '🎯', 'students': ['اسم1', 'اسم2']}, ...]"
+    )
+
+    # رقم الأسبوع الحالي
+    current_week = models.IntegerField(
+        default=1,
+        verbose_name="رقم الأسبوع الحالي",
+        help_text="رقم الأسبوع الذي سيظهر في القالب"
+    )
+
+    # إعدادات إضافية
+    default_committee_name = models.CharField(
+        max_length=200,
+        default="[يكتب هنا اسم اللجنة]",
+        verbose_name="النص الافتراضي لاسم اللجنة"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'إعدادات حاسبة النقاط'
+        verbose_name_plural = 'إعدادات حاسبة النقاط'
+
+    def __str__(self):
+        if self.user:
+            return f"إعدادات {self.user.email}"
+        return "إعدادات عامة"
+
+    @staticmethod
+    def get_default_settings():
+        """إرجاع الإعدادات الافتراضية مع أسماء عربية عشوائية"""
+        random_names_batch1 = [
+            'أحمد محمد', 'خالد عبدالله', 'سعد علي', 'فهد ناصر',
+            'عبدالرحمن صالح', 'محمد يوسف', 'عبدالعزيز حسن', 'تركي ماجد'
+        ]
+        random_names_batch2 = [
+            'عمر إبراهيم', 'يوسف حمد', 'عبدالله سعيد', 'مشعل فيصل',
+            'نواف راشد', 'عبدالمجيد خالد', 'صالح عبدالرحمن', 'علي فهد', 'مازن سعد'
+        ]
+        random_names_batch3 = [
+            'عبداللطيف محمد', 'عزام خالد', 'أنس فهد', 'عبدالعزيز ناصر',
+            'محمد عبدالله', 'عبدالرحمن صالح', 'مازن علي', 'عمار يوسف',
+            'فهد سعد', 'خالد عبدالعزيز', 'عبدالله محمد', 'صالح ناصر', 'علي فهد'
+        ]
+
+        return {
+            'program_name': 'عشائر آل سلطان',
+            'committees': ['الثقافية', 'الإعلامية', 'العلمية', 'الاجتماعية', 'الرياضية', 'التحفيزية'],
+            'batches': [
+                {
+                    'name': 'ثالث',
+                    'student_count': 8,
+                    'emoji': '🎯',
+                    'students': random_names_batch1
+                },
+                {
+                    'name': 'ثاني',
+                    'student_count': 9,
+                    'emoji': '🌟',
+                    'students': random_names_batch2
+                },
+                {
+                    'name': 'أول',
+                    'student_count': 13,
+                    'emoji': '🏅',
+                    'students': random_names_batch3
+                }
+            ],
+            'default_committee_name': '[يكتب هنا اسم اللجنة]',
+            'current_week': 1
+        }
+
+import uuid
+class PointsResult(models.Model):
+    """
+    حفظ نتائج حساب النقاط مع رابط مشاركة
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="points_results",
+        verbose_name="المستخدم",
+        null=True,
+        blank=True
+    )
+
+    # بيانات النتائج (JSON)
+    summary_data = models.JSONField(
+        default=dict,
+        verbose_name="بيانات الملخص"
+    )
+
+    # معلومات إضافية
+    week_number = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name="رقم الأسبوع"
+    )
+    program_name = models.CharField(
+        max_length=200,
+        default="عشائر آل سلطان",
+        verbose_name="اسم البرنامج"
+    )
+
+    # رابط المشاركة
+    share_url = models.CharField(
+        max_length=200,
+        unique=True,
+        verbose_name="رابط المشاركة"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="تاريخ انتهاء الصلاحية"
+    )
+
+    # صور الطلاب (مستقبلاً) - JSON يحفظ {student_name: image_url}
+    student_images = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="صور الطلاب",
+        help_text="قاموس يحفظ صور الطلاب: {'اسم الطالب': 'رابط الصورة'}"
+    )
+
+    class Meta:
+        verbose_name = 'نتيجة حساب النقاط'
+        verbose_name_plural = 'نتائج حساب النقاط'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"نتيجة {self.program_name} - الأسبوع {self.week_number or 'غير محدد'}"
+
+    def save(self, *args, **kwargs):
+        if not self.share_url:
+            self.share_url = str(self.id)
+        super().save(*args, **kwargs)

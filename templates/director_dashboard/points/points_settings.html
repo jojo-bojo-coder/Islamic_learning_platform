@@ -1,0 +1,441 @@
+{% extends 'director_base.html' %}
+{% load static %}
+
+{% block title %}إعدادات حاسبة النقاط - منصة مداد{% endblock %}
+
+{% block extra_css %}
+<style>
+    .points-calculator-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .calculator-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .calculator-header h1 {
+        color: white;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .calculator-header p {
+        color: white;
+        font-size: 1.2em;
+        opacity: 0.95;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+        background: #d4edda;
+        color: #155724;
+        border-right: 4px solid #28a745;
+    }
+
+    .template-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(97, 188, 215, 0.3);
+    }
+
+    .section-header h2 {
+        color: var(--blue-dark);
+        font-size: 1.8em;
+        font-weight: 700;
+        font-family: 'Cairo', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .copy-btn {
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 3px 10px rgba(0, 132, 171, 0.3);
+    }
+
+    .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.4);
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--blue-dark);
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group label i {
+        color: var(--blue-primary);
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid rgba(97, 188, 215, 0.3);
+        border-radius: 10px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        direction: rtl;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 3px rgba(97, 188, 215, 0.1);
+    }
+
+    .help-text {
+        color: var(--text-gray);
+        font-size: 0.95em;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .help-text i {
+        color: var(--blue-primary);
+    }
+
+    .batch-item-full {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #f9f9f9;
+        border-radius: 10px;
+        border: 2px solid rgba(97, 188, 215, 0.2);
+    }
+
+    .batch-header {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .batch-name-input {
+        flex: 2;
+        min-width: 150px;
+    }
+
+    .batch-count-input {
+        max-width: 120px;
+    }
+
+    .batch-emoji-input {
+        max-width: 100px;
+        text-align: center;
+    }
+
+    .batch-students {
+        margin-top: 15px;
+    }
+
+    .batch-students label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--blue-primary);
+        font-size: 0.95em;
+    }
+
+    .batch-students textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid rgba(97, 188, 215, 0.3);
+        border-radius: 8px;
+        font-size: 0.95em;
+        direction: rtl;
+        text-align: right;
+        resize: vertical;
+        font-family: 'IBM Plex Sans Arabic', sans-serif;
+    }
+
+    .batch-students textarea:focus {
+        outline: none;
+        border-color: var(--blue-primary);
+        box-shadow: 0 0 0 3px rgba(97, 188, 215, 0.1);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .btn-submit, .btn-reset {
+        padding: 15px 40px;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-gradient) 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.4);
+    }
+
+    .btn-reset {
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    .btn-reset:hover {
+        background: #d0d0d0;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .calculator-header h1 {
+            font-size: 1.8em;
+        }
+
+        .batch-header {
+            flex-direction: column;
+        }
+
+        .batch-name-input, .batch-count-input, .batch-emoji-input {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn-submit, .btn-reset {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="points-calculator-container fade-in-up">
+    <div class="calculator-header">
+        <h1><i class="fas fa-cog"></i> تخصيص إعدادات حاسبة النقاط</h1>
+        <p>قم بتخصيص القالب حسب احتياجاتك</p>
+    </div>
+
+    {% if success_message %}
+    <div class="alert">
+        <i class="fas fa-check-circle"></i> {{ success_message }}
+    </div>
+    {% endif %}
+
+    <div class="calculator-content">
+        <form method="POST" action="{% url 'points_settings' %}">
+            {% csrf_token %}
+
+            <!-- إعدادات عامة -->
+            <div class="template-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-info-circle"></i> إعدادات عامة</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="program_name">
+                        <i class="fas fa-tag"></i> اسم البرنامج
+                    </label>
+                    <input type="text" id="program_name" name="program_name"
+                           value="{{ settings.program_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="default_committee_name">
+                        <i class="fas fa-building"></i> النص الافتراضي لاسم اللجنة
+                    </label>
+                    <input type="text" id="default_committee_name" name="default_committee_name"
+                           value="{{ settings.default_committee_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="current_week">
+                        <i class="fas fa-calendar-week"></i> رقم الأسبوع الحالي
+                    </label>
+                    <input type="number" id="current_week" name="current_week"
+                           value="{{ settings.current_week }}" min="1" max="52" required>
+                    <p class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        هذا الرقم سيظهر في القالب المفرغ
+                    </p>
+                </div>
+            </div>
+
+            <!-- ملاحظة حول اللجان -->
+            <div class="template-section" style="background: #e8f4f8; border-right: 4px solid var(--blue-primary);">
+                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                    <i class="fas fa-info-circle" style="color: var(--blue-primary); font-size: 1.5em; margin-top: 3px;"></i>
+                    <div>
+                        <h3 style="color: var(--blue-primary); margin: 0 0 10px 0; font-size: 1.2em;">ملاحظة حول اللجان</h3>
+                        <p style="color: var(--text-gray); margin: 0; line-height: 1.8;">
+                            النظام يتعرف تلقائياً على عدد وأسماء اللجان من الرسائل المجمعة.
+                            لا حاجة لتحديد اللجان مسبقاً - فقط تأكد من أن كل رسالة تحتوي على
+                            <strong>"اسم اللجنة: [اسم اللجنة]"</strong> وسيتعرف النظام عليها تلقائياً.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الدفعات -->
+            <div class="template-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> الدفعات</h2>
+                    <button type="button" class="copy-btn" onclick="addBatch()">
+                        <i class="fas fa-plus"></i> إضافة دفعة
+                    </button>
+                </div>
+
+                <div id="batches-container">
+                    {% for batch in settings.batches %}
+                    <div class="batch-item-full">
+                        <div class="batch-header">
+                            <input type="text" name="batch_name" value="{{ batch.name }}"
+                                   placeholder="اسم الدفعة (مثل: ثالث)" required class="batch-name-input">
+                            <input type="number" name="batch_student_count" value="{{ batch.student_count }}"
+                                   placeholder="عدد الطلاب" min="1" required class="batch-count-input">
+                            <input type="text" name="batch_emoji" value="{{ batch.emoji }}"
+                                   placeholder="إيموجي (مثل: 🎯)" maxlength="2" class="batch-emoji-input">
+                            <button type="button" class="btn-reset" onclick="removeBatch(this)">
+                                <i class="fas fa-times"></i> حذف
+                            </button>
+                        </div>
+                        <div class="batch-students">
+                            <label>أسماء الطلاب (سطر واحد لكل اسم أو مفصولة بفواصل):</label>
+                            <textarea name="batch_students" rows="4" placeholder="مثال:&#10;المثنى العواد&#10;عبدالله الصبيح&#10;سليمان الظاهري">{% for student in batch.students %}{{ student }}
+{% endfor %}</textarea>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="batch-item-full">
+                        <div class="batch-header">
+                            <input type="text" name="batch_name" value=""
+                                   placeholder="اسم الدفعة" required class="batch-name-input">
+                            <input type="number" name="batch_student_count" value="0"
+                                   placeholder="عدد الطلاب" min="1" required class="batch-count-input">
+                            <input type="text" name="batch_emoji" value="👨‍🎓"
+                                   placeholder="إيموجي" maxlength="2" class="batch-emoji-input">
+                            <button type="button" class="btn-reset" onclick="removeBatch(this)">
+                                <i class="fas fa-times"></i> حذف
+                            </button>
+                        </div>
+                        <div class="batch-students">
+                            <label>أسماء الطلاب (سطر واحد لكل اسم أو مفصولة بفواصل):</label>
+                            <textarea name="batch_students" rows="4" placeholder="مثال:&#10;المثنى العواد&#10;عبدالله الصبيح&#10;سليمان الظاهري"></textarea>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- أزرار الحفظ -->
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> حفظ الإعدادات
+                </button>
+                <a href="{% url 'points_calculator' %}" class="btn-reset">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function addBatch() {
+    const container = document.getElementById('batches-container');
+    const newItem = document.createElement('div');
+    newItem.className = 'batch-item-full';
+    newItem.innerHTML = `
+        <div class="batch-header">
+            <input type="text" name="batch_name" value="" placeholder="اسم الدفعة" required class="batch-name-input">
+            <input type="number" name="batch_student_count" value="0" placeholder="عدد الطلاب" min="1" required class="batch-count-input">
+            <input type="text" name="batch_emoji" value="👨‍🎓" placeholder="إيموجي" maxlength="2" class="batch-emoji-input">
+            <button type="button" class="btn-reset" onclick="removeBatch(this)">
+                <i class="fas fa-times"></i> حذف
+            </button>
+        </div>
+        <div class="batch-students">
+            <label>أسماء الطلاب (سطر واحد لكل اسم أو مفصولة بفواصل):</label>
+            <textarea name="batch_students" rows="4" placeholder="مثال:&#10;المثنى العواد&#10;عبدالله الصبيح&#10;سليمان الظاهري"></textarea>
+        </div>
+    `;
+    container.appendChild(newItem);
+}
+
+function removeBatch(btn) {
+    if (document.querySelectorAll('.batch-item-full').length > 1) {
+        btn.closest('.batch-item-full').remove();
+    } else {
+        alert('يجب أن يكون لديك دفعة واحدة على الأقل');
+    }
+}
+</script>
+{% endblock %}
