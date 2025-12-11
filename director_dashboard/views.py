@@ -40,10 +40,7 @@ def dashboard(request):
 
             if cultural_committee:
                 from datetime import date
-                daily_phrase = DailyPhrase.objects.filter(
-                    display_date=date.today(),
-                    is_active=True
-                ).first()
+                daily_phrase = DailyPhrase.get_today_phrase()
     except Exception as e:
         # Log the error but don't break the dashboard
         print(f"Error fetching daily phrase: {e}")
