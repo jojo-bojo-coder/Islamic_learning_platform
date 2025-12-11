@@ -1,96 +1,134 @@
 {% extends base_template %}
+{% load static %}
 
 {% block title %}أحداث {{ date }} - {{ program.name }}{% endblock %}
 
 {% block page_title %}أحداث {{ date|date:"Y-m-d" }} - {{ program.name }}{% endblock %}
 
+{% block head %}
+
+{% endblock %}
 
 {% block content %}
 <style>
-    .count-task_sessions {
-    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
-}
+    :root {
+        --primary-color: #366092;
+        --primary-gradient: linear-gradient(135deg, #366092, #2a4a7a);
+        --secondary-color: #86B817;
+        --danger-color: #DC2626;
+        --success-color: #10B981;
+        --warning-color: #F59E0B;
+        --info-color: #3B82F6;
+        --text-color: #374151;
+        --text-light: #6B7280;
+        --white: #FFFFFF;
+        --light-bg: #F9FAFB;
+        --border-color: #E5E7EB;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --border-radius: 10px;
+        --border-radius-lg: 12px;
+        --border-radius-xl: 16px;
+    }
 
-.type-task_sessions {
-    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
-}
-
-.status-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.status-badge.completed {
-    background: rgba(39, 174, 96, 0.1);
-    color: #27ae60;
-    border: 1px solid rgba(39, 174, 96, 0.3);
-}
-
-.status-badge.upcoming {
-    background: rgba(52, 152, 219, 0.1);
-    color: #3498db;
-    border: 1px solid rgba(52, 152, 219, 0.3);
-}
-
-.status-badge.past {
-    background: rgba(231, 76, 60, 0.1);
-    color: #e74c3c;
-    border: 1px solid rgba(231, 76, 60, 0.3);
-}
-    .events-wrapper {
+    .events-container {
         background: var(--white);
-        border-radius: 20px;
-        padding: 2.5rem;
-        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
-        border: 1px solid rgba(97, 188, 215, 0.3);
+        border-radius: var(--border-radius-xl);
+        padding: 2rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
         position: relative;
         overflow: hidden;
     }
 
-    .events-wrapper::before {
+    .events-container::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle at top right, rgba(54, 96, 146, 0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .events-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-color);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .events-header h1 {
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .events-header h1 i {
+        font-size: 1.6rem;
+        color: var(--primary-color);
+    }
+
+    .btn {
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        font-size: 0.9375rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: none;
+        cursor: pointer;
+        font-family: 'Cairo', sans-serif;
+    }
+
+    .btn-secondary {
+        background: var(--light-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--white);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+    }
+
+    .date-header {
+        background: var(--primary-gradient);
+        color: var(--white);
+        padding: 1.5rem 2rem;
+        border-radius: var(--border-radius-lg);
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .date-header::before {
         content: "";
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
-    }
-
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--blue-primary);
-        text-decoration: none;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        transition: all 0.3s ease;
-        padding: 0.8rem 1.5rem;
-        background: rgba(0, 132, 171, 0.1);
-        border-radius: 12px;
-        border: 1px solid rgba(97, 188, 215, 0.3);
-    }
-
-    .back-link:hover {
-        color: var(--blue-dark);
-        background: rgba(0, 132, 171, 0.2);
-        transform: translateX(-5px);
-    }
-
-    .date-header {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
-        color: var(--white);
-        padding: 1.5rem 2rem;
-        border-radius: 16px;
-        margin-bottom: 2rem;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        height: 100%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: translateX(-100%);
     }
 
     .date-header h3 {
@@ -98,97 +136,97 @@
         font-size: 1.5rem;
         font-weight: 700;
         font-family: 'Cairo', sans-serif;
-    }
-
-    .filter-section {
-        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(97, 188, 215, 0.2);
         position: relative;
-        overflow: hidden;
+        z-index: 1;
     }
 
-    .filter-section::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+    .hijri-date {
+        display: block;
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-top: 0.5rem;
+        direction: ltr;
+        text-align: left;
     }
 
-    .filter-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--blue-dark);
-        margin-bottom: 1.5rem;
+    .filters-section {
+        background: var(--light-bg);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .filters-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 1rem;
         font-family: 'Cairo', sans-serif;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .filter-title i {
-        color: var(--blue-primary);
+    .filters-title i {
+        color: var(--primary-color);
     }
 
-    .filter-buttons {
+    .filters-grid {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.8rem;
-    }
-
-    .filter-btn {
-        padding: 0.8rem 1.5rem;
-        border: 2px solid rgba(97, 188, 215, 0.3);
-        border-radius: 25px;
-        background: var(--white);
-        color: var(--text-dark);
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
         gap: 0.5rem;
     }
 
+    .filter-btn {
+        padding: 0.6rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        background: var(--white);
+        color: var(--text-color);
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-family: 'Cairo', sans-serif;
+    }
+
     .filter-btn:hover {
-        border-color: var(--blue-primary);
-        color: var(--blue-primary);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 132, 171, 0.2);
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-1px);
     }
 
     .filter-btn.active {
-        background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
-        border-color: var(--blue-primary);
+        background: var(--primary-gradient);
+        border-color: var(--primary-color);
         color: var(--white);
-        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.3);
+        box-shadow: var(--shadow-sm);
     }
 
-    .filter-btn .count {
+    .filter-count {
         background: rgba(255, 255, 255, 0.2);
-        padding: 0.3rem 0.6rem;
-        border-radius: 15px;
-        font-size: 0.8rem;
-        font-weight: 700;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
 
-    .filter-btn:not(.active) .count {
-        background: rgba(0, 132, 171, 0.1);
-        color: var(--blue-primary);
+    .filter-btn:not(.active) .filter-count {
+        background: var(--light-bg);
+        color: var(--text-light);
     }
 
     .section-title {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 700;
-        color: var(--blue-dark);
+        color: var(--primary-color);
         margin-bottom: 1.5rem;
         padding-bottom: 0.8rem;
-        border-bottom: 2px solid rgba(0, 132, 171, 0.1);
+        border-bottom: 2px solid var(--border-color);
         font-family: 'Cairo', sans-serif;
         display: flex;
         align-items: center;
@@ -196,20 +234,20 @@
     }
 
     .section-title i {
-        color: var(--blue-primary);
+        font-size: 1.2rem;
     }
 
     .events-grid {
         display: grid;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
     }
 
     .event-card {
         background: var(--white);
-        border: 1px solid rgba(97, 188, 215, 0.3);
-        border-radius: 16px;
-        padding: 2rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
@@ -222,16 +260,16 @@
         content: "";
         position: absolute;
         top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--blue-gradient), var(--blue-primary));
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary-color);
     }
 
     .event-card:hover {
-        border-color: var(--blue-primary);
-        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
-        transform: translateY(-5px);
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
+        transform: translateY(-3px);
         color: inherit;
     }
 
@@ -239,81 +277,112 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     .event-title {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         font-weight: 700;
-        color: var(--blue-dark);
+        color: var(--text-color);
         margin: 0;
         flex: 1;
         font-family: 'Cairo', sans-serif;
+        line-height: 1.4;
     }
 
     .event-type {
         color: var(--white);
-        padding: 0.5rem 1rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 20px;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: 600;
         display: flex;
         align-items: center;
         gap: 0.3rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-sm);
+        margin-right: 0.5rem;
     }
 
     .event-details {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.2rem;
-        margin-bottom: 1.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
     }
 
     .event-detail {
         display: flex;
         align-items: center;
-        gap: 0.8rem;
-        font-size: 0.95rem;
-        color: var(--text-gray);
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-light);
         font-weight: 500;
-        padding: 0.8rem;
-        background: rgba(0, 132, 171, 0.05);
-        border-radius: 10px;
-        border: 1px solid rgba(97, 188, 215, 0.2);
+        padding: 0.4rem 0.8rem;
+        background: var(--light-bg);
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
     }
 
     .event-detail i {
-        color: var(--blue-primary);
-        width: 16px;
-        font-size: 1rem;
+        color: var(--primary-color);
+        width: 14px;
+        font-size: 0.9rem;
     }
 
     .event-description {
-        color: var(--text-dark);
+        color: var(--text-color);
         line-height: 1.6;
-        margin-bottom: 0;
-        font-size: 1rem;
+        margin: 0;
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-top: 1rem;
+    }
+
+    .status-badge.completed {
+        background: rgba(39, 174, 96, 0.1);
+        color: #27ae60;
+        border: 1px solid rgba(39, 174, 96, 0.3);
+    }
+
+    .status-badge.upcoming {
+        background: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+        border: 1px solid rgba(52, 152, 219, 0.3);
+    }
+
+    .status-badge.past {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+        border: 1px solid rgba(231, 76, 60, 0.3);
     }
 
     .no-events {
         text-align: center;
         padding: 3rem 2rem;
-        color: var(--text-gray);
+        color: var(--text-light);
     }
 
     .no-events i {
-        font-size: 3.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--blue-primary);
-        opacity: 0.3;
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--border-color);
     }
 
     .no-events h5 {
-        font-weight: 700;
-        color: var(--blue-dark);
+        font-weight: 600;
+        color: var(--text-light);
         margin-bottom: 0.5rem;
-        font-size: 1.3rem;
+        font-size: 1.1rem;
     }
 
     /* Hide sections by default - will be shown via JavaScript */
@@ -330,6 +399,7 @@
     .type-tasks { background: linear-gradient(135deg, #3498db, #2980b9); }
     .type-activities { background: linear-gradient(135deg, #27ae60, #229954); }
     .type-cultural_tasks { background: linear-gradient(135deg, #e67e22, #d35400); }
+    .type-task_sessions { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
     .type-operations_tasks { background: linear-gradient(135deg, #16a085, #138d75); }
     .type-scientific_tasks { background: linear-gradient(135deg, #2c3e50, #34495e); }
     .type-lectures { background: linear-gradient(135deg, #8e44ad, #6c3483); }
@@ -338,23 +408,61 @@
     .type-sports_tasks { background: linear-gradient(135deg, #f39c12, #d68910); }
     .type-matches { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
-    .fade-in-up {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.6s ease forwards;
-    }
-
+    /* Animation */
     @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
         to {
             opacity: 1;
             transform: translateY(0);
         }
     }
 
-    @media (max-width: 768px) {
-        .events-wrapper {
+    .fade-in-up {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991px) {
+        .events-container {
             padding: 1.5rem;
-            margin: 0 1rem;
+        }
+
+        .events-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .filters-grid {
+            justify-content: center;
+        }
+
+        .date-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .event-header {
+            flex-direction: column;
+            gap: 0.8rem;
+            align-items: flex-start;
+        }
+
+        .event-type {
+            align-self: flex-start;
+        }
+
+        .event-details {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .events-container {
+            padding: 1rem;
         }
 
         .date-header {
@@ -362,128 +470,146 @@
         }
 
         .date-header h3 {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
 
-        .filter-section {
-            padding: 1.5rem;
+        .filters-section {
+            padding: 1rem;
         }
 
-        .filter-buttons {
+        .filter-btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+        }
+
+        .event-card {
+            padding: 1.2rem;
+        }
+
+        .event-title {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .filters-grid {
             justify-content: center;
         }
 
         .filter-btn {
-            padding: 0.6rem 1.2rem;
-            font-size: 0.9rem;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
         }
 
-        .event-details {
-            grid-template-columns: 1fr;
+        .date-header {
+            padding: 1rem;
         }
 
-        .event-header {
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .event-type {
-            align-self: flex-start;
-        }
-
-        .event-card {
-            padding: 1.5rem;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
+        .hijri-date {
+            font-size: 0.85rem;
         }
     }
 </style>
-<div class="events-wrapper fade-in-up">
-    <a href="{% url 'schedule_calendar' program.id %}?year={{ date.year }}&month={{ date.month }}" class="back-link">
-        <i class="fas fa-arrow-right"></i>
-        العودة إلى الجدول
-    </a>
+<div class="events-container fade-in-up">
+    <!-- Header -->
+    <div class="events-header">
+        <h1>
+            <i class="fas fa-calendar-day"></i>
+            أحداث اليوم
+        </h1>
+        <a href="{% url 'schedule_calendar' program.id %}?year={{ date.year }}&month={{ date.month }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-right"></i>
+            العودة إلى الجدول
+        </a>
+    </div>
 
+    <!-- Date Header -->
     <div class="date-header">
         <h3>
-            <i class="fas fa-calendar-day me-2"></i>
-            أحداث {{ date|date:"Y-m-d" }}
+            <i class="fas fa-calendar-alt"></i>
+            {{ date|date:"Y-m-d" }}
+            <span class="hijri-date" data-date="{{ date|date:'Y-m-d' }}">
+                <!-- Hijri date will be populated by JavaScript -->
+            </span>
         </h3>
     </div>
 
-    <!-- Filter Section -->
-    <div class="filter-section">
-        <div class="filter-title">
+    <!-- Filters -->
+    <div class="filters-section">
+        <div class="filters-title">
             <i class="fas fa-filter"></i>
             تصفية المحتوى
         </div>
-        <div class="filter-buttons">
+        <div class="filters-grid">
             <button class="filter-btn active" data-filter="all">
                 <i class="fas fa-layer-group"></i>
                 الكل
-                <span class="count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks.count|add:matches.count }}</span>
+                <span class="filter-count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks.count|add:matches.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
                 <i class="fas fa-calendar-check"></i>
                 الأحداث
-                <span class="count">{{ events.count }}</span>
+                <span class="filter-count">{{ events.count }}</span>
             </button>
             <button class="filter-btn" data-filter="tasks">
                 <i class="fas fa-tasks"></i>
                 المهام
-                <span class="count">{{ tasks.count }}</span>
+                <span class="filter-count">{{ tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="activities">
                 <i class="fas fa-running"></i>
                 الأنشطة
-                <span class="count">{{ activities.count }}</span>
+                <span class="filter-count">{{ activities.count }}</span>
             </button>
             <button class="filter-btn" data-filter="cultural_tasks">
                 <i class="fas fa-theater-masks"></i>
                 المهام الثقافية
-                <span class="count">{{ cultural_tasks.count }}</span>
+                <span class="filter-count">{{ cultural_tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="task_sessions">
                 <i class="fas fa-clock"></i>
                 جلسات المهام
-                <span class="count">{{ task_sessions.count }}</span>
+                <span class="filter-count">{{ task_sessions.count }}</span>
             </button>
             <button class="filter-btn" data-filter="operations_tasks">
                 <i class="fas fa-cogs"></i>
                 المهام التشغيلية
-                <span class="count">{{ operations_tasks.count }}</span>
+                <span class="filter-count">{{ operations_tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="scientific_tasks">
                 <i class="fas fa-flask"></i>
                 المهام العلمية
-                <span class="count">{{ scientific_tasks.count }}</span>
+                <span class="filter-count">{{ scientific_tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="lectures">
                 <i class="fas fa-chalkboard-teacher"></i>
                 المحاضرات
-                <span class="count">{{ lectures.count }}</span>
+                <span class="filter-count">{{ lectures.count }}</span>
             </button>
             <button class="filter-btn" data-filter="sharia_tasks">
                 <i class="fas fa-mosque"></i>
                 المهام الشرعية
-                <span class="count">{{ sharia_tasks.count }}</span>
+                <span class="filter-count">{{ sharia_tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="family_competitions">
                 <i class="fas fa-trophy"></i>
                 المسابقات الأسرية
-                <span class="count">{{ family_competitions.count }}</span>
+                <span class="filter-count">{{ family_competitions.count }}</span>
             </button>
             <button class="filter-btn" data-filter="sports_tasks">
                 <i class="fas fa-futbol"></i>
                 المهام الرياضية
-                <span class="count">{{ sports_tasks.count }}</span>
+                <span class="filter-count">{{ sports_tasks.count }}</span>
             </button>
             <button class="filter-btn" data-filter="matches">
                 <i class="fas fa-trophy"></i>
                 المباريات
-                <span class="count">{{ matches.count }}</span>
+                <span class="filter-count">{{ matches.count }}</span>
             </button>
         </div>
     </div>
@@ -532,6 +658,7 @@
             <div class="no-events">
                 <i class="fas fa-calendar-times"></i>
                 <h5>لا توجد أحداث مجدولة</h5>
+                <p>لم يتم جدولة أي أحداث لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -579,6 +706,7 @@
             <div class="no-events">
                 <i class="fas fa-tasks"></i>
                 <h5>لا توجد مهام</h5>
+                <p>لم يتم إضافة أي مهام لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -622,6 +750,7 @@
             <div class="no-events">
                 <i class="fas fa-running"></i>
                 <h5>لا توجد أنشطة</h5>
+                <p>لم يتم إضافة أي أنشطة لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -665,11 +794,11 @@
             <div class="no-events">
                 <i class="fas fa-theater-masks"></i>
                 <h5>لا توجد مهام ثقافية</h5>
+                <p>لم يتم إضافة أي مهام ثقافية لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
     </div>
-
 
     <!-- Task Sessions -->
     <div class="events-section active" id="task_sessions-section">
@@ -708,22 +837,21 @@
                 {% if session.notes %}
                 <p class="event-description">{{ session.notes|truncatewords:20 }}</p>
                 {% endif %}
-                <div class="event-status">
-                    <span class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
-                        {% if session.is_completed %}
-                        <i class="fas fa-check-circle"></i> مكتملة
-                        {% elif session.is_past %}
-                        <i class="fas fa-exclamation-circle"></i> منتهية
-                        {% else %}
-                        <i class="fas fa-clock"></i> قادمة
-                        {% endif %}
-                    </span>
+                <div class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
+                    {% if session.is_completed %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif session.is_past %}
+                    <i class="fas fa-exclamation-circle"></i> منتهية
+                    {% else %}
+                    <i class="fas fa-clock"></i> قادمة
+                    {% endif %}
                 </div>
             </a>
             {% empty %}
             <div class="no-events">
                 <i class="fas fa-clock"></i>
                 <h5>لا توجد جلسات مهام</h5>
+                <p>لم يتم إضافة أي جلسات مهام لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -767,6 +895,7 @@
             <div class="no-events">
                 <i class="fas fa-cogs"></i>
                 <h5>لا توجد مهام تشغيلية</h5>
+                <p>لم يتم إضافة أي مهام تشغيلية لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -810,6 +939,7 @@
             <div class="no-events">
                 <i class="fas fa-flask"></i>
                 <h5>لا توجد مهام علمية</h5>
+                <p>لم يتم إضافة أي مهام علمية لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -859,6 +989,7 @@
             <div class="no-events">
                 <i class="fas fa-chalkboard-teacher"></i>
                 <h5>لا توجد محاضرات</h5>
+                <p>لم يتم إضافة أي محاضرات لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -902,6 +1033,7 @@
             <div class="no-events">
                 <i class="fas fa-mosque"></i>
                 <h5>لا توجد مهام شرعية</h5>
+                <p>لم يتم إضافة أي مهام شرعية لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -943,6 +1075,7 @@
             <div class="no-events">
                 <i class="fas fa-trophy"></i>
                 <h5>لا توجد مسابقات أسرية</h5>
+                <p>لم يتم إضافة أي مسابقات أسرية لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -986,6 +1119,7 @@
             <div class="no-events">
                 <i class="fas fa-futbol"></i>
                 <h5>لا توجد مهام رياضية</h5>
+                <p>لم يتم إضافة أي مهام رياضية لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
@@ -1036,41 +1170,70 @@
             <div class="no-events">
                 <i class="fas fa-trophy"></i>
                 <h5>لا توجد مباريات</h5>
+                <p>لم يتم إضافة أي مباريات لهذا اليوم</p>
             </div>
             {% endfor %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const eventSections = document.querySelectorAll('.events-section');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const eventSections = document.querySelectorAll('.events-section');
 
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const filter = this.getAttribute('data-filter');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
 
-            // Update active button
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
 
-            // Show/hide sections based on filter
-            eventSections.forEach(section => {
-                if (filter === 'all') {
-                    section.classList.add('active');
-                } else {
-                    if (section.id === `${filter}-section`) {
+                // Show/hide sections based on filter
+                eventSections.forEach(section => {
+                    if (filter === 'all') {
                         section.classList.add('active');
                     } else {
-                        section.classList.remove('active');
+                        if (section.id === `${filter}-section`) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    }
+                });
+            });
+        });
+
+        // Hijri date conversion
+        try {
+            if (typeof moment !== 'undefined' && moment.hijri) {
+                const hijriElement = document.querySelector('.hijri-date');
+                if (hijriElement) {
+                    const dateStr = hijriElement.getAttribute('data-date');
+                    if (dateStr) {
+                        const hijriDate = moment(dateStr).format('iYYYY/iM/iD');
+                        hijriElement.textContent = hijriDate;
                     }
                 }
+            }
+        } catch (e) {
+            console.log('Moment Hijri not loaded, skipping Hijri conversion');
+        }
+
+        // Add hover effect to event cards
+        const eventCards = document.querySelectorAll('.event-card');
+        eventCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.1)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
             });
         });
     });
-});
 </script>
 {% endblock %}
