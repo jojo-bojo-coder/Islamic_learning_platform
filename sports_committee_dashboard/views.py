@@ -70,10 +70,7 @@ def sports_dashboard(request):
         ).first()
 
         if cultural_committee:
-            daily_phrase = DailyPhrase.objects.filter(
-                display_date=timezone.now().date(),
-                is_active=True
-            ).first()
+            daily_phrase = DailyPhrase.get_today_phrase()
         else:
             daily_phrase = None
     except:
