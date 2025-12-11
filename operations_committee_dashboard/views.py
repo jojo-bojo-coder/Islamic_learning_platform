@@ -21,6 +21,7 @@ def get_client_ip(request):
     return ip
 
 
+from cultural_committee_dashboard.models import DailyPhrase
 @login_required
 def operations_dashboard(request):
     if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'operations':
@@ -69,6 +70,26 @@ def operations_dashboard(request):
     total_resources = LogisticsResource.objects.filter(committee=committee).count()
     available_resources = LogisticsResource.objects.filter(committee=committee, status='available').count()
 
+    try:
+        # Get the program that the current committee belongs to
+        program = committee.program
+
+        # Find cultural committee in the same program
+        cultural_committee = Committee.objects.filter(
+            program=program,
+            supervisor__supervisor_type='cultural'
+        ).first()
+
+        # Get today's phrase from the cultural committee
+        if cultural_committee:
+            daily_phrase = DailyPhrase.get_today_phrase()
+        else:
+            daily_phrase = None
+
+    except Exception as e:
+        print(f"Error getting daily phrase: {e}")
+        daily_phrase = None
+
     context = {
         'committee': committee,
         'total_members': total_members,
@@ -82,6 +103,7 @@ def operations_dashboard(request):
         'task_distribution': task_distribution,
         'total_resources': total_resources,
         'available_resources': available_resources,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'operations_committee/dashboard.html', context)
 
