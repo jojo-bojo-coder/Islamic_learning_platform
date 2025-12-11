@@ -33,6 +33,22 @@ def sharia_dashboard(request):
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
         return redirect('home')
 
+    from cultural_committee_dashboard.models import DailyPhrase
+    from django.utils import timezone
+
+    try:
+        # Get the cultural committee in the same program
+        cultural_committee = Committee.objects.filter(
+            program=committee.program,
+        ).first()
+
+        if cultural_committee:
+            daily_phrase = DailyPhrase.get_today_phrase()
+        else:
+            daily_phrase = None
+    except Exception as e:
+        daily_phrase = None
+
     # Statistics
     total_members = ShariaMember.objects.filter(committee=committee, is_active=True).count()
     total_tasks = ShariaTask.objects.filter(committee=committee).count()
@@ -67,6 +83,7 @@ def sharia_dashboard(request):
         'unread_notifications': unread_notifications,
         'top_members': top_members,
         'task_distribution': task_distribution,
+        'daily_phrase': daily_phrase,
     }
     return render(request, 'sharia_committee/dashboard.html', context)
 
