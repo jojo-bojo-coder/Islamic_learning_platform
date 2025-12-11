@@ -10,6 +10,7 @@ urlpatterns = [
 
     # Committee Management
     path('committees/', views.committee_management, name='pm_committee_management'),
+    path('committees/detail/<int:committee_id>/', views.committee_detail, name='pm_committee_detail'),
     path('committees/add/', views.add_committee, name='pm_add_committee'),
     path('committees/edit/<int:committee_id>/', views.edit_committee, name='pm_edit_committee'),
     path('committees/delete/<int:committee_id>/', views.delete_committee, name='pm_delete_committee'),

@@ -1,0 +1,1634 @@
+{% extends 'program_manager_base.html' %}
+{% load committee_tags %}
+{% block title %}تفاصيل اللجنة - {{ committee.name }}{% endblock %}
+
+{% block page_title %}تفاصيل اللجنة{% endblock %}
+
+{% block extra_css %}
+<style>
+    .committee-detail-wrapper {
+        padding: 2rem 0;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-family: 'Cairo', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #0084AB;
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        padding: 0.8rem 1.5rem;
+        background: rgba(0, 132, 171, 0.08);
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(0, 132, 171, 0.15);
+        backdrop-filter: blur(10px);
+    }
+
+    .back-button:hover {
+        background: rgba(0, 132, 171, 0.15);
+        color: #0084AB;
+        transform: translateX(-8px);
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.2);
+        border-color: rgba(0, 132, 171, 0.3);
+    }
+
+    .committee-header {
+        background: linear-gradient(135deg, #0084AB 0%, #61bcd7 100%);
+        border-radius: 24px;
+        padding: 3.5rem 3rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 132, 171, 0.25);
+        position: relative;
+        overflow: hidden;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .committee-header::before {
+        content: "";
+        position: absolute;
+        top: -150px;
+        right: -150px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+    }
+
+    .committee-header::after {
+        content: "";
+        position: absolute;
+        bottom: -100px;
+        left: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+    }
+
+    .committee-header-content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+    }
+
+    .committee-icon-large {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .committee-icon-large:hover {
+        transform: rotate(10deg) scale(1.05);
+    }
+
+    .committee-icon-large i {
+        font-size: 4.5rem;
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .committee-info {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .committee-info h2 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .committee-info .description {
+        font-size: 1.3rem;
+        opacity: 0.95;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        max-width: 800px;
+    }
+
+    .committee-type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.9rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        background: rgba(255, 255, 255, 0.95);
+        color: #0084AB;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .committee-type-badge:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        background: white;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 15px 35px rgba(0, 132, 171, 0.12);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, #0084AB, #61bcd7);
+        opacity: 0.8;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(0, 132, 171, 0.2);
+        border-color: rgba(97, 188, 215, 0.4);
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: rotate(15deg) scale(1.1);
+    }
+
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.15));
+        color: #0084AB;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid rgba(0, 132, 171, 0.1);
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #0B3B24;
+        line-height: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-nav {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(97, 188, 215, 0.15);
+    }
+
+    .nav-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid rgba(0, 132, 171, 0.1);
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.02), rgba(97, 188, 215, 0.05));
+    }
+
+    .nav-item {
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+
+    .nav-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 40%;
+        background: rgba(0, 132, 171, 0.15);
+    }
+
+    .nav-link {
+        padding: 1.8rem 2rem;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.15rem;
+        border: none;
+        background: transparent;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.1));
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::before {
+        transform: translateY(0);
+    }
+
+    .nav-link:hover {
+        color: #0084AB;
+        transform: translateY(-2px);
+    }
+
+    .nav-link i {
+        position: relative;
+        z-index: 1;
+    }
+
+    .nav-link span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .nav-link.active {
+        color: #0084AB;
+        background: transparent;
+    }
+
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #0084AB, #61bcd7);
+        box-shadow: 0 0 15px rgba(0, 132, 171, 0.3);
+    }
+
+    .nav-link.active::before {
+        transform: translateY(0);
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.08), rgba(97, 188, 215, 0.12));
+    }
+
+    .tab-content {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 15px 35px rgba(0, 132, 171, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.2);
+        min-height: 400px;
+    }
+
+    .tab-pane {
+        display: none;
+        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0B3B24;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(0, 132, 171, 0.1);
+    }
+
+    .section-title i {
+        color: #0084AB;
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Tasks Section - Enhanced */
+    .task-item {
+        background: rgba(0, 132, 171, 0.03);
+        border-radius: 18px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(0, 132, 171, 0.1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .task-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 6px;
+        background: linear-gradient(to bottom, #0084AB, #61bcd7);
+        border-radius: 3px;
+    }
+
+    .task-item:hover {
+        background: rgba(0, 132, 171, 0.08);
+        transform: translateX(10px);
+        border-color: rgba(0, 132, 171, 0.2);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .task-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0B3B24;
+        margin-bottom: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .task-description {
+        color: #6c757d;
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 800px;
+    }
+
+    .task-status {
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: white;
+    }
+
+    .status-overdue {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .task-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        margin-top: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .task-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
+        padding: 0.4rem 1rem;
+        background: rgba(0, 132, 171, 0.05);
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    /* Members Section - Enhanced */
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .member-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.15);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .member-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #0084AB, #61bcd7);
+        opacity: 0.3;
+    }
+
+    .member-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 132, 171, 0.2);
+        border-color: rgba(97, 188, 215, 0.3);
+    }
+
+    .member-card.supervisor-card {
+        border: 2px solid #0084AB;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.1));
+        box-shadow: 0 15px 35px rgba(0, 132, 171, 0.15);
+    }
+
+    .supervisor-card::before {
+        background: linear-gradient(90deg, #0084AB, #61bcd7);
+        opacity: 1;
+    }
+
+    .member-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .member-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+    }
+
+    .member-avatar.supervisor {
+        background: linear-gradient(135deg, #0B3B24, #1a5e3e);
+        width: 85px;
+        height: 85px;
+        font-size: 2.5rem;
+        box-shadow: 0 10px 25px rgba(11, 59, 36, 0.3);
+    }
+
+    .member-info h4 {
+        margin: 0 0 0.5rem 0;
+        color: #0B3B24;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .member-info .member-role {
+        color: #0084AB;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-top: 0.2rem;
+    }
+
+    .member-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.2rem;
+        background: linear-gradient(135deg, #0B3B24, #1a5e3e);
+        color: white;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-top: 0.8rem;
+        box-shadow: 0 4px 12px rgba(11, 59, 36, 0.2);
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 10px;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 1rem 0;
+        position: relative;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #0084AB, #61bcd7);
+        border-radius: 10px;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 100%);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    /* Content Section - Enhanced */
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 2rem;
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 132, 171, 0.1);
+        border: 1px solid rgba(97, 188, 215, 0.15);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .content-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(to bottom, #0084AB, #61bcd7);
+        opacity: 0.5;
+    }
+
+    .content-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 132, 171, 0.2);
+        border-color: rgba(97, 188, 215, 0.3);
+    }
+
+    .content-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.15));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #0084AB;
+        flex-shrink: 0;
+        border: 2px solid rgba(0, 132, 171, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .content-card:hover .content-icon {
+        transform: rotate(10deg) scale(1.1);
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.15), rgba(97, 188, 215, 0.2));
+    }
+
+    .content-details {
+        flex: 1;
+    }
+
+    .content-details h4 {
+        margin: 0 0 1rem 0;
+        color: #0B3B24;
+        font-size: 1.3rem;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    .content-details .content-description {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .content-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    .content-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.2rem;
+        background: rgba(0, 132, 171, 0.1);
+        color: #0084AB;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+
+    .content-date {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .download-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.8rem 1.8rem;
+        background: linear-gradient(135deg, #0084AB, #61bcd7);
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 1rem;
+        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        border: none;
+        cursor: pointer;
+    }
+
+    .download-btn:hover {
+        background: linear-gradient(135deg, #0B3B24, #1a5e3e);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 25px rgba(11, 59, 36, 0.3);
+    }
+
+    /* Activities Section - Enhanced */
+    .activities-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .activity-item {
+        background: rgba(0, 132, 171, 0.03);
+        border-radius: 18px;
+        padding: 2rem;
+        border-left: 6px solid #61bcd7;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(97, 188, 215, 0.1);
+    }
+
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(97, 188, 215, 0.05) 0%, rgba(97, 188, 215, 0) 70%);
+    }
+
+    .activity-item:hover {
+        background: rgba(0, 132, 171, 0.08);
+        transform: translateX(10px);
+        border-color: rgba(97, 188, 215, 0.2);
+        box-shadow: 0 10px 25px rgba(0, 132, 171, 0.15);
+    }
+
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .activity-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0B3B24;
+        line-height: 1.4;
+    }
+
+    .activity-date {
+        color: #0084AB;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 0.5rem 1.2rem;
+        background: rgba(0, 132, 171, 0.1);
+        border-radius: 25px;
+    }
+
+    .activity-location {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-top: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+        background: rgba(0, 132, 171, 0.02);
+        border-radius: 20px;
+        border: 2px dashed rgba(0, 132, 171, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .empty-message:hover {
+        background: rgba(0, 132, 171, 0.05);
+        border-color: rgba(0, 132, 171, 0.3);
+        transform: translateY(-5px);
+    }
+
+    .empty-message i {
+        font-size: 4rem;
+        color: #0084AB;
+        opacity: 0.2;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .empty-message:hover i {
+        opacity: 0.4;
+        transform: scale(1.1);
+    }
+
+    .empty-message p {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Sessions Section - Enhanced */
+    .session-item {
+        background: rgba(97, 188, 215, 0.05);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #61bcd7;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(97, 188, 215, 0.1);
+    }
+
+    .session-item:hover {
+        background: rgba(97, 188, 215, 0.1);
+        transform: translateX(8px);
+        border-color: rgba(97, 188, 215, 0.2);
+        box-shadow: 0 8px 20px rgba(97, 188, 215, 0.15);
+    }
+
+    .session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .session-name {
+        font-weight: 700;
+        color: #0B3B24;
+        font-size: 1.2rem;
+    }
+
+    .session-time {
+        color: #0084AB;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .session-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #28a745, #218838);
+        color: white;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+    }
+
+    .status-upcoming {
+        background: linear-gradient(135deg, #ffc107, #ffb300);
+        color: white;
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+    }
+
+    .status-past {
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .committee-detail-wrapper {
+            padding: 1.5rem;
+        }
+
+        .content-grid {
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        }
+
+        .members-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+
+    @media (max-width: 992px) {
+        .committee-header {
+            padding: 2.5rem 2rem;
+        }
+
+        .committee-info h2 {
+            font-size: 2.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .nav-tabs {
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            flex: 1 0 calc(50% - 1px);
+            min-width: 200px;
+        }
+
+        .nav-item:not(:last-child)::after {
+            display: none;
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .committee-header-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 2rem;
+        }
+
+        .committee-info {
+            min-width: 100%;
+        }
+
+        .committee-info h2 {
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .nav-item {
+            flex: 1 0 100%;
+        }
+
+        .members-grid,
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .task-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .content-card {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .content-icon {
+            align-self: center;
+        }
+
+        .activity-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .committee-detail-wrapper {
+            padding: 1rem;
+        }
+
+        .committee-header {
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+        }
+
+        .task-item,
+        .activity-item,
+        .member-card,
+        .content-card {
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="committee-detail-wrapper">
+    <a href="{% url 'pm_committee_management' %}" class="back-button">
+        <i class="fas fa-arrow-right"></i>
+        العودة إلى قائمة اللجان
+    </a>
+
+    <!-- Committee Header -->
+    <div class="committee-header">
+        <div class="committee-header-content">
+            <div class="committee-icon-large">
+                <i class="fas {{ committee.name|get_committee_icon }}"></i>
+            </div>
+            <div class="committee-info">
+                <h2>{{ committee.name }}</h2>
+                {% if committee.description %}
+                <p class="description">{{ committee.description }}</p>
+                {% endif %}
+                <span class="committee-type-badge">
+                    {% if committee.supervisor and committee.supervisor.supervisor_type %}
+                        <i class="fas
+                            {% if committee.supervisor.supervisor_type == 'cultural' %}fa-palette
+                            {% elif committee.supervisor.supervisor_type == 'sports' %}fa-futbol
+                            {% elif committee.supervisor.supervisor_type == 'sharia' %}fa-book-quran
+                            {% elif committee.supervisor.supervisor_type == 'scientific' %}fa-microscope
+                            {% elif committee.supervisor.supervisor_type == 'operations' %}fa-cogs
+                            {% else %}fa-puzzle-piece{% endif %}
+                        "></i>
+                        {% if committee.supervisor.supervisor_type == 'cultural' %}لجنة ثقافية
+                        {% elif committee.supervisor.supervisor_type == 'sports' %}لجنة رياضية
+                        {% elif committee.supervisor.supervisor_type == 'sharia' %}لجنة شرعية
+                        {% elif committee.supervisor.supervisor_type == 'scientific' %}لجنة علمية
+                        {% elif committee.supervisor.supervisor_type == 'operations' %}لجنة تشغيلية
+                        {% else %}لجنة البرنامج{% endif %}
+                    {% else %}
+                        <i class="fas fa-puzzle-piece"></i>
+                        لجنة البرنامج
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                {% if committee.supervisor and committee.supervisor.supervisor_type == 'sports' %}
+                    <i class="fas fa-running"></i>
+                {% elif committee.supervisor and committee.supervisor.supervisor_type == 'scientific' %}
+                    <i class="fas fa-graduation-cap"></i>
+                {% else %}
+                    <i class="fas fa-users"></i>
+                {% endif %}
+            </div>
+            <div class="stat-label">
+                {% if committee.supervisor and committee.supervisor.supervisor_type %}
+                    {% if committee.supervisor.supervisor_type == 'sports' %}عدد اللاعبين
+                    {% elif committee.supervisor.supervisor_type == 'scientific' %}عدد الباحثين
+                    {% else %}عدد الأعضاء{% endif %}
+                {% else %}
+                    عدد الطلاب
+                {% endif %}
+            </div>
+            <div class="stat-value">{{ committee_stats.student_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                {% if committee.supervisor and committee.supervisor.supervisor_type %}
+                    <i class="fas fa-chart-line"></i>
+                {% else %}
+                    <i class="fas fa-user-graduate"></i>
+                {% endif %}
+            </div>
+            <div class="stat-label">
+                {% if committee.supervisor and committee.supervisor.supervisor_type %}
+                    متوسط المشاركة
+                {% else %}
+                    متوسط التقدم
+                {% endif %}
+            </div>
+            <div class="stat-value">{{ committee_stats.avg_progress }}%</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-label">المهام المكتملة</div>
+            <div class="stat-value">{{ committee_stats.completed_tasks }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">
+                {% if committee_stats.overdue_tasks > 0 %}
+                    <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                {% else %}
+                    <i class="fas fa-clock"></i>
+                {% endif %}
+            </div>
+            <div class="stat-label">نسبة الإنجاز</div>
+            <div class="stat-value">{{ committee_stats.completion_rate }}%</div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="section-nav">
+        <div class="nav-tabs">
+            <div class="nav-item">
+                <a href="#overview" class="nav-link active" data-tab="overview">
+                    <i class="fas fa-info-circle"></i>
+                    نظرة عامة
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#tasks" class="nav-link" data-tab="tasks">
+                    <i class="fas fa-tasks"></i>
+                    المهام
+                </a>
+            </div>
+            {% if committee.supervisor and committee.supervisor.supervisor_type == 'cultural' %}
+            <div class="nav-item">
+                <a href="#sessions" class="nav-link" data-tab="sessions">
+                    <i class="fas fa-calendar-check"></i>
+                    الجلسات
+                </a>
+            </div>
+            {% endif %}
+            <div class="nav-item">
+                <a href="#members" class="nav-link" data-tab="members">
+                    <i class="fas fa-users"></i>
+                    الأعضاء
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#content" class="nav-link" data-tab="content">
+                    <i class="fas fa-file-alt"></i>
+                    المحتوى
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#activities" class="nav-link" data-tab="activities">
+                    <i class="fas fa-calendar-alt"></i>
+                    الأنشطة
+                </a>
+            </div>
+        </div>
+
+        <div class="tab-content">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-pane active">
+                <h3 class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    نظرة عامة على اللجنة
+                </h3>
+
+                <div class="stats-summary">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>معلومات اللجنة</h4>
+                            <p><strong>اسم اللجنة:</strong> {{ committee.name }}</p>
+                            {% if committee.description %}
+                            <p><strong>الوصف:</strong> {{ committee.description }}</p>
+                            {% endif %}
+                            <p><strong>نوع اللجنة:</strong>
+                                {% if committee.supervisor and committee.supervisor.supervisor_type %}
+                                    {% if committee.supervisor.supervisor_type == 'cultural' %}ثقافية
+                                    {% elif committee.supervisor.supervisor_type == 'sports' %}رياضية
+                                    {% elif committee.supervisor.supervisor_type == 'sharia' %}شرعية
+                                    {% elif committee.supervisor.supervisor_type == 'scientific' %}علمية
+                                    {% elif committee.supervisor.supervisor_type == 'operations' %}تشغيلية
+                                    {% else %}غير محدد{% endif %}
+                                {% else %}
+                                    غير محدد
+                                {% endif %}
+                            </p>
+                            <p><strong>تاريخ الإنشاء:</strong> {{ committee.created_at|date:"Y/m/d" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>إحصائيات الأداء</h4>
+                            <p><strong>إجمالي المهام:</strong> {{ committee_stats.total_tasks }}</p>
+                            <p><strong>المهام المكتملة:</strong> {{ committee_stats.completed_tasks }}</p>
+                            <p><strong>المهام قيد التنفيذ:</strong> {{ committee_stats.pending_tasks }}</p>
+                            {% if committee_stats.overdue_tasks > 0 %}
+                            <p><strong>المهام المتأخرة:</strong> <span style="color: #dc3545;">{{ committee_stats.overdue_tasks }}</span></p>
+                            {% endif %}
+                            <p><strong>متوسط إنجاز المهام:</strong> {{ committee_stats.avg_completion_percentage }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Tab -->
+            <div id="tasks" class="tab-pane">
+                <h3 class="section-title">
+                    <i class="fas fa-tasks"></i>
+                    مهام اللجنة
+                </h3>
+
+                {% if recent_tasks %}
+                    {% for task in recent_tasks %}
+                    <div class="task-item">
+                        <div class="task-header">
+                            <div>
+                                <div class="task-title">{{ task.title }}</div>
+                                <p class="task-description">{{ task.description|truncatewords:20 }}</p>
+                                {% if task.get_task_type_display %}
+                                <span class="task-type-badge">{{ task.get_task_type_display }}</span>
+                                {% endif %}
+                            </div>
+
+                            {% if task.status == 'pending' or task.status == 'not_started' %}
+                            <span class="task-status status-pending">
+                                <i class="fas fa-clock"></i>
+                                {% if task.status == 'not_started' %}لم يبدأ
+                                {% else %}قيد التنفيذ{% endif %}
+                            </span>
+                            {% elif task.status == 'in_progress' %}
+                            <span class="task-status status-pending">
+                                <i class="fas fa-spinner"></i> جاري العمل
+                            </span>
+                            {% elif task.status == 'completed' %}
+                            <span class="task-status status-completed">
+                                <i class="fas fa-check"></i> مكتملة
+                            </span>
+                            {% elif task.status == 'overdue' %}
+                            <span class="task-status status-overdue">
+                                <i class="fas fa-exclamation-triangle"></i> متأخرة
+                            </span>
+                            {% elif task.status == 'cancelled' %}
+                            <span class="task-status status-cancelled">
+                                <i class="fas fa-times"></i> ملغاة
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="task-meta">
+                            {% if task.assigned_to_name or task.assigned_to %}
+                            <span><i class="fas fa-user"></i>
+                                {% if task.assigned_to_name %}{{ task.assigned_to_name }}
+                                {% elif task.assigned_to %}{{ task.assigned_to.get_full_name }}{% endif %}
+                            </span>
+                            {% endif %}
+                            {% if task.due_date %}
+                            <span><i class="fas fa-calendar"></i> {{ task.due_date|date:"Y/m/d" }}</span>
+                            {% endif %}
+                            {% if task.completion_percentage %}
+                            <span><i class="fas fa-percentage"></i> {{ task.completion_percentage }}% إنجاز</span>
+                            {% endif %}
+                            {% if task.priority and committee.supervisor.supervisor_type == 'operations' %}
+                            <span><i class="fas fa-flag"></i> أولوية: {{ task.get_priority_display }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if task.has_sessions and task.sessions.all %}
+                        <div class="task-sessions" style="margin-top: 1rem;">
+                            <h6><i class="fas fa-calendar-check"></i> جلسات المهمة:</h6>
+                            {% for session in task.sessions.all|slice:":3" %}
+                            <div class="session-item">
+                                <div class="session-header">
+                                    <span class="session-name">{{ session.name }}</span>
+                                    <span class="session-time">{{ session.date|date:"Y/m/d" }} - {{ session.time|time:"H:i" }}</span>
+                                </div>
+                                <div class="session-details">
+                                    <span class="session-status {% if session.is_completed %}status-completed{% elif session.is_upcoming %}status-upcoming{% else %}status-past{% endif %}">
+                                        {% if session.is_completed %}مكتملة
+                                        {% elif session.is_upcoming %}قادمة
+                                        {% else %}منتهية{% endif %}
+                                    </span>
+                                    {% if session.notes %}
+                                    <p class="session-notes" style="font-size: 0.9rem; color: #6c757d; margin-top: 0.5rem;">
+                                        {{ session.notes|truncatewords:10 }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-tasks"></i>
+                        <p>لا توجد مهام مسجلة حتى الآن</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Sessions Tab (for Cultural Committees) -->
+            {% if committee.supervisor and committee.supervisor.supervisor_type == 'cultural' %}
+            <div id="sessions" class="tab-pane">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar-check"></i>
+                    جلسات اللجنة الثقافية
+                </h3>
+
+                {% if cultural_sessions %}
+                <div class="sessions-list">
+                    {% for session in cultural_sessions %}
+                    <div class="session-item">
+                        <div class="session-header">
+                            <div>
+                                <div class="session-name">{{ session.name }}</div>
+                                <div class="session-task">المهمة: {{ session.task.title }}</div>
+                            </div>
+                            <div class="session-time">
+                                <div>{{ session.date|date:"Y/m/d" }}</div>
+                                <div>{{ session.time|time:"H:i" }}</div>
+                            </div>
+                        </div>
+                        <div class="session-details">
+                            <span class="session-status {% if session.is_completed %}status-completed{% elif session.is_upcoming %}status-upcoming{% else %}status-past{% endif %}">
+                                {% if session.is_completed %}مكتملة
+                                {% elif session.is_upcoming %}قادمة
+                                {% else %}منتهية{% endif %}
+                            </span>
+                            <span class="session-order">الجلسة رقم: {{ session.session_order }}</span>
+                        </div>
+                        {% if session.notes %}
+                        <p class="session-notes" style="margin-top: 0.5rem; font-size: 0.9rem; color: #6c757d;">
+                            {{ session.notes }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>لا توجد جلسات مسجلة حتى الآن</p>
+                    </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Members Tab -->
+            <div id="members" class="tab-pane">
+                <h3 class="section-title">
+                    <i class="fas fa-users"></i>
+                    أعضاء اللجنة
+                </h3>
+
+                {% if supervisor %}
+                <!-- Supervisor Card -->
+                <div class="member-card supervisor-card">
+                    <div class="member-header">
+                        <div class="member-avatar supervisor">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="member-info">
+                            <h4>{{ supervisor.get_full_name|default:supervisor.username }}</h4>
+                            <div class="member-role">المشرف المسؤول</div>
+                            <span class="member-badge">
+                                <i class="fas fa-star"></i> المشرف الرئيسي
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="supervisor-contact">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>{{ supervisor.email }}</span>
+                        </div>
+
+                        {% if supervisor.phone %}
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ supervisor.phone }}</span>
+                        </div>
+                        {% endif %}
+
+                        {% if supervisor.supervisor_type %}
+                        <div class="contact-item">
+                            <i class="fas fa-briefcase"></i>
+                            <span>
+                                {% if supervisor.supervisor_type == 'cultural' %}
+                                مشرف لجنة ثقافية
+                                {% elif supervisor.supervisor_type == 'sports' %}
+                                مشرف لجنة رياضية
+                                {% elif supervisor.supervisor_type == 'sharia' %}
+                                مشرف اللجنة الشرعية
+                                {% elif supervisor.supervisor_type == 'scientific' %}
+                                مشرف اللجنة العلمية
+                                {% elif supervisor.supervisor_type == 'operations' %}
+                                مشرف اللجنة التشغيلية
+                                {% else %}
+                                مشرف لجنة
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <div class="contact-item">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>انضم في {{ supervisor.date_joined|date:"Y/m/d" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Regular Members -->
+                {% if members %}
+                <div class="members-grid" style="{% if supervisor %}margin-top: 2rem;{% endif %}">
+                    {% for member in members %}
+                    <div class="member-card">
+                        <div class="member-header">
+                            <div class="member-avatar">
+                                {% if committee.supervisor.supervisor_type == 'sports' %}
+                                    <i class="fas fa-running"></i>
+                                {% elif committee.supervisor.supervisor_type == 'scientific' %}
+                                    <i class="fas fa-graduation-cap"></i>
+                                {% else %}
+                                    <i class="fas fa-user-graduate"></i>
+                                {% endif %}
+                            </div>
+                            <div class="member-info">
+                                <h4>{{ member.user.get_full_name|default:member.user.username }}</h4>
+                                {% if member.role %}
+                                <div class="member-role">{{ member.get_role_display|default:member.role }}</div>
+                                {% endif %}
+                                {% if member.specialization %}
+                                <div class="member-specialization">{{ member.specialization }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="font-size: 0.9rem; color: #6c757d;">درجة المشاركة</span>
+                                <span style="font-weight: 700; color: #0084AB;">{{ member.participation_score }}</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: {{ member.progress|default:member.participation_score }}%"></div>
+                            </div>
+                        </div>
+
+                        {% if member.joined_date %}
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #6c757d;">
+                            <i class="fas fa-calendar-plus"></i> انضم في {{ member.joined_date|date:"Y/m/d" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-users-slash"></i>
+                        <p>لا يوجد أعضاء في هذه اللجنة حتى الآن</p>
+                    </div>
+                {% endif %}
+
+                {% if not supervisor and not members %}
+                    <div class="empty-message">
+                        <i class="fas fa-user-times"></i>
+                        <p>لم يتم تعيين مشرف أو أعضاء لهذه اللجنة بعد</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Content Tab -->
+            <div id="content" class="tab-pane">
+                <h3 class="section-title">
+                    <i class="fas fa-file-alt"></i>
+                    محتوى اللجنة
+                </h3>
+
+                {% if committee_content %}
+                <div class="content-grid">
+                    {% for item in committee_content %}
+                    <div class="content-card">
+                        <div class="content-icon">
+                            {% if item.file_type %}
+                            <i class="fas fa-file-{{ item.file_type }}"></i>
+                            {% else %}
+                            <i class="fas fa-file"></i>
+                            {% endif %}
+                        </div>
+                        <div class="content-details">
+                            <h4>{{ item.title }}</h4>
+                            {% if item.description %}
+                            <p class="content-description">{{ item.description|truncatewords:15 }}</p>
+                            {% endif %}
+                            <div class="content-meta">
+                                <span class="content-type">{{ item.get_file_type_display|default:"ملف" }}</span>
+                                <span class="content-date">{{ item.uploaded_at|date:"Y/m/d" }}</span>
+                            </div>
+                            {% if item.file %}
+                            <a href="{{ item.file.url }}" class="download-btn" target="_blank" download>
+                                <i class="fas fa-download"></i>
+                                تحميل الملف
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-folder-open"></i>
+                        <p>لا يوجد محتوى في هذه اللجنة حتى الآن</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Activities Tab -->
+            <div id="activities" class="tab-pane">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    أنشطة اللجنة
+                </h3>
+
+                {% if activities %}
+                <div class="activities-list">
+                    {% for activity in activities %}
+                    <div class="activity-item">
+                        <div class="activity-header">
+                            <div class="activity-name">{{ activity.name }}</div>
+                            <div class="activity-date">{{ activity.date|date:"Y/m/d" }}</div>
+                        </div>
+                        <p>{{ activity.description|truncatewords:30 }}</p>
+                        {% if activity.location %}
+                        <div class="activity-location">
+                            <i class="fas fa-map-marker-alt"></i> {{ activity.location }}
+                        </div>
+                        {% endif %}
+                        {% if activity.time %}
+                        <div class="activity-time">
+                            <i class="fas fa-clock"></i> {{ activity.time|time:"H:i" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="empty-message">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>لا توجد أنشطة مسجلة حتى الآن</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabLinks = document.querySelectorAll('.nav-link');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Get the target tab
+            const targetTab = this.getAttribute('href').substring(1);
+
+            // Remove active class from all tabs and panes
+            tabLinks.forEach(tab => tab.classList.remove('active'));
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+
+            // Add active class to clicked tab and corresponding pane
+            this.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+
+    // Add fade-in animation to elements
+    const fadeElements = document.querySelectorAll('.stat-card, .task-item, .member-card, .activity-item, .content-card, .session-item');
+    fadeElements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+    });
+});
+</script>
+{% endblock %}

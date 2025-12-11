@@ -116,16 +116,466 @@ def committee_management(request):
         messages.error(request, 'لم يتم تعيين برنامج لك بعد')
         return redirect('home')
 
-    committees = Committee.objects.filter(program=program).select_related('supervisor').annotate(
-        student_count=Count('student'),
-        avg_progress=Avg('student__progress')
-    )
+    # Get committees with basic info
+    committees = Committee.objects.filter(program=program).select_related('supervisor')
+
+    # Convert to list so we can add custom attributes
+    committees_list = []
+
+    for committee in committees:
+        supervisor = committee.supervisor
+
+        # Initialize committee stats
+        total_members = 0
+        avg_participation = 0
+        total_tasks = 0
+        completed_tasks = 0
+        task_completion_percentage = 0
+
+        # Query based on supervisor type
+        if supervisor and supervisor.supervisor_type:
+            if supervisor.supervisor_type == 'cultural':
+                from cultural_committee_dashboard.models import CulturalTask, CommitteeMember
+
+                # Get members count
+                total_members = CommitteeMember.objects.filter(committee=committee).count()
+
+                # Get tasks
+                tasks = CulturalTask.objects.filter(committee=committee)
+                total_tasks = tasks.count()
+                completed_tasks = tasks.filter(status='completed').count()
+
+                # Calculate average participation
+                members = CommitteeMember.objects.filter(committee=committee)
+                if members.exists():
+                    avg_participation = round(sum(member.participation_score for member in members) / total_members, 1)
+
+                # Calculate task completion percentage
+                if total_tasks > 0:
+                    task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+
+            elif supervisor.supervisor_type == 'sports':
+                from sports_committee_dashboard.models import SportsTask, SportsMember
+
+                # Get members count
+                total_members = SportsMember.objects.filter(committee=committee).count()
+
+                # Get tasks
+                tasks = SportsTask.objects.filter(committee=committee)
+                total_tasks = tasks.count()
+                completed_tasks = tasks.filter(status='completed').count()
+
+                # Calculate average participation
+                members = SportsMember.objects.filter(committee=committee)
+                if members.exists():
+                    avg_participation = round(sum(member.participation_score for member in members) / total_members, 1)
+
+                # Calculate task completion percentage
+                if total_tasks > 0:
+                    task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+
+            elif supervisor.supervisor_type == 'sharia':
+                from sharia_committee_dashboard.models import ShariaTask, ShariaMember
+
+                # Get members count
+                total_members = ShariaMember.objects.filter(committee=committee).count()
+
+                # Get tasks
+                tasks = ShariaTask.objects.filter(committee=committee)
+                total_tasks = tasks.count()
+                completed_tasks = tasks.filter(status='completed').count()
+
+                # Calculate average participation
+                members = ShariaMember.objects.filter(committee=committee)
+                if members.exists():
+                    avg_participation = round(sum(member.participation_score for member in members) / total_members, 1)
+
+                # Calculate task completion percentage
+                if total_tasks > 0:
+                    task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+
+            elif supervisor.supervisor_type == 'scientific':
+                from scientific_committee_dashboard.models import ScientificTask, ScientificMember
+
+                # Get members count
+                total_members = ScientificMember.objects.filter(committee=committee).count()
+
+                # Get tasks
+                tasks = ScientificTask.objects.filter(committee=committee)
+                total_tasks = tasks.count()
+                completed_tasks = tasks.filter(status='completed').count()
+
+                # Calculate average participation
+                members = ScientificMember.objects.filter(committee=committee)
+                if members.exists():
+                    avg_participation = round(sum(member.participation_score for member in members) / total_members, 1)
+
+                # Calculate task completion percentage
+                if total_tasks > 0:
+                    task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+
+            elif supervisor.supervisor_type == 'operations':
+                from operations_committee_dashboard.models import OperationsTask, OperationsTeamMember
+
+                # Get members count
+                total_members = OperationsTeamMember.objects.filter(committee=committee).count()
+
+                # Get tasks
+                tasks = OperationsTask.objects.filter(committee=committee)
+                total_tasks = tasks.count()
+                completed_tasks = tasks.filter(status='completed').count()
+
+                # Calculate average participation
+                members = OperationsTeamMember.objects.filter(committee=committee)
+                if members.exists():
+                    avg_participation = round(sum(member.participation_score for member in members) / total_members, 1)
+
+                # Calculate task completion percentage
+                if total_tasks > 0:
+                    task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+
+            else:
+                # Fallback to generic models
+                total_members = Student.objects.filter(committee=committee).count()
+
+                # Get student progress as participation
+                students = Student.objects.filter(committee=committee)
+                if students.exists():
+                    avg_participation = round(sum(student.progress for student in students) / total_members, 1)
+
+                # Get generic tasks
+                tasks = Task.objects.filter(committee=committee)
+                total_tasks = tasks.count()
+                completed_tasks = tasks.filter(status='completed').count()
+
+                # Calculate task completion percentage
+                if total_tasks > 0:
+                    task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+        else:
+            # No supervisor or supervisor type
+            total_members = Student.objects.filter(committee=committee).count()
+
+            # Get student progress as participation
+            students = Student.objects.filter(committee=committee)
+            if students.exists():
+                avg_participation = round(sum(student.progress for student in students) / total_members, 1)
+
+            # Get generic tasks
+            tasks = Task.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+
+            # Calculate task completion percentage
+            if total_tasks > 0:
+                task_completion_percentage = round((completed_tasks / total_tasks) * 100, 1)
+
+        # Add custom attributes to committee object
+        committee.student_count = total_members
+        committee.avg_progress = avg_participation
+        committee.total_tasks = total_tasks
+        committee.completed_tasks = completed_tasks
+        committee.task_completion_percentage = task_completion_percentage
+
+        committees_list.append(committee)
 
     context = {
         'program': program,
-        'committees': committees,
+        'committees': committees_list,
     }
     return render(request, 'program_manager/committee_management.html', context)
+
+
+@login_required
+def committee_detail(request, committee_id):
+    if request.user.role != 'program_manager':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
+    try:
+        program = Program.objects.get(manager=request.user)
+    except Program.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين برنامج لك بعد')
+        return redirect('home')
+
+    committee = get_object_or_404(Committee, id=committee_id, program=program)
+
+    # Get supervisor details
+    supervisor = committee.supervisor
+
+    # Initialize variables
+    total_tasks = 0
+    completed_tasks = 0
+    pending_tasks = 0
+    overdue_tasks = 0
+    recent_tasks = []
+    members = []
+    committee_content = []
+    cultural_sessions = []
+    total_members = 0
+    avg_completion_percentage = 0
+
+    # Query based on supervisor type
+    if supervisor and supervisor.supervisor_type:
+        if supervisor.supervisor_type == 'cultural':
+            from cultural_committee_dashboard.models import CulturalTask, CommitteeMember, FileLibrary, TaskSession
+
+            # Get tasks
+            tasks = CulturalTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = 0  # Cultural tasks don't have overdue status
+
+            # Calculate average completion percentage
+            if tasks.exists():
+                avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+            # Get sessions for cultural tasks
+            cultural_sessions = TaskSession.objects.filter(task__committee=committee).order_by('-date', '-time')
+
+            # Get members
+            members_query = CommitteeMember.objects.filter(committee=committee).select_related('user')
+            total_members = members_query.count()
+
+            # Calculate average participation score for members
+            if members_query.exists():
+                avg_participation = round(sum(member.participation_score for member in members_query) / total_members,
+                                          1)
+            else:
+                avg_participation = 0
+
+            members = members_query
+
+            # Get files
+            committee_content = FileLibrary.objects.filter(committee=committee).order_by('-uploaded_at')
+
+        elif supervisor.supervisor_type == 'sports':
+            from sports_committee_dashboard.models import SportsTask, SportsMember, SportsFile
+
+            # Get tasks
+            tasks = SportsTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = tasks.filter(status='overdue').count()
+
+            # Calculate average completion percentage
+            if tasks.exists():
+                avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+            # Get members
+            members_query = SportsMember.objects.filter(committee=committee).select_related('user')
+            total_members = members_query.count()
+
+            # Calculate average participation score for members
+            if members_query.exists():
+                avg_participation = round(sum(member.participation_score for member in members_query) / total_members,
+                                          1)
+            else:
+                avg_participation = 0
+
+            members = members_query
+
+            # Get files
+            committee_content = SportsFile.objects.filter(committee=committee).order_by('-uploaded_at')
+
+        elif supervisor.supervisor_type == 'sharia':
+            from sharia_committee_dashboard.models import ShariaTask, ShariaMember, ShariaFile
+
+            # Get tasks
+            tasks = ShariaTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = 0  # Sharia tasks don't have overdue status
+
+            # Calculate average completion percentage
+            if tasks.exists():
+                avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+            # Get members
+            members_query = ShariaMember.objects.filter(committee=committee).select_related('user')
+            total_members = members_query.count()
+
+            # Calculate average participation score for members
+            if members_query.exists():
+                avg_participation = round(sum(member.participation_score for member in members_query) / total_members,
+                                          1)
+            else:
+                avg_participation = 0
+
+            members = members_query
+
+            # Get files
+            committee_content = ShariaFile.objects.filter(committee=committee).order_by('-uploaded_at')
+
+        elif supervisor.supervisor_type == 'scientific':
+            from scientific_committee_dashboard.models import ScientificTask, ScientificMember, ScientificFile
+
+            # Get tasks
+            tasks = ScientificTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = 0  # Scientific tasks don't have overdue status
+
+            # Calculate average completion percentage
+            if tasks.exists():
+                avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+            # Get members
+            members_query = ScientificMember.objects.filter(committee=committee).select_related('user')
+            total_members = members_query.count()
+
+            # Calculate average participation score for members
+            if members_query.exists():
+                avg_participation = round(sum(member.participation_score for member in members_query) / total_members,
+                                          1)
+            else:
+                avg_participation = 0
+
+            members = members_query
+
+            # Get files
+            committee_content = ScientificFile.objects.filter(committee=committee).order_by('-uploaded_at')
+
+        elif supervisor.supervisor_type == 'operations':
+            from operations_committee_dashboard.models import OperationsTask, OperationsTeamMember, \
+                OperationsFileLibrary
+
+            # Get tasks
+            tasks = OperationsTask.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status__in=['not_started', 'in_progress']).count()
+            overdue_tasks = tasks.filter(status='overdue').count()
+
+            # Calculate average completion percentage
+            if tasks.exists():
+                avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+            # Get members
+            members_query = OperationsTeamMember.objects.filter(committee=committee).select_related('user')
+            total_members = members_query.count()
+
+            # Calculate average participation score for members
+            if members_query.exists():
+                avg_participation = round(sum(member.participation_score for member in members_query) / total_members,
+                                          1)
+            else:
+                avg_participation = 0
+
+            members = members_query
+
+            # Get files
+            committee_content = OperationsFileLibrary.objects.filter(committee=committee).order_by('-uploaded_at')
+
+        else:
+            # Fallback to generic models
+            tasks = Task.objects.filter(committee=committee)
+            total_tasks = tasks.count()
+            completed_tasks = tasks.filter(status='completed').count()
+            pending_tasks = tasks.filter(status='pending').count()
+            overdue_tasks = tasks.filter(status='overdue').count()
+
+            # Calculate average completion percentage
+            if tasks.exists():
+                avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+            recent_tasks = tasks.order_by('-created_at')[:10]
+
+            # Get members (students)
+            members_query = Student.objects.filter(committee=committee).select_related('user')
+            total_members = members_query.count()
+
+            # Calculate average progress for students
+            if members_query.exists():
+                avg_participation = round(sum(member.progress for member in members_query) / total_members, 1)
+            else:
+                avg_participation = 0
+
+            members = members_query
+
+            # Get files (if available)
+            try:
+                from .models import File  # Your generic File model
+                committee_content = File.objects.filter(committee=committee).order_by('-uploaded_at')
+            except:
+                committee_content = []
+    else:
+        # No supervisor or supervisor type - use generic models
+        tasks = Task.objects.filter(committee=committee)
+        total_tasks = tasks.count()
+        completed_tasks = tasks.filter(status='completed').count()
+        pending_tasks = tasks.filter(status='pending').count()
+        overdue_tasks = tasks.filter(status='overdue').count()
+
+        # Calculate average completion percentage
+        if tasks.exists():
+            avg_completion_percentage = round(sum(task.completion_percentage for task in tasks) / total_tasks, 1)
+
+        recent_tasks = tasks.order_by('-created_at')[:10]
+
+        # Get members (students)
+        members_query = Student.objects.filter(committee=committee).select_related('user')
+        total_members = members_query.count()
+
+        # Calculate average progress for students
+        if members_query.exists():
+            avg_participation = round(sum(member.progress for member in members_query) / total_members, 1)
+        else:
+            avg_participation = 0
+
+        members = members_query
+
+        # Get files
+        try:
+            from .models import File  # Your generic File model
+            committee_content = File.objects.filter(committee=committee).order_by('-uploaded_at')
+        except:
+            committee_content = []
+
+    # Calculate completion rate
+    completion_rate = round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0, 1)
+
+    # Committee stats
+    committee_stats = {
+        'student_count': total_members,  # Changed from student_count to total_members
+        'avg_progress': avg_participation,  # Changed from avg_progress to avg_participation
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'pending_tasks': pending_tasks,
+        'overdue_tasks': overdue_tasks,
+        'completion_rate': completion_rate,
+        'avg_completion_percentage': avg_completion_percentage,  # Added this for reference
+    }
+
+    # Get activities
+    activities = Activity.objects.filter(committee=committee).order_by('-date')[:10]
+
+    context = {
+        'program': program,
+        'committee': committee,
+        'supervisor': supervisor,
+        'committee_stats': committee_stats,
+        'recent_tasks': recent_tasks,
+        'members': members,
+        'committee_content': committee_content,
+        'activities': activities,
+        'cultural_sessions': cultural_sessions if supervisor and supervisor.supervisor_type == 'cultural' else [],
+    }
+
+    return render(request, 'program_manager/committee_detail.html', context)
 
 
 @login_required
