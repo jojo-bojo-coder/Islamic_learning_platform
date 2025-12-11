@@ -3,6 +3,7 @@ from django.utils import timezone
 from .models import (CulturalTask, CommitteeMember, FileLibrary,
                      Discussion, DiscussionComment, CulturalReport,DailyPhrase,TaskSession)
 from accounts.models import User
+from django.utils.translation import gettext as _
 
 
 class CulturalTaskForm(forms.ModelForm):
@@ -258,9 +259,11 @@ class CulturalReportForm(forms.ModelForm):
         }
 
 class DailyPhraseForm(forms.ModelForm):
+    """Form for creating and editing daily phrases by day of week"""
+
     class Meta:
         model = DailyPhrase
-        fields = ['phrase', 'author', 'category', 'display_date', 'is_active']
+        fields = ['phrase', 'author', 'category', 'day_of_week', 'is_active']
         widgets = {
             'phrase': forms.Textarea(attrs={
                 'class': 'form-control',
@@ -275,9 +278,8 @@ class DailyPhraseForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'التصنيف (اختياري)'
             }),
-            'display_date': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date',
+            'day_of_week': forms.Select(attrs={
+                'class': 'form-select',
             }),
             'is_active': forms.CheckboxInput(attrs={
                 'class': 'form-check-input'
@@ -287,13 +289,36 @@ class DailyPhraseForm(forms.ModelForm):
             'phrase': 'العبارة',
             'author': 'المؤلف',
             'category': 'التصنيف',
-            'display_date': 'تاريخ العرض',
+            'day_of_week': 'يوم الأسبوع',
             'is_active': 'نشط',
         }
 
     def __init__(self, *args, **kwargs):
+        self.committee = kwargs.pop('committee', None)
         super().__init__(*args, **kwargs)
-        # Set minimum date to today
-        self.fields['display_date'].widget.attrs['min'] = timezone.now().date().isoformat()
+
         self.fields['author'].required = False
         self.fields['category'].required = False
+
+        # Disable day_of_week field if editing and it's "all"
+        if self.instance and self.instance.pk and self.instance.day_of_week == 'all':
+            self.fields['day_of_week'].disabled = True
+            self.fields['day_of_week'].help_text = 'لا يمكن تغيير "جميع الأيام" بعد الإنشاء'
+
+    def clean(self):
+        """Validate that only one phrase per day exists"""
+        cleaned_data = super().clean()
+        day_of_week = cleaned_data.get('day_of_week')
+
+        if self.committee and day_of_week:
+            # Check if there's already a phrase for this day
+            existing_phrase = DailyPhrase.objects.filter(
+                committee=self.committee,
+                day_of_week=day_of_week
+            ).exclude(pk=self.instance.pk if self.instance else None)
+
+            if existing_phrase.exists():
+                day_name = dict(DailyPhrase.DAY_CHOICES)[day_of_week]
+                raise forms.ValidationError(f'يوجد بالفعل عبارة ليوم {day_name}')
+
+        return cleaned_data

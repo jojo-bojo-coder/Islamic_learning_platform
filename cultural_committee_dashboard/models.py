@@ -310,24 +310,101 @@ class CulturalNotification(models.Model):
 from django.utils import timezone
 
 class DailyPhrase(models.Model):
-    """Phrase of the Day model"""
+    """Phrase of the Day model - Based on days of the week"""
+
+    DAY_CHOICES = [
+        ('all', 'جميع الأيام'),
+        ('saturday', 'السبت'),
+        ('sunday', 'الأحد'),
+        ('monday', 'الإثنين'),
+        ('tuesday', 'الثلاثاء'),
+        ('wednesday', 'الأربعاء'),
+        ('thursday', 'الخميس'),
+        ('friday', 'الجمعة'),
+    ]
+
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE, related_name='daily_phrases')
     phrase = models.TextField(verbose_name='العبارة')
     author = models.CharField(max_length=255, blank=True, verbose_name='المؤلف (اختياري)')
     category = models.CharField(max_length=100, blank=True, verbose_name='التصنيف (اختياري)')
+    day_of_week = models.CharField(
+        max_length=20,
+        choices=DAY_CHOICES,
+        verbose_name='يوم الأسبوع',
+        default='all'
+    )
     is_active = models.BooleanField(default=True, verbose_name='نشط')
-    display_date = models.DateField(verbose_name='تاريخ العرض', unique=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-display_date']
+        ordering = ['day_of_week']
         verbose_name = 'عبارة اليوم'
-        verbose_name_plural = 'عبارات اليوم'
+        verbose_name_plural = 'عبارات الأسبوع'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['committee', 'day_of_week'],
+                name='unique_daily_phrase_per_day'
+            )
+        ]
 
     def __str__(self):
-        return f"عبارة اليوم - {self.display_date}"
+        day_name = self.get_day_of_week_display()
+        return f"عبارة {day_name}"
 
+    def get_today_phrase():
+        """Get today's phrase based on current day of week"""
+        from django.utils import timezone
+        import datetime
+
+        today = timezone.now().date()
+        # Get day name in Arabic matching our choices
+        day_mapping = {
+            5: 'saturday',  # Monday = 0, Saturday = 5
+            6: 'sunday',  # Sunday = 6
+            0: 'monday',  # Monday = 0
+            1: 'tuesday',  # Tuesday = 1
+            2: 'wednesday',  # Wednesday = 2
+            3: 'thursday',  # Thursday = 3
+            4: 'friday',  # Friday = 4
+        }
+
+        current_day = day_mapping.get(today.weekday(), 'all')
+
+        # First try to get phrase for specific day
+        phrase = DailyPhrase.objects.filter(
+            is_active=True,
+            day_of_week=current_day
+        ).first()
+
+        # If no specific day phrase, get the "all days" phrase
+        if not phrase:
+            phrase = DailyPhrase.objects.filter(
+                is_active=True,
+                day_of_week='all'
+            ).first()
+
+        return phrase
+
+    @property
     def is_today_phrase(self):
-        return self.display_date == timezone.now().date()
+        """Check if this phrase should be displayed today"""
+        from django.utils import timezone
+        import datetime
+
+        today = timezone.now().date()
+        day_mapping = {
+            5: 'saturday',
+            6: 'sunday',
+            0: 'monday',
+            1: 'tuesday',
+            2: 'wednesday',
+            3: 'thursday',
+            4: 'friday',
+        }
+
+        current_day = day_mapping.get(today.weekday(), 'all')
+
+        # If phrase is for all days or matches today's day
+        return self.day_of_week == 'all' or self.day_of_week == current_day

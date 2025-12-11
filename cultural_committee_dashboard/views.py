@@ -510,11 +510,7 @@ def cultural_dashboard(request):
     # Daily phrase for today
     from django.utils import timezone
     try:
-        daily_phrase = DailyPhrase.objects.filter(
-            committee=committee,
-            display_date=timezone.now().date(),
-            is_active=True
-        ).first()
+        daily_phrase = DailyPhrase.get_today_phrase()
     except Exception as e:
         daily_phrase = None
 
@@ -898,56 +894,44 @@ from .forms import DailyPhraseForm
 
 @login_required
 def daily_phrases(request):
+    if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        return redirect('home')
+
     try:
-        # Check user permissions
-        if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'cultural':
-            messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
-            return redirect('home')
+        committee = Committee.objects.get(supervisor=request.user)
+    except Committee.DoesNotExist:
+        messages.error(request, 'لم يتم تعيين لجنة لك بعد')
+        return redirect('home')
 
-        try:
-            # Get user's committee
-            committee = Committee.objects.get(supervisor=request.user)
-        except Committee.DoesNotExist:
-            messages.error(request, 'لم يتم تعيين لجنة لك بعد')
-            return redirect('home')
-        except Exception as e:
-            messages.error(request, f'حدث خطأ في تحميل بيانات اللجنة: {str(e)}')
-            return redirect('home')
+    # Get all phrases for this committee
+    phrases = DailyPhrase.objects.filter(committee=committee).order_by('day_of_week')
 
-        try:
-            # Get daily phrases
-            phrases = DailyPhrase.objects.filter(committee=committee).order_by('-display_date')
-        except Exception as e:
-            messages.error(request, f'حدث خطأ في تحميل العبارات: {str(e)}')
-            phrases = []
-
-        # Filter by active status with error handling
-        is_active = request.GET.get('is_active')
-        try:
-            if is_active == 'true' and phrases:
-                phrases = phrases.filter(is_active=True)
-            elif is_active == 'false' and phrases:
-                phrases = phrases.filter(is_active=False)
-        except Exception as e:
-            messages.error(request, f'حدث خطأ في تطبيق الفلتر: {str(e)}')
-            # Continue with unfiltered phrases
-
-        context = {
-            'committee': committee,
-            'phrases': phrases if phrases else [],
-            'is_active_filter': is_active,
+    # Get phrases by day for display
+    days_dict = {}
+    for day_code, day_name in DailyPhrase.DAY_CHOICES:
+        day_phrase = phrases.filter(day_of_week=day_code).first()
+        days_dict[day_code] = {
+            'name': day_name,
+            'phrase': day_phrase,
+            'code': day_code
         }
 
-        try:
-            return render(request, 'cultural_committee/daily_phrases.html', context)
-        except Exception as e:
-            messages.error(request, f'حدث خطأ في تحميل الصفحة: {str(e)}')
-            return redirect('home')
+    # Filter by active status
+    is_active = request.GET.get('is_active')
+    if is_active == 'true':
+        phrases = phrases.filter(is_active=True)
+    elif is_active == 'false':
+        phrases = phrases.filter(is_active=False)
 
-    except Exception as e:
-        # Global exception catch
-        messages.error(request, f'حدث خطأ غير متوقع: {str(e)}')
-        return redirect('home')
+    context = {
+        'committee': committee,
+        'phrases': phrases,
+        'days_dict': days_dict,
+        'day_choices': DailyPhrase.DAY_CHOICES,
+        'is_active_filter': is_active,
+    }
+    return render(request, 'cultural_committee/daily_phrases.html', context)
 
 
 @login_required
@@ -962,18 +946,26 @@ def add_daily_phrase(request):
         messages.error(request, 'لم يتم تعيين لجنة لك بعد')
         return redirect('home')
 
+    # Check which days are already taken
+    taken_days = DailyPhrase.objects.filter(
+        committee=committee
+    ).values_list('day_of_week', flat=True)
+
+    available_days = [
+        (code, name) for code, name in DailyPhrase.DAY_CHOICES
+        if code not in taken_days
+    ]
+
+    if not available_days:
+        messages.error(request, 'جميع أيام الأسبوع تحتوي بالفعل على عبارات')
+        return redirect('cultural_daily_phrases')
+
     if request.method == 'POST':
-        form = DailyPhraseForm(request.POST)
+        form = DailyPhraseForm(request.POST, committee=committee)
         if form.is_valid():
             phrase = form.save(commit=False)
             phrase.committee = committee
             phrase.created_by = request.user
-
-            # Check if date already exists
-            if DailyPhrase.objects.filter(display_date=phrase.display_date, committee=committee).exists():
-                messages.error(request, 'يوجد بالفعل عبارة لهذا التاريخ')
-                return redirect('cultural_add_daily_phrase')
-
             phrase.save()
 
             # Notify members
@@ -983,26 +975,31 @@ def add_daily_phrase(request):
                     user=member.user,
                     committee=committee,
                     notification_type='daily_phrase_added',
-                    title='عبارة اليوم',
-                    message=f'تم إضافة عبارة جديدة ليوم {phrase.display_date}',
+                    title='عبارة جديدة',
+                    message=f'تم إضافة عبارة ليوم {phrase.get_day_of_week_display()}',
                     related_daily_phrase=phrase
                 )
 
             UserActivity.objects.create(
                 user=request.user,
-                action=f'إضافة عبارة اليوم: {phrase.display_date}',
+                action=f'إضافة عبارة ليوم {phrase.get_day_of_week_display()}',
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم إضافة عبارة اليوم بنجاح!')
+            messages.success(request, 'تم إضافة العبارة بنجاح!')
             return redirect('cultural_daily_phrases')
     else:
-        form = DailyPhraseForm()
+        # Initialize form with available days only
+        initial_form = DailyPhraseForm(committee=committee)
+        # Update choices dynamically
+        initial_form.fields['day_of_week'].choices = available_days
 
     context = {
         'committee': committee,
-        'form': form,
-        'title': 'إضافة عبارة اليوم'
+        'form': initial_form,
+        'title': 'إضافة عبارة جديدة',
+        'available_days': available_days,
+        'taken_days': taken_days,
     }
     return render(request, 'cultural_committee/daily_phrase_form.html', context)
 
@@ -1022,32 +1019,37 @@ def edit_daily_phrase(request, phrase_id):
     phrase = get_object_or_404(DailyPhrase, id=phrase_id, committee=committee)
 
     if request.method == 'POST':
-        form = DailyPhraseForm(request.POST, instance=phrase)
+        form = DailyPhraseForm(request.POST, instance=phrase, committee=committee)
         if form.is_valid():
-            # Check if date already exists (excluding current phrase)
-            new_date = form.cleaned_data['display_date']
-            if DailyPhrase.objects.filter(display_date=new_date, committee=committee).exclude(id=phrase.id).exists():
-                messages.error(request, 'يوجد بالفعل عبارة لهذا التاريخ')
-                return redirect('cultural_edit_daily_phrase', phrase_id=phrase.id)
-
             form.save()
 
             UserActivity.objects.create(
                 user=request.user,
-                action=f'تعديل عبارة اليوم: {phrase.display_date}',
+                action=f'تعديل عبارة ليوم {phrase.get_day_of_week_display()}',
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم تعديل عبارة اليوم بنجاح!')
+            messages.success(request, 'تم تعديل العبارة بنجاح!')
             return redirect('cultural_daily_phrases')
     else:
-        form = DailyPhraseForm(instance=phrase)
+        form = DailyPhraseForm(instance=phrase, committee=committee)
+        # If phrase is for a specific day, show all choices except those taken by others
+        if phrase.day_of_week != 'all':
+            taken_days = DailyPhrase.objects.filter(
+                committee=committee
+            ).exclude(id=phrase.id).values_list('day_of_week', flat=True)
+
+            available_days = [
+                (code, name) for code, name in DailyPhrase.DAY_CHOICES
+                if code not in taken_days or code == phrase.day_of_week
+            ]
+            form.fields['day_of_week'].choices = available_days
 
     context = {
         'committee': committee,
         'form': form,
         'phrase': phrase,
-        'title': 'تعديل عبارة اليوم'
+        'title': f'تعديل عبارة {phrase.get_day_of_week_display()}'
     }
     return render(request, 'cultural_committee/daily_phrase_form.html', context)
 
@@ -1067,12 +1069,10 @@ def delete_daily_phrase(request, phrase_id):
     phrase = get_object_or_404(DailyPhrase, id=phrase_id, committee=committee)
 
     if request.method == 'POST':
-        phrase_date = phrase.display_date
         phrase.delete()
 
         UserActivity.objects.create(
             user=request.user,
-            action=f'حذف عبارة اليوم: {phrase_date}',
             ip_address=get_client_ip(request)
         )
 

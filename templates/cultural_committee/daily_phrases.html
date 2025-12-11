@@ -368,7 +368,7 @@
         <div class="col-md-6">
             <h4>
                 <i class="fas fa-quote-right"></i>
-                إدارة عبارات اليوم
+                إدارة عبارات الأسبوع
             </h4>
         </div>
         <div class="col-md-6 text-start">
@@ -393,7 +393,53 @@
     </div>
 </div>
 
-<!-- Phrases List -->
+<!-- Days of Week Overview -->
+<div class="row mb-4 fade-in-up">
+    {% for code, day_info in days_dict.items %}
+    <div class="col-md-4 col-lg-3 mb-3">
+        <div class="phrase-card small-card {% if not day_info.phrase %}empty-day{% endif %}">
+            <div class="phrase-meta mb-2">
+                <strong>{{ day_info.name }}</strong>
+                {% if day_info.phrase and day_info.phrase.is_today_phrase %}
+                <span class="today-badge badge-sm">
+                    <i class="fas fa-star"></i>
+                    اليوم
+                </span>
+                {% endif %}
+            </div>
+
+            {% if day_info.phrase %}
+            <div class="phrase-content small">
+                {{ day_info.phrase.phrase|truncatechars:100 }}
+                {% if day_info.phrase.author %}
+                <div class="phrase-author mt-2">
+                    <small><i>{{ day_info.phrase.author }}</i></small>
+                </div>
+                {% endif %}
+            </div>
+            <div class="phrase-actions mt-2">
+                <a href="{% url 'cultural_edit_daily_phrase' day_info.phrase.id %}" class="btn-sm btn-outline-primary">
+                    <i class="fas fa-edit"></i>
+                    تعديل
+                </a>
+            </div>
+            {% else %}
+            <div class="empty-day-state text-center py-3">
+                <i class="fas fa-plus-circle text-muted"></i>
+                <p class="text-muted mb-0">لا توجد عبارة</p>
+                {% if code not in taken_days %}
+                <a href="{% url 'cultural_add_daily_phrase' %}" class="btn-sm btn-outline-secondary mt-2">
+                    إضافة
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Existing Phrases List -->
 <div class="row">
     <div class="col-12">
         {% for phrase in phrases %}
@@ -404,10 +450,11 @@
 
             <div class="phrase-meta">
                 <div>
+                    <strong>{{ phrase.get_day_of_week_display }}</strong>
                     {% if phrase.author %}
-                    <strong>{{ phrase.author }}</strong>
-                    {% if phrase.category %} - {{ phrase.category }}{% endif %}
+                    - <strong>{{ phrase.author }}</strong>
                     {% endif %}
+                    {% if phrase.category %} - {{ phrase.category }}{% endif %}
                 </div>
                 <div class="d-flex align-items-center gap-3">
                     {% if phrase.is_today_phrase %}
@@ -417,8 +464,8 @@
                     </span>
                     {% endif %}
                     <span>
-                        <i class="far fa-calendar ms-1"></i>
-                        {{ phrase.display_date }}
+                        <i class="far fa-clock ms-1"></i>
+                        {{ phrase.created_at|date:"Y/m/d" }}
                     </span>
                 </div>
             </div>
@@ -448,7 +495,7 @@
         <div class="empty-state fade-in-up">
             <i class="fas fa-quote-right"></i>
             <h5>لا توجد عبارات بعد</h5>
-            <p>ابدأ بإضافة أول عبارة اليوم</p>
+            <p>ابدأ بإضافة أول عبارة للأسبوع</p>
         </div>
         {% endfor %}
     </div>
