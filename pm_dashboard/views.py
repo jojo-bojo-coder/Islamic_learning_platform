@@ -64,7 +64,6 @@ def pm_dashboard(request):
         avg_progress=Avg('student__progress')
     )
 
-    from django.utils import timezone
     from cultural_committee_dashboard.models import DailyPhrase
 
     today = timezone.now().date()
