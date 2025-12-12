@@ -1133,3 +1133,751 @@ def public_album_detail(request, album_id):
         'total_photos': photos.count(),
     }
     return render(request, 'main/album_detail.html', context)
+
+
+from django.http import HttpResponse
+from datetime import datetime, timedelta
+import csv
+from io import BytesIO
+
+try:
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    REPORTLAB_AVAILABLE = True
+except ImportError:
+    REPORTLAB_AVAILABLE = False
+
+try:
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+
+    OPENPYXL_AVAILABLE = True
+except ImportError:
+    OPENPYXL_AVAILABLE = False
+
+
+@login_required
+def export_calendar_ics(request):
+    """Export calendar as ICS file"""
+    program_id = request.GET.get('program_id')
+    view_type = request.GET.get('view', 'monthly')
+    year = int(request.GET.get('year', timezone.now().year))
+    month = int(request.GET.get('month', timezone.now().month))
+    week = int(request.GET.get('week', timezone.now().isocalendar()[1]))
+
+    program = get_object_or_404(Program, id=program_id)
+
+    # Check permissions
+    if not has_permission_for_program(request.user, program):
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذا التقويم')
+        return redirect('home')
+
+    # Get date range
+    if view_type == 'weekly':
+        jan_1 = datetime(year, 1, 1).date()
+        start_date = jan_1 + timedelta(weeks=week - 1)
+        start_date = start_date - timedelta(days=(start_date.weekday() + 1) % 7)
+        end_date = start_date + timedelta(days=6)
+    else:
+        start_date = datetime(year, month, 1).date()
+        end_date = datetime(year, month, monthrange(year, month)[1]).date()
+
+    # Get all events
+    events = ScheduleEvent.objects.filter(
+        program=program,
+        start_date__gte=start_date,
+        start_date__lte=end_date
+    ).select_related('committee', 'created_by')
+
+    # Filter by committee if supervisor
+    if request.user.role == 'committee_supervisor':
+        try:
+            committee = Committee.objects.get(supervisor=request.user)
+            events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
+        except Committee.DoesNotExist:
+            pass
+
+    # Create ICS content
+    response = HttpResponse(content_type='text/calendar; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="calendar_{program.name}_{year}_{month}.ics"'
+
+    ics_content = ["BEGIN:VCALENDAR"]
+    ics_content.append("VERSION:2.0")
+    ics_content.append(f"PRODID:-//{program.name}//Calendar//AR")
+    ics_content.append("CALSCALE:GREGORIAN")
+    ics_content.append("METHOD:PUBLISH")
+
+    for event in events:
+        ics_content.append("BEGIN:VEVENT")
+
+        # Format dates
+        dtstart = event.start_date.strftime('%Y%m%d')
+        if event.start_time:
+            dtstart += f"T{event.start_time.strftime('%H%M%S')}"
+        ics_content.append(f"DTSTART:{dtstart}")
+
+        if event.end_date:
+            dtend = event.end_date.strftime('%Y%m%d')
+            if event.end_time:
+                dtend += f"T{event.end_time.strftime('%H%M%S')}"
+            ics_content.append(f"DTEND:{dtend}")
+
+        ics_content.append(f"SUMMARY:{event.title}")
+        ics_content.append(f"DESCRIPTION:{event.description}")
+
+        if event.location:
+            ics_content.append(f"LOCATION:{event.location}")
+
+        ics_content.append(f"UID:{event.id}@{program.name}")
+        ics_content.append(f"DTSTAMP:{timezone.now().strftime('%Y%m%dT%H%M%SZ')}")
+        ics_content.append("END:VEVENT")
+
+    ics_content.append("END:VCALENDAR")
+
+    response.write('\r\n'.join(ics_content))
+    return response
+
+
+@login_required
+def export_calendar_excel(request):
+    """Export calendar as Excel file"""
+    if not OPENPYXL_AVAILABLE:
+        messages.error(request, 'مكتبة Excel غير متوفرة. الرجاء تثبيت openpyxl')
+        return redirect('schedule_calendar')
+
+    program_id = request.GET.get('program_id')
+    view_type = request.GET.get('view', 'monthly')
+    year = int(request.GET.get('year', timezone.now().year))
+    month = int(request.GET.get('month', timezone.now().month))
+    week = int(request.GET.get('week', timezone.now().isocalendar()[1]))
+
+    program = get_object_or_404(Program, id=program_id)
+
+    # Check permissions
+    if not has_permission_for_program(request.user, program):
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذا التقويم')
+        return redirect('home')
+
+    # Get date range
+    if view_type == 'weekly':
+        jan_1 = datetime(year, 1, 1).date()
+        start_date = jan_1 + timedelta(weeks=week - 1)
+        start_date = start_date - timedelta(days=(start_date.weekday() + 1) % 7)
+        end_date = start_date + timedelta(days=6)
+    else:
+        start_date = datetime(year, month, 1).date()
+        end_date = datetime(year, month, monthrange(year, month)[1]).date()
+
+    # Get all events
+    events = ScheduleEvent.objects.filter(
+        program=program,
+        start_date__gte=start_date,
+        start_date__lte=end_date
+    ).select_related('committee', 'created_by').order_by('start_date', 'start_time')
+
+    tasks = Task.objects.filter(
+        program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee').order_by('due_date')
+
+    activities = Activity.objects.filter(
+        program=program,
+        date__gte=start_date,
+        date__lte=end_date
+    ).select_related('committee').order_by('date')
+
+    # Filter by committee if supervisor
+    if request.user.role == 'committee_supervisor':
+        try:
+            committee = Committee.objects.get(supervisor=request.user)
+            events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
+            tasks = tasks.filter(Q(committee=committee) | Q(committee__isnull=True))
+            activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
+        except Committee.DoesNotExist:
+            pass
+
+    # Create Excel workbook
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "التقويم"
+    ws.right_to_left = True
+
+    # Styles
+    header_fill = PatternFill(start_color="0084AB", end_color="0084AB", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    header_alignment = Alignment(horizontal="center", vertical="center")
+    border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+
+    # Headers
+    headers = ["التاريخ", "النوع", "العنوان", "الوصف", "الوقت", "المكان", "اللجنة", "الحالة"]
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num, value=header)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        cell.border = border
+
+    # Add events
+    row = 2
+    for event in events:
+        ws.cell(row=row, column=1, value=event.start_date.strftime('%Y-%m-%d')).border = border
+        ws.cell(row=row, column=2, value=event.get_event_type_display()).border = border
+        ws.cell(row=row, column=3, value=event.title).border = border
+        ws.cell(row=row, column=4, value=event.description).border = border
+        ws.cell(row=row, column=5, value=event.start_time.strftime('%H:%M') if event.start_time else '').border = border
+        ws.cell(row=row, column=6, value=event.location or '').border = border
+        ws.cell(row=row, column=7, value=event.committee.name if event.committee else '').border = border
+        ws.cell(row=row, column=8, value=event.get_status_display()).border = border
+        row += 1
+
+    # Add tasks
+    for task in tasks:
+        ws.cell(row=row, column=1, value=task.due_date.strftime('%Y-%m-%d')).border = border
+        ws.cell(row=row, column=2, value='مهمة').border = border
+        ws.cell(row=row, column=3, value=task.title).border = border
+        ws.cell(row=row, column=4, value=task.description).border = border
+        ws.cell(row=row, column=5, value='').border = border
+        ws.cell(row=row, column=6, value='').border = border
+        ws.cell(row=row, column=7, value=task.committee.name if task.committee else '').border = border
+        ws.cell(row=row, column=8, value=task.get_status_display()).border = border
+        row += 1
+
+    # Add activities
+    for activity in activities:
+        ws.cell(row=row, column=1, value=activity.date.strftime('%Y-%m-%d')).border = border
+        ws.cell(row=row, column=2, value='نشاط').border = border
+        ws.cell(row=row, column=3, value=activity.name).border = border
+        ws.cell(row=row, column=4, value=activity.description or '').border = border
+        ws.cell(row=row, column=5, value=activity.time.strftime('%H:%M') if activity.time else '').border = border
+        ws.cell(row=row, column=6, value=activity.location or '').border = border
+        ws.cell(row=row, column=7, value=activity.committee.name if activity.committee else '').border = border
+        ws.cell(row=row, column=8, value='').border = border
+        row += 1
+
+    # Adjust column widths
+    for col in range(1, 9):
+        ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 20
+
+    # Save to response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="calendar_{program.name}_{year}_{month}.xlsx"'
+
+    wb.save(response)
+    return response
+
+
+@login_required
+def export_calendar_pdf(request):
+    """Export calendar as PDF file with Arabic support - includes all event types"""
+    try:
+        from reportlab.lib import colors
+        from reportlab.lib.pagesizes import A4
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.units import cm
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+        from io import BytesIO
+        import os
+        from django.conf import settings
+
+        REPORTLAB_AVAILABLE = True
+    except ImportError as e:
+        print(f"❌ ReportLab import error: {e}")
+        messages.error(request, 'مكتبة PDF غير متوفرة. الرجاء تثبيت reportlab')
+        return redirect('schedule_calendar')
+
+    try:
+        import arabic_reshaper
+        from bidi.algorithm import get_display
+        ARABIC_TEXT_SUPPORT = True
+    except ImportError:
+        ARABIC_TEXT_SUPPORT = False
+        print("⚠ Arabic text support libraries not found")
+
+    def process_arabic_text(text):
+        """Process Arabic text for proper RTL display"""
+        if not text or not isinstance(text, str):
+            return text or ''
+
+        if not ARABIC_TEXT_SUPPORT:
+            return text
+
+        try:
+            reshaper = arabic_reshaper.ArabicReshaper()
+            reshaped_text = reshaper.reshape(text)
+            bidi_text = get_display(reshaped_text)
+            return bidi_text
+        except Exception as e:
+            print(f"⚠ Arabic text processing error: {e}")
+            return text
+
+    def hex_to_rgb(hex_color):
+        """Convert hex color to RGB tuple (0-1 scale)"""
+        hex_color = hex_color.lstrip('#')
+        if len(hex_color) == 3:
+            hex_color = ''.join([c * 2 for c in hex_color])
+
+        r = int(hex_color[0:2], 16) / 255.0
+        g = int(hex_color[2:4], 16) / 255.0
+        b = int(hex_color[4:6], 16) / 255.0
+        return (r, g, b)
+
+    # Get parameters
+    program_id = request.GET.get('program_id')
+    view_type = request.GET.get('view', 'monthly')
+    year = int(request.GET.get('year', timezone.now().year))
+    month = int(request.GET.get('month', timezone.now().month))
+    week = int(request.GET.get('week', timezone.now().isocalendar()[1]))
+
+    program = get_object_or_404(Program, id=program_id)
+
+    if not has_permission_for_program(request.user, program):
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذا التقويم')
+        return redirect('home')
+
+    # Get date range
+    if view_type == 'weekly':
+        jan_1 = datetime(year, 1, 1).date()
+        start_date = jan_1 + timedelta(weeks=week - 1)
+        start_date = start_date - timedelta(days=(start_date.weekday() + 1) % 7)
+        end_date = start_date + timedelta(days=6)
+    else:
+        start_date = datetime(year, month, 1).date()
+        end_date = datetime(year, month, monthrange(year, month)[1]).date()
+
+    # Get all types of events/tasks
+    all_items = []
+
+    # Schedule Events
+    events = ScheduleEvent.objects.filter(
+        program=program,
+        start_date__gte=start_date,
+        start_date__lte=end_date
+    ).select_related('committee', 'created_by').order_by('start_date', 'start_time')
+
+    for event in events:
+        all_items.append({
+            'date': event.start_date,
+            'type': 'حدث',
+            'title': event.title,
+            'description': event.description,
+            'committee': event.committee.name if event.committee else '',
+            'item_type': 'event',
+            'event_obj': event
+        })
+
+    # Tasks
+    tasks = Task.objects.filter(
+        program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee').order_by('due_date')
+
+    for task in tasks:
+        all_items.append({
+            'date': task.due_date,
+            'type': 'مهمة',
+            'title': task.title,
+            'description': task.description,
+            'committee': task.committee.name if task.committee else '',
+            'item_type': 'task',
+            'event_obj': task
+        })
+
+    # Activities
+    activities = Activity.objects.filter(
+        program=program,
+        date__gte=start_date,
+        date__lte=end_date
+    ).select_related('committee').order_by('date')
+
+    for activity in activities:
+        all_items.append({
+            'date': activity.date,
+            'type': 'نشاط',
+            'title': activity.name,
+            'description': activity.description or '',
+            'committee': activity.committee.name if activity.committee else '',
+            'item_type': 'activity',
+            'event_obj': activity
+        })
+
+    # Cultural Tasks
+    cultural_tasks = CulturalTask.objects.filter(
+        committee__program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee')
+
+    for task in cultural_tasks:
+        all_items.append({
+            'date': task.due_date,
+            'type': 'مهمة ثقافية',
+            'title': task.title,
+            'description': task.description or '',
+            'committee': task.committee.name if task.committee else '',
+            'item_type': 'cultural_task',
+            'event_obj': task
+        })
+
+    # Task Sessions
+    task_sessions = TaskSession.objects.filter(
+        task__committee__program=program,
+        date__gte=start_date,
+        date__lte=end_date
+    ).select_related('task', 'task__committee')
+
+    for session in task_sessions:
+        all_items.append({
+            'date': session.date,
+            'type': 'جلسة مهمة',
+            'title': session.title or f"جلسة {session.task.title}",
+            'description': session.description or '',
+            'committee': session.task.committee.name if session.task and session.task.committee else '',
+            'item_type': 'task_session',
+            'event_obj': session
+        })
+
+    # Operations Tasks
+    operations_tasks = OperationsTask.objects.filter(
+        committee__program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee')
+
+    for task in operations_tasks:
+        all_items.append({
+            'date': task.due_date,
+            'type': 'مهمة تشغيلية',
+            'title': task.title,
+            'description': task.description or '',
+            'committee': task.committee.name if task.committee else '',
+            'item_type': 'operations_task',
+            'event_obj': task
+        })
+
+    # Scientific Tasks
+    scientific_tasks = ScientificTask.objects.filter(
+        committee__program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee')
+
+    for task in scientific_tasks:
+        all_items.append({
+            'date': task.due_date,
+            'type': 'مهمة علمية',
+            'title': task.title,
+            'description': task.description or '',
+            'committee': task.committee.name if task.committee else '',
+            'item_type': 'scientific_task',
+            'event_obj': task
+        })
+
+    # Lectures
+    lectures = Lecture.objects.filter(
+        committee__program=program,
+        date__gte=start_date,
+        date__lte=end_date
+    ).select_related('committee', 'created_by')
+
+    for lecture in lectures:
+        all_items.append({
+            'date': lecture.date,
+            'type': 'محاضرة',
+            'title': lecture.title,
+            'description': lecture.description or '',
+            'committee': lecture.committee.name if lecture.committee else '',
+            'item_type': 'lecture',
+            'event_obj': lecture
+        })
+
+    # Sharia Tasks
+    sharia_tasks = ShariaTask.objects.filter(
+        committee__program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee')
+
+    for task in sharia_tasks:
+        all_items.append({
+            'date': task.due_date,
+            'type': 'مهمة شرعية',
+            'title': task.title,
+            'description': task.description or '',
+            'committee': task.committee.name if task.committee else '',
+            'item_type': 'sharia_task',
+            'event_obj': task
+        })
+
+    # Family Competitions
+    family_competitions = FamilyCompetition.objects.filter(
+        committee__program=program,
+        start_date__lte=end_date,
+        end_date__gte=start_date
+    ).select_related('committee')
+
+    for comp in family_competitions:
+        all_items.append({
+            'date': comp.start_date,
+            'type': 'مسابقة أسرية',
+            'title': comp.title,
+            'description': comp.description or '',
+            'committee': comp.committee.name if comp.committee else '',
+            'item_type': 'family_competition',
+            'event_obj': comp
+        })
+
+    # Sports Tasks
+    sports_tasks = SportsTask.objects.filter(
+        committee__program=program,
+        due_date__gte=start_date,
+        due_date__lte=end_date
+    ).select_related('committee')
+
+    for task in sports_tasks:
+        all_items.append({
+            'date': task.due_date,
+            'type': 'مهمة رياضية',
+            'title': task.title,
+            'description': task.description or '',
+            'committee': task.committee.name if task.committee else '',
+            'item_type': 'sports_task',
+            'event_obj': task
+        })
+
+    # Matches
+    matches = Match.objects.filter(
+        committee__program=program,
+        date__gte=start_date,
+        date__lte=end_date
+    ).select_related('committee', 'created_by')
+
+    for match in matches:
+        all_items.append({
+            'date': match.date,
+            'type': 'مباراة',
+            'title': match.title,
+            'description': match.description or '',
+            'committee': match.committee.name if match.committee else '',
+            'item_type': 'match',
+            'event_obj': match
+        })
+
+    # Filter by committee if supervisor
+    if request.user.role == 'committee_supervisor':
+        try:
+            committee = Committee.objects.get(supervisor=request.user)
+            filtered_items = []
+            for item in all_items:
+                if item['committee'] == committee.name:
+                    filtered_items.append(item)
+            all_items = filtered_items
+        except Committee.DoesNotExist:
+            all_items = []
+
+    # Sort all items by date
+    all_items.sort(key=lambda x: x['date'])
+
+    # Create PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="calendar_{program.name}_{year}_{month}.pdf"'
+
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=A4,
+        rightMargin=1.5 * cm,
+        leftMargin=1.5 * cm,
+        topMargin=2 * cm,
+        bottomMargin=2 * cm
+    )
+
+    # Try to register Arabic font
+    arabic_font = 'Helvetica'
+    try:
+        font_paths = [
+            os.path.join(settings.BASE_DIR, 'main', 'static', 'fonts', 'IBMPlexSansArabic-Regular.ttf'),
+            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
+            r'C:\Windows\Fonts\arial.ttf',
+        ]
+
+        for font_path in font_paths:
+            if os.path.exists(font_path):
+                try:
+                    pdfmetrics.registerFont(TTFont('IBMPlexArabic', font_path))
+                    arabic_font = 'IBMPlexArabic'
+                    break
+                except Exception as e:
+                    continue
+    except Exception as e:
+        arabic_font = 'Helvetica'
+
+    # Create styles
+    styles = getSampleStyleSheet()
+
+    primary_color = (0, 0.33, 0.67)
+
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=20,
+        textColor=primary_color,
+        spaceAfter=20,
+        alignment=TA_CENTER,
+        fontName=arabic_font,
+    )
+
+    header_style = ParagraphStyle(
+        'CustomHeader',
+        parent=styles['Normal'],
+        fontSize=11,
+        textColor=(0, 0, 0),
+        alignment=TA_CENTER,
+        fontName=arabic_font,
+        leading=14,
+    )
+
+    cell_style = ParagraphStyle(
+        'CustomCell',
+        parent=styles['Normal'],
+        fontSize=9,
+        alignment=TA_CENTER,
+        fontName=arabic_font,
+        leading=12,
+    )
+
+    legend_style = ParagraphStyle(
+        'LegendStyle',
+        parent=styles['Normal'],
+        fontSize=12,
+        alignment=TA_RIGHT,
+        fontName=arabic_font,
+        spaceAfter=5,
+    )
+
+    # Build story
+    story = []
+
+    # Title
+    title_text = process_arabic_text(f'تقويم {program.name} - {year}/{month}')
+    story.append(Paragraph(title_text, title_style))
+    story.append(Spacer(1, 0.3 * cm))
+
+
+    # Legend items as simple text
+    legend_items = [
+        ('اجتماع', '#8B5CF6'),
+        ('مبيت', '#EC4899'),
+        ('رحلة', '#10B981'),
+        ('الثقافية', '#3B82F6'),
+        ('الرياضية', '#0EA5E9'),
+        ('العلمية', '#FB923C'),
+        ('الشرعية', '#F59E0B'),
+        ('التشغيلية', '#8B5A2B'),
+        ('المهمات', '#6B7280'),
+        ('النشاطات', '#10B981'),
+        ('المباريات', '#EF4444'),
+        ('المحاضرات', '#8B5CF6'),
+        ('المسابقات', '#EC4899'),
+    ]
+
+    # Build table data with only 5 columns: التاريخ, النوع, العنوان, الوصف, اللجنة
+    table_data = []
+
+    # Header row (only 5 columns now)
+    headers = ['التاريخ', 'النوع', 'العنوان', 'الوصف', 'اللجنة']
+    table_data.append([Paragraph(process_arabic_text(header), header_style) for header in headers])
+
+    # Add all items to table
+    for item in all_items:
+        row = []
+
+        # Date
+        date_str = item['date'].strftime('%Y-%m-%d')
+        row.append(Paragraph(process_arabic_text(date_str), cell_style))
+
+        # Type
+        row.append(Paragraph(process_arabic_text(item['type']), cell_style))
+
+        # Title
+        title = item['title'][:30] + '...' if len(item['title']) > 30 else item['title']
+        row.append(Paragraph(process_arabic_text(title), cell_style))
+
+        # Description
+        desc = item['description'][:40] + '...' if len(item['description']) > 40 else item['description']
+        row.append(Paragraph(process_arabic_text(desc), cell_style))
+
+        # Committee
+        row.append(Paragraph(process_arabic_text(item['committee']), cell_style))
+
+        table_data.append(row)
+
+    # Create table with 5 columns
+    col_widths = [2.5 * cm, 2.5 * cm, 4.5 * cm, 5 * cm, 3 * cm]
+    table = Table(table_data, colWidths=col_widths, repeatRows=1)
+
+    # Style table
+    table_style = [
+        # Header row
+        ('BACKGROUND', (0, 0), (-1, 0), (0.21, 0.38, 0.57)),
+        ('TEXTCOLOR', (0, 0), (-1, 0), (1, 1, 1)),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+        ('FONTNAME', (0, 0), (-1, 0), arabic_font),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('TOPPADDING', (0, 0), (-1, 0), 8),
+
+        # Data rows
+        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 1), (-1, -1), 'TOP'),
+        ('GRID', (0, 0), (-1, -1), 0.5, (0.7, 0.7, 0.7)),
+        ('FONTNAME', (0, 1), (-1, -1), arabic_font),
+        ('FONTSIZE', (0, 1), (-1, -1), 8),
+        ('LEFTPADDING', (0, 0), (-1, -1), 4),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+        ('TOPPADDING', (0, 1), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
+    ]
+
+    # Add alternating row colors for better readability
+    for row_idx in range(1, len(table_data)):
+        if row_idx % 2 == 0:
+            table_style.append(('BACKGROUND', (0, row_idx), (-1, row_idx), (0.95, 0.95, 0.95)))
+
+    table.setStyle(TableStyle(table_style))
+    story.append(table)
+
+    # Add summary
+    story.append(Spacer(1, 0.5 * cm))
+    summary_text = process_arabic_text(f'إجمالي العناصر: {len(all_items)}')
+    summary_style = ParagraphStyle(
+        'SummaryStyle',
+        parent=styles['Normal'],
+        fontSize=10,
+        alignment=TA_CENTER,
+        fontName=arabic_font,
+        spaceBefore=10,
+    )
+    story.append(Paragraph(summary_text, summary_style))
+
+    # Build PDF
+    doc.build(story)
+
+    return response

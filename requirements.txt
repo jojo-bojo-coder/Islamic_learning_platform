@@ -1,6 +1,8 @@
+arabic-reshaper==3.0.0
 asgiref==3.9.2
 brotli==1.2.0
 cffi==2.0.0
+charset-normalizer==3.4.4
 cssselect2==0.8.0
 dj-database-url==3.0.1
 Django==5.2.6
@@ -17,9 +19,11 @@ psycopg2-binary==2.9.11
 pycparser==2.23
 pydyf==0.11.0
 pyphen==0.17.2
+python-bidi==0.6.7
 python-dateutil==2.9.0.post0
 python-decouple==3.8
 pytz==2025.2
+reportlab==4.4.6
 six==1.17.0
 sqlparse==0.5.3
 tinycss2==1.4.0

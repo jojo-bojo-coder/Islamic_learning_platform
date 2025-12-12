@@ -20,4 +20,8 @@ urlpatterns = [
     path('objects/<str:object_type>/<int:program_id>/', views.object_list, name='object_list'),
     path('albums/', views.public_albums, name='public_albums'),
     path('albums/<int:album_id>/', views.public_album_detail, name='public_album_detail'),
+
+    path('schedule/export/ics/', views.export_calendar_ics, name='export_calendar_ics'),
+    path('schedule/export/excel/', views.export_calendar_excel, name='export_calendar_excel'),
+    path('schedule/export/pdf/', views.export_calendar_pdf, name='export_calendar_pdf'),
 ]
