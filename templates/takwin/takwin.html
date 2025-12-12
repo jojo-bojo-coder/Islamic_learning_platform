@@ -32,6 +32,52 @@
         min-height: 100vh;
     }
 
+    /* شريط التنقل الإضافي */
+    .management-nav {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
+        padding: 15px 0;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 132, 171, 0.2);
+    }
+
+    .management-nav .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .management-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--blue-dark);
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .management-btn:hover {
+        background: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        color: var(--blue-primary);
+    }
+
+    .management-btn i {
+        font-size: 1.2rem;
+    }
+
+    /* باقي CSS كما هو... */
+
     /* الحاوي الرئيسي */
     .dashboard {
         max-width: 1200px;
@@ -413,6 +459,16 @@
             padding: 15px;
         }
 
+        .management-nav {
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .management-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+
         .takween h2 {
             font-size: 2rem;
         }
@@ -469,6 +525,14 @@
 
 {% block content %}
 <div class="dashboard">
+    <div class="management-nav" style="animation: slideDown 0.5s ease-out;">
+        <div class="container">
+            <a href="{% url 'takwin_management' %}" class="management-btn">
+                <i class="fas fa-cogs"></i> إدارة التكوينات
+            </a>
+        </div>
+    </div>
+
     <div class="takween">
         <h2>تكوين</h2>
         <p>اختر أحد الجوانب التالية لاستعراض محتوياتها</p>

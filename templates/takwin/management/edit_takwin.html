@@ -1,0 +1,20 @@
+{% extends 'takwin/management/add_takwin.html' %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .form-header h1 {
+        color: #FF8E53;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #FF8E53, #FF6B6B);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% with title="تعديل التكوين" submit_text="تحديث التكوين" %}
+{{ block.super }}
+{% endwith %}
+{% endblock %}

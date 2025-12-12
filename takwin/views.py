@@ -196,3 +196,123 @@ def pdf_file_view_takwin(request, takwin_id):
             raise Http404("File not found on disk")
     except Exception as e:
         raise Http404(f"Error loading file: {str(e)}")
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from .models import Takwin, UserTakwin
+from .forms import TakwinForm
+from django.http import FileResponse, Http404
+from accounts.models import UserActivity
+import os
+import mimetypes
+
+
+def is_program_manager(user):
+    return user.is_authenticated and hasattr(user, 'role') and user.role == 'program_manager'
+
+
+
+@login_required(login_url="/accounts/login/")
+@user_passes_test(is_program_manager)
+def takwin_management(request):
+    """لوحة تحكم إدارة التكوينات"""
+    takwins = Takwin.objects.all().order_by('-created_at')
+
+    # إحصائيات
+    stats = {
+        'total': takwins.count(),
+        'tarbawiu': takwins.filter(aspect='tarbawiu').count(),
+        'shareiu': takwins.filter(aspect='shareiu').count(),
+        'mhari': takwins.filter(aspect='mhari').count(),
+        'medad': takwins.filter(aspect='medad').count(),
+    }
+
+    return render(request, 'takwin/management/dashboard.html', {
+        'takwins': takwins,
+        'stats': stats,
+    })
+
+
+@login_required(login_url="/accounts/login/")
+@user_passes_test(is_program_manager)
+def add_takwin(request):
+    """إضافة تكوين جديد"""
+    if request.method == 'POST':
+        form = TakwinForm(request.POST, request.FILES)
+        if form.is_valid():
+            takwin = form.save()
+
+            # تسجيل النشاط
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'إضافة تكوين جديد: {takwin.title}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم إضافة التكوين بنجاح!')
+            return redirect('takwin_management')
+    else:
+        form = TakwinForm()
+
+    return render(request, 'takwin/management/add_takwin.html', {'form': form})
+
+
+@login_required(login_url="/accounts/login/")
+@user_passes_test(is_program_manager)
+def edit_takwin(request, takwin_id):
+    """تعديل تكوين موجود"""
+    takwin = get_object_or_404(Takwin, id=takwin_id)
+
+    if request.method == 'POST':
+        form = TakwinForm(request.POST, request.FILES, instance=takwin)
+        if form.is_valid():
+            updated_takwin = form.save()
+
+            # تسجيل النشاط
+            UserActivity.objects.create(
+                user=request.user,
+                action=f'تعديل تكوين: {updated_takwin.title}',
+                ip_address=get_client_ip(request)
+            )
+
+            messages.success(request, 'تم تحديث التكوين بنجاح!')
+            return redirect('takwin_management')
+    else:
+        form = TakwinForm(instance=takwin)
+
+    return render(request, 'takwin/management/edit_takwin.html', {
+        'form': form,
+        'takwin': takwin
+    })
+
+
+@login_required(login_url="/accounts/login/")
+@user_passes_test(is_program_manager)
+def delete_takwin(request, takwin_id):
+    """حذف تكوين"""
+    takwin = get_object_or_404(Takwin, id=takwin_id)
+
+    if request.method == 'POST':
+        title = takwin.title
+
+        # حذف الملفات المرتبطة إذا كانت موجودة
+        if takwin.image and os.path.exists(takwin.image.path):
+            os.remove(takwin.image.path)
+        if takwin.pdf and os.path.exists(takwin.pdf.path):
+            os.remove(takwin.pdf.path)
+
+        takwin.delete()
+
+        # تسجيل النشاط
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف تكوين: {title}',
+            ip_address=get_client_ip(request)
+        )
+
+        messages.success(request, 'تم حذف التكوين بنجاح!')
+        return redirect('takwin_management')
+
+    return render(request, 'takwin/management/delete_takwin.html', {'takwin': takwin})
