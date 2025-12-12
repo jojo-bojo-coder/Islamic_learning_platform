@@ -1074,11 +1074,6 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'takwin' %}" class="navbar-link {% if 'takwin' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-book-open"></i>تكوين
-                        </a>
-                    </li>
-                    <li>
                         <a href="{% url 'points_main' %}" class="navbar-link {% if 'points' in request.resolver_match.url_name %}active{% endif %}">
                             <i class="fas fa-chart-line"></i>النقاط
                         </a>
@@ -1143,11 +1138,6 @@
                 <li>
                     <a href="{% url 'user_management' %}" class="{% if 'user' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-users"></i> المستخدمين
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'takwin' %}" class="{% if 'takwin' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-book-open"></i> تكوين
                     </a>
                 </li>
                 <li>
