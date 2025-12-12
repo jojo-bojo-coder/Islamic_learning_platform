@@ -735,6 +735,7 @@ from sports_committee_dashboard.models import SportsTask,SportsNotification
 from sharia_committee_dashboard.models import ShariaTask,ShariaNotification
 from cultural_committee_dashboard.models import CulturalNotification,CulturalTask
 from operations_committee_dashboard.models import OperationsTask,OperationsNotification
+
 @login_required
 def add_task(request):
     if request.user.role != 'program_manager':
@@ -752,10 +753,31 @@ def add_task(request):
         if form.is_valid():
             task_data = form.cleaned_data
 
-            # Check if this is a scientific committee task
+            # Check if this is a committee-specific task
             committee = task_data.get('committee')
             assigned_to = task_data.get('assigned_to')
 
+            # Create the main task first
+            task = form.save(commit=False)
+            task.program = program
+            task.created_by = request.user
+
+            # Set start_date if not provided
+            if not task.start_date:
+                task.start_date = task.due_date
+
+            # Convert recurrence_days to JSON format if it's a list
+            if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                if isinstance(task.recurrence_days, list):
+                    # Already a list, good to go
+                    pass
+                else:
+                    # Convert to list if needed
+                    task.recurrence_days = list(task.recurrence_days)
+
+            task.save()
+
+            # Now handle committee-specific tasks
             is_scientific_committee = (
                     committee and
                     assigned_to and
@@ -764,42 +786,40 @@ def add_task(request):
             )
 
             if is_scientific_committee:
-                # Create ScientificTask instead of regular Task
+                # Create ScientificTask
                 scientific_task = ScientificTask.objects.create(
                     committee=committee,
-                    task_type='other',  # Default type, you might want to add a field for this
-                    title=f"مهمة من المدير: {task_data['title']}",
-                    description=task_data['description'],
+                    task_type='other',
+                    title=f"مهمة من المدير: {task.title}",
+                    description=task.description,
                     assigned_to=assigned_to,
                     status='pending',
-                    due_date=task_data['due_date'],
+                    due_date=task.due_date,
                     created_by=request.user
                 )
 
-                # Create scientific notification
+                # Link to main task
+                task.is_scientific_task = True
+                task.scientific_task_ref = scientific_task
+                task.save()
+
+                # Create notification
                 ScientificNotification.objects.create(
                     user=assigned_to,
                     committee=committee,
                     notification_type='task_added',
                     title='مهمة جديدة من مدير البرنامج',
-                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task_data["title"]}',
+                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task.title}',
                     related_task=scientific_task
                 )
 
                 UserActivity.objects.create(
                     user=request.user,
-                    action=f'إضافة مهمة علمية: {task_data["title"]}',
+                    action=f'إضافة مهمة علمية: {task.title}',
                     ip_address=get_client_ip(request)
                 )
 
                 messages.success(request, 'تم إضافة المهمة العلمية بنجاح!')
-
-            is_sports_committee = (
-                    committee and
-                    assigned_to and
-                    assigned_to.role == 'committee_supervisor' and
-                    assigned_to.supervisor_type == 'sports'
-            )
 
             is_cultural_committee = (
                     committee and
@@ -809,78 +829,79 @@ def add_task(request):
             )
 
             if is_cultural_committee:
-                # Create CulturalTask instead of regular Task
+                # Create CulturalTask
                 cultural_task = CulturalTask.objects.create(
                     committee=committee,
-                    task_type='other',  # Default type for program manager tasks
-                    title=f"مهمة من مدير البرنامج: {task_data['title']}",
-                    description=task_data['description'],
+                    task_type='other',
+                    title=f"مهمة من مدير البرنامج: {task.title}",
+                    description=task.description,
                     assigned_to=assigned_to,
                     status='pending',
-                    due_date=task_data['due_date'],
+                    due_date=task.due_date,
                     created_by=request.user
                 )
 
-                # Create notification for cultural committee supervisor
+                # Link to main task
+                task.is_cultural_task = True
+                task.cultural_task_ref = cultural_task
+                task.save()
+
+                # Create notification
                 CulturalNotification.objects.create(
                     user=assigned_to,
                     committee=committee,
                     notification_type='task_added',
                     title='مهمة جديدة من مدير البرنامج',
-                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task_data["title"]}',
+                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task.title}',
                     related_task=cultural_task
                 )
 
-                # Also create regular Task for tracking in program manager dashboard
-                task = form.save(commit=False)
-                task.program = program
-                task.created_by = request.user
-                task.is_cultural_task = True  # Add this field to your Task model
-                task.cultural_task_ref = cultural_task  # Add this field to your Task model
-                task.save()
-
                 UserActivity.objects.create(
                     user=request.user,
-                    action=f'إضافة مهمة ثقافية: {task_data["title"]}',
+                    action=f'إضافة مهمة ثقافية: {task.title}',
                     ip_address=get_client_ip(request)
                 )
 
                 messages.success(request, 'تم إضافة المهمة الثقافية بنجاح!')
 
+            is_sports_committee = (
+                    committee and
+                    assigned_to and
+                    assigned_to.role == 'committee_supervisor' and
+                    assigned_to.supervisor_type == 'sports'
+            )
+
             if is_sports_committee:
-                # Create SportsTask for sports committee
+                # Create SportsTask
                 sports_task = SportsTask.objects.create(
                     committee=committee,
-                    task_type='other',  # Default type for program manager tasks
-                    title=f"مهمة من المدير: {task_data['title']}",
-                    description=task_data['description'],
+                    task_type='other',
+                    title=f"مهمة من المدير: {task.title}",
+                    description=task.description,
                     assigned_to_name=assigned_to.get_full_name() if assigned_to else "غير محدد",
                     status='pending',
-                    due_date=task_data['due_date'],
+                    due_date=task.due_date,
                     created_by=request.user
                 )
 
-                # Create notification for sports committee supervisor
+                # Link to main task
+                task.is_sports_task = True
+                task.sports_task_ref = sports_task
+                task.save()
+
+                # Create notification
                 SportsNotification.objects.create(
                     user=assigned_to,
                     committee=committee,
                     notification_type='task_added',
                     title='مهمة جديدة من مدير البرنامج',
-                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task_data["title"]}',
+                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task.title}',
                     related_task=sports_task
                 )
 
-                # Also create regular Task for tracking
-                task = form.save(commit=False)
-                task.program = program
-                task.created_by = request.user
-                task.is_sports_task = True  # Add this field to your Task model
-                task.sports_task_ref = sports_task  # Add this field to your Task model
-                task.save()
-
                 UserActivity.objects.create(
                     user=request.user,
-                    action=f'إضافة مهمة رياضية: {task_data["title"]}',
+                    action=f'إضافة مهمة رياضية: {task.title}',
                     ip_address=get_client_ip(request)
                 )
 
@@ -894,50 +915,37 @@ def add_task(request):
             )
 
             if is_operations_committee:
-                # Create OperationsTask instead of regular Task
+                # Create OperationsTask
                 operations_task = OperationsTask.objects.create(
                     committee=committee,
-                    task_type='other',  # Default type for program manager tasks
-                    title=f"مهمة من مدير البرنامج: {task_data['title']}",
-                    description=task_data['description'],
+                    task_type='other',
+                    title=f"مهمة من مدير البرنامج: {task.title}",
+                    description=task.description,
                     assigned_to=assigned_to,
-                    status='not_started',  # Use operations committee status
-                    priority=task_data.get('priority', 'medium'),
-                    due_date=task_data['due_date'],
+                    status='not_started',
+                    priority=task.priority,
+                    due_date=task.due_date,
                     created_by=request.user
                 )
 
-                # Create operations notification for the supervisor
+                # Link to main task
+                task.is_operations_task = True
+                task.operations_task_ref = operations_task
+                task.save()
+
+                # Create notification
                 OperationsNotification.objects.create(
                     user=assigned_to,
                     committee=committee,
                     notification_type='task_added',
                     title='مهمة جديدة من مدير البرنامج',
-                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task_data["title"]}',
+                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task.title}',
                     related_task=operations_task
                 )
 
-                # Also create regular Task for tracking in program manager dashboard
-                task = form.save(commit=False)
-                task.program = program
-                task.created_by = request.user
-                task.is_operations_task = True  # Add this field to your Task model
-                task.operations_task_ref = operations_task  # Add this field to your Task model
-                task.save()
-
-                # Create notification for the assigned user (if different from supervisor)
-                if assigned_to:
-                    Notification.objects.create(
-                        user=assigned_to,
-                        notification_type='task_added',
-                        title='مهمة جديدة',
-                        message=f'تم تعيين مهمة جديدة لك: {task_data["title"]}',
-                        related_task=task
-                    )
-
                 UserActivity.objects.create(
                     user=request.user,
-                    action=f'إضافة مهمة تشغيلية: {task_data["title"]}',
+                    action=f'إضافة مهمة تشغيلية: {task.title}',
                     ip_address=get_client_ip(request)
                 )
 
@@ -951,51 +959,44 @@ def add_task(request):
             )
 
             if is_sharia_committee:
-                # Create ShariaTask instead of regular Task
+                # Create ShariaTask
                 sharia_task = ShariaTask.objects.create(
                     committee=committee,
-                    task_type='other',  # Default type for program manager tasks
-                    title=f"مهمة من مدير البرنامج: {task_data['title']}",
-                    description=task_data['description'],
+                    task_type='other',
+                    title=f"مهمة من مدير البرنامج: {task.title}",
+                    description=task.description,
                     assigned_to=assigned_to,
                     status='pending',
-                    due_date=task_data['due_date'],
+                    due_date=task.due_date,
                     created_by=request.user
                 )
 
-                # Create sharia notification for the supervisor
+                # Link to main task
+                task.is_sharia_task = True
+                task.sharia_task_ref = sharia_task
+                task.save()
+
+                # Create notification
                 ShariaNotification.objects.create(
                     user=assigned_to,
                     committee=committee,
                     notification_type='task_added',
                     title='مهمة جديدة من مدير البرنامج',
-                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task_data["title"]}',
+                    message=f'تم تعيين مهمة جديدة لك من مدير البرنامج: {task.title}',
                     related_task=sharia_task
                 )
 
-                # Also create regular Task for tracking in program manager dashboard
-                task = form.save(commit=False)
-                task.program = program
-                task.created_by = request.user
-                task.is_sharia_task = True  # Add this field to your Task model
-                task.sharia_task_ref = sharia_task  # Add this field to your Task model
-                task.save()
-
                 UserActivity.objects.create(
                     user=request.user,
-                    action=f'إضافة مهمة شرعية: {task_data["title"]}',
+                    action=f'إضافة مهمة شرعية: {task.title}',
                     ip_address=get_client_ip(request)
                 )
 
                 messages.success(request, 'تم إضافة المهمة الشرعية بنجاح!')
 
-            else:
-                # Create regular task
-                task = form.save(commit=False)
-                task.program = program
-                task.created_by = request.user
-                task.save()
-
+            # If it's not a committee-specific task
+            if not any([is_scientific_committee, is_cultural_committee, is_sports_committee,
+                        is_operations_committee, is_sharia_committee]):
                 # Create notification for regular task
                 if task.assigned_to:
                     Notification.objects.create(
@@ -1012,7 +1013,11 @@ def add_task(request):
                     ip_address=get_client_ip(request)
                 )
 
-                messages.success(request, 'تم إضافة المهمة بنجاح!')
+                if task.is_recurring:
+                    messages.success(request,
+                                     f'تم إضافة المهمة المتكررة بنجاح! ({task.get_recurrence_pattern_display()})')
+                else:
+                    messages.success(request, 'تم إضافة المهمة بنجاح!')
 
             return redirect('pm_task_management')
     else:
@@ -1043,7 +1048,20 @@ def edit_task(request, task_id):
     if request.method == 'POST':
         form = TaskForm(request.POST, instance=task, program=program)
         if form.is_valid():
-            task = form.save()
+            task = form.save(commit=False)
+
+            # Set start_date if not provided
+            if not task.start_date:
+                task.start_date = task.due_date
+
+            # Convert recurrence_days to JSON format if it's a list
+            if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                if isinstance(task.recurrence_days, list):
+                    pass
+                else:
+                    task.recurrence_days = list(task.recurrence_days)
+
+            task.save()
 
             # Handle scientific committee task updates
             if task.is_scientific_task and task.scientific_task_ref:
@@ -1083,7 +1101,6 @@ def edit_task(request, task_id):
                     related_task=cultural_task
                 )
 
-            # Handle sharia committee task updates
             elif task.is_sharia_task and task.sharia_task_ref:
                 sharia_task = task.sharia_task_ref
                 sharia_task.title = f"مهمة من مدير البرنامج: {task.title}"
@@ -1102,7 +1119,6 @@ def edit_task(request, task_id):
                     related_task=sharia_task
                 )
 
-            # Handle sports committee task updates
             elif task.is_sports_task and task.sports_task_ref:
                 sports_task = task.sports_task_ref
                 sports_task.title = f"مهمة من مدير البرنامج: {task.title}"
@@ -1158,10 +1174,19 @@ def edit_task(request, task_id):
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم تعديل المهمة بنجاح!')
+            if task.is_recurring:
+                messages.success(request, f'تم تعديل المهمة المتكررة بنجاح! ({task.get_recurrence_pattern_display()})')
+            else:
+                messages.success(request, 'تم تعديل المهمة بنجاح!')
+
             return redirect('pm_task_management')
     else:
-        form = TaskForm(instance=task, program=program)
+        # Pre-populate form with existing data
+        initial_data = {}
+        if task.recurrence_days and isinstance(task.recurrence_days, list):
+            initial_data['recurrence_days'] = [str(day) for day in task.recurrence_days]
+
+        form = TaskForm(instance=task, program=program, initial=initial_data)
 
     context = {
         'program': program,
@@ -1188,6 +1213,8 @@ def delete_task(request, task_id):
 
     if request.method == 'POST':
         task_title = task.title
+        is_recurring = task.is_recurring
+        recurrence_pattern = task.get_recurrence_pattern_display() if task.is_recurring else None
 
         # Handle scientific committee task deletion
         if task.is_scientific_task and task.scientific_task_ref:
@@ -1218,7 +1245,6 @@ def delete_task(request, task_id):
 
             cultural_task.delete()
 
-        # Handle sharia committee task deletion
         elif task.is_sharia_task and task.sharia_task_ref:
             sharia_task = task.sharia_task_ref
 
@@ -1247,7 +1273,6 @@ def delete_task(request, task_id):
 
             operations_task.delete()
 
-        # Handle sports committee task deletion
         elif task.is_sports_task and task.sports_task_ref:
             sports_task = task.sports_task_ref
 
@@ -1271,21 +1296,27 @@ def delete_task(request, task_id):
                 message=f'تم حذف المهمة: {task_title}'
             )
 
+        # Delete the main task
         task.delete()
 
         UserActivity.objects.create(
             user=request.user,
-            action=f'حذف المهمة: {task_title}',
+            action=f'حذف المهمة: {task_title}' + (f' ({recurrence_pattern})' if is_recurring else ''),
             ip_address=get_client_ip(request)
         )
 
-        messages.success(request, 'تم حذف المهمة بنجاح!')
+        if is_recurring:
+            messages.success(request, f'تم حذف المهمة المتكررة بنجاح! ({recurrence_pattern})')
+        else:
+            messages.success(request, 'تم حذف المهمة بنجاح!')
+
         return redirect('pm_task_management')
 
     context = {
         'program': program,
         'object': task,
-        'type': 'مهمة'
+        'type': 'مهمة' + (' متكررة' if task.is_recurring else ''),
+        'extra_info': f'نمط التكرار: {task.get_recurrence_pattern_display()}' if task.is_recurring else None
     }
     return render(request, 'program_manager/confirm_delete.html', context)
 
