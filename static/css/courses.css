@@ -1,0 +1,554 @@
+/* استخدام نفس المتغيرات من director_base */
+:root {
+    --primary-green: #86B817;
+    --dark-green: #0B3B24;
+    --light-bg: #F8F9FA;
+    --white: #FFFFFF;
+    --text-dark: #1a1a1a;
+    --text-gray: #6c757d;
+    --border-light: #e8e8e8;
+    --blue-primary: #0084AB;
+    --blue-dark: #00576F;
+    --blue-gradient: #61bcd7;
+}
+
+/* التنسيق الأساسي */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'IBM Plex Sans Arabic', 'Sonar', sans-serif;
+    direction: rtl;
+    background-color: var(--light-bg);
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* العنوان الرئيسي مع الأنيميشن */
+h1 {
+    text-align: center;
+    color: var(--blue-primary);
+    font-size: 40px;
+    margin: 70px 0 30px;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(-50px);
+    animation: slideDown 1.5s ease-out forwards;
+    animation-delay: 0.3s;
+}
+
+@keyframes slideDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* حاوية البطاقات بتصميم الشبكة المرنة */
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* بطاقة البرنامج */
+.program-card {
+    background: linear-gradient(135deg, rgba(0, 132, 171, 0.05) 0%, var(--white) 70%);
+    border: 2px solid var(--border-light);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0, 50, 70, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+    outline: none;
+}
+
+.program-card:hover,
+.program-card:focus-visible {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 132, 171, 0.25);
+    border-color: var(--blue-primary);
+}
+
+/* منطقة الصورة والفيديو */
+.program-image {
+    width: 100%;
+    margin-bottom: 15px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 56.25%; /* نسبة 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: var(--white);
+}
+
+.program-image iframe,
+.program-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.program-image img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--white);
+}
+
+/* الفيديو بحاوية بمقياس 16:9 */
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* نسبة 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* عنوان البرنامج */
+.program-title {
+    text-align: center;
+    color: var(--blue-dark);
+    font-size: 24px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+/* وصف البرنامج */
+.program-description {
+    text-align: center;
+    color: var(--text-dark);
+    font-size: 17px;
+    line-height: 1.5;
+    margin: 10px 0 20px;
+    flex-grow: 1;
+}
+
+/* حاوية الأزرار */
+.buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    margin-top: auto;
+}
+
+/* روابط PDF و الروابط الأخرى */
+.pdf-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 132, 171, 0.2);
+    min-width: 160px;
+    cursor: pointer;
+}
+
+.pdf-link:hover:not(.disabled) {
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+    color: var(--white);
+}
+
+.pdf-link.disabled {
+    background: linear-gradient(135deg, #cfd8dc, #b0bec5);
+    color: #607d8b;
+    cursor: default;
+    box-shadow: none;
+}
+
+.pdf-icon {
+    font-size: 1.2em;
+}
+
+.pdf-text {
+    font-size: 1em;
+}
+
+/* زر البرنامج */
+.program-button {
+    background: linear-gradient(135deg, var(--white), #f8f9ff);
+    color: var(--blue-primary);
+    border: 2px solid var(--blue-primary);
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 180px;
+    height: 50px;
+}
+
+.program-button:hover {
+    background: linear-gradient(135deg, rgba(0, 132, 171, 0.1), rgba(97, 188, 215, 0.1));
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 132, 171, 0.2);
+}
+
+.program-button.done {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: var(--white);
+    border-color: #4CAF50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+/* رسالة عدم وجود Programs */
+.empty-state {
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 18px;
+    margin-top: 50px;
+}
+
+/* زر العودة */
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.back-home-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 30px;
+    border: 2px solid var(--blue-primary);
+    border-radius: 50px;
+    color: var(--blue-primary);
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    background: linear-gradient(135deg, transparent, rgba(0, 132, 171, 0.05));
+    transition: all 0.3s ease;
+    min-width: 250px;
+    cursor: pointer;
+}
+
+.back-home-btn:hover {
+    background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+    color: var(--white);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+}
+
+/* استجابة الأجهزة */
+
+/* هواتف */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 10px;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin: 40px 0 20px;
+    }
+
+    .cards-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 0 5px;
+    }
+
+    .program-card {
+        min-height: auto;
+        padding: 15px;
+    }
+
+    .program-title {
+        font-size: 20px;
+    }
+
+    .program-description {
+        font-size: 15px;
+    }
+
+    .video-container {
+        padding-bottom: 60%;
+    }
+
+    .pdf-link {
+        padding: 10px 16px;
+        min-width: 140px;
+        font-size: 14px;
+    }
+
+    .program-button {
+        padding: 10px 16px;
+        min-width: 160px;
+        font-size: 15px;
+    }
+
+    .back-home-btn {
+        padding: 12px 24px;
+        min-width: 200px;
+        font-size: 16px;
+    }
+
+    .buttons-container {
+        gap: 12px;
+    }
+}
+
+/* أجهزة لوحية */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: 20px 15px;
+    }
+
+    h1 {
+        font-size: 36px;
+        margin: 50px 0 25px;
+    }
+
+    .cards-container {
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 18px;
+        max-width: 900px;
+    }
+
+    .program-title {
+        font-size: 22px;
+    }
+
+    .program-description {
+        font-size: 16px;
+    }
+
+    .pdf-link {
+        min-width: 150px;
+    }
+
+    .program-button {
+        min-width: 170px;
+    }
+
+    .back-home-btn {
+        min-width: 220px;
+        font-size: 17px;
+    }
+}
+
+/* شاشات كبيرة */
+@media (min-width: 1025px) {
+    .cards-container {
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        max-width: 1200px;
+    }
+
+    .program-card {
+        padding: 25px;
+    }
+}
+
+/* شاشات كبيرة جداً */
+@media (min-width: 1400px) {
+    .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1400px;
+    }
+}
+
+/* تفضيلات تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+    h1,
+    .program-card,
+    .program-button,
+    .pdf-link,
+    .back-home-btn {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+}
+
+/* تنسيقات النافذة المنبثقة */
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.custom-modal-content {
+    background-color: var(--white);
+    margin: auto;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 132, 171, 0.3);
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+    border: 2px solid var(--blue-gradient);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.custom-close {
+    color: var(--text-gray);
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.custom-close:hover,
+.custom-close:focus {
+    color: var(--blue-primary);
+    background-color: rgba(0, 132, 171, 0.1);
+    text-decoration: none;
+}
+
+#modal-title {
+    color: var(--blue-primary);
+    margin-top: 0;
+    text-align: center;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--blue-gradient);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#modal-description {
+    line-height: 1.8;
+    color: var(--text-dark);
+    font-size: 1.05rem;
+    text-align: right;
+    white-space: pre-wrap;
+}
+
+.show-more {
+    text-decoration: none;
+    color: var(--blue-gradient);
+    font-weight: bold;
+    transition: all 0.3s ease;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.3rem;
+    display: inline-block;
+}
+
+.show-more:hover {
+    color: var(--blue-primary);
+    background-color: rgba(0, 132, 171, 0.1);
+    text-decoration: underline;
+}
+
+.show-more:active {
+    transform: translateY(1px);
+}
+
+/* تحسينات للجوال للنافذة المنبثقة */
+@media (max-width: 768px) {
+    .custom-modal-content {
+        width: 90%;
+        padding: 20px 15px;
+        margin: 10px;
+    }
+
+    #modal-title {
+        font-size: 1.3rem;
+        padding-right: 25px;
+    }
+
+    .custom-close {
+        top: 10px;
+        left: 10px;
+    }
+}
+
+/* رسائل unsupported link و no-media */
+.unsupported-link,
+.no-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+    border-radius: 12px;
+}
+
+.unsupported-link p,
+.no-media p {
+    color: var(--text-gray);
+    font-size: 16px;
+    font-weight: 600;
+}

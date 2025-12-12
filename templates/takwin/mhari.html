@@ -1,0 +1,169 @@
+{% extends "director_base.html" %}
+{% load static %}
+
+{% block title %}الجانب التربوي - تكوين - منصة مداد{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/courses.css' %}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="animated-title">الجانب المهاري <i class="fas fa-tools"></i></h1>
+
+    <div class="cards-container">
+        {% for takwin in takwin_list %}
+        <div class="program-card" tabindex="0">
+            <div class="program-image">
+                {% if takwin.link %}
+                    {% with takwin.get_youtube_video_id as video_id %}
+                        {% if video_id %}
+                            <div class="video-container">
+                                <iframe src="https://www.youtube.com/embed/{{ video_id }}?rel=0&modestbranding=1"
+                                        title="YouTube video player"
+                                        frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowfullscreen
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                            </div>
+                        {% else %}
+                            <div class="unsupported-link">
+                                <p>رابط غير مدعوم</p>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% elif takwin.get_image_url %}
+                    <img src="{{ takwin.get_image_url }}" alt="{{ takwin.title }}" loading="lazy" />
+                {% else %}
+                    <div class="no-media">
+                        <p>لا توجد وسائط متاحة</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <h2 class="program-title">{{ takwin.title }}</h2>
+
+            {% if takwin.description %}
+                <p class="program-description">
+                    {{ takwin.description|slice:":255" }}
+                    {% if takwin.description|length > 255 %}
+                        ... <a href="#" class="show-more" data-description="{{ takwin.description|escapejs }}">عرض المزيد</a>
+                    {% endif %}
+                </p>
+            {% endif %}
+
+            <div class="buttons-container">
+                {% if takwin.link %}
+                    <a href="{{ takwin.link }}" target="_blank" rel="noopener noreferrer" class="pdf-link">
+                        <span class="pdf-icon"><i class="fa-solid fa-link"></i></span>
+                        <span class="pdf-text">رابط البرنامج</span>
+                    </a>
+                {% else %}
+                    <span class="pdf-link disabled">
+                        <span class="pdf-icon"><i class="fa-solid fa-ban"></i></span>
+                        <span class="pdf-text">لا يوجد رابط</span>
+                    </span>
+                {% endif %}
+
+                {% if takwin.pdf %}
+                    <a href="{% url 'pdf_view_takwin' takwin.id %}" target="_blank" rel="noopener noreferrer" class="pdf-link">
+                        <span class="pdf-icon"><i class="fa-solid fa-file"></i></span>
+                        <span class="pdf-text">عرض PDF</span>
+                    </a>
+                {% else %}
+                    <span class="pdf-link disabled">
+                        <span class="pdf-icon"><i class="fa-solid fa-ban"></i></span>
+                        <span class="pdf-text">لا يوجد ملف PDF </span>
+                    </span>
+                {% endif %}
+
+                <form method="post" action="{% url 'toggle_takwin' takwin.id %}">
+                    {% csrf_token %}
+                    {% if takwin.is_done %}
+                        <button type="submit" class="program-button done" aria-label="تعليم كغير منجز">✓ تم الإنجاز</button>
+                    {% else %}
+                        <button type="submit" class="program-button" aria-label="تعليم كمنجز">أنجزتها</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not takwin_list %}
+    <div class="empty-state">
+        <p>لا توجد برامج متاحة حالياً</p>
+    </div>
+    {% endif %}
+
+    <div class="button-container">
+        <a href="{% url 'takwin' %}" class="back-home-btn">
+            <span class="btn-text">العودة للتكوين ←</span>
+        </a>
+    </div>
+</div>
+
+
+<!-- النافذة المنبثقة -->
+<div id="description-modal" class="custom-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description" tabindex="-1">
+    <div class="custom-modal-content">
+        <button class="custom-close" aria-label="إغلاق النافذة">&times;</button>
+        <h3 id="modal-title">الوصف الكامل</h3>
+        <p id="modal-description"></p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("description-modal");
+        const modalDescription = document.getElementById("modal-description");
+        const closeBtn = modal.querySelector(".custom-close");
+
+        // إضافة حدث النقر لعرض المزيد
+        document.querySelectorAll(".show-more").forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                const fullDescription = this.getAttribute("data-description");
+                modalDescription.textContent = fullDescription;
+                modal.style.display = "flex";
+                // إضافة التركيز على النافذة المنبثقة للأمانة
+                modal.focus();
+
+                // إضافة التركيز على زر الإغلاق لتسهيل التنقل
+                setTimeout(() => {
+                    closeBtn.focus();
+                }, 100);
+            });
+        });
+
+        // إغلاق النافذة المنبثقة
+        function closeModal() {
+            modal.style.display = "none";
+            // إعادة التركيز على الرابط الذي تم النقر عليه
+            const activeLink = document.querySelector(".show-more:focus");
+            if (activeLink) {
+                activeLink.focus();
+            }
+        }
+
+        closeBtn.addEventListener("click", closeModal);
+
+        // إغلاق النافذة عند النقر خارج المحتوى
+        modal.addEventListener("click", function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // إغلاق النافذة بمفتاح ESC
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape" && modal.style.display === "flex") {
+                closeModal();
+            }
+        });
+    });
+</script>
+{% endblock %}

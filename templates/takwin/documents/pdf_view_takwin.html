@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.1.4/dist/docx-preview.min.js"></script>
+    <title>عرض الملف - منصة مداد</title>
+    <style>
+        :root {
+            --blue-primary: #0084AB;
+            --blue-dark: #00576F;
+            --blue-gradient: #61bcd7;
+            --text-dark: #2c3e50;
+            --text-light: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 132, 171, 0.15);
+            overflow: hidden;
+            border: 2px solid var(--blue-gradient);
+        }
+
+        .header {
+            background: linear-gradient(90deg, var(--blue-primary) 0%, var(--blue-dark) 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .file-info {
+            background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-right: 4px solid var(--blue-primary);
+        }
+
+        .file-info p {
+            margin: 8px 0;
+            color: var(--text-light);
+        }
+
+        .file-info strong {
+            color: var(--text-dark);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--blue-dark), var(--blue-primary));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+        }
+
+        .pdf-container {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: auto;
+            box-shadow: 0 5px 15px rgba(0, 132, 171, 0.1);
+            height: 70vh;
+            transition: all 0.3s ease;
+            background-color: #525252;
+            position: relative;
+        }
+
+        .pdf-container.hidden {
+            display: none;
+        }
+
+        .image-viewer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100%;
+            background-color: #f5f5f5;
+        }
+
+        .image-viewer img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 132, 171, 0.2);
+        }
+
+        .iframe-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: white;
+        }
+
+        .download-only-message {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .download-only-message a {
+            color: #4CAF50;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .pdf-viewer-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100%;
+        }
+
+        .pdf-page {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 132, 171, 0.2);
+            background: white;
+        }
+
+        .pdf-page canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .pdf-controls-bar {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            z-index: 10;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .pdf-controls-bar button {
+            padding: 8px 15px;
+            border: 1px solid var(--blue-primary);
+            background: white;
+            color: var(--blue-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-controls-bar button:hover:not(:disabled) {
+            background: var(--blue-primary);
+            color: white;
+        }
+
+        .pdf-controls-bar button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pdf-controls-bar .page-info {
+            padding: 8px 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 8px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header p {
+                font-size: 14px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .pdf-container {
+                height: 60vh;
+                max-height: 500px;
+            }
+
+            .pdf-controls-bar {
+                flex-direction: column;
+                gap: 8px;
+                padding: 8px;
+            }
+
+            .pdf-controls-bar button {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .image-viewer {
+                padding: 10px;
+            }
+
+            .image-viewer img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .iframe-viewer {
+                height: calc(100% - 20px);
+            }
+
+            .download-only-message {
+                padding: 20px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>عرض الملف</h1>
+            <p>منصة مداد - نظام إدارة الملفات</p>
+        </div>
+
+        <div class="content">
+            <div class="file-info">
+                <p><strong>العنوان:</strong> {{ takwin.title|escape }}</p>
+                <p><strong>الوصف:</strong> {{ takwin.description|escape }}</p>
+            </div>
+
+            {% if takwin.pdf %}
+            <div class="controls">
+                <button type="button" id="toggleFile" class="btn btn-primary">
+                    <span>إخفاء الملف</span>
+                    <span><i class="fa-solid fa-eye-slash" title="إخفاء"></i></span>
+                </button>
+
+                <button type="button" id="downloadFile" class="btn btn-secondary">
+                    <span>تحميل الملف</span>
+                    <span><i class="fa-solid fa-download" title="تحميل"></i></span>
+                </button>
+            </div>
+
+            <div id="fileContainer" class="pdf-container">
+                <div class="loading-message">جاري تحميل الملف...</div>
+            </div>
+            {% else %}
+            <p style="color: red; font-weight: bold;">لا يوجد ملف متاح.</p>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            <p>© 2025 منصة مداد — جميع الحقوق محفوظة</p>
+        </div>
+    </div>
+
+    {% if takwin.pdf %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileContainer = document.getElementById('fileContainer');
+            const toggleButton = document.getElementById('toggleFile');
+            const downloadButton = document.getElementById('downloadFile');
+            const fileUrl = '{% url "pdf_file_view_takwin" takwin.id %}';
+            const fileName = '{{ takwin.pdf.name|default:"" }}';
+
+            // اكتشاف نوع الملف من الامتداد
+            function getFileType(filename) {
+                if (!filename) return 'unknown';
+                const ext = filename.split('.').pop().toLowerCase();
+                const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+                const officeTypes = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+
+                if (ext === 'pdf') return 'pdf';
+                if (imageTypes.includes(ext)) return 'image';
+                if (officeTypes.includes(ext)) return 'office';
+                return 'unknown';
+            }
+
+            const fileType = getFileType(fileName);
+
+            // زر عرض/إخفاء الملف
+            toggleButton.addEventListener('click', function() {
+                fileContainer.classList.toggle('hidden');
+                if (!fileContainer.classList.contains('hidden')) {
+                    toggleButton.innerHTML = '<span>إخفاء الملف</span> <span><i class="fa-solid fa-eye-slash"></i></span>';
+                } else {
+                    toggleButton.innerHTML = '<span>فتح الملف</span> <span><i class="fa-solid fa-folder-open"></i></span>';
+                }
+            });
+
+            // زر تحميل الملف
+            downloadButton.addEventListener('click', function() {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = fileUrl;
+                downloadLink.download = '{{ takwin.title|default:"document"|escapejs }}';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            });
+
+            // عرض الملف حسب نوعه - نفس الكود من الملف الأصلي
+            function displayFile() {
+                if (fileType === 'pdf') {
+                    // تحميل PDF.js فقط عند الحاجة
+                    if (typeof pdfjsLib === 'undefined') {
+                        const script = document.createElement('script');
+                        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+                        script.onload = function() {
+                            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                            loadPDF();
+                        };
+                        document.head.appendChild(script);
+                    } else {
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                        loadPDF();
+                    }
+
+                    function loadPDF() {
+                        // نفس منطق تحميل PDF من الملف الأصلي
+                        pdfjsLib.getDocument(fileUrl).promise.then(function(pdf) {
+                            fileContainer.innerHTML = '<div class="pdf-viewer-wrapper"></div>';
+                            const wrapper = fileContainer.querySelector('.pdf-viewer-wrapper');
+
+                            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                                pdf.getPage(pageNum).then(function(page) {
+                                    const scale = 1.5;
+                                    const viewport = page.getViewport({scale: scale});
+                                    const canvas = document.createElement('canvas');
+                                    const context = canvas.getContext('2d');
+                                    canvas.height = viewport.height;
+                                    canvas.width = viewport.width;
+
+                                    const div = document.createElement('div');
+                                    div.className = 'pdf-page';
+                                    div.appendChild(canvas);
+                                    wrapper.appendChild(div);
+
+                                    page.render({
+                                        canvasContext: context,
+                                        viewport: viewport
+                                    });
+                                });
+                            }
+                        }).catch(function(error) {
+                            console.error('Error loading PDF:', error);
+                            fileContainer.innerHTML = '<div class="error-message">حدث خطأ أثناء تحميل الملف. <a href="' + fileUrl + '" download>اضغط هنا لتحميل الملف</a></div>';
+                        });
+                    }
+                } else if (fileType === 'image') {
+                    // عرض الصورة مباشرة
+                    const imageViewer = document.createElement('div');
+                    imageViewer.className = 'image-viewer';
+                    const img = document.createElement('img');
+                    img.src = fileUrl;
+                    img.alt = '{{ takwin.title|default:"صورة"|escapejs }}';
+                    img.onerror = function() {
+                        fileContainer.innerHTML = '<div class="error-message">حدث خطأ أثناء تحميل الصورة. <a href="' + fileUrl + '" download>اضغط هنا لتحميل الملف</a></div>';
+                    };
+                    imageViewer.appendChild(img);
+                    fileContainer.innerHTML = '';
+                    fileContainer.appendChild(imageViewer);
+                } else {
+                    // أنواع ملفات أخرى - خيار التحميل فقط
+                    fileContainer.innerHTML = '<div class="download-only-message">لا يمكن عرض هذا النوع من الملفات مباشرة. <a href="' + fileUrl + '" download>اضغط هنا لتحميل الملف</a></div>';
+                }
+            }
+
+            // تحميل الملف
+            displayFile();
+        });
+    </script>
+    {% endif %}
+</body>
+</html>

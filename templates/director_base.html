@@ -1070,7 +1070,12 @@
                     </li>
                     <li>
                         <a href="{% url 'user_management' %}" class="navbar-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
-                            <i class="fas fa-users"></i>التكوين
+                            <i class="fas fa-users"></i>المستخدمين
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'takwin' %}" class="navbar-link {% if 'takwin' in request.resolver_match.url_name %}active{% endif %}">
+                            <i class="fas fa-book-open"></i>تكوين
                         </a>
                     </li>
                     <li>
@@ -1137,7 +1142,12 @@
                 </li>
                 <li>
                     <a href="{% url 'user_management' %}" class="{% if 'user' in request.resolver_match.url_name %}active{% endif %}">
-                        <i class="fas fa-users"></i> التكوين
+                        <i class="fas fa-users"></i> المستخدمين
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'takwin' %}" class="{% if 'takwin' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-book-open"></i> تكوين
                     </a>
                 </li>
                 <li>

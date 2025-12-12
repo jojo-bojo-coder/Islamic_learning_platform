@@ -32,6 +32,7 @@ urlpatterns = [
     path('sharia/', include('sharia_committee_dashboard.urls')),
     path('scientific/', include('scientific_committee_dashboard.urls')),
     path('operations/', include('operations_committee_dashboard.urls')),
+    path('takwin/', include('takwin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if not settings.DEBUG:
     urlpatterns += [
