@@ -720,11 +720,18 @@
                 أسبوعي
             </a>
 
+            {% if user.role == 'director' %}
             <!-- Add Event -->
-<!--            <a href="{% url 'add_event' program.id %}" class="btn btn-primary">-->
-<!--                <i class="fas fa-plus"></i>-->
-<!--                إضافة حدث-->
-<!--            </a>-->
+            <a href="{% url 'add_event' program.id %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                إضافة حدث
+            </a>
+            {% elif user.role == 'program_manager' %}
+            <a href="{% url 'pm_add_task' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                إضافة حدث
+            </a>
+            {% endif %}
 
             <!-- Export Dropdown -->
             <div class="export-dropdown">
