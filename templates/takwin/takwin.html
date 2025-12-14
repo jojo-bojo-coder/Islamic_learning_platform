@@ -525,6 +525,7 @@
 
 {% block content %}
 <div class="dashboard">
+    {% if user.role == 'program_manager' %}
     <div class="management-nav" style="animation: slideDown 0.5s ease-out;">
         <div class="container">
             <a href="{% url 'takwin_management' %}" class="management-btn">
@@ -532,6 +533,7 @@
             </a>
         </div>
     </div>
+    {% endif %}
 
     <div class="takween">
         <h2>تكوين</h2>
