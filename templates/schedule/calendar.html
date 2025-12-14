@@ -36,6 +36,89 @@
         z-index: auto;
     }
 
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: 1px solid #E5E7EB;
+        animation: slideInFromTop 0.6s ease;
+    }
+
+    .filter-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: #0EA5E9;
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+
+    .filter-select {
+        padding: 0.65rem 2.5rem 0.65rem 1rem;
+        border: 1px solid #D1D5DB;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #374151;
+        background-color: white;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: left 0.75rem center;
+        background-size: 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 160px;
+        appearance: none;
+    }
+
+    .filter-select:hover {
+        border-color: #0EA5E9;
+        background-color: #F8FAFC;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #0EA5E9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+    }
+
+    .filter-clear-btn {
+        padding: 0.65rem 1.5rem;
+        background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
+        white-space: nowrap;
+    }
+
+    .filter-clear-btn:hover {
+        background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+    .filter-clear-btn:active {
+        transform: translateY(0);
+    }
+
     /* Header */
     .calendar-header {
         display: flex;
@@ -46,7 +129,7 @@
         gap: 1rem;
         animation: slideInFromTop 0.8s ease 0.2s both;
         position: relative;
-        z-index: auto;
+        z-index: 1;
     }
 
     .calendar-header h1 {
@@ -201,8 +284,8 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         border: 1px solid #E5E7EB;
         position: relative;
-        z-index: auto;
-        overflow: visible;
+        z-index: 1;
+        overflow: hidden;
         animation: fadeInUp 0.8s ease 0.4s both;
     }
 
@@ -212,7 +295,7 @@
         border-spacing: 0;
         background: var(--white);
         border-radius: var(--border-radius);
-        overflow: visible !important;
+        overflow: hidden;
         direction: rtl;
         border: 1px solid #E5E7EB;
     }
@@ -223,360 +306,271 @@
         padding: 0.875rem 1rem;
         text-align: center;
         font-weight: 700;
-        font-size: 1rem;
-        border: none;
-        letter-spacing: 0.3px;
-    }
-
-    .calendar-table tbody td {
-        background: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 0;
-        padding: 0.75rem;
-        min-height: 140px;
-        vertical-align: top;
-        transition: var(--transition);
-        position: relative;
-        cursor: pointer;
-    }
-
-    .weekly-view .calendar-table tbody td {
-        min-height: 200px;
-    }
-
-    .calendar-table tbody td:hover {
-        border-color: #1e88b5;
-        box-shadow: 0 2px 8px rgba(30, 136, 181, 0.15);
-        transform: none;
-    }
-
-    .calendar-table tbody td.not-current-month {
-        background: #F9FAFB;
-        opacity: 0.6;
-        cursor: default;
-    }
-
-    .calendar-table tbody td.not-current-month:hover {
-        border-color: #E5E7EB;
-        box-shadow: none;
-        transform: none;
-    }
-
-    .calendar-table tbody td.today {
-        border-color: #1e88b5;
-        background: white;
-        position: relative;
-        box-shadow: inset 0 0 0 2px rgba(30, 136, 181, 0.3);
-    }
-
-    .day-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.625rem;
-        padding-bottom: 0;
-        border-bottom: none;
-    }
-
-    .day-number {
-        font-size: 1.125rem;
-        font-weight: 700;
-        color: #1F2937;
-        background: transparent;
-        width: auto;
-        height: auto;
-        display: inline-block;
-        border-radius: 0;
-    }
-
-    .calendar-table tbody td.today .day-number {
-        background: transparent;
-        color: #1e88b5;
-    }
-
-    .hijri-date {
-        font-size: 0.75rem;
-        color: #9CA3AF;
-        direction: ltr;
-        text-align: left;
-        font-weight: 400;
-    }
-
-    .day-content {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-        max-height: 300px;
-        overflow-y: auto;
-        padding-right: 0.25rem;
-    }
-
-    .day-content::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    .day-content::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .day-content::-webkit-scrollbar-thumb {
-        background: #D1D5DB;
-        border-radius: 2px;
-    }
-
-    /* Event and Task Items */
-    .event-item {
-        background: var(--white);
-        border-radius: 6px;
-        padding: 0.5rem 0.625rem;
-        border-right: 3px solid;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        border-left: none !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        margin-bottom: 0.375rem;
-    }
-
-    .event-item:hover {
-        transform: translateX(-3px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        font-size: 0.9375rem;
+        border-bottom: 2px solid #E5E7EB;
+        position: sticky;
+        top: 0;
         z-index: 10;
     }
 
-    /* Recurring Task Badge Styles */
-    .task-badge {
-        background: var(--white);
-        border-radius: 6px;
-        padding: 0.5rem 0.625rem;
-        border-right: 3px solid #3498db;
-        transition: all 0.2s ease;
+    .calendar-table tbody td {
+        padding: 0;
+        border: 1px solid #E5E7EB;
+        vertical-align: top;
+        background: white;
+        transition: all 0.3s ease;
+        position: relative;
+        height: 120px;
+        min-height: 120px;
+    }
+
+    .calendar-table tbody td:hover {
+        background: #F9FAFB;
+        box-shadow: inset 0 0 0 2px #0EA5E9;
+    }
+
+    .day-cell {
+        padding: 0.5rem;
+        height: 100%;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        position: relative;
         cursor: pointer;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        margin-bottom: 0.375rem;
+    }
+
+    .day-number {
+        font-weight: 700;
+        font-size: 0.9375rem;
+        color: #1F2937;
+        margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .today .day-number {
+        background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        width: fit-content;
+    }
+
+    .other-month .day-number {
+        color: #9CA3AF;
+    }
+
+    .weekend {
+        background: #FEF2F2 !important;
+    }
+
+    .weekend:hover {
+        background: #FEE2E2 !important;
+    }
+
+    /* Event badges */
+    .event-count-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .event-count-badge:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .event-count-badge i {
+        font-size: 0.7rem;
+    }
+
+    /* Event type specific colors */
+    .count-events {
+        background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    }
+
+    .count-activities {
+        background: linear-gradient(135deg, #27ae60, #229954);
+    }
+
+    .count-cultural_tasks {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+
+    .count-task_sessions {
+        background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    }
+
+    .count-operations_tasks {
+        background: linear-gradient(135deg, #16a085, #138d75);
+    }
+
+    .count-scientific_tasks {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+    }
+
+    .count-lectures {
+        background: linear-gradient(135deg, #8e44ad, #6c3483);
+    }
+
+    .count-sharia_tasks {
+        background: linear-gradient(135deg, #c0392b, #922b21);
+    }
+
+    .count-family_competitions {
+        background: linear-gradient(135deg, #d35400, #ba4a00);
+    }
+
+    .count-sports_tasks {
+        background: linear-gradient(135deg, #f39c12, #d68910);
+    }
+
+    .count-matches {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+
+    /* Task badges for recurring tasks */
+    .task-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
         position: relative;
     }
 
+    .task-badge:hover {
+        transform: scale(1.02);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 5;
+    }
+
+    .type-task {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+
+    /* Multi-day task styling */
     .task-badge.multi-day {
-        background: linear-gradient(90deg, rgba(52, 152, 219, 0.1) 0%, rgba(52, 152, 219, 0.05) 100%);
-        border-right-width: 4px;
-        margin-bottom: 0;
+        border-radius: 0;
+        margin: 0;
     }
 
     .task-badge.task-start {
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-left: 1px solid rgba(52, 152, 219, 0.3);
-    }
-
-    .task-badge.task-middle {
-        border-radius: 0;
-        border-left: 1px solid rgba(52, 152, 219, 0.3);
-        border-right-width: 0;
-        padding-right: 0;
-        background: linear-gradient(90deg, rgba(52, 152, 219, 0.15) 0%, rgba(52, 152, 219, 0.1) 100%);
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
     }
 
     .task-badge.task-end {
-        border-top-left-radius: 10px;
-        border-bottom-left-radius: 10px;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        border-right-width: 0;
-        padding-right: 0;
-        border-left: 3px solid #3498db;
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
     }
 
     .task-badge.task-single {
         border-radius: 6px;
     }
 
-    .task-badge:hover {
-        transform: translateX(-3px);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-        z-index: 10;
+    .task-badge.task-middle {
+        border-radius: 0;
     }
 
     .event-title {
-        font-weight: 600;
-        font-size: 0.8125rem;
-        color: #374151;
-        margin-bottom: 0.125rem;
         display: flex;
         align-items: center;
-        gap: 0.375rem;
-        line-height: 1.3;
+        gap: 0.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
-
-    .event-title i {
-        font-size: 0.75rem;
-    }
-
-    .event-time {
-        font-size: 0.6875rem;
-        color: #6B7280;
-        margin-top: 0.125rem;
-    }
-
-    .event-meta {
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        margin-top: 0.25rem;
-        flex-wrap: wrap;
-    }
-
-    .event-badge {
-        padding: 0.125rem 0.4rem;
-        border-radius: 10px;
-        font-size: 0.6875rem;
-        font-weight: 500;
-        background: #F3F4F6;
-        color: #6B7280;
-    }
-
-    .task-span-indicator {
-        font-size: 0.65rem;
-        color: #6B7280;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.2rem;
-        margin-top: 0.2rem;
-    }
-
-    .task-span-indicator i {
-        font-size: 0.6rem;
-    }
-
-    .event-count-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-        padding: 0.3rem 0.6rem;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--white);
-        margin-bottom: 0.3rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Event Type Colors */
-    .type-event { border-right-color: #9b59b6; }
-    .type-task { border-right-color: #3498db; }
-    .type-activity { border-right-color: #27ae60; }
-    .type-cultural_task { border-right-color: #e67e22; }
-    .type-task_sessions { border-right-color: #9C27B0; }
-    .type-operations_task { border-right-color: #16a085; }
-    .type-scientific_task { border-right-color: #2c3e50; }
-    .type-lecture { border-right-color: #8e44ad; }
-    .type-sharia_task { border-right-color: #c0392b; }
-    .type-family_competition { border-right-color: #d35400; }
-    .type-sports_task { border-right-color: #f39c12; }
-    .type-match { border-right-color: #e74c3c; }
-
-    /* Count Badge Colors */
-    .count-events { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-    .count-tasks { background: linear-gradient(135deg, #3498db, #2980b9); }
-    .count-activities { background: linear-gradient(135deg, #27ae60, #229954); }
-    .count-cultural_tasks { background: linear-gradient(135deg, #e67e22, #d35400); }
-    .count-task_sessions { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
-    .count-operations_tasks { background: linear-gradient(135deg, #16a085, #138d75); }
-    .count-scientific_tasks { background: linear-gradient(135deg, #2c3e50, #34495e); }
-    .count-lectures { background: linear-gradient(135deg, #8e44ad, #6c3483); }
-    .count-sharia_tasks { background: linear-gradient(135deg, #c0392b, #922b21); }
-    .count-family_competitions { background: linear-gradient(135deg, #d35400, #ba4a00); }
-    .count-sports_tasks { background: linear-gradient(135deg, #f39c12, #d68910); }
-    .count-matches { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
     .no-events {
         color: #9CA3AF;
-        font-size: 0.8125rem;
+        font-size: 0.8rem;
         text-align: center;
-        padding: 1.5rem 0.5rem;
-        font-style: normal;
+        padding: 1rem 0;
     }
 
     /* Legend */
     .legend {
         display: flex;
-        gap: 1.25rem;
-        margin-top: 1.5rem;
-        padding: 1.25rem 1.5rem;
-        border-top: 1px solid #E5E7EB;
         flex-wrap: wrap;
-        justify-content: center;
-        background: #F9FAFB;
-        border-radius: 8px;
-        box-shadow: none;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1.25rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #E5E7EB;
+        animation: fadeInUp 0.6s ease 0.6s both;
     }
 
     .legend-item {
         display: flex;
         align-items: center;
-        gap: 0.4375rem;
+        gap: 0.5rem;
     }
 
     .legend-color {
-        width: 14px;
-        height: 14px;
-        border-radius: 3px;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .legend-label {
-        font-size: 0.8125rem;
-        font-weight: 500;
+        font-size: 0.875rem;
         color: #374151;
+        font-weight: 500;
     }
 
-    /* Export Dropdown */
+    /* Export dropdown */
     .export-dropdown {
         position: relative;
         display: inline-block;
-        z-index: 1000;
-    }
-
-    #export-btn {
-        cursor: pointer !important;
-        pointer-events: auto !important;
-        position: relative !important;
-        user-select: none !important;
     }
 
     .export-menu {
-        display: none !important;
-        visibility: hidden !important;
-        position: absolute !important;
+        display: none;
+        visibility: hidden;
+        position: absolute;
+        left: 0;
         top: 100%;
-        right: 0;
+        margin-top: 0.5rem;
         background: white;
-        border: 1px solid #ddd;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
-        margin-top: 5px;
-        overflow: hidden;
-        z-index: 10000;
-    }
-
-    .export-menu[style*="display: block"] {
-        display: block !important;
-        visibility: visible !important;
+        border: 1px solid #E5E7EB;
+        min-width: 180px;
+        z-index: 100;
+        animation: dropdownSlideIn 0.2s ease;
     }
 
     .export-option {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
         display: flex;
         align-items: center;
-        padding: 14px 20px;
-        color: #333;
+        gap: 0.5rem;
+        color: #374151;
         text-decoration: none;
-        border-bottom: 1px solid #eee;
-        transition: background 0.2s;
-        cursor: pointer;
-        pointer-events: auto !important;
+        border-bottom: 1px solid #F3F4F6;
     }
 
     .export-option:last-child {
@@ -584,434 +578,375 @@
     }
 
     .export-option:hover {
-        background-color: #f5f5f5 !important;
+        background: #F9FAFB;
+        color: #0EA5E9;
     }
 
     .export-option i {
-        margin-left: 12px;
-        font-size: 16px;
         width: 20px;
     }
 
-    .export-option[data-format="ics"] i { color: #366092; }
-    .export-option[data-format="excel"] i { color: #217346; }
-    .export-option[data-format="pdf"] i { color: #DC2626; }
-
     /* Animations */
     @keyframes fadeInDown {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @keyframes slideInFromTop {
-        from { opacity: 0; transform: translateY(-30px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @keyframes slideInRight {
-        from { opacity: 0; transform: translateX(-30px); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
     @keyframes iconBounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    @keyframes dropdownSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Responsive Design */
-    @media (max-width: 991px) {
-        .calendar-container { padding: 1.5rem; }
-        .calendar-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-        .calendar-actions { width: 100%; justify-content: flex-start; }
-        .calendar-table { font-size: 0.85rem; }
-        .calendar-table tbody td { min-height: 120px; padding: 0.75rem; }
-        .weekly-view .calendar-table tbody td { min-height: 150px; }
+    @media (max-width: 768px) {
+        .filter-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-item {
+            width: 100%;
+        }
+
+        .filter-select {
+            width: 100%;
+        }
+
+        .calendar-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .calendar-actions {
+            justify-content: center;
+        }
+
+        .day-cell {
+            min-height: 80px;
+            padding: 0.25rem;
+        }
+
+        .legend {
+            gap: 0.5rem;
+        }
     }
-
-    @media (max-width: 767px) {
-        .calendar-container { padding: 1rem; }
-        .calendar-nav-header { padding: 0.75rem; }
-        .calendar-nav-header .current-period { min-width: 150px; font-size: 1rem; }
-        .calendar-table thead th { font-size: 0.85rem; padding: 0.75rem; }
-        .calendar-table tbody td { min-height: 100px; padding: 0.5rem; }
-        .weekly-view .calendar-table tbody td { min-height: 120px; }
-        .day-number { font-size: 1.1rem; width: 32px; height: 32px; }
-        .event-item, .task-badge { padding: 0.4rem; }
-        .event-title { font-size: 0.8rem; }
-        .legend { gap: 1rem; }
-        .export-menu { right: 0 !important; left: auto !important; min-width: 180px !important; }
-    }
-
-    @media (max-width: 575px) {
-        .btn { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
-        .calendar-nav-header { gap: 0.5rem; }
-        .calendar-nav-header .current-period { min-width: 120px; font-size: 0.9375rem; }
-        .nav-arrow { padding: 0.375rem 0.5rem; font-size: 1rem; }
-        .event-count-badge { font-size: 0.75rem; padding: 0.2rem 0.4rem; }
-    }
-
-
-
-.calendar-header {
-    position: relative !important;
-    z-index: 99999 !important;
-}
-
-.export-dropdown {
-    position: relative !important;
-    z-index: 100000 !important;
-}
-
-.export-menu {
-    z-index: 200000 !important;
-    position: absolute !important;
-    top: 100%;
-    right: 0;
-}
-
 </style>
 
-<div class="calendar-container {% if view_type == 'weekly' %}weekly-view{% endif %}">
-    <!-- Header -->
+<div class="calendar-container">
+
+    <!-- Calendar Header -->
     <div class="calendar-header">
         <h1>
             <i class="fas fa-calendar-alt"></i>
-            التقويم المشترك - {{ program.name }}
+            تقويم {{ program.name }}
         </h1>
-        <div class="calendar-controls">
-            <a href="?view=monthly&year={{ year }}&month={{ month }}"
-               class="btn btn-view {% if view_type == 'monthly' %}active{% endif %}">
-                <i class="fas fa-calendar"></i> شهري
-            </a>
-            <a href="?view=weekly&year={{ year }}&week={{ week_number|default:today.isocalendar.1 }}"
-               class="btn btn-view {% if view_type == 'weekly' %}active{% endif %}">
-                <i class="fas fa-calendar-week"></i> أسبوعي
-            </a>
-        </div>
+
         <div class="calendar-actions">
-            {% if user.role == 'director' %}
-            <a href="{% url 'add_event' program.id %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i>
-                إضافة حدث
+            <!-- View Toggle -->
+            <a href="?view=monthly&year={{ year }}&month={{ month }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}"
+               class="btn btn-view {% if view_type == 'monthly' %}active{% endif %}">
+                <i class="fas fa-calendar"></i>
+                شهري
             </a>
-            {% endif %}
+            <a href="?view=weekly&year={{ year }}&week={{ week_number }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}"
+               class="btn btn-view {% if view_type == 'weekly' %}active{% endif %}">
+                <i class="fas fa-calendar-week"></i>
+                أسبوعي
+            </a>
+
+            <!-- Add Event -->
+<!--            <a href="{% url 'add_event' program.id %}" class="btn btn-primary">-->
+<!--                <i class="fas fa-plus"></i>-->
+<!--                إضافة حدث-->
+<!--            </a>-->
+
+            <!-- Export Dropdown -->
             <div class="export-dropdown">
-                <button id="export-btn" class="btn btn-secondary" title="تصدير التقويم" type="button">
-                    <i class="fas fa-download"></i> تصدير <i class="fas fa-chevron-down" style="margin-right: 5px; font-size: 10px;"></i>
+                <button type="button" class="btn btn-secondary" id="export-btn">
+                    <i class="fas fa-download"></i>
+                    تصدير
+                    <i class="fas fa-chevron-down" style="font-size: 0.75rem;"></i>
                 </button>
-                <div id="export-menu" class="export-menu">
+                <div class="export-menu" id="export-menu">
                     <a href="#" class="export-option" data-format="ics">
-                        <i class="fas fa-calendar-alt"></i>
-                        <span>تصدير ICS</span>
+                        <i class="fas fa-calendar-plus"></i>
+                        ملف iCal
                     </a>
                     <a href="#" class="export-option" data-format="excel">
                         <i class="fas fa-file-excel"></i>
-                        <span>تصدير Excel</span>
+                        ملف Excel
                     </a>
                     <a href="#" class="export-option" data-format="pdf">
                         <i class="fas fa-file-pdf"></i>
-                        <span>تصدير PDF</span>
+                        ملف PDF
                     </a>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="GET" id="filter-form">
+            <div class="filter-container">
+                <!-- Unified Event Type Filter -->
+                <div class="filter-item">
+                    <label class="filter-label">نوع الحدث:</label>
+                    <select name="event_type" class="filter-select" onchange="this.form.submit()">
+                        <option value="">الكل</option>
+                        <option value="schedule_event" {% if request.GET.event_type == 'schedule_event' %}selected{% endif %}>أحداث جدولة</option>
+                        <option value="task" {% if request.GET.event_type == 'task' %}selected{% endif %}>مهام</option>
+                        <option value="activity" {% if request.GET.event_type == 'activity' %}selected{% endif %}>أنشطة</option>
+                        <option value="cultural_task" {% if request.GET.event_type == 'cultural_task' %}selected{% endif %}>مهام ثقافية</option>
+                        <option value="task_session" {% if request.GET.event_type == 'task_session' %}selected{% endif %}>جلسات مهام</option>
+                        <option value="operations_task" {% if request.GET.event_type == 'operations_task' %}selected{% endif %}>مهام تشغيلية</option>
+                        <option value="scientific_task" {% if request.GET.event_type == 'scientific_task' %}selected{% endif %}>مهام علمية</option>
+                        <option value="lecture" {% if request.GET.event_type == 'lecture' %}selected{% endif %}>محاضرات</option>
+                        <option value="sharia_task" {% if request.GET.event_type == 'sharia_task' %}selected{% endif %}>مهام شرعية</option>
+                        <option value="family_competition" {% if request.GET.event_type == 'family_competition' %}selected{% endif %}>مسابقات أسرية</option>
+                        <option value="sports_task" {% if request.GET.event_type == 'sports_task' %}selected{% endif %}>مهام رياضية</option>
+                        <option value="match" {% if request.GET.event_type == 'match' %}selected{% endif %}>مباريات</option>
+                    </select>
+                </div>
 
-    <!-- Calendar Table -->
+                <!-- Status Filter (Applies to most event types) -->
+                <div class="filter-item">
+                    <label class="filter-label">الحالة:</label>
+                    <select name="status" class="filter-select" onchange="this.form.submit()">
+                        <option value="">الكل</option>
+                        <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>قيد التنفيذ</option>
+                        <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>جاري العمل</option>
+                        <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>مكتملة</option>
+                        <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>ملغاة</option>
+                    </select>
+                </div>
+
+                <!-- Priority Filter (Applies to events with priority) -->
+                <div class="filter-item">
+                    <label class="filter-label">الأولوية:</label>
+                    <select name="priority" class="filter-select" onchange="this.form.submit()">
+                        <option value="">الكل</option>
+                        <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>منخفضة</option>
+                        <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>متوسطة</option>
+                        <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>عالية</option>
+                    </select>
+                </div>
+
+                <!-- Clear Filters Button -->
+                <button type="button" class="filter-clear-btn" onclick="clearFilters()">
+                    مسح الفلتر
+                </button>
+            </div>
+
+            <!-- Hidden fields to preserve other parameters -->
+            <input type="hidden" name="view" value="{{ view_type }}">
+            <input type="hidden" name="year" value="{{ year }}">
+            <input type="hidden" name="month" value="{{ month }}">
+            {% if week_number %}
+            <input type="hidden" name="week" value="{{ week_number }}">
+            {% endif %}
+        </form>
+    </div>
+
+
+    <!-- Calendar Wrapper -->
     <div id="calendar-wrapper">
-        <!-- Navigation -->
+        <!-- Calendar Navigation -->
         <div class="calendar-nav-header">
-            {% if view_type == 'weekly' %}
-                <button onclick="location.href='?view=weekly&year={{ prev_week_year }}&week={{ prev_week }}'" class="nav-arrow">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                <span class="current-period">{{ month_name }} {{ year }}</span>
-                <button onclick="location.href='?view=weekly&year={{ next_week_year }}&week={{ next_week }}'" class="nav-arrow">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
+            {% if view_type == 'monthly' %}
+            <button class="nav-arrow" onclick="location.href='?view=monthly&year={{ prev_year }}&month={{ prev_month }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}'">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="current-period">
+                {{ month_name }} {{ year }}
+            </div>
+            <button class="nav-arrow" onclick="location.href='?view=monthly&year={{ next_year }}&month={{ next_month }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}'">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             {% else %}
-                <button onclick="location.href='?view=monthly&year={{ prev_year }}&month={{ prev_month }}'" class="nav-arrow">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                <span class="current-period">{{ month_name }} {{ year }}</span>
-                <button onclick="location.href='?view=monthly&year={{ next_year }}&month={{ next_month }}'" class="nav-arrow">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
+            <button class="nav-arrow" onclick="location.href='?view=weekly&year={{ prev_week_year }}&week={{ prev_week }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}'">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="current-period">
+                الأسبوع {{ week_number }} - {{ year }}
+            </div>
+            <button class="nav-arrow" onclick="location.href='?view=weekly&year={{ next_week_year }}&week={{ next_week }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}'">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             {% endif %}
         </div>
 
+        <!-- Calendar Table -->
         <table class="calendar-table">
             <thead>
                 <tr>
+                    <th>السبت</th>
                     <th>الأحد</th>
                     <th>الاثنين</th>
                     <th>الثلاثاء</th>
                     <th>الأربعاء</th>
                     <th>الخميس</th>
                     <th>الجمعة</th>
-                    <th>السبت</th>
                 </tr>
             </thead>
             <tbody>
-                {% for week in weeks %}
+                {% for week in calendar_data %}
                 <tr>
                     {% for day_data in week %}
-                    <td class="calendar-day
-                        {% if not day_data.is_current_month and view_type == 'monthly' %}not-current-month{% endif %}
-                        {% if day_data.is_today %}today{% endif %}"
-                        {% if view_type == 'monthly' and day_data.is_current_month %}onclick="location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'"{% endif %}>
+                    <td class="{% if day_data.is_weekend %}weekend{% endif %} {% if not day_data.is_current_month %}other-month{% endif %}">
+                        <div class="day-cell {% if day_data.is_today %}today{% endif %}"
+                             onclick="location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                            <div class="day-number">
+                                <span>{{ day_data.date.day }}</span>
+                                <span class="hijri-date" data-date="{{ day_data.date|date:'Y-m-d' }}"></span>
+                            </div>
 
-                        <div class="day-header">
-                            <span class="day-number">{{ day_data.day }}</span>
-                            <span class="hijri-date" data-date="{{ day_data.date|date:'Y-m-d' }}"></span>
-                        </div>
+                            {% if day_data.is_current_month %}
+                                {% if day_data.events.count > 0 %}
+                                <div class="event-count-badge count-events" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-calendar-check"></i>
+                                    {{ day_data.events.count }} حدث
+                                </div>
+                                {% endif %}
 
-                        <div class="day-content">
-                            {% if view_type == 'weekly' or day_data.is_current_month %}
-                                {% if view_type == 'weekly' %}
-                                    <!-- Weekly View - Show event details -->
-                                    {% for event in day_data.events %}
-                                    <div class="event-item type-event" onclick="location.href='{% url 'event_detail' event.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-calendar-check"></i> {{ event.title|truncatechars:40 }}
-                                        </div>
-                                        {% if event.start_time %}
-                                        <div class="event-time">{{ event.start_time|time:"H:i" }}</div>
-                                        {% endif %}
-                                        {% if event.location %}
-                                        <div class="event-meta">
-                                            <span class="event-badge">
-                                                <i class="fas fa-map-marker-alt"></i> {{ event.location|truncatechars:15 }}
-                                            </span>
-                                        </div>
-                                        {% endif %}
+                                <!-- Show recurring tasks as connected badges -->
+                                {% for task_occ in day_data.task_occurrences %}
+                                <div class="task-badge type-task {% if task_occ.span_days > 1 %}multi-day{% endif %} {% if task_occ.is_start and task_occ.is_end %}task-single{% elif task_occ.is_start %}task-start{% elif task_occ.is_end %}task-end{% else %}task-middle{% endif %}"
+                                     onclick="event.stopPropagation(); location.href='{% url 'object_detail' 'task' task_occ.task.id %}'">
+                                    <div class="event-title">
+                                        <i class="fas fa-tasks"></i> {{ task_occ.task.title|truncatechars:25 }}
                                     </div>
-                                    {% endfor %}
+                                </div>
+                                {% endfor %}
 
-                                    <!-- Recurring Tasks Display -->
-                                    {% for task_occ in day_data.task_occurrences %}
-                                    <div class="task-badge type-task {% if task_occ.span_days > 1 %}multi-day{% endif %} {% if task_occ.is_start and task_occ.is_end %}task-single{% elif task_occ.is_start %}task-start{% elif task_occ.is_end %}task-end{% else %}task-middle{% endif %}"
-                                         onclick="location.href='{% url 'object_detail' 'task' task_occ.task.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-tasks"></i> {{ task_occ.task.title|truncatechars:40 }}
-                                        </div>
-                                        {% if task_occ.span_days > 1 %}
-                                        <div class="task-span-indicator">
-                                            {% if task_occ.is_start %}
-                                                <i class="fas fa-arrow-left"></i> يبدأ - {{ task_occ.span_days }} يوم
-                                            {% elif task_occ.is_end %}
-                                                <i class="fas fa-arrow-right"></i> ينتهي
-                                            {% else %}
-                                                <i class="fas fa-arrows-alt-h"></i> اليوم {{ forloop.counter }} من {{ task_occ.span_days }}
-                                            {% endif %}
-                                        </div>
-                                        {% endif %}
-                                        <div class="event-meta">
-                                            <span class="event-badge">{{ task_occ.task.get_status_display }}</span>
-                                            {% if task_occ.task.priority %}
-                                            <span class="event-badge">{{ task_occ.task.get_priority_display }}</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.activities.count > 0 %}
+                                <div class="event-count-badge count-activities" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-running"></i>
+                                    {{ day_data.activities.count }} نشاط
+                                </div>
+                                {% endif %}
 
-                                    {% for activity in day_data.activities %}
-                                    <div class="event-item type-activity" onclick="location.href='{% url 'object_detail' 'activity' activity.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-running"></i> {{ activity.name|truncatechars:40 }}
-                                        </div>
-                                        {% if activity.time %}
-                                        <div class="event-time">{{ activity.time|time:"H:i" }}</div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.cultural_tasks.count > 0 %}
+                                <div class="event-count-badge count-cultural_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-theater-masks"></i>
+                                    {{ day_data.cultural_tasks.count }} ثقافية
+                                </div>
+                                {% endif %}
 
-                                    {% for ctask in day_data.cultural_tasks %}
-                                    <div class="event-item type-cultural_task" onclick="location.href='{% url 'object_detail' 'cultural_task' ctask.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-theater-masks"></i> {{ ctask.title|truncatechars:40 }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.task_sessions.count > 0 %}
+                                <div class="event-count-badge count-task_sessions" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-clock"></i>
+                                    {{ day_data.task_sessions.count }} جلسة
+                                </div>
+                                {% endif %}
 
-                                    {% for session in day_data.task_sessions %}
-                                    <div class="event-item type-task_sessions" onclick="location.href='{% url 'object_detail' 'cultural_task' session.task.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-clock"></i> {{ session.title|truncatechars:40 }}
-                                        </div>
-                                        <div class="event-time">جلسة: {{ session.time|time:"H:i" }}</div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.operations_tasks.count > 0 %}
+                                <div class="event-count-badge count-operations_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-cogs"></i>
+                                    {{ day_data.operations_tasks.count }} تشغيلية
+                                </div>
+                                {% endif %}
 
-                                    {% for otask in day_data.operations_tasks %}
-                                    <div class="event-item type-operations_task" onclick="location.href='{% url 'object_detail' 'operations_task' otask.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-cogs"></i> {{ otask.title|truncatechars:40 }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.scientific_tasks.count > 0 %}
+                                <div class="event-count-badge count-scientific_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-flask"></i>
+                                    {{ day_data.scientific_tasks.count }} علمية
+                                </div>
+                                {% endif %}
 
-                                    {% for stask in day_data.scientific_tasks %}
-                                    <div class="event-item type-scientific_task" onclick="location.href='{% url 'object_detail' 'scientific_task' stask.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-flask"></i> {{ stask.title|truncatechars:40 }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.lectures.count > 0 %}
+                                <div class="event-count-badge count-lectures" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    {{ day_data.lectures.count }} محاضرة
+                                </div>
+                                {% endif %}
 
-                                    {% for lecture in day_data.lectures %}
-                                    <div class="event-item type-lecture" onclick="location.href='{% url 'object_detail' 'lecture' lecture.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-chalkboard-teacher"></i> {{ lecture.title|truncatechars:40 }}
-                                        </div>
-                                        {% if lecture.time %}
-                                        <div class="event-time">{{ lecture.time|time:"H:i" }}</div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.sharia_tasks.count > 0 %}
+                                <div class="event-count-badge count-sharia_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-mosque"></i>
+                                    {{ day_data.sharia_tasks.count }} شرعية
+                                </div>
+                                {% endif %}
 
-                                    {% for shtask in day_data.sharia_tasks %}
-                                    <div class="event-item type-sharia_task" onclick="location.href='{% url 'object_detail' 'sharia_task' shtask.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-mosque"></i> {{ shtask.title|truncatechars:40 }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.family_competitions.count > 0 %}
+                                <div class="event-count-badge count-family_competitions" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-trophy"></i>
+                                    {{ day_data.family_competitions.count }} مسابقة
+                                </div>
+                                {% endif %}
 
-                                    {% for comp in day_data.family_competitions %}
-                                    <div class="event-item type-family_competition" onclick="location.href='{% url 'object_detail' 'family_competition' comp.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-trophy"></i> {{ comp.title|truncatechars:40 }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.sports_tasks.count > 0 %}
+                                <div class="event-count-badge count-sports_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-futbol"></i>
+                                    {{ day_data.sports_tasks.count }} رياضية
+                                </div>
+                                {% endif %}
 
-                                    {% for sptask in day_data.sports_tasks %}
-                                    <div class="event-item type-sports_task" onclick="location.href='{% url 'object_detail' 'sports_task' sptask.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-futbol"></i> {{ sptask.title|truncatechars:40 }}
-                                        </div>
-                                    </div>
-                                    {% endfor %}
+                                {% if day_data.matches.count > 0 %}
+                                <div class="event-count-badge count-matches" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                    <i class="fas fa-trophy"></i>
+                                    {{ day_data.matches.count }} مباراة
+                                </div>
+                                {% endif %}
 
-                                    {% for match in day_data.matches %}
-                                    <div class="event-item type-match" onclick="location.href='{% url 'object_detail' 'match' match.id %}'">
-                                        <div class="event-title">
-                                            <i class="fas fa-trophy"></i> {{ match.title|truncatechars:40 }}
-                                        </div>
-                                        {% if match.time %}
-                                        <div class="event-time">{{ match.time|time:"H:i" }}</div>
-                                        {% endif %}
-                                    </div>
-                                    {% endfor %}
-
-                                    {% if day_data.total_events == 0 %}
-                                    <div class="no-events">
-                                        <i class="fas fa-calendar-times"></i>
-                                        لا توجد أحداث
-                                    </div>
-                                    {% endif %}
-                                {% else %}
-                                    <!-- Monthly View - Show counts with special handling for recurring tasks -->
-                                   <!-- Monthly View - Show counts OR connected badges for recurring tasks -->
-    {% if day_data.events.count > 0 %}
-    <div class="event-count-badge count-events" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-calendar-check"></i>
-        {{ day_data.events.count }} حدث
-    </div>
-    {% endif %}
-
-    <!-- Show recurring tasks as connected badges -->
-    {% for task_occ in day_data.task_occurrences %}
-    <div class="task-badge type-task {% if task_occ.span_days > 1 %}multi-day{% endif %} {% if task_occ.is_start and task_occ.is_end %}task-single{% elif task_occ.is_start %}task-start{% elif task_occ.is_end %}task-end{% else %}task-middle{% endif %}"
-         onclick="event.stopPropagation(); location.href='{% url 'object_detail' 'task' task_occ.task.id %}'">
-        <div class="event-title">
-            <i class="fas fa-tasks"></i> {{ task_occ.task.title|truncatechars:25 }}
-        </div>
-    </div>
-    {% endfor %}
-
-    {% if day_data.activities.count > 0 %}
-    <div class="event-count-badge count-activities" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-running"></i>
-        {{ day_data.activities.count }} نشاط
-    </div>
-    {% endif %}
-
-    {% if day_data.cultural_tasks.count > 0 %}
-    <div class="event-count-badge count-cultural_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-theater-masks"></i>
-        {{ day_data.cultural_tasks.count }} ثقافية
-    </div>
-    {% endif %}
-
-    {% if day_data.task_sessions.count > 0 %}
-    <div class="event-count-badge count-task_sessions" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-clock"></i>
-        {{ day_data.task_sessions.count }} جلسة
-    </div>
-    {% endif %}
-
-    {% if day_data.operations_tasks.count > 0 %}
-    <div class="event-count-badge count-operations_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-cogs"></i>
-        {{ day_data.operations_tasks.count }} تشغيلية
-    </div>
-    {% endif %}
-
-    {% if day_data.scientific_tasks.count > 0 %}
-    <div class="event-count-badge count-scientific_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-flask"></i>
-        {{ day_data.scientific_tasks.count }} علمية
-    </div>
-    {% endif %}
-
-    {% if day_data.lectures.count > 0 %}
-    <div class="event-count-badge count-lectures" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-chalkboard-teacher"></i>
-        {{ day_data.lectures.count }} محاضرة
-    </div>
-    {% endif %}
-
-    {% if day_data.sharia_tasks.count > 0 %}
-    <div class="event-count-badge count-sharia_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-mosque"></i>
-        {{ day_data.sharia_tasks.count }} شرعية
-    </div>
-    {% endif %}
-
-    {% if day_data.family_competitions.count > 0 %}
-    <div class="event-count-badge count-family_competitions" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-trophy"></i>
-        {{ day_data.family_competitions.count }} مسابقة
-    </div>
-    {% endif %}
-
-    {% if day_data.sports_tasks.count > 0 %}
-    <div class="event-count-badge count-sports_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-futbol"></i>
-        {{ day_data.sports_tasks.count }} رياضية
-    </div>
-    {% endif %}
-
-    {% if day_data.matches.count > 0 %}
-    <div class="event-count-badge count-matches" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
-        <i class="fas fa-trophy"></i>
-        {{ day_data.matches.count }} مباراة
-    </div>
-    {% endif %}
-
-    {% if day_data.total_events == 0 %}
-    <div class="no-events">
-        لا توجد أحداث
-    </div>
-    {% endif %}
-{% endif %}
+                                {% if day_data.total_events == 0 %}
+                                <div class="no-events">
+                                    لا توجد أحداث
+                                </div>
+                                {% endif %}
                             {% else %}
                                 <div class="no-events">
                                     -
@@ -1080,6 +1015,25 @@
 </div>
 
 <script>
+    // Clear filters function
+    function clearFilters() {
+        const baseUrl = window.location.pathname;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Keep only view, year, month, and week parameters
+        const view = urlParams.get('view') || 'monthly';
+        const year = urlParams.get('year') || '{{ year }}';
+        const month = urlParams.get('month') || '{{ month }}';
+        const week = urlParams.get('week') || '';
+
+        let newUrl = `${baseUrl}?view=${view}&year=${year}&month=${month}`;
+        if (week) {
+            newUrl += `&week=${week}`;
+        }
+
+        window.location.href = newUrl;
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         // Export dropdown functionality
         const exportBtn = document.getElementById('export-btn');
@@ -1111,12 +1065,28 @@
                     const weekNumber = '{{ week_number|default:"1" }}';
                     const programId = '{{ program.id }}';
 
+                    // Build export URL with filters
+                    const urlParams = new URLSearchParams(window.location.search);
                     let exportUrl = `/schedule/export/${format}/?program_id=${programId}&view=${viewType}&year=${year}`;
 
                     if (viewType === 'monthly') {
                         exportUrl += `&month=${month}`;
                     } else if (viewType === 'weekly') {
                         exportUrl += `&week=${weekNumber}`;
+                    }
+
+                    // Add filter parameters
+                    if (urlParams.get('event_type')) {
+                        exportUrl += `&event_type=${urlParams.get('event_type')}`;
+                    }
+                    if (urlParams.get('status')) {
+                        exportUrl += `&status=${urlParams.get('status')}`;
+                    }
+                    if (urlParams.get('priority')) {
+                        exportUrl += `&priority=${urlParams.get('priority')}`;
+                    }
+                    if (urlParams.get('committee')) {
+                        exportUrl += `&committee=${urlParams.get('committee')}`;
                     }
 
                     window.location.href = exportUrl;

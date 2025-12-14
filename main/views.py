@@ -137,10 +137,29 @@ def schedule_calendar(request, program_id=None):
     view_type = request.GET.get('view', 'monthly')
 
     # Get month, year, and week from query params
+    # Get month, year, and week from query params
     now = timezone.now()
-    year = int(request.GET.get('year', now.year))
-    month = int(request.GET.get('month', now.month))
-    week_number = int(request.GET.get('week', now.isocalendar()[1]))
+
+    # Handle year parameter
+    year_param = request.GET.get('year')
+    if year_param and year_param != 'None':
+        year = int(year_param)
+    else:
+        year = now.year
+
+    # Handle month parameter
+    month_param = request.GET.get('month')
+    if month_param and month_param != 'None':
+        month = int(month_param)
+    else:
+        month = now.month
+
+    # Handle week parameter
+    week_param = request.GET.get('week')
+    if week_param and week_param != 'None':
+        week_number = int(week_param)
+    else:
+        week_number = now.isocalendar()[1]
 
     # Calculate previous and next month
     if month == 1:
@@ -155,15 +174,19 @@ def schedule_calendar(request, program_id=None):
 
     if view_type == 'weekly':
         # Weekly view logic
-        jan_1 = datetime(year, 1, 1).date()
-        week_start = jan_1 + timedelta(weeks=week_number - 1)
-        week_start = week_start - timedelta(days=(week_start.weekday() + 1) % 7)
+        monday_of_week = datetime.strptime(f'{year}-W{week_number:02d}-1', "%Y-W%W-%w").date()
+
+        # Adjust to Saturday (go back 2 days from Monday)
+        week_start = monday_of_week - timedelta(days=2)
         week_end = week_start + timedelta(days=6)
 
-        prev_week = week_number - 1 if week_number > 1 else 52
-        prev_week_year = year if week_number > 1 else year - 1
-        next_week = week_number + 1 if week_number < 52 else 1
-        next_week_year = year if week_number < 52 else year + 1
+        prev_week_start = week_start - timedelta(days=7)
+        prev_week = prev_week_start.isocalendar()[1]
+        prev_week_year = prev_week_start.year
+
+        next_week_start = week_start + timedelta(days=7)
+        next_week = next_week_start.isocalendar()[1]
+        next_week_year = next_week_start.year
 
         start_date = week_start
         end_date = week_end
@@ -173,6 +196,11 @@ def schedule_calendar(request, program_id=None):
         start_date = datetime(year, month, 1).date()
         end_date = datetime(year, month, monthrange(year, month)[1]).date()
 
+    event_type_filter = request.GET.get('event_type', '')  # Now this is the unified filter
+    status_filter = request.GET.get('status', '')
+    priority_filter = request.GET.get('priority', '')
+    committee_filter = request.GET.get('committee', '')
+
     # Get all events and tasks for the period
     events = ScheduleEvent.objects.filter(
         program=program,
@@ -180,11 +208,20 @@ def schedule_calendar(request, program_id=None):
         start_date__lte=end_date
     ).select_related('committee', 'created_by').order_by('start_date', 'start_time')
 
-    # Get regular tasks - now handling recurring tasks
+    if status_filter:
+        events = events.filter(status=status_filter)
+    if priority_filter:
+        events = events.filter(priority=priority_filter)
+    if committee_filter:
+        events = events.filter(committee_id=committee_filter)
+
     # Get regular tasks - now handling recurring tasks
     tasks = Task.objects.filter(
         program=program
     ).select_related('committee')
+
+    if committee_filter:
+        tasks = tasks.filter(committee_id=committee_filter)
 
     # Process recurring tasks
     task_occurrences = {}  # {date: [(task, is_start, is_end, group_id), ...]}
@@ -298,6 +335,201 @@ def schedule_calendar(request, program_id=None):
         date__gte=start_date
     ).select_related('committee', 'created_by')
 
+    # ========== APPLY STATUS FILTER TO ALL TYPES THAT HAVE STATUS FIELD ==========
+    if status_filter:
+        # Models with status field: ScheduleEvent, Task, CulturalTask, OperationsTask,
+        # ScientificTask, ShariaTask, SportsTask, Lecture, Match, FamilyCompetition
+        events = events.filter(status=status_filter)
+        tasks = tasks.filter(status=status_filter)
+        cultural_tasks = cultural_tasks.filter(status=status_filter)
+        operations_tasks = operations_tasks.filter(status=status_filter)
+        scientific_tasks = scientific_tasks.filter(status=status_filter)
+        sharia_tasks = sharia_tasks.filter(status=status_filter)
+        sports_tasks = sports_tasks.filter(status=status_filter)
+        lectures = lectures.filter(status=status_filter)
+        matches = matches.filter(status=status_filter)
+        family_competitions = family_competitions.filter(status=status_filter)
+
+    # ========== APPLY PRIORITY FILTER TO ALL TYPES THAT HAVE PRIORITY FIELD ==========
+    if priority_filter:
+        # Models with priority field: ScheduleEvent, Task, OperationsTask
+        events = events.filter(priority=priority_filter)
+        tasks = tasks.filter(priority=priority_filter)
+        operations_tasks = operations_tasks.filter(priority=priority_filter)
+
+    # ========== APPLY COMMITTEE FILTER TO ALL EVENT TYPES ==========
+    if committee_filter:
+        events = events.filter(committee_id=committee_filter)
+        tasks = tasks.filter(committee_id=committee_filter)
+        activities = activities.filter(committee_id=committee_filter)
+        cultural_tasks = cultural_tasks.filter(committee_id=committee_filter)
+        task_sessions = task_sessions.filter(task__committee_id=committee_filter)
+        operations_tasks = operations_tasks.filter(committee_id=committee_filter)
+        scientific_tasks = scientific_tasks.filter(committee_id=committee_filter)
+        lectures = lectures.filter(committee_id=committee_filter)
+        sharia_tasks = sharia_tasks.filter(committee_id=committee_filter)
+        family_competitions = family_competitions.filter(committee_id=committee_filter)
+        sports_tasks = sports_tasks.filter(committee_id=committee_filter)
+        matches = matches.filter(committee_id=committee_filter)
+
+    if event_type_filter:
+        if event_type_filter == 'schedule_event':
+            # Keep only ScheduleEvents, clear all others
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'task':
+            # Keep only Tasks
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+        elif event_type_filter == 'activity':
+            # Keep only Activities
+            events = events.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'cultural_task':
+            # Keep only Cultural Tasks
+            events = events.none()
+            activities = activities.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'task_session':
+            # Keep only Task Sessions
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'operations_task':
+            # Keep only Operations Tasks
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'scientific_task':
+            # Keep only Scientific Tasks
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'lecture':
+            # Keep only Lectures
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'sharia_task':
+            # Keep only Sharia Tasks
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'family_competition':
+            # Keep only Family Competitions
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            sports_tasks = sports_tasks.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'sports_task':
+            # Keep only Sports Tasks
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            matches = matches.none()
+            task_occurrences = {}
+        elif event_type_filter == 'match':
+            # Keep only Matches
+            events = events.none()
+            activities = activities.none()
+            cultural_tasks = cultural_tasks.none()
+            task_sessions = task_sessions.none()
+            operations_tasks = operations_tasks.none()
+            scientific_tasks = scientific_tasks.none()
+            lectures = lectures.none()
+            sharia_tasks = sharia_tasks.none()
+            family_competitions = family_competitions.none()
+            sports_tasks = sports_tasks.none()
+            task_occurrences = {}
+
     # Filter by committee if supervisor
     if user.role == 'committee_supervisor':
         events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
@@ -345,6 +577,7 @@ def schedule_calendar(request, program_id=None):
                 'date': day_date,
                 'day': day_date.day,
                 'is_today': day_date == now.date(),
+                'is_current_month': True,
                 'events': day_events,
                 'task_occurrences': day_task_occurrences,
                 'activities': day_activities,
@@ -361,6 +594,7 @@ def schedule_calendar(request, program_id=None):
             })
 
         weeks = [week_days]
+        calendar_data = [week_days]
 
         month_names = [
             'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
@@ -381,6 +615,7 @@ def schedule_calendar(request, program_id=None):
         }
 
 
+
     else:
 
         # Monthly view logic
@@ -391,9 +626,47 @@ def schedule_calendar(request, program_id=None):
 
         cal_data = []
 
-        first_weekday = first_day.weekday()
+        # Get weekday of first day (0=Monday, 6=Sunday in Python)
 
-        first_weekday = (first_weekday + 1) % 7
+        # But we want Saturday as first column (0=Saturday, 6=Friday)
+
+        first_weekday = first_day.weekday()  # Monday=0, Sunday=6
+
+        # Convert to our calendar where Saturday is first column (0)
+
+        # Python: Mon(0), Tue(1), Wed(2), Thu(3), Fri(4), Sat(5), Sun(6)
+
+        # We want: Sat(0), Sun(1), Mon(2), Tue(3), Wed(4), Thu(5), Fri(6)
+
+        if first_weekday == 5:  # Saturday
+
+            first_weekday = 0
+
+        elif first_weekday == 6:  # Sunday
+
+            first_weekday = 1
+
+        elif first_weekday == 0:  # Monday
+
+            first_weekday = 2
+
+        elif first_weekday == 1:  # Tuesday
+
+            first_weekday = 3
+
+        elif first_weekday == 2:  # Wednesday
+
+            first_weekday = 4
+
+        elif first_weekday == 3:  # Thursday
+
+            first_weekday = 5
+
+        elif first_weekday == 4:  # Friday
+
+            first_weekday = 6
+
+        # Add blank days from previous month
 
         if first_weekday > 0:
 
@@ -402,24 +675,67 @@ def schedule_calendar(request, program_id=None):
             for i in range(first_weekday):
                 day = prev_month_days - first_weekday + i + 1
 
+                date = datetime(prev_year, prev_month, day).date()
+
                 cal_data.append({
 
                     'day': day,
 
-                    'date': datetime(prev_year, prev_month, day).date(),
+                    'date': date,
 
                     'is_current_month': False,
 
+                    'is_today': date == now.date(),
+
                     'events': [],
 
-                    'task_occurrences': []
+                    'task_occurrences': [],
+
+                    'activities': [],
+
+                    'cultural_tasks': [],
+
+                    'operations_tasks': [],
+
+                    'scientific_tasks': [],
+
+                    'task_sessions': [],
+
+                    'lectures': [],
+
+                    'sharia_tasks': [],
+
+                    'family_competitions': [],
+
+                    'sports_tasks': [],
+
+                    'matches': [],
+
+                    'total_events': 0,
 
                 })
 
         days_in_month = monthrange(year, month)[1]
 
         for day in range(1, days_in_month + 1):
+
             date = datetime(year, month, day).date()
+
+            # Determine if weekend (Friday = 4, Saturday = 5 in Python weekday)
+
+            # In our adjusted calendar: Saturday=0, Sunday=1, Friday=6
+
+            python_weekday = date.weekday()  # Monday=0, Sunday=6
+
+            is_weekend = False
+
+            if python_weekday == 4:  # Friday
+
+                is_weekend = True
+
+            elif python_weekday == 5:  # Saturday
+
+                is_weekend = True
 
             day_events = events.filter(start_date=date)
 
@@ -475,9 +791,11 @@ def schedule_calendar(request, program_id=None):
 
                 'is_today': date == now.date(),
 
+                'is_weekend': is_weekend,
+
                 'events': day_events,
 
-                'task_occurrences': day_task_occurrences,  # This is now a list, not queryset
+                'task_occurrences': day_task_occurrences,
 
                 'activities': day_activities,
 
@@ -503,7 +821,11 @@ def schedule_calendar(request, program_id=None):
 
             })
 
-        remaining = 42 - len(cal_data)
+        # Fill remaining cells
+
+        total_cells_needed = 42  # 6 weeks * 7 days
+
+        remaining = total_cells_needed - len(cal_data)
 
         for day in range(1, remaining + 1):
             date = datetime(next_year, next_month, day).date()
@@ -516,16 +838,44 @@ def schedule_calendar(request, program_id=None):
 
                 'is_current_month': False,
 
+                'is_today': date == now.date(),
+
                 'events': [],
 
-                'task_occurrences': []
+                'task_occurrences': [],
+
+                'activities': [],
+
+                'cultural_tasks': [],
+
+                'operations_tasks': [],
+
+                'scientific_tasks': [],
+
+                'task_sessions': [],
+
+                'lectures': [],
+
+                'sharia_tasks': [],
+
+                'family_competitions': [],
+
+                'sports_tasks': [],
+
+                'matches': [],
+
+                'total_events': 0,
 
             })
+
+        # Split into weeks (7 days each)
 
         weeks = []
 
         for i in range(0, len(cal_data), 7):
             weeks.append(cal_data[i:i + 7])
+
+        calendar_data = weeks
 
         month_names = [
 
@@ -574,6 +924,18 @@ def schedule_calendar(request, program_id=None):
     context = {
         'program': program,
         'weeks': weeks,
+        'calendar_data': calendar_data,
+        'view_type': view_type,
+        'month_name': month_names[month-1] if 1 <= month <= 12 else '',
+        'week_number': week_number if view_type == 'weekly' else None,
+        'prev_year': prev_year,
+        'prev_month': prev_month,
+        'next_year': next_year,
+        'next_month': next_month,
+        'prev_week': prev_week if view_type == 'weekly' else None,
+        'prev_week_year': prev_week_year if view_type == 'weekly' else None,
+        'next_week': next_week if view_type == 'weekly' else None,
+        'next_week_year': next_week_year if view_type == 'weekly' else None,
         'year': year,
         'month': month,
         'today': now.date(),
