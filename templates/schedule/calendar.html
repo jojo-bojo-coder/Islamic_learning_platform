@@ -696,6 +696,34 @@
         background: linear-gradient(135deg, #f39c12, #d68910) !important;
     }
 
+    .list-view-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.5rem;
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .list-view-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+        color: white;
+    }
+
+    .list-view-btn i {
+        font-size: 1.1rem;
+    }
+
 </style>
 
 <div class="calendar-container">
@@ -708,6 +736,10 @@
         </h1>
 
         <div class="calendar-actions">
+            <a href="{% url 'calendar_list' %}" class="list-view-btn">
+                <i class="fas fa-list"></i>
+                قائمة
+            </a>
             <!-- View Toggle -->
             <a href="?view=monthly&year={{ year }}&month={{ month }}{% if request.GET.event_type %}&event_type={{ request.GET.event_type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.committee %}&committee={{ request.GET.committee }}{% endif %}"
                class="btn btn-view {% if view_type == 'monthly' %}active{% endif %}">

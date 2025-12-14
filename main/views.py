@@ -2525,3 +2525,229 @@ def export_calendar_pdf(request):
     doc.build(story)
 
     return response
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models import Q, Count
+from datetime import datetime, timedelta
+from pm_dashboard.models import Task, Activity
+from cultural_committee_dashboard.models import CulturalTask
+from scientific_committee_dashboard.models import ScientificTask
+from operations_committee_dashboard.models import OperationsTask
+from sharia_committee_dashboard.models import ShariaTask
+from sports_committee_dashboard.models import SportsTask
+
+
+@login_required
+def calendar_list_view(request):
+    """
+    List view for all calendar tasks, program tasks, and committee tasks
+    Similar to the schedule_list_view in main app but for calendar app
+    """
+    user = request.user
+
+    # Get date range from query params or default to current month
+    today = timezone.now().date()
+
+    # Date filters
+    date_from_str = request.GET.get('date_from')
+    date_to_str = request.GET.get('date_to')
+
+    if date_from_str:
+        try:
+            date_from = datetime.strptime(date_from_str, '%Y-%m-%d').date()
+        except ValueError:
+            date_from = today.replace(day=1)
+    else:
+        date_from = today.replace(day=1)
+
+    if date_to_str:
+        try:
+            date_to = datetime.strptime(date_to_str, '%Y-%m-%d').date()
+        except ValueError:
+            # Default to end of current month
+            if today.month == 12:
+                date_to = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+            else:
+                date_to = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+    else:
+        # Default to end of current month
+        if today.month == 12:
+            date_to = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
+        else:
+            date_to = today.replace(month=today.month + 1, day=1) - timedelta(days=1)
+
+    # Get program tasks (from pm_dashboard)
+    program_tasks = Task.objects.filter(
+        due_date__gte=date_from,
+        due_date__lte=date_to
+    ).select_related('committee', 'program').order_by('-due_date')
+
+    # Get activities
+    activities = Activity.objects.filter(
+        date__gte=date_from,
+        date__lte=date_to
+    ).select_related('committee', 'program').order_by('-date')
+
+    # Get cultural tasks
+    cultural_tasks = CulturalTask.objects.filter(
+        due_date__gte=date_from,
+        due_date__lte=date_to
+    ).select_related('committee').order_by('-due_date')
+
+    # Get scientific tasks
+    scientific_tasks = ScientificTask.objects.filter(
+        due_date__gte=date_from,
+        due_date__lte=date_to
+    ).select_related('committee').order_by('-due_date')
+
+    # Get operations tasks
+    operations_tasks = OperationsTask.objects.filter(
+        due_date__gte=date_from,
+        due_date__lte=date_to
+    ).select_related('committee').order_by('-due_date')
+
+    # Get sharia tasks
+    sharia_tasks = ShariaTask.objects.filter(
+        due_date__gte=date_from,
+        due_date__lte=date_to
+    ).select_related('committee').order_by('-due_date')
+
+    # Get sports tasks
+    sports_tasks = SportsTask.objects.filter(
+        due_date__gte=date_from,
+        due_date__lte=date_to
+    ).select_related('committee').order_by('-due_date')
+
+    # Apply permission filters based on user role
+    if user.role == 'program_manager':
+        try:
+            from director_dashboard.models import Program
+            program = Program.objects.get(manager=user)
+            program_tasks = program_tasks.filter(program=program)
+            activities = activities.filter(program=program)
+            cultural_tasks = cultural_tasks.filter(committee__program=program)
+            scientific_tasks = scientific_tasks.filter(committee__program=program)
+            operations_tasks = operations_tasks.filter(committee__program=program)
+            sharia_tasks = sharia_tasks.filter(committee__program=program)
+            sports_tasks = sports_tasks.filter(committee__program=program)
+        except:
+            pass
+
+    elif user.role == 'committee_supervisor':
+        try:
+            from director_dashboard.models import Committee
+            committee = Committee.objects.get(supervisor=user)
+            program_tasks = program_tasks.filter(committee=committee)
+            activities = activities.filter(committee=committee)
+
+            # Filter committee-specific tasks
+            if user.supervisor_type == 'cultural':
+                cultural_tasks = cultural_tasks.filter(committee=committee)
+                scientific_tasks = ScientificTask.objects.none()
+                operations_tasks = OperationsTask.objects.none()
+                sharia_tasks = ShariaTask.objects.none()
+                sports_tasks = SportsTask.objects.none()
+            elif user.supervisor_type == 'scientific':
+                scientific_tasks = scientific_tasks.filter(committee=committee)
+                cultural_tasks = CulturalTask.objects.none()
+                operations_tasks = OperationsTask.objects.none()
+                sharia_tasks = ShariaTask.objects.none()
+                sports_tasks = SportsTask.objects.none()
+            elif user.supervisor_type == 'operations':
+                operations_tasks = operations_tasks.filter(committee=committee)
+                cultural_tasks = CulturalTask.objects.none()
+                scientific_tasks = ScientificTask.objects.none()
+                sharia_tasks = ShariaTask.objects.none()
+                sports_tasks = SportsTask.objects.none()
+            elif user.supervisor_type == 'sharia':
+                sharia_tasks = sharia_tasks.filter(committee=committee)
+                cultural_tasks = CulturalTask.objects.none()
+                scientific_tasks = ScientificTask.objects.none()
+                operations_tasks = OperationsTask.objects.none()
+                sports_tasks = SportsTask.objects.none()
+            elif user.supervisor_type == 'sports':
+                sports_tasks = sports_tasks.filter(committee=committee)
+                cultural_tasks = CulturalTask.objects.none()
+                scientific_tasks = ScientificTask.objects.none()
+                operations_tasks = OperationsTask.objects.none()
+                sharia_tasks = ShariaTask.objects.none()
+        except:
+            pass
+
+    # Calculate statistics
+    total_tasks = (
+            program_tasks.count() +
+            cultural_tasks.count() +
+            scientific_tasks.count() +
+            operations_tasks.count() +
+            sharia_tasks.count() +
+            sports_tasks.count()
+    )
+
+    # Completed tasks
+    completed_tasks = (
+            program_tasks.filter(status='completed').count() +
+            cultural_tasks.filter(status='completed').count() +
+            scientific_tasks.filter(status='completed').count() +
+            operations_tasks.filter(status='completed').count() +
+            sharia_tasks.filter(status='completed').count() +
+            sports_tasks.filter(status='completed').count()
+    )
+
+    # Pending/In Progress tasks
+    pending_tasks = (
+            program_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
+            cultural_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
+            scientific_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
+            operations_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
+            sharia_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
+            sports_tasks.filter(Q(status='pending') | Q(status='in_progress')).count()
+    )
+
+    # Overdue tasks (tasks past due date and not completed)
+    overdue_tasks = (
+            program_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
+            cultural_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
+            scientific_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
+            operations_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
+            sharia_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
+            sports_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count()
+    )
+
+    if user.role == 'director':
+        base_template = 'director_base.html'
+    elif user.role == 'program_manager':
+        base_template = 'program_manager_base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+        base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    else:
+        base_template = 'base.html'
+
+    context = {
+        'program_tasks': program_tasks,
+        'activities': activities,
+        'cultural_tasks': cultural_tasks,
+        'scientific_tasks': scientific_tasks,
+        'operations_tasks': operations_tasks,
+        'sharia_tasks': sharia_tasks,
+        'sports_tasks': sports_tasks,
+        'date_from': date_from.strftime('%Y-%m-%d'),
+        'date_to': date_to.strftime('%Y-%m-%d'),
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'pending_tasks': pending_tasks,
+        'overdue_tasks': overdue_tasks,
+        'base_template': base_template,
+    }
+
+    return render(request, 'schedule/calendar_list_view.html', context)

@@ -1,0 +1,1242 @@
+{% extends base_template %}
+{% load static %}
+
+{% block title %}قائمة المهام - التقويم{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #3B82F6;
+        --secondary-color: #10B981;
+        --danger-color: #EF4444;
+        --warning-color: #F59E0B;
+        --info-color: #06B6D4;
+        --success-color: #10B981;
+        --dark-color: #1F2937;
+        --light-color: #F3F4F6;
+        --border-color: #E5E7EB;
+    }
+
+    .calendar-list-container {
+        padding: 2rem;
+        background-color: #F9FAFB;
+        min-height: 100vh;
+        direction: rtl;
+    }
+
+    .list-header {
+        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .list-header .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        opacity: 0.95;
+        flex-wrap: wrap;
+    }
+
+    .list-header .breadcrumb a {
+        color: white;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .list-header .breadcrumb a:hover {
+        opacity: 0.8;
+    }
+
+    .filters-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .filters-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1.25rem;
+        border: 2px solid var(--border-color);
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--dark-color);
+    }
+
+    .filter-btn:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .filter-btn.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+    }
+
+    .filter-btn i {
+        font-size: 1rem;
+    }
+
+    .advanced-filters {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-group label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--dark-color);
+    }
+
+    .filter-group select,
+    .filter-group input {
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .events-section {
+        display: none;
+        margin-bottom: 2rem;
+    }
+
+    .events-section.active {
+        display: block;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 3px solid var(--primary-color);
+    }
+
+    .section-title i {
+        color: var(--primary-color);
+        font-size: 1.75rem;
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .event-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        border-right: 4px solid var(--primary-color);
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15);
+    }
+
+    .event-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .event-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+        flex: 1;
+        line-height: 1.4;
+    }
+
+    .event-type {
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    /* Event Type Colors - matching calendar colors */
+    .type-tasks { background: #DBEAFE; color: #1E40AF; }
+    .type-activities { background: #D1FAE5; color: #065F46; }
+    .type-cultural-tasks { background: #FCE7F3; color: #BE185D; }
+    .type-scientific-tasks { background: #FED7AA; color: #9A3412; }
+    .type-operations-tasks { background: #E0E7FF; color: #3730A3; }
+    .type-sharia-tasks { background: #FEF3C7; color: #92400E; }
+    .type-sports-tasks { background: #CFFAFE; color: #155E75; }
+    .type-matches { background: #CCFBF1; color: #134E4A; }
+    .type-lectures { background: #FFE4E6; color: #9F1239; }
+    .type-family-competitions { background: #FEF9C3; color: #854D0E; }
+    .type-calendar-tasks { background: #DDD6FE; color: #5B21B6; }
+
+    .event-meta {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .event-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: var(--light-color);
+        border-radius: 8px;
+    }
+
+    .event-detail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #6B7280;
+    }
+
+    .event-detail i {
+        color: var(--primary-color);
+        width: 18px;
+        text-align: center;
+    }
+
+    .event-description {
+        font-size: 0.9rem;
+        color: #6B7280;
+        line-height: 1.6;
+        margin: 0.75rem 0;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+
+    .status-badge.upcoming {
+        background: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    .status-badge.in-progress {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .status-badge.completed {
+        background: #D1FAE5;
+        color: #065F46;
+    }
+
+    .status-badge.cancelled {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .priority-badge.high {
+        background: #FEE2E2;
+        color: #991B1B;
+    }
+
+    .priority-badge.medium {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .priority-badge.low {
+        background: #DBEAFE;
+        color: #1E40AF;
+    }
+
+    .completion-progress {
+        margin-top: 1rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+        font-weight: 500;
+    }
+
+    .progress-bar-container {
+        height: 8px;
+        background: var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 4px;
+        transition: width 0.3s;
+    }
+
+    .no-events {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        color: #9CA3AF;
+    }
+
+    .no-events i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .no-events h5 {
+        font-size: 1.25rem;
+        margin: 0.5rem 0;
+        color: #6B7280;
+    }
+
+    .no-events p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.blue { background: #DBEAFE; color: #1E40AF; }
+    .stat-icon.green { background: #D1FAE5; color: #065F46; }
+    .stat-icon.yellow { background: #FEF3C7; color: #92400E; }
+    .stat-icon.red { background: #FEE2E2; color: #991B1B; }
+
+    .stat-content h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--dark-color);
+    }
+
+    .stat-content p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6B7280;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2563EB;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: var(--dark-color);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .overdue-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.6rem;
+        background: #FEE2E2;
+        color: #991B1B;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .recurring-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.6rem;
+        background: #E0E7FF;
+        color: #3730A3;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .calendar-list-container {
+            padding: 1rem;
+        }
+
+        .events-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-buttons {
+            flex-direction: column;
+        }
+
+        .advanced-filters {
+            grid-template-columns: 1fr;
+        }
+
+        .stats-overview {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="calendar-list-container">
+    <!-- Header -->
+    <div class="list-header">
+        <h1>قائمة المهام والفعاليات</h1>
+        <div class="breadcrumb">
+            <a href="{% url 'home' %}"><i class="fas fa-home"></i> الرئيسية</a>
+            <span>/</span>
+            <span>قائمة المهام</span>
+        </div>
+    </div>
+
+    <!-- Statistics Overview -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-icon blue">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_tasks }}</h3>
+                <p>إجمالي المهام</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ completed_tasks }}</h3>
+                <p>المهام المكتملة</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ pending_tasks }}</h3>
+                <p>قيد التنفيذ</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ overdue_tasks }}</h3>
+                <p>متأخرة</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+        <div class="filters-title">
+            <i class="fas fa-filter"></i>
+            تصفية حسب النوع
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">
+                <i class="fas fa-th"></i>
+                الكل
+            </button>
+            <button class="filter-btn" data-filter="calendar-tasks">
+                <i class="fas fa-calendar-check"></i>
+                مهام التقويم
+            </button>
+            <button class="filter-btn" data-filter="program-tasks">
+                <i class="fas fa-tasks"></i>
+                مهام البرامج
+            </button>
+            <button class="filter-btn" data-filter="activities">
+                <i class="fas fa-running"></i>
+                الأنشطة
+            </button>
+            <button class="filter-btn" data-filter="cultural-tasks">
+                <i class="fas fa-book"></i>
+                المهام الثقافية
+            </button>
+            <button class="filter-btn" data-filter="scientific-tasks">
+                <i class="fas fa-flask"></i>
+                المهام العلمية
+            </button>
+            <button class="filter-btn" data-filter="operations-tasks">
+                <i class="fas fa-cogs"></i>
+                المهام التشغيلية
+            </button>
+            <button class="filter-btn" data-filter="sharia-tasks">
+                <i class="fas fa-mosque"></i>
+                المهام الشرعية
+            </button>
+            <button class="filter-btn" data-filter="sports-tasks">
+                <i class="fas fa-futbol"></i>
+                المهام الرياضية
+            </button>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="advanced-filters">
+            <div class="filter-group">
+                <label>الحالة</label>
+                <select id="status-filter">
+                    <option value="">الكل</option>
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="in_progress">قيد التنفيذ</option>
+                    <option value="completed">مكتملة</option>
+                    <option value="cancelled">ملغاة</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>الأولوية</label>
+                <select id="priority-filter">
+                    <option value="">الكل</option>
+                    <option value="high">عالية</option>
+                    <option value="medium">متوسطة</option>
+                    <option value="low">منخفضة</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>من تاريخ</label>
+                <input type="date" id="date-from-filter" value="{{ date_from }}">
+            </div>
+            <div class="filter-group">
+                <label>إلى تاريخ</label>
+                <input type="date" id="date-to-filter" value="{{ date_to }}">
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Tasks Section -->
+    <div class="events-section active" id="calendar-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-calendar-check"></i>
+            مهام التقويم
+        </h4>
+        <div class="events-grid">
+            {% for task in calendar_tasks %}
+            <div class="event-card" data-status="{{ task.status }}" data-priority="{{ task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-calendar-tasks">
+                            <i class="fas fa-calendar-check"></i>
+                            مهمة تقويم
+                        </span>
+                        {% if task.priority %}
+                        <span class="priority-badge {{ task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ task.date_start|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if not task.is_all_day %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ task.date_start|time:"H:i" }} - {{ task.date_end|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if task.responsible_person %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ task.responsible_person.get_full_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if task.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ task.location }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if task.description %}
+                <p class="event-description">{{ task.description|truncatewords:30 }}</p>
+                {% endif %}
+                {% if task.progress_percentage > 0 %}
+                <div class="completion-progress">
+                    <div class="progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ task.progress_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ task.progress_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="status-badge {{ task.status }}">
+                    {% if task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif task.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% elif task.status == 'in_progress' %}
+                    <i class="fas fa-spinner"></i> قيد التنفيذ
+                    {% else %}
+                    <i class="fas fa-clock"></i> قيد الانتظار
+                    {% endif %}
+                </div>
+                <div class="action-buttons">
+                    <a href="{% url 'calendar_app:task_detail' task.id %}" class="btn btn-primary">
+                        <i class="fas fa-eye"></i> عرض التفاصيل
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-calendar-check"></i>
+                <h5>لا توجد مهام تقويم</h5>
+                <p>لم يتم إضافة أي مهام تقويم بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Program Tasks Section -->
+    <div class="events-section" id="program-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-tasks"></i>
+            مهام البرامج
+        </h4>
+        <div class="events-grid">
+            {% for task in program_tasks %}
+            <a href="{% url 'object_detail' 'task' task.id %}" class="event-card" data-status="{{ task.status }}" data-priority="{{ task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-tasks">
+                            <i class="fas fa-tasks"></i>
+                            مهمة
+                        </span>
+                        {% if task.priority %}
+                        <span class="priority-badge {{ task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                        {% if task.is_overdue %}
+                        <span class="overdue-indicator">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            متأخرة
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if task.assigned_to_name %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ task.assigned_to_name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>تاريخ الاستحقاق: {{ task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if task.description %}
+                <p class="event-description">{{ task.description|truncatewords:30 }}</p>
+                {% endif %}
+                {% if task.completion_percentage > 0 %}
+                <div class="completion-progress">
+                    <div class="progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ task.completion_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="status-badge {{ task.status }}">
+                    {% if task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif task.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ task.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-tasks"></i>
+                <h5>لا توجد مهام برامج</h5>
+                <p>لم يتم إضافة أي مهام برامج بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Activities Section -->
+    <div class="events-section" id="activities-section">
+        <h4 class="section-title">
+            <i class="fas fa-running"></i>
+            الأنشطة
+        </h4>
+        <div class="events-grid">
+            {% for activity in activities %}
+            <a href="{% url 'object_detail' 'activity' activity.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ activity.name }}</h5>
+                    <span class="event-type type-activities">
+                        <i class="fas fa-running"></i>
+                        نشاط
+                    </span>
+                </div>
+                <div class="event-details">
+                    {% if activity.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ activity.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ activity.date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if activity.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ activity.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if activity.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ activity.location }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-running"></i>
+                <h5>لا توجد أنشطة</h5>
+                <p>لم يتم إضافة أي أنشطة بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Cultural Tasks Section -->
+    <div class="events-section" id="cultural-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-book"></i>
+            المهام الثقافية
+        </h4>
+        <div class="events-grid">
+            {% for cultural_task in cultural_tasks %}
+            <a href="{% url 'object_detail' 'cultural_task' cultural_task.id %}" class="event-card" data-status="{{ cultural_task.status }}" data-priority="{{ cultural_task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ cultural_task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-cultural-tasks">
+                            <i class="fas fa-book"></i>
+                            مهمة ثقافية
+                        </span>
+                        {% if cultural_task.priority %}
+                        <span class="priority-badge {{ cultural_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ cultural_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if cultural_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ cultural_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ cultural_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if cultural_task.description %}
+                <p class="event-description">{{ cultural_task.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ cultural_task.status }}">
+                    {% if cultural_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ cultural_task.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-book"></i>
+                <h5>لا توجد مهام ثقافية</h5>
+                <p>لم يتم إضافة أي مهام ثقافية بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Scientific Tasks Section -->
+    <div class="events-section" id="scientific-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-flask"></i>
+            المهام العلمية
+        </h4>
+        <div class="events-grid">
+            {% for scientific_task in scientific_tasks %}
+            <a href="{% url 'object_detail' 'scientific_task' scientific_task.id %}" class="event-card" data-status="{{ scientific_task.status }}" data-priority="{{ scientific_task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ scientific_task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-scientific-tasks">
+                            <i class="fas fa-flask"></i>
+                            مهمة علمية
+                        </span>
+                        {% if scientific_task.priority %}
+                        <span class="priority-badge {{ scientific_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ scientific_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if scientific_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ scientific_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ scientific_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if scientific_task.description %}
+                <p class="event-description">{{ scientific_task.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ scientific_task.status }}">
+                    {% if scientific_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ scientific_task.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-flask"></i>
+                <h5>لا توجد مهام علمية</h5>
+                <p>لم يتم إضافة أي مهام علمية بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Operations Tasks Section -->
+    <div class="events-section" id="operations-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-cogs"></i>
+            المهام التشغيلية
+        </h4>
+        <div class="events-grid">
+            {% for operations_task in operations_tasks %}
+            <a href="{% url 'object_detail' 'operations_task' operations_task.id %}" class="event-card" data-status="{{ operations_task.status }}" data-priority="{{ operations_task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ operations_task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-operations-tasks">
+                            <i class="fas fa-cogs"></i>
+                            مهمة تشغيلية
+                        </span>
+                        {% if operations_task.priority %}
+                        <span class="priority-badge {{ operations_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ operations_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if operations_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ operations_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ operations_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if operations_task.description %}
+                <p class="event-description">{{ operations_task.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ operations_task.status }}">
+                    {% if operations_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ operations_task.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-cogs"></i>
+                <h5>لا توجد مهام تشغيلية</h5>
+                <p>لم يتم إضافة أي مهام تشغيلية بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sharia Tasks Section -->
+    <div class="events-section" id="sharia-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-mosque"></i>
+            المهام الشرعية
+        </h4>
+        <div class="events-grid">
+            {% for sharia_task in sharia_tasks %}
+            <a href="{% url 'object_detail' 'sharia_task' sharia_task.id %}" class="event-card" data-status="{{ sharia_task.status }}" data-priority="{{ sharia_task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ sharia_task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-sharia-tasks">
+                            <i class="fas fa-mosque"></i>
+                            مهمة شرعية
+                        </span>
+                        {% if sharia_task.priority %}
+                        <span class="priority-badge {{ sharia_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ sharia_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if sharia_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ sharia_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ sharia_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if sharia_task.description %}
+                <p class="event-description">{{ sharia_task.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ sharia_task.status }}">
+                    {% if sharia_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ sharia_task.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-mosque"></i>
+                <h5>لا توجد مهام شرعية</h5>
+                <p>لم يتم إضافة أي مهام شرعية بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sports Tasks Section -->
+    <div class="events-section" id="sports-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-futbol"></i>
+            المهام الرياضية
+        </h4>
+        <div class="events-grid">
+            {% for sports_task in sports_tasks %}
+            <a href="{% url 'object_detail' 'sports_task' sports_task.id %}" class="event-card" data-status="{{ sports_task.status }}" data-priority="{{ sports_task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ sports_task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-sports-tasks">
+                            <i class="fas fa-futbol"></i>
+                            مهمة رياضية
+                        </span>
+                        {% if sports_task.priority %}
+                        <span class="priority-badge {{ sports_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ sports_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if sports_task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ sports_task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ sports_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                </div>
+                {% if sports_task.description %}
+                <p class="event-description">{{ sports_task.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ sports_task.status }}">
+                    {% if sports_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ sports_task.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-futbol"></i>
+                <h5>لا توجد مهام رياضية</h5>
+                <p>لم يتم إضافة أي مهام رياضية بعد</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const eventSections = document.querySelectorAll('.events-section');
+    const statusFilter = document.getElementById('status-filter');
+    const priorityFilter = document.getElementById('priority-filter');
+    const dateFromFilter = document.getElementById('date-from-filter');
+    const dateToFilter = document.getElementById('date-to-filter');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show/hide sections based on filter
+            eventSections.forEach(section => {
+                if (filter === 'all') {
+                    section.classList.add('active');
+                } else {
+                    if (section.id === `${filter}-section`) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                }
+            });
+
+            applyAdvancedFilters();
+        });
+    });
+
+    // Advanced filters
+    function applyAdvancedFilters() {
+        const statusValue = statusFilter.value;
+        const priorityValue = priorityFilter.value;
+        const cards = document.querySelectorAll('.event-card');
+
+        cards.forEach(card => {
+            let show = true;
+
+            if (statusValue && card.dataset.status !== statusValue) {
+                show = false;
+            }
+
+            if (priorityValue && card.dataset.priority !== priorityValue) {
+                show = false;
+            }
+
+            card.style.display = show ? 'block' : 'none';
+        });
+    }
+
+    statusFilter.addEventListener('change', applyAdvancedFilters);
+    priorityFilter.addEventListener('change', applyAdvancedFilters);
+
+    // Date filters (would need backend support for full functionality)
+    dateFromFilter.addEventListener('change', function() {
+        console.log('Date from changed:', this.value);
+        // Implement date filtering logic
+    });
+
+    dateToFilter.addEventListener('change', function() {
+        console.log('Date to changed:', this.value);
+        // Implement date filtering logic
+    });
+
+    // Add hover effect to event cards
+    const eventCards = document.querySelectorAll('.event-card');
+    eventCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}
