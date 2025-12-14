@@ -615,6 +615,22 @@
                 <i class="fas fa-futbol"></i>
                 المهام الرياضية
             </button>
+            <button class="filter-btn" data-filter="task-sessions">
+                <i class="fas fa-chalkboard-teacher"></i>
+                جلسات المهام
+            </button>
+            <button class="filter-btn" data-filter="lectures">
+                <i class="fas fa-graduation-cap"></i>
+                المحاضرات
+            </button>
+            <button class="filter-btn" data-filter="matches">
+                <i class="fas fa-trophy"></i>
+                المباريات
+            </button>
+            <button class="filter-btn" data-filter="family-competitions">
+                <i class="fas fa-users"></i>
+                مسابقات العائلات
+            </button>
         </div>
 
         <!-- Advanced Filters -->
@@ -739,86 +755,99 @@
     </div>
 
     <!-- Program Tasks Section -->
-    <div class="events-section" id="program-tasks-section">
-        <h4 class="section-title">
-            <i class="fas fa-tasks"></i>
-            مهام البرامج
-        </h4>
-        <div class="events-grid">
-            {% for task in program_tasks %}
-            <a href="{% url 'object_detail' 'task' task.id %}" class="event-card" data-status="{{ task.status }}" data-priority="{{ task.priority }}">
-                <div class="event-header">
-                    <h5 class="event-title">{{ task.title }}</h5>
-                    <div class="event-meta">
-                        <span class="event-type type-tasks">
-                            <i class="fas fa-tasks"></i>
-                            مهمة
-                        </span>
-                        {% if task.priority %}
-                        <span class="priority-badge {{ task.priority }}">
-                            <i class="fas fa-flag"></i>
-                            {{ task.get_priority_display }}
-                        </span>
-                        {% endif %}
-                        {% if task.is_overdue %}
-                        <span class="overdue-indicator">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            متأخرة
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="event-details">
-                    {% if task.committee %}
-                    <div class="event-detail">
-                        <i class="fas fa-users"></i>
-                        <span>{{ task.committee.name }}</span>
-                    </div>
+    <<div class="events-section" id="program-tasks-section">
+    <h4 class="section-title">
+        <i class="fas fa-tasks"></i>
+        مهام البرامج
+    </h4>
+    <div class="events-grid">
+        {% for item in program_tasks %}
+        <a href="{% url 'object_detail' 'task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
+            <div class="event-header">
+                <h5 class="event-title">{{ item.task.title }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-tasks">
+                        <i class="fas fa-tasks"></i>
+                        مهمة
+                    </span>
+                    {% if item.task.priority %}
+                    <span class="priority-badge {{ item.task.priority }}">
+                        <i class="fas fa-flag"></i>
+                        {{ item.task.get_priority_display }}
+                    </span>
                     {% endif %}
-                    {% if task.assigned_to_name %}
-                    <div class="event-detail">
-                        <i class="fas fa-user"></i>
-                        <span>{{ task.assigned_to_name }}</span>
-                    </div>
+                    {% if item.is_recurring %}
+                    <span class="recurring-indicator">
+                        <i class="fas fa-redo"></i>
+                        متكررة
+                    </span>
                     {% endif %}
-                    <div class="event-detail">
-                        <i class="fas fa-calendar-day"></i>
-                        <span>تاريخ الاستحقاق: {{ task.due_date|date:"Y/m/d" }}</span>
-                    </div>
-                </div>
-                {% if task.description %}
-                <p class="event-description">{{ task.description|truncatewords:30 }}</p>
-                {% endif %}
-                {% if task.completion_percentage > 0 %}
-                <div class="completion-progress">
-                    <div class="progress-label">
-                        <span>نسبة الإنجاز</span>
-                        <span>{{ task.completion_percentage }}%</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: {{ task.completion_percentage }}%"></div>
-                    </div>
-                </div>
-                {% endif %}
-                <div class="status-badge {{ task.status }}">
-                    {% if task.status == 'completed' %}
-                    <i class="fas fa-check-circle"></i> مكتملة
-                    {% elif task.status == 'cancelled' %}
-                    <i class="fas fa-times-circle"></i> ملغاة
-                    {% else %}
-                    <i class="fas fa-clock"></i> {{ task.get_status_display }}
+                    {% if item.task.is_overdue %}
+                    <span class="overdue-indicator">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        متأخرة
+                    </span>
                     {% endif %}
                 </div>
-            </a>
-            {% empty %}
-            <div class="no-events">
-                <i class="fas fa-tasks"></i>
-                <h5>لا توجد مهام برامج</h5>
-                <p>لم يتم إضافة أي مهام برامج بعد</p>
             </div>
-            {% endfor %}
+            <div class="event-details">
+                {% if item.task.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ item.task.committee.name }}</span>
+                </div>
+                {% endif %}
+                {% if item.task.assigned_to_name %}
+                <div class="event-detail">
+                    <i class="fas fa-user"></i>
+                    <span>{{ item.task.assigned_to_name }}</span>
+                </div>
+                {% endif %}
+                {% if item.is_recurring %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                </div>
+                {% else %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>تاريخ الاستحقاق: {{ item.task.due_date|date:"Y/m/d" }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if item.task.description %}
+            <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
+            {% endif %}
+            {% if item.task.completion_percentage > 0 %}
+            <div class="completion-progress">
+                <div class="progress-label">
+                    <span>نسبة الإنجاز</span>
+                    <span>{{ item.task.completion_percentage }}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ item.task.completion_percentage }}%"></div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="status-badge {{ item.task.status }}">
+                {% if item.task.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% elif item.task.status == 'cancelled' %}
+                <i class="fas fa-times-circle"></i> ملغاة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-tasks"></i>
+            <h5>لا توجد مهام برامج</h5>
+            <p>لم يتم إضافة أي مهام برامج بعد</p>
         </div>
+        {% endfor %}
     </div>
+</div>
 
     <!-- Activities Section -->
     <div class="events-section" id="activities-section">
@@ -873,60 +902,73 @@
 
     <!-- Cultural Tasks Section -->
     <div class="events-section" id="cultural-tasks-section">
-        <h4 class="section-title">
-            <i class="fas fa-book"></i>
-            المهام الثقافية
-        </h4>
-        <div class="events-grid">
-            {% for cultural_task in cultural_tasks %}
-            <a href="{% url 'object_detail' 'cultural_task' cultural_task.id %}" class="event-card" data-status="{{ cultural_task.status }}" data-priority="{{ cultural_task.priority }}">
-                <div class="event-header">
-                    <h5 class="event-title">{{ cultural_task.title }}</h5>
-                    <div class="event-meta">
-                        <span class="event-type type-cultural-tasks">
-                            <i class="fas fa-book"></i>
-                            مهمة ثقافية
-                        </span>
-                        {% if cultural_task.priority %}
-                        <span class="priority-badge {{ cultural_task.priority }}">
-                            <i class="fas fa-flag"></i>
-                            {{ cultural_task.get_priority_display }}
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="event-details">
-                    {% if cultural_task.committee %}
-                    <div class="event-detail">
-                        <i class="fas fa-users"></i>
-                        <span>{{ cultural_task.committee.name }}</span>
-                    </div>
+    <h4 class="section-title">
+        <i class="fas fa-book"></i>
+        المهام الثقافية
+    </h4>
+    <div class="events-grid">
+        {% for item in cultural_tasks %}
+        <a href="{% url 'object_detail' 'cultural_task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
+            <div class="event-header">
+                <h5 class="event-title">{{ item.task.title }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-cultural-tasks">
+                        <i class="fas fa-book"></i>
+                        مهمة ثقافية
+                    </span>
+                    {% if item.task.priority %}
+                    <span class="priority-badge {{ item.task.priority }}">
+                        <i class="fas fa-flag"></i>
+                        {{ item.task.get_priority_display }}
+                    </span>
                     {% endif %}
-                    <div class="event-detail">
-                        <i class="fas fa-calendar-day"></i>
-                        <span>{{ cultural_task.due_date|date:"Y/m/d" }}</span>
-                    </div>
-                </div>
-                {% if cultural_task.description %}
-                <p class="event-description">{{ cultural_task.description|truncatewords:30 }}</p>
-                {% endif %}
-                <div class="status-badge {{ cultural_task.status }}">
-                    {% if cultural_task.status == 'completed' %}
-                    <i class="fas fa-check-circle"></i> مكتملة
-                    {% else %}
-                    <i class="fas fa-clock"></i> {{ cultural_task.get_status_display }}
+                    {% if item.is_recurring %}
+                    <span class="recurring-indicator">
+                        <i class="fas fa-redo"></i>
+                        متكررة
+                    </span>
                     {% endif %}
                 </div>
-            </a>
-            {% empty %}
-            <div class="no-events">
-                <i class="fas fa-book"></i>
-                <h5>لا توجد مهام ثقافية</h5>
-                <p>لم يتم إضافة أي مهام ثقافية بعد</p>
             </div>
-            {% endfor %}
+            <div class="event-details">
+                {% if item.task.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ item.task.committee.name }}</span>
+                </div>
+                {% endif %}
+                {% if item.is_recurring %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                </div>
+                {% else %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ item.task.due_date|date:"Y/m/d" }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if item.task.description %}
+            <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
+            {% endif %}
+            <div class="status-badge {{ item.task.status }}">
+                {% if item.task.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-book"></i>
+            <h5>لا توجد مهام ثقافية</h5>
+            <p>لم يتم إضافة أي مهام ثقافية بعد</p>
         </div>
+        {% endfor %}
     </div>
+</div>
 
     <!-- Scientific Tasks Section -->
     <div class="events-section" id="scientific-tasks-section">
@@ -1100,61 +1142,371 @@
     </div>
 
     <!-- Sports Tasks Section -->
-    <div class="events-section" id="sports-tasks-section">
-        <h4 class="section-title">
-            <i class="fas fa-futbol"></i>
-            المهام الرياضية
-        </h4>
-        <div class="events-grid">
-            {% for sports_task in sports_tasks %}
-            <a href="{% url 'object_detail' 'sports_task' sports_task.id %}" class="event-card" data-status="{{ sports_task.status }}" data-priority="{{ sports_task.priority }}">
-                <div class="event-header">
-                    <h5 class="event-title">{{ sports_task.title }}</h5>
-                    <div class="event-meta">
-                        <span class="event-type type-sports-tasks">
-                            <i class="fas fa-futbol"></i>
-                            مهمة رياضية
-                        </span>
-                        {% if sports_task.priority %}
-                        <span class="priority-badge {{ sports_task.priority }}">
-                            <i class="fas fa-flag"></i>
-                            {{ sports_task.get_priority_display }}
-                        </span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="event-details">
-                    {% if sports_task.committee %}
-                    <div class="event-detail">
-                        <i class="fas fa-users"></i>
-                        <span>{{ sports_task.committee.name }}</span>
-                    </div>
+   <div class="events-section" id="sports-tasks-section">
+    <h4 class="section-title">
+        <i class="fas fa-futbol"></i>
+        المهام الرياضية
+    </h4>
+    <div class="events-grid">
+        {% for item in sports_tasks %}
+        <a href="{% url 'object_detail' 'sports_task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
+            <div class="event-header">
+                <h5 class="event-title">{{ item.task.title }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-sports-tasks">
+                        <i class="fas fa-futbol"></i>
+                        مهمة رياضية
+                    </span>
+                    {% if item.task.priority %}
+                    <span class="priority-badge {{ item.task.priority }}">
+                        <i class="fas fa-flag"></i>
+                        {{ item.task.get_priority_display }}
+                    </span>
                     {% endif %}
-                    <div class="event-detail">
-                        <i class="fas fa-calendar-day"></i>
-                        <span>{{ sports_task.due_date|date:"Y/m/d" }}</span>
-                    </div>
-                </div>
-                {% if sports_task.description %}
-                <p class="event-description">{{ sports_task.description|truncatewords:30 }}</p>
-                {% endif %}
-                <div class="status-badge {{ sports_task.status }}">
-                    {% if sports_task.status == 'completed' %}
-                    <i class="fas fa-check-circle"></i> مكتملة
-                    {% else %}
-                    <i class="fas fa-clock"></i> {{ sports_task.get_status_display }}
+                    {% if item.is_recurring %}
+                    <span class="recurring-indicator">
+                        <i class="fas fa-redo"></i>
+                        متكررة
+                    </span>
                     {% endif %}
                 </div>
-            </a>
-            {% empty %}
-            <div class="no-events">
-                <i class="fas fa-futbol"></i>
-                <h5>لا توجد مهام رياضية</h5>
-                <p>لم يتم إضافة أي مهام رياضية بعد</p>
             </div>
-            {% endfor %}
+            <div class="event-details">
+                {% if item.task.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ item.task.committee.name }}</span>
+                </div>
+                {% endif %}
+                {% if item.is_recurring %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                </div>
+                {% else %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ item.task.due_date|date:"Y/m/d" }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if item.task.description %}
+            <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
+            {% endif %}
+            <div class="status-badge {{ item.task.status }}">
+                {% if item.task.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-futbol"></i>
+            <h5>لا توجد مهام رياضية</h5>
+            <p>لم يتم إضافة أي مهام رياضية بعد</p>
         </div>
+        {% endfor %}
     </div>
+</div>
+
+    <!-- Task Sessions Section -->
+<div class="events-section" id="task-sessions-section">
+    <h4 class="section-title">
+        <i class="fas fa-chalkboard-teacher"></i>
+        جلسات المهام
+    </h4>
+    <div class="events-grid">
+        {% for session in task_sessions %}
+        <a href="{% url 'object_detail' 'task_session' session.id %}" class="event-card">
+            <div class="event-header">
+                <h5 class="event-title">{{ session.task.title }} - جلسة {{ session.session_number }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-cultural-tasks">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        جلسة
+                    </span>
+                </div>
+            </div>
+            <div class="event-details">
+                {% if session.task.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ session.task.committee.name }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ session.date|date:"Y/m/d" }}</span>
+                </div>
+                {% if session.time %}
+                <div class="event-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ session.time|time:"H:i" }}</span>
+                </div>
+                {% endif %}
+                {% if session.location %}
+                <div class="event-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ session.location }}</span>
+                </div>
+                {% endif %}
+                {% if session.speaker %}
+                <div class="event-detail">
+                    <i class="fas fa-user"></i>
+                    <span>المحاضر: {{ session.speaker }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if session.description %}
+            <p class="event-description">{{ session.description|truncatewords:30 }}</p>
+            {% endif %}
+            <div class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
+                {% if session.is_completed %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% else %}
+                <i class="fas fa-clock"></i> قادمة
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <h5>لا توجد جلسات مهام</h5>
+            <p>لم يتم إضافة أي جلسات مهام لهذه الفترة</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Lectures Section -->
+<div class="events-section" id="lectures-section">
+    <h4 class="section-title">
+        <i class="fas fa-graduation-cap"></i>
+        المحاضرات
+    </h4>
+    <div class="events-grid">
+        {% for lecture in lectures %}
+        <a href="{% url 'object_detail' 'lecture' lecture.id %}" class="event-card" data-status="{{ lecture.status }}">
+            <div class="event-header">
+                <h5 class="event-title">{{ lecture.title }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-scientific-tasks">
+                        <i class="fas fa-graduation-cap"></i>
+                        محاضرة
+                    </span>
+                </div>
+            </div>
+            <div class="event-details">
+                {% if lecture.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ lecture.committee.name }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ lecture.date|date:"Y/m/d" }}</span>
+                </div>
+                {% if lecture.time %}
+                <div class="event-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ lecture.time|time:"H:i" }}</span>
+                </div>
+                {% endif %}
+                {% if lecture.location %}
+                <div class="event-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ lecture.location }}</span>
+                </div>
+                {% endif %}
+                {% if lecture.speaker %}
+                <div class="event-detail">
+                    <i class="fas fa-user"></i>
+                    <span>المحاضر: {{ lecture.speaker }}</span>
+                </div>
+                {% endif %}
+                {% if lecture.target_audience %}
+                <div class="event-detail">
+                    <i class="fas fa-bullseye"></i>
+                    <span>{{ lecture.get_target_audience_display }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if lecture.description %}
+            <p class="event-description">{{ lecture.description|truncatewords:30 }}</p>
+            {% endif %}
+            <div class="status-badge {{ lecture.status }}">
+                {% if lecture.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% elif lecture.status == 'cancelled' %}
+                <i class="fas fa-times-circle"></i> ملغاة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ lecture.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-graduation-cap"></i>
+            <h5>لا توجد محاضرات</h5>
+            <p>لم يتم إضافة أي محاضرات لهذه الفترة</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Matches Section -->
+<div class="events-section" id="matches-section">
+    <h4 class="section-title">
+        <i class="fas fa-trophy"></i>
+        المباريات
+    </h4>
+    <div class="events-grid">
+        {% for match in matches %}
+        <a href="{% url 'object_detail' 'match' match.id %}" class="event-card" data-status="{{ match.status }}">
+            <div class="event-header">
+                <h5 class="event-title">{{ match.title }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-matches">
+                        <i class="fas fa-trophy"></i>
+                        مباراة
+                    </span>
+                </div>
+            </div>
+            <div class="event-details">
+                {% if match.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ match.committee.name }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>{{ match.date|date:"Y/m/d" }}</span>
+                </div>
+                {% if match.time %}
+                <div class="event-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>{{ match.time|time:"H:i" }}</span>
+                </div>
+                {% endif %}
+                {% if match.location %}
+                <div class="event-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ match.location }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ match.team1 }} vs {{ match.team2 }}</span>
+                </div>
+                {% if match.sport_type %}
+                <div class="event-detail">
+                    <i class="fas fa-futbol"></i>
+                    <span>{{ match.get_sport_type_display }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if match.result %}
+            <div class="event-detail" style="margin-top: 0.5rem; padding: 0.5rem; background: #F3F4F6; border-radius: 6px;">
+                <i class="fas fa-flag-checkered"></i>
+                <span><strong>النتيجة:</strong> {{ match.result }}</span>
+            </div>
+            {% endif %}
+            <div class="status-badge {{ match.status }}">
+                {% if match.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> انتهت
+                {% elif match.status == 'cancelled' %}
+                <i class="fas fa-times-circle"></i> ملغاة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ match.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-trophy"></i>
+            <h5>لا توجد مباريات</h5>
+            <p>لم يتم إضافة أي مباريات لهذه الفترة</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Family Competitions Section -->
+<div class="events-section" id="family-competitions-section">
+    <h4 class="section-title">
+        <i class="fas fa-users"></i>
+        مسابقات العائلات
+    </h4>
+    <div class="events-grid">
+        {% for competition in family_competitions %}
+        <a href="{% url 'object_detail' 'family_competition' competition.id %}" class="event-card" data-status="{{ competition.status }}">
+            <div class="event-header">
+                <h5 class="event-title">{{ competition.title }}</h5>
+                <div class="event-meta">
+                    <span class="event-type type-family-competitions">
+                        <i class="fas fa-users"></i>
+                        مسابقة
+                    </span>
+                </div>
+            </div>
+            <div class="event-details">
+                {% if competition.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ competition.committee.name }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>من {{ competition.start_date|date:"Y/m/d" }} إلى {{ competition.end_date|date:"Y/m/d" }}</span>
+                </div>
+                {% if competition.location %}
+                <div class="event-detail">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>{{ competition.location }}</span>
+                </div>
+                {% endif %}
+                {% if competition.competition_type %}
+                <div class="event-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>{{ competition.get_competition_type_display }}</span>
+                </div>
+                {% endif %}
+                {% if competition.max_teams %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>عدد الفرق: {{ competition.max_teams }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if competition.description %}
+            <p class="event-description">{{ competition.description|truncatewords:30 }}</p>
+            {% endif %}
+            <div class="status-badge {{ competition.status }}">
+                {% if competition.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> انتهت
+                {% elif competition.status == 'cancelled' %}
+                <i class="fas fa-times-circle"></i> ملغاة
+                {% elif competition.status == 'in_progress' %}
+                <i class="fas fa-spinner"></i> جارية
+                {% else %}
+                <i class="fas fa-clock"></i> قادمة
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-users"></i>
+            <h5>لا توجد مسابقات عائلات</h5>
+            <p>لم يتم إضافة أي مسابقات عائلات لهذه الفترة</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 </div>
 
 <script>
