@@ -852,7 +852,7 @@ def delete_task(request, task_id):
         'committee': task.committee,
     }
 
-    return render(request, 'cultural_committee/delete_task_confirm.html', context)
+    return render(request, 'cultural_committee/confirm_delete.html', context)
 
 from django.db import models
 

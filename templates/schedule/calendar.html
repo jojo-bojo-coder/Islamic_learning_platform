@@ -724,6 +724,10 @@
         font-size: 1.1rem;
     }
 
+    .task-badge.type-sharia_task {
+        background: linear-gradient(135deg, #c0392b, #922b21) !important;
+    }
+
 </style>
 
 <div class="calendar-container">
@@ -921,6 +925,7 @@
                                 <div class="task-badge
                                             {% if task_occ.type == 'regular_task' %}type-regular_task
                                             {% elif task_occ.type == 'cultural_task' %}type-cultural_task
+                                            {% elif task_occ.type == 'sharia_task' %}type-sharia_task
                                             {% elif task_occ.type == 'sports_task' %}type-sports_task{% endif %}
                                             {% if task_occ.span_days > 1 %}multi-day{% endif %}
                                             {% if task_occ.is_start and task_occ.is_end %}task-single
@@ -932,16 +937,24 @@
                                               location.href='{% url 'object_detail' 'task' task_occ.task.id %}'
                                               {% elif task_occ.type == 'cultural_task' %}
                                               location.href='{% url 'object_detail' 'cultural_task' task_occ.task.id %}'
+                                              {% elif task_occ.type == 'sharia_task' %}
+                                              location.href='{% url 'object_detail' 'sharia_task' task_occ.task.id %}'
                                               {% elif task_occ.type == 'sports_task' %}
                                               location.href='{% url 'object_detail' 'sports_task' task_occ.task.id %}'
-                                              {% endif %}">
+                                              {% endif %}"
+                                     title="{% if task_occ.task.is_recurring %}{{ task_occ.task.get_recurrence_pattern_display }}{% endif %}">
                                     <div class="event-title">
                                         {% if task_occ.type == 'regular_task' %}
                                         <i class="fas fa-tasks"></i> {{ task_occ.task.title|truncatechars:25 }}
                                         {% elif task_occ.type == 'cultural_task' %}
                                         <i class="fas fa-theater-masks"></i> {{ task_occ.task.title|truncatechars:25 }}
+                                        {% elif task_occ.type == 'sharia_task' %}
+                                        <i class="fas fa-mosque"></i> {{ task_occ.task.title|truncatechars:25 }}
                                         {% elif task_occ.type == 'sports_task' %}
                                         <i class="fas fa-futbol"></i> {{ task_occ.task.title|truncatechars:25 }}
+                                        {% endif %}
+                                        {% if task_occ.task.is_recurring %}
+                                        <i class="fas fa-redo" style="font-size: 0.7rem; margin-right: 3px;"></i>
                                         {% endif %}
                                     </div>
                                 </div>

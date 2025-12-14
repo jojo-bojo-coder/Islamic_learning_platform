@@ -148,7 +148,7 @@ def task_management(request):
 @login_required
 def add_task(request):
     if request.user.role != 'committee_supervisor' or request.user.supervisor_type != 'sharia':
-        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصفحة')
+        messages.error(request, 'ليس لديك صلاحية للوصول إلى هذه الصلفة')
         return redirect('home')
 
     try:
@@ -163,6 +163,18 @@ def add_task(request):
             task = form.save(commit=False)
             task.committee = committee
             task.created_by = request.user
+
+            # Set start_date if not provided
+            if not task.start_date:
+                task.start_date = task.due_date
+
+            # Convert recurrence_days to JSON format if it's a list
+            if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                if isinstance(task.recurrence_days, list):
+                    pass
+                else:
+                    task.recurrence_days = list(task.recurrence_days)
+
             task.save()
 
             members = ShariaMember.objects.filter(committee=committee, is_active=True)
@@ -179,11 +191,15 @@ def add_task(request):
 
             UserActivity.objects.create(
                 user=request.user,
-                action=f'إضافة مهمة شرعية: {task.title}',
+                action=f'إضافة مهمة شرعية: {task.title}' + (' (متكررة)' if task.is_recurring else ''),
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم إضافة المهمة بنجاح!')
+            if task.is_recurring:
+                messages.success(request, f'تم إضافة المهمة المتكررة بنجاح! ({task.get_recurrence_pattern_display()})')
+            else:
+                messages.success(request, 'تم إضافة المهمة بنجاح!')
+
             return redirect('sharia_task_management')
     else:
         form = ShariaTaskForm(committee=committee)
@@ -213,12 +229,25 @@ def edit_task(request, task_id):
     if request.method == 'POST':
         form = ShariaTaskForm(request.POST, instance=task, committee=committee)
         if form.is_valid():
-            task = form.save()
+            task = form.save(commit=False)
+
+            # Set start_date if not provided
+            if not task.start_date:
+                task.start_date = task.due_date
+
+            # Convert recurrence_days to JSON format if it's a list
+            if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                if isinstance(task.recurrence_days, list):
+                    pass
+                else:
+                    task.recurrence_days = list(task.recurrence_days)
+
+            task.save()
 
             members = ShariaMember.objects.filter(committee=committee, is_active=True)
             for member in members:
                 ShariaNotification.objects.create(
-                    user=request.user,
+                    user=member.user,
                     committee=committee,
                     notification_type='task_updated',
                     title='تعديل مهمة',
@@ -229,14 +258,23 @@ def edit_task(request, task_id):
 
             UserActivity.objects.create(
                 user=request.user,
-                action=f'تعديل مهمة شرعية: {task.title}',
+                action=f'تعديل مهمة شرعية: {task.title}' + (' (متكررة)' if task.is_recurring else ''),
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم تعديل المهمة بنجاح!')
+            if task.is_recurring:
+                messages.success(request, f'تم تعديل المهمة المتكررة بنجاح! ({task.get_recurrence_pattern_display()})')
+            else:
+                messages.success(request, 'تم تعديل المهمة بنجاح!')
+
             return redirect('sharia_task_management')
     else:
-        form = ShariaTaskForm(instance=task, committee=committee)
+        # Pre-populate form with existing data
+        initial_data = {}
+        if task.recurrence_days and isinstance(task.recurrence_days, list):
+            initial_data['recurrence_days'] = [str(day) for day in task.recurrence_days]
+
+        form = ShariaTaskForm(instance=task, committee=committee, initial=initial_data)
 
     context = {
         'committee': committee,
@@ -263,21 +301,40 @@ def delete_task(request, task_id):
 
     if request.method == 'POST':
         task_title = task.title
+        is_recurring = task.is_recurring
+        recurrence_pattern = task.get_recurrence_pattern_display() if task.is_recurring else None
+
+        # Send notifications to members before deletion
+        members = ShariaMember.objects.filter(committee=committee, is_active=True)
+        for member in members:
+            ShariaNotification.objects.create(
+                user=member.user,
+                committee=committee,
+                notification_type='task_updated',
+                title='تم حذف المهمة',
+                message=f'تم حذف المهمة: {task_title}'
+            )
+
         task.delete()
 
         UserActivity.objects.create(
             user=request.user,
-            action=f'حذف مهمة شرعية: {task_title}',
+            action=f'حذف مهمة شرعية: {task_title}' + (f' ({recurrence_pattern})' if is_recurring else ''),
             ip_address=get_client_ip(request)
         )
 
-        messages.success(request, 'تم حذف المهمة بنجاح!')
+        if is_recurring:
+            messages.success(request, f'تم حذف المهمة المتكررة بنجاح! ({recurrence_pattern})')
+        else:
+            messages.success(request, 'تم حذف المهمة بنجاح!')
+
         return redirect('sharia_task_management')
 
     context = {
         'committee': committee,
         'object': task,
-        'type': 'مهمة'
+        'type': 'مهمة' + (' متكررة' if task.is_recurring else ''),
+        'extra_info': f'نمط التكرار: {task.get_recurrence_pattern_display()}' if task.is_recurring else None
     }
     return render(request, 'sharia_committee/confirm_delete.html', context)
 

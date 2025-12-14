@@ -385,8 +385,75 @@ def schedule_calendar(request, program_id=None):
         date__gte=start_date
     ).select_related('committee', 'created_by')
 
-    sharia_tasks = ShariaTask.objects.filter(
+    sharia_tasks_all = ShariaTask.objects.filter(
+        committee__program=program
+    ).select_related('committee')
+
+    if committee_filter:
+        sharia_tasks_all = sharia_tasks_all.filter(committee_id=committee_filter)
+
+    # Process recurring sharia tasks
+    sharia_task_occurrences = {}  # {date: [(sharia_task, is_start, is_end, group_id), ...]}
+
+    for sharia_task in sharia_tasks_all:
+        if sharia_task.is_recurring:
+            # IMPORTANT: Only get occurrences within the view's date range
+            # Don't process if task hasn't started yet
+            sharia_task_start = sharia_task.start_date or sharia_task.due_date
+            if sharia_task_start > end_date:
+                continue
+
+            # Don't process if task has ended
+            if sharia_task.recurrence_end_date and sharia_task.recurrence_end_date < start_date:
+                continue
+
+            # Get consecutive day groups for this task within the view range
+            groups = sharia_task.get_consecutive_day_groups(start_date, end_date)
+            for group_idx, (group_start, group_end) in enumerate(groups):
+                group_id = f"sharia_task_{sharia_task.id}_group_{group_idx}"
+
+                # Add all dates in this group
+                current = group_start
+                while current <= group_end:
+                    if start_date <= current <= end_date:
+                        if current not in sharia_task_occurrences:
+                            sharia_task_occurrences[current] = []
+
+                        sharia_task_occurrences[current].append({
+                            'task': sharia_task,
+                            'is_start': current == group_start,
+                            'is_end': current == group_end,
+                            'group_id': group_id,
+                            'group_start': group_start,
+                            'group_end': group_end,
+                            'span_days': (group_end - group_start).days + 1,
+                            'type': 'sharia_task'  # Add type identifier
+                        })
+                    current += timedelta(days=1)
+        else:
+            # Non-recurring sharia task
+            if start_date <= sharia_task.due_date <= end_date:
+                if sharia_task.due_date not in sharia_task_occurrences:
+                    sharia_task_occurrences[sharia_task.due_date] = []
+                sharia_task_occurrences[sharia_task.due_date].append({
+                    'task': sharia_task,
+                    'is_start': True,
+                    'is_end': True,
+                    'group_id': f"sharia_task_{sharia_task.id}_single",
+                    'group_start': sharia_task.due_date,
+                    'group_end': sharia_task.due_date,
+                    'span_days': 1,
+                    'type': 'sharia_task'  # Add type identifier
+                })
+
+    for date, occurrences in sharia_task_occurrences.items():
+        if date not in all_task_occurrences:
+            all_task_occurrences[date] = []
+        all_task_occurrences[date].extend(occurrences)
+
+    sharia_tasks_non_recurring = ShariaTask.objects.filter(
         committee__program=program,
+        is_recurring=False,
         due_date__lte=end_date,
         due_date__gte=start_date
     ).select_related('committee')
@@ -478,7 +545,7 @@ def schedule_calendar(request, program_id=None):
         cultural_tasks = cultural_tasks.filter(status=status_filter)
         operations_tasks = operations_tasks.filter(status=status_filter)
         scientific_tasks = scientific_tasks.filter(status=status_filter)
-        sharia_tasks = sharia_tasks.filter(status=status_filter)
+        sharia_tasks_all = sharia_tasks_all.filter(status=status_filter)
         sports_tasks = sports_tasks.filter(status=status_filter)
         lectures = lectures.filter(status=status_filter)
         matches = matches.filter(status=status_filter)
@@ -490,6 +557,8 @@ def schedule_calendar(request, program_id=None):
                 if occ['type'] == 'regular_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
                 elif occ['type'] == 'cultural_task' and occ['task'].status == status_filter:
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'sharia_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
                 elif occ['type'] == 'sports_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
@@ -513,6 +582,8 @@ def schedule_calendar(request, program_id=None):
                     filtered_occurrences.append(occ)
                 elif occ['type'] == 'cultural_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
+                elif occ['type'] == 'sharia_task' and occ['task'].priority == priority_filter:
+                    filtered_occurrences.append(occ)
                 elif occ['type'] == 'sports_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
             if filtered_occurrences:
@@ -530,7 +601,7 @@ def schedule_calendar(request, program_id=None):
         operations_tasks = operations_tasks.filter(committee_id=committee_filter)
         scientific_tasks = scientific_tasks.filter(committee_id=committee_filter)
         lectures = lectures.filter(committee_id=committee_filter)
-        sharia_tasks = sharia_tasks.filter(committee_id=committee_filter)
+        sharia_tasks_all = sharia_tasks_all.filter(committee_id=committee_filter)
         family_competitions = family_competitions.filter(committee_id=committee_filter)
         sports_tasks = sports_tasks.filter(committee_id=committee_filter)
         matches = matches.filter(committee_id=committee_filter)
@@ -541,6 +612,10 @@ def schedule_calendar(request, program_id=None):
                 if occ['type'] == 'regular_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
                 elif occ['type'] == 'cultural_task' and occ['task'].committee_id == int(committee_filter):
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'sharia_task' and occ['task'].committee_id == int(committee_filter):
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'sports_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
             if filtered_occurrences:
                 all_task_occurrences[date] = filtered_occurrences
@@ -556,7 +631,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -570,7 +645,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -582,7 +657,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -595,7 +670,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -608,7 +683,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -621,7 +696,7 @@ def schedule_calendar(request, program_id=None):
             task_sessions = task_sessions.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -634,7 +709,7 @@ def schedule_calendar(request, program_id=None):
             task_sessions = task_sessions.none()
             operations_tasks = operations_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -647,7 +722,7 @@ def schedule_calendar(request, program_id=None):
             task_sessions = task_sessions.none()
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
@@ -674,7 +749,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
             task_occurrences = {}
@@ -687,7 +762,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             matches = matches.none()
             task_occurrences = {}
@@ -700,7 +775,7 @@ def schedule_calendar(request, program_id=None):
             operations_tasks = operations_tasks.none()
             scientific_tasks = scientific_tasks.none()
             lectures = lectures.none()
-            sharia_tasks = sharia_tasks.none()
+            sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             task_occurrences = {}
@@ -714,7 +789,7 @@ def schedule_calendar(request, program_id=None):
         operations_tasks = operations_tasks.filter(committee=committee)
         scientific_tasks = scientific_tasks.filter(committee=committee)
         lectures = lectures.filter(committee=committee)
-        sharia_tasks = sharia_tasks.filter(committee=committee)
+        sharia_tasks_all = [st for st in sharia_tasks_all if st.committee == committee]
         family_competitions = family_competitions.filter(committee=committee)
         sports_tasks = sports_tasks.filter(committee=committee)
         matches = matches.filter(committee=committee)
@@ -732,7 +807,7 @@ def schedule_calendar(request, program_id=None):
             day_operations_tasks = operations_tasks.filter(due_date=day_date)
             day_scientific_tasks = scientific_tasks.filter(due_date=day_date)
             day_lectures = lectures.filter(date=day_date)
-            day_sharia_tasks = sharia_tasks.filter(due_date=day_date)
+            day_sharia_tasks = sharia_tasks_non_recurring.filter(due_date=day_date)
             day_family_competitions = family_competitions.filter(
                 start_date__lte=day_date,
                 end_date__gte=day_date
@@ -928,7 +1003,7 @@ def schedule_calendar(request, program_id=None):
 
             day_lectures = lectures.filter(date=date)
 
-            day_sharia_tasks = sharia_tasks.filter(due_date=date)
+            day_sharia_tasks = sharia_tasks_non_recurring.filter(due_date=date)
 
             day_family_competitions = family_competitions.filter(
 
@@ -1157,6 +1232,10 @@ def day_events(request, program_id, year, month, day):
         committee__program=program
     ).select_related('committee')
 
+    all_sharia_tasks = ShariaTask.objects.filter(
+        committee__program=program
+    ).select_related('committee')
+
     # Filter tasks that occur on this date
     tasks_for_day = []
     for task in all_tasks:
@@ -1202,9 +1281,22 @@ def day_events(request, program_id, year, month, day):
             if sports_task.due_date == date:
                 sports_tasks_for_day.append(sports_task)
 
+    sharia_tasks_for_day = []
+    for sharia_task in all_sharia_tasks:
+        if sharia_task.is_recurring:
+            # Check if this date is in the task's occurrence dates
+            occurrences = sharia_task.get_occurrence_dates(date, date)
+            if date in occurrences:
+                sharia_tasks_for_day.append(sharia_task)
+        else:
+            # Non-recurring sharia task - check if due_date matches
+            if sharia_task.due_date == date:
+                sharia_tasks_for_day.append(sharia_task)
+
     # Convert to queryset-like behavior for template
     tasks = [item['task'] for item in tasks_for_day if item['type'] == 'regular_task']
     cultural_tasks = cultural_tasks_for_day
+    sharia_tasks = sharia_tasks_for_day
     sports_tasks = sports_tasks_for_day
 
     activities = Activity.objects.filter(
@@ -1232,11 +1324,6 @@ def day_events(request, program_id, year, month, day):
         date=date
     ).select_related('committee', 'created_by')
 
-    sharia_tasks = ShariaTask.objects.filter(
-        committee__program=program,
-        due_date=date
-    ).select_related('committee')
-
     family_competitions = FamilyCompetition.objects.filter(
         committee__program=program,
         start_date__lte=date,
@@ -1261,7 +1348,7 @@ def day_events(request, program_id, year, month, day):
             operations_tasks = operations_tasks.filter(committee=committee)
             scientific_tasks = scientific_tasks.filter(committee=committee)
             lectures = lectures.filter(committee=committee)
-            sharia_tasks = sharia_tasks.filter(committee=committee)
+            sharia_tasks = [st for st in sharia_tasks if st.committee == committee]
             family_competitions = family_competitions.filter(committee=committee)
             matches = matches.filter(committee=committee)
         except Committee.DoesNotExist:
@@ -1301,6 +1388,7 @@ def day_events(request, program_id, year, month, day):
         'scientific_tasks': scientific_tasks,
         'lectures': lectures,
         'sharia_tasks': sharia_tasks,
+        'sharia_tasks_count': len(sharia_tasks),
         'family_competitions': family_competitions,
         'matches': matches,
         'base_template': base_template,

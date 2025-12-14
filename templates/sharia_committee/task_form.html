@@ -183,6 +183,83 @@
         font-size: 1.1rem;
     }
 
+    /* Recurrence Options */
+    .recurrence-options {
+        display: none;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-top: 1rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .recurrence-options.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .day-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+    }
+
+    .day-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .day-checkbox-wrapper:hover {
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .day-checkbox-wrapper input:checked + label {
+        color: var(--blue-primary);
+        font-weight: 700;
+    }
+
+    /* Form Check Styling */
+    .form-check {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+        margin-top: 0.125em;
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        font-weight: 600;
+        color: var(--blue-dark);
+        cursor: pointer;
+        margin-right: 0.5rem;
+    }
+
     /* Responsive Design */
     @media (max-width: 768px) {
         .form-card {
@@ -201,6 +278,10 @@
         .form-header h3 {
             font-size: 1.5rem;
         }
+
+        .day-checkboxes {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
     }
 
     /* Custom styling for form fields */
@@ -217,6 +298,19 @@
     input[type="number"].form-control {
         direction: ltr;
         text-align: right;
+    }
+
+    #id_recurrence_pattern, #id_recurrence_end_date, #id_recurrence_days {
+        display: none;
+    }
+
+    .recurrence-options.active #id_recurrence_pattern,
+    .recurrence-options.active #id_recurrence_end_date {
+        display: block;
+    }
+
+    .recurrence-options.active #id_recurrence_days {
+        display: grid;
     }
 </style>
 {% endblock %}
@@ -307,6 +401,20 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
+                    <label for="{{ form.start_date.id_for_label }}" class="form-label">
+                        {{ form.start_date.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.start_date }}
+                    <small class="text-muted d-block mt-1">يُستخدم كتاريخ بداية للمهام المتكررة</small>
+                    {% if form.start_date.errors %}
+                        <div class="text-danger mt-1">{{ form.start_date.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
                     <label for="{{ form.due_date.id_for_label }}" class="form-label">
                         {{ form.due_date.label }}
                         <span class="required-star">*</span>
@@ -316,20 +424,76 @@
                         <div class="text-danger mt-1">{{ form.due_date.errors }}</div>
                     {% endif %}
                 </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">
+                        {{ form.completion_percentage.label }}
+                    </label>
+                    <div class="input-group d-flex flex-row-reverse">
+                        {{ form.completion_percentage }}
+                        <span class="input-group-text">%</span>
+                    </div>
+                    {% if form.completion_percentage.errors %}
+                        <div class="text-danger mt-1">{{ form.completion_percentage.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recurrence Section -->
+        <div class="form-section">
+            <h5 class="form-section-title">
+                <i class="fas fa-redo me-2"></i>
+                إعدادات التكرار
+            </h5>
+
+            <div class="form-check">
+                {{ form.is_recurring }}
+                <label class="form-check-label" for="{{ form.is_recurring.id_for_label }}">
+                    {{ form.is_recurring.label }}
+                </label>
             </div>
 
-            <div class="mb-3">
-                <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">
-                    {{ form.completion_percentage.label }}
-                </label>
-                <div class="input-group d-flex flex-row-reverse">
-                    {{ form.completion_percentage }}
-                    <span class="input-group-text">%</span>
+            <div id="recurrence-options" class="recurrence-options">
+                <div class="mb-4">
+                    <label for="{{ form.recurrence_pattern.id_for_label }}" class="form-label">
+                        {{ form.recurrence_pattern.label }}
+                    </label>
+                    {{ form.recurrence_pattern }}
+                    {% if form.recurrence_pattern.errors %}
+                        <div class="text-danger mt-1">{{ form.recurrence_pattern.errors }}</div>
+                    {% endif %}
                 </div>
-                {% if form.completion_percentage.errors %}
-                    <div class="text-danger mt-1">{{ form.completion_percentage.errors }}</div>
-                {% endif %}
+
+                <div id="custom-days-section" style="display: none;">
+                    <label class="form-label">اختر أيام التكرار:</label>
+                    <div class="day-checkboxes">
+                        {% for value, label in form.recurrence_days.field.choices %}
+                        <div class="day-checkbox-wrapper">
+                            <input type="checkbox" name="recurrence_days" value="{{ value }}"
+                                   id="day_{{ value }}" class="form-check-input day-checkbox"
+                                   {% if value in form.recurrence_days.initial %}checked{% endif %}>
+                            <label for="day_{{ value }}" class="form-check-label" style="margin: 0 0 0 0.5rem;">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-4 mt-3">
+                    <label for="{{ form.recurrence_end_date.id_for_label }}" class="form-label">
+                        {{ form.recurrence_end_date.label }} (اختياري)
+                    </label>
+                    {{ form.recurrence_end_date }}
+                    <small class="text-muted d-block mt-1">اترك فارغاً للتكرار بدون نهاية</small>
+                    {% if form.recurrence_end_date.errors %}
+                        <div class="text-danger mt-1">{{ form.recurrence_end_date.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
+
+            {% if form.is_recurring.errors %}
+                <div class="text-danger mt-1">{{ form.is_recurring.errors }}</div>
+            {% endif %}
         </div>
 
         <div class="btn-group-actions">
@@ -344,4 +508,77 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isRecurringCheckbox = document.getElementById('{{ form.is_recurring.id_for_label }}');
+    const recurrenceOptions = document.getElementById('recurrence-options');
+    const recurrencePattern = document.getElementById('{{ form.recurrence_pattern.id_for_label }}');
+    const customDaysSection = document.getElementById('custom-days-section');
+    const startDateInput = document.getElementById('id_start_date');
+    const dueDateInput = document.getElementById('id_due_date');
+    const recurrenceEndDateInput = document.getElementById('id_recurrence_end_date');
+
+    // Toggle recurrence options
+    if (isRecurringCheckbox) {
+        isRecurringCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                recurrenceOptions.classList.add('active');
+            } else {
+                recurrenceOptions.classList.remove('active');
+            }
+        });
+
+        // Initialize on page load
+        if (isRecurringCheckbox.checked) {
+            recurrenceOptions.classList.add('active');
+        }
+    }
+
+    // Show/hide custom days section
+    if (recurrencePattern) {
+        recurrencePattern.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customDaysSection.style.display = 'block';
+            } else {
+                customDaysSection.style.display = 'none';
+            }
+        });
+
+        // Initialize on page load
+        if (recurrencePattern.value === 'custom') {
+            customDaysSection.style.display = 'block';
+        }
+    }
+
+    // Set minimum date for start_date to today
+    const today = new Date().toISOString().split('T')[0];
+
+    if (startDateInput && !startDateInput.value) {
+        startDateInput.setAttribute('min', today);
+    }
+
+    // Update due_date min when start_date changes
+    if (startDateInput && dueDateInput) {
+        startDateInput.addEventListener('change', function() {
+            dueDateInput.setAttribute('min', this.value);
+            if (recurrenceEndDateInput) {
+                recurrenceEndDateInput.setAttribute('min', this.value);
+            }
+        });
+    }
+
+    // Check day checkboxes based on initial data
+    const recurrenceDaysInputs = document.querySelectorAll('input[name="recurrence_days"]');
+    const initialRecurrenceDays = {{ form.recurrence_days.initial|default:"[]"|safe }};
+
+    if (initialRecurrenceDays && initialRecurrenceDays.length > 0) {
+        recurrenceDaysInputs.forEach(input => {
+            if (initialRecurrenceDays.includes(input.value)) {
+                input.checked = true;
+            }
+        });
+    }
+});
+</script>
 {% endblock %}
