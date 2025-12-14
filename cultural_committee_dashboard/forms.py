@@ -4,10 +4,62 @@ from .models import (CulturalTask, CommitteeMember, FileLibrary,
                      Discussion, DiscussionComment, CulturalReport,DailyPhrase,TaskSession)
 from accounts.models import User
 from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 
 class CulturalTaskForm(forms.ModelForm):
-    """Form for creating and editing cultural tasks"""
+    """Form for creating and editing cultural tasks with recurrence"""
+
+    is_recurring = forms.BooleanField(
+        required=False,
+        label=_('مهمة متكررة'),
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input',
+            'id': 'id_is_recurring'
+        })
+    )
+
+    recurrence_pattern = forms.ChoiceField(
+        choices=[
+            ('', 'اختر نمط التكرار'),
+            ('daily', 'يومي'),
+            ('weekly', 'أسبوعي'),
+            ('custom', 'مخصص'),
+        ],
+        required=False,
+        label=_('نمط التكرار'),
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'id': 'id_recurrence_pattern'
+        })
+    )
+
+    recurrence_days = forms.MultipleChoiceField(
+        choices=[
+            (0, 'الأحد'),  # Sunday = 0 in calendar display (6 in Python weekday())
+            (1, 'الاثنين'),  # Monday = 1 (0 in Python)
+            (2, 'الثلاثاء'),  # Tuesday = 2 (1 in Python)
+            (3, 'الأربعاء'),  # Wednesday = 3 (2 in Python)
+            (4, 'الخميس'),  # Thursday = 4 (3 in Python)
+            (5, 'الجمعة'),  # Friday = 5 (4 in Python)
+            (6, 'السبت'),  # Saturday = 6 (5 in Python)
+        ],
+        required=False,
+        label=_('أيام التكرار'),
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'form-check-input day-checkbox',
+        })
+    )
+
+    recurrence_end_date = forms.DateField(
+        required=False,
+        label=_('تاريخ انتهاء التكرار'),
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'id': 'id_recurrence_end_date'
+        })
+    )
 
     class Meta:
         model = CulturalTask
@@ -16,9 +68,15 @@ class CulturalTaskForm(forms.ModelForm):
             'title',
             'description',
             'status',
+            'priority',
             'assigned_to_name',
+            'start_date',
             'due_date',
             'completion_percentage',
+            'is_recurring',
+            'recurrence_pattern',
+            'recurrence_days',
+            'recurrence_end_date',
         ]
         widgets = {
             'task_type': forms.Select(attrs={
@@ -40,9 +98,17 @@ class CulturalTaskForm(forms.ModelForm):
                 'class': 'form-select',
                 'required': True,
             }),
+            'priority': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True,
+            }),
             'assigned_to_name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'اسم الشخص المسؤول عن المهمة',
+            }),
+            'start_date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date',
             }),
             'due_date': forms.DateInput(attrs={
                 'class': 'form-control',
@@ -62,13 +128,63 @@ class CulturalTaskForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Customize field labels
-        self.fields['task_type'].label = 'نوع المهمة'
-        self.fields['title'].label = 'عنوان المهمة'
-        self.fields['description'].label = 'وصف المهمة'
-        self.fields['status'].label = 'حالة المهمة'
-        self.fields['assigned_to_name'].label = 'المسؤول عن المهمة'
-        self.fields['due_date'].label = 'تاريخ الاستحقاق'
-        self.fields['completion_percentage'].label = 'نسبة الإنجاز (%)'
+        self.fields['task_type'].label = _('نوع المهمة')
+        self.fields['title'].label = _('عنوان المهمة')
+        self.fields['description'].label = _('وصف المهمة')
+        self.fields['status'].label = _('حالة المهمة')
+        self.fields['priority'].label = _('الأولوية')
+        self.fields['assigned_to_name'].label = _('المسؤول عن المهمة')
+        self.fields['start_date'].label = _('تاريخ البداية')
+        self.fields['due_date'].label = _('تاريخ الاستحقاق')
+        self.fields['completion_percentage'].label = _('نسبة الإنجاز (%)')
+
+        # Set initial recurrence_days if editing
+        if self.instance and self.instance.pk and self.instance.recurrence_days:
+            self.initial['recurrence_days'] = self.instance.recurrence_days
+
+    def clean(self):
+        """Validate form data including recurrence"""
+        cleaned_data = super().clean()
+        is_recurring = cleaned_data.get('is_recurring')
+        start_date = cleaned_data.get('start_date')
+        due_date = cleaned_data.get('due_date')
+
+        # Validate start_date and due_date
+        if start_date and due_date:
+            if start_date > due_date:
+                raise forms.ValidationError(_('تاريخ البداية يجب أن يكون قبل تاريخ الاستحقاق'))
+
+        # Set start_date to due_date if not provided and not recurring
+        if not start_date and due_date:
+            cleaned_data['start_date'] = due_date
+
+        if is_recurring:
+            recurrence_pattern = cleaned_data.get('recurrence_pattern')
+            recurrence_days = cleaned_data.get('recurrence_days')
+            recurrence_end_date = cleaned_data.get('recurrence_end_date')
+
+            if not recurrence_pattern:
+                raise forms.ValidationError(_('يجب تحديد نمط التكرار للمهام المتكررة'))
+
+            if recurrence_pattern == 'custom' and not recurrence_days:
+                raise forms.ValidationError(_('يجب تحديد أيام التكرار للمهام المخصصة'))
+
+            if recurrence_end_date:
+                if not start_date:
+                    raise forms.ValidationError(_('يجب تحديد تاريخ البداية عند تحديد تاريخ انتهاء التكرار'))
+                if recurrence_end_date < start_date:
+                    raise forms.ValidationError(_('تاريخ انتهاء التكرار يجب أن يكون بعد تاريخ البداية'))
+
+            # Convert recurrence_days to list of integers if custom pattern
+            if recurrence_pattern == 'custom' and recurrence_days:
+                cleaned_data['recurrence_days'] = [int(day) for day in recurrence_days]
+        else:
+            # Clear recurrence fields if not recurring
+            cleaned_data['recurrence_pattern'] = None
+            cleaned_data['recurrence_days'] = None
+            cleaned_data['recurrence_end_date'] = None
+
+        return cleaned_data
 
     def clean_completion_percentage(self):
         """Validate completion percentage"""

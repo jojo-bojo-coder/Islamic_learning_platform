@@ -405,8 +405,9 @@
         background: linear-gradient(135deg, #27ae60, #229954);
     }
 
-    .count-cultural_tasks {
-        background: linear-gradient(135deg, #e67e22, #d35400);
+    .count-cultural_tasks,
+    .task-badge.type-cultural_task {
+        background: linear-gradient(135deg, #e67e22, #d35400) !important;
     }
 
     .count-task_sessions {
@@ -684,6 +685,14 @@
             gap: 0.5rem;
         }
     }
+
+
+    /* Task badges for recurring tasks */
+    .task-badge.type-regular_task {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+    }
+
+
 </style>
 
 <div class="calendar-container">
@@ -738,6 +747,8 @@
             </div>
         </div>
     </div>
+
+    {% if user.role == 'director' or 'program_manager' %}
     <!-- Filter Section -->
     <div class="filter-section">
         <form method="GET" id="filter-form">
@@ -800,6 +811,7 @@
             {% endif %}
         </form>
     </div>
+    {% endif %}
 
 
     <!-- Calendar Wrapper -->
@@ -864,10 +876,26 @@
 
                                 <!-- Show recurring tasks as connected badges -->
                                 {% for task_occ in day_data.task_occurrences %}
-                                <div class="task-badge type-task {% if task_occ.span_days > 1 %}multi-day{% endif %} {% if task_occ.is_start and task_occ.is_end %}task-single{% elif task_occ.is_start %}task-start{% elif task_occ.is_end %}task-end{% else %}task-middle{% endif %}"
-                                     onclick="event.stopPropagation(); location.href='{% url 'object_detail' 'task' task_occ.task.id %}'">
+                                <div class="task-badge
+                                            {% if task_occ.type == 'regular_task' %}type-regular_task
+                                            {% elif task_occ.type == 'cultural_task' %}type-cultural_task{% endif %}
+                                            {% if task_occ.span_days > 1 %}multi-day{% endif %}
+                                            {% if task_occ.is_start and task_occ.is_end %}task-single
+                                            {% elif task_occ.is_start %}task-start
+                                            {% elif task_occ.is_end %}task-end
+                                            {% else %}task-middle{% endif %}"
+                                     onclick="event.stopPropagation();
+                                              {% if task_occ.type == 'regular_task' %}
+                                              location.href='{% url 'object_detail' 'task' task_occ.task.id %}'
+                                              {% elif task_occ.type == 'cultural_task' %}
+                                              location.href='{% url 'object_detail' 'cultural_task' task_occ.task.id %}'
+                                              {% endif %}">
                                     <div class="event-title">
+                                        {% if task_occ.type == 'regular_task' %}
                                         <i class="fas fa-tasks"></i> {{ task_occ.task.title|truncatechars:25 }}
+                                        {% elif task_occ.type == 'cultural_task' %}
+                                        <i class="fas fa-theater-masks"></i> {{ task_occ.task.title|truncatechars:25 }}
+                                        {% endif %}
                                     </div>
                                 </div>
                                 {% endfor %}
@@ -880,7 +908,9 @@
                                 {% endif %}
 
                                 {% if day_data.cultural_tasks.count > 0 %}
-                                <div class="event-count-badge count-cultural_tasks" onclick="event.stopPropagation(); location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
+                                <div class="event-count-badge count-cultural_tasks"
+                                     onclick="event.stopPropagation();
+                                              location.href='{% url 'day_events' program.id day_data.date.year day_data.date.month day_data.date.day %}'">
                                     <i class="fas fa-theater-masks"></i>
                                     {{ day_data.cultural_tasks.count }} ثقافية
                                 </div>

@@ -32,6 +32,78 @@
         --border-radius-xl: 16px;
     }
 
+    /* Add recurrence badge styling */
+    .recurrence-badge {
+        background: linear-gradient(135deg, #6f42c1, #9b72cf);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        margin-left: 8px;
+        box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+    }
+
+    .recurrence-days-badge {
+        background: linear-gradient(135deg, #20c997, #3dd9a3);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    /* Priority badges */
+    .priority-badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        margin-left: 8px;
+    }
+
+    .priority-high {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+    }
+
+    .priority-medium {
+        background: linear-gradient(135deg, #f39c12, #d68910);
+        color: white;
+    }
+
+    .priority-low {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+    }
+
+    /* Overdue indicator */
+    .overdue-indicator {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        margin-left: 8px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+
     .events-container {
         background: var(--white);
         border-radius: var(--border-radius-xl);
@@ -256,6 +328,21 @@
         overflow: hidden;
     }
 
+    .event-card.recurring-task {
+        border-left: 4px solid #6f42c1;
+        border-right: none;
+    }
+
+    .event-card.recurring-task::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background: #6f42c1;
+    }
+
     .event-card::before {
         content: "";
         position: absolute;
@@ -278,6 +365,14 @@
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .event-title-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
     .event-title {
@@ -285,9 +380,15 @@
         font-weight: 700;
         color: var(--text-color);
         margin: 0;
-        flex: 1;
         font-family: 'Cairo', sans-serif;
         line-height: 1.4;
+    }
+
+    .event-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
     }
 
     .event-type {
@@ -301,6 +402,7 @@
         gap: 0.3rem;
         box-shadow: var(--shadow-sm);
         margin-right: 0.5rem;
+        flex-shrink: 0;
     }
 
     .event-details {
@@ -337,6 +439,38 @@
         opacity: 0.9;
     }
 
+    .completion-progress {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: var(--light-bg);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .progress-bar-container {
+        height: 10px;
+        background: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(135deg, var(--success-color), #27ae60);
+        border-radius: 5px;
+        transition: width 0.3s ease;
+    }
+
     .status-badge {
         padding: 0.4rem 0.8rem;
         border-radius: 20px;
@@ -364,6 +498,12 @@
         background: rgba(231, 76, 60, 0.1);
         color: #e74c3c;
         border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+
+    .status-badge.cancelled {
+        background: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+        border: 1px solid rgba(108, 117, 125, 0.3);
     }
 
     .no-events {
@@ -549,7 +689,7 @@
             <button class="filter-btn active" data-filter="all">
                 <i class="fas fa-layer-group"></i>
                 الكل
-                <span class="filter-count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks.count|add:matches.count }}</span>
+                <span class="filter-count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count|add:task_sessions.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks.count|add:matches.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
                 <i class="fas fa-calendar-check"></i>
@@ -672,13 +812,35 @@
         </h4>
         <div class="events-grid">
             {% for task in tasks %}
-            <a href="{% url 'object_detail' 'task' task.id %}" class="event-card">
+            <a href="{% url 'object_detail' 'task' task.id %}" class="event-card {% if task.is_recurring %}recurring-task{% endif %}">
                 <div class="event-header">
-                    <h5 class="event-title">{{ task.title }}</h5>
-                    <span class="event-type type-tasks">
-                        <i class="fas fa-tasks"></i>
-                        مهمة
-                    </span>
+                    <div class="event-title-container">
+                        <h5 class="event-title">{{ task.title }}</h5>
+                        <div class="event-badges">
+                            <span class="event-type type-tasks">
+                                <i class="fas fa-tasks"></i>
+                                مهمة
+                            </span>
+                            {% if task.is_recurring %}
+                            <span class="recurrence-badge">
+                                <i class="fas fa-redo"></i>
+                                {{ task.get_recurrence_pattern_display }}
+                            </span>
+                            {% endif %}
+                            {% if task.priority %}
+                            <span class="priority-badge priority-{{ task.priority }}">
+                                <i class="fas fa-flag"></i>
+                                {{ task.get_priority_display }}
+                            </span>
+                            {% endif %}
+                            {% if task.is_overdue %}
+                            <span class="overdue-indicator">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                متأخرة
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 <div class="event-details">
                     {% if task.committee %}
@@ -694,13 +856,45 @@
                     </div>
                     {% endif %}
                     <div class="event-detail">
-                        <i class="fas fa-flag"></i>
-                        <span>{{ task.get_priority_display }}</span>
+                        <i class="fas fa-calendar-day"></i>
+                        <span>تاريخ الاستحقاق: {{ task.due_date|date:"Y/m/d" }}</span>
                     </div>
+                    {% if task.is_recurring %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>نشطة منذ: {{ task.start_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if task.recurrence_end_date %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-times"></i>
+                        <span>تنتهي في: {{ task.recurrence_end_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% endif %}
+                    {% endif %}
                 </div>
                 {% if task.description %}
-                <p class="event-description">{{ task.description|truncatewords:20 }}</p>
+                <p class="event-description">{{ task.description|truncatewords:30 }}</p>
                 {% endif %}
+                {% if task.completion_percentage > 0 %}
+                <div class="completion-progress">
+                    <div class="progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ task.completion_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="status-badge {% if task.status == 'completed' %}completed{% elif task.status == 'overdue' %}past{% else %}upcoming{% endif %}">
+                    {% if task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif task.status == 'overdue' %}
+                    <i class="fas fa-exclamation-circle"></i> متأخرة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ task.get_status_display }}
+                    {% endif %}
+                </div>
             </a>
             {% empty %}
             <div class="no-events">
@@ -741,6 +935,12 @@
                         <span>{{ activity.location }}</span>
                     </div>
                     {% endif %}
+                    {% if activity.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ activity.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 {% if activity.description %}
                 <p class="event-description">{{ activity.description|truncatewords:20 }}</p>
@@ -764,13 +964,35 @@
         </h4>
         <div class="events-grid">
             {% for cultural_task in cultural_tasks %}
-            <a href="{% url 'object_detail' 'cultural_task' cultural_task.id %}" class="event-card">
+            <a href="{% url 'object_detail' 'cultural_task' cultural_task.id %}" class="event-card {% if cultural_task.is_recurring %}recurring-task{% endif %}">
                 <div class="event-header">
-                    <h5 class="event-title">{{ cultural_task.title }}</h5>
-                    <span class="event-type type-cultural_tasks">
-                        <i class="fas fa-theater-masks"></i>
-                        مهمة ثقافية
-                    </span>
+                    <div class="event-title-container">
+                        <h5 class="event-title">{{ cultural_task.title }}</h5>
+                        <div class="event-badges">
+                            <span class="event-type type-cultural_tasks">
+                                <i class="fas fa-theater-masks"></i>
+                                مهمة ثقافية
+                            </span>
+                            {% if cultural_task.is_recurring %}
+                            <span class="recurrence-badge">
+                                <i class="fas fa-redo"></i>
+                                {{ cultural_task.get_recurrence_pattern_display }}
+                            </span>
+                            {% endif %}
+                            {% if cultural_task.priority %}
+                            <span class="priority-badge priority-{{ cultural_task.priority }}">
+                                <i class="fas fa-flag"></i>
+                                {{ cultural_task.get_priority_display }}
+                            </span>
+                            {% endif %}
+                            {% if cultural_task.is_overdue %}
+                            <span class="overdue-indicator">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                متأخرة
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 <div class="event-details">
                     {% if cultural_task.committee %}
@@ -785,10 +1007,59 @@
                         <span>{{ cultural_task.assigned_to_name }}</span>
                     </div>
                     {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>تاريخ الاستحقاق: {{ cultural_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if cultural_task.is_recurring %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>نشطة منذ: {{ cultural_task.start_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if cultural_task.recurrence_end_date %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-times"></i>
+                        <span>تنتهي في: {{ cultural_task.recurrence_end_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-tag"></i>
+                        <span>نوع المهمة: {{ cultural_task.get_task_type_display }}</span>
+                    </div>
                 </div>
                 {% if cultural_task.description %}
-                <p class="event-description">{{ cultural_task.description|truncatewords:20 }}</p>
+                <p class="event-description">{{ cultural_task.description|truncatewords:30 }}</p>
                 {% endif %}
+                {% if cultural_task.completion_percentage > 0 %}
+                <div class="completion-progress">
+                    <div class="progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ cultural_task.completion_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ cultural_task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if cultural_task.has_sessions %}
+                <div class="event-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>تحتوي على {{ cultural_task.sessions_count }} جلسة</span>
+                </div>
+                {% endif %}
+                <div class="status-badge
+                    {% if cultural_task.status == 'completed' %}completed
+                    {% elif cultural_task.status == 'cancelled' %}cancelled
+                    {% else %}upcoming{% endif %}">
+                    {% if cultural_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif cultural_task.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ cultural_task.get_status_display }}
+                    {% endif %}
+                </div>
             </a>
             {% empty %}
             <div class="no-events">
@@ -837,7 +1108,7 @@
                 {% if session.notes %}
                 <p class="event-description">{{ session.notes|truncatewords:20 }}</p>
                 {% endif %}
-                <div class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
+                <div class="status-badge {% if session.is_completed %}completed{% elif session.is_past %}past{% else %}upcoming{% endif %}">
                     {% if session.is_completed %}
                     <i class="fas fa-check-circle"></i> مكتملة
                     {% elif session.is_past %}

@@ -275,14 +275,88 @@ def schedule_calendar(request, program_id=None):
                     'span_days': 1
                 })
 
+    cultural_tasks = CulturalTask.objects.filter(
+        committee__program=program
+    ).select_related('committee')
+
+    if committee_filter:
+        cultural_tasks = cultural_tasks.filter(committee_id=committee_filter)
+
+    # Process recurring cultural tasks
+    cultural_task_occurrences = {}  # {date: [(cultural_task, is_start, is_end, group_id), ...]}
+
+    for cultural_task in cultural_tasks:
+        if cultural_task.is_recurring:
+            # IMPORTANT: Only get occurrences within the view's date range
+            # Don't process if task hasn't started yet
+            cultural_task_start = cultural_task.start_date or cultural_task.due_date
+            if cultural_task_start > end_date:
+                continue
+
+            # Don't process if task has ended
+            if cultural_task.recurrence_end_date and cultural_task.recurrence_end_date < start_date:
+                continue
+
+            # Get consecutive day groups for this task within the view range
+            groups = cultural_task.get_consecutive_day_groups(start_date, end_date)
+            for group_idx, (group_start, group_end) in enumerate(groups):
+                group_id = f"cultural_task_{cultural_task.id}_group_{group_idx}"
+
+                # Add all dates in this group
+                current = group_start
+                while current <= group_end:
+                    if start_date <= current <= end_date:
+                        if current not in cultural_task_occurrences:
+                            cultural_task_occurrences[current] = []
+
+                        cultural_task_occurrences[current].append({
+                            'task': cultural_task,
+                            'is_start': current == group_start,
+                            'is_end': current == group_end,
+                            'group_id': group_id,
+                            'group_start': group_start,
+                            'group_end': group_end,
+                            'span_days': (group_end - group_start).days + 1,
+                            'type': 'cultural_task'  # Add type identifier
+                        })
+                    current += timedelta(days=1)
+        else:
+            # Non-recurring cultural task
+            if start_date <= cultural_task.due_date <= end_date:
+                if cultural_task.due_date not in cultural_task_occurrences:
+                    cultural_task_occurrences[cultural_task.due_date] = []
+                cultural_task_occurrences[cultural_task.due_date].append({
+                    'task': cultural_task,
+                    'is_start': True,
+                    'is_end': True,
+                    'group_id': f"cultural_task_{cultural_task.id}_single",
+                    'group_start': cultural_task.due_date,
+                    'group_end': cultural_task.due_date,
+                    'span_days': 1,
+                    'type': 'cultural_task'  # Add type identifier
+                })
+
+    # Combine all task occurrences
+    all_task_occurrences = {}
+    for date, occurrences in task_occurrences.items():
+        if date not in all_task_occurrences:
+            all_task_occurrences[date] = []
+        all_task_occurrences[date].extend(occurrences)
+
+    for date, occurrences in cultural_task_occurrences.items():
+        if date not in all_task_occurrences:
+            all_task_occurrences[date] = []
+        all_task_occurrences[date].extend(occurrences)
+
     activities = Activity.objects.filter(
         program=program,
         date__lte=end_date,
         date__gte=start_date
     ).select_related('committee', 'created_by')
 
-    cultural_tasks = CulturalTask.objects.filter(
+    cultural_tasks_non_recurring = CulturalTask.objects.filter(
         committee__program=program,
+        is_recurring=False,
         due_date__lte=end_date,
         due_date__gte=start_date
     ).select_related('committee')
@@ -350,12 +424,37 @@ def schedule_calendar(request, program_id=None):
         matches = matches.filter(status=status_filter)
         family_competitions = family_competitions.filter(status=status_filter)
 
+        for date in list(all_task_occurrences.keys()):
+            filtered_occurrences = []
+            for occ in all_task_occurrences[date]:
+                if occ['type'] == 'regular_task' and occ['task'].status == status_filter:
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'cultural_task' and occ['task'].status == status_filter:
+                    filtered_occurrences.append(occ)
+            if filtered_occurrences:
+                all_task_occurrences[date] = filtered_occurrences
+            else:
+                del all_task_occurrences[date]
+
     # ========== APPLY PRIORITY FILTER TO ALL TYPES THAT HAVE PRIORITY FIELD ==========
     if priority_filter:
         # Models with priority field: ScheduleEvent, Task, OperationsTask
         events = events.filter(priority=priority_filter)
         tasks = tasks.filter(priority=priority_filter)
+        cultural_tasks_non_recurring = cultural_tasks_non_recurring.filter(priority=priority_filter)
         operations_tasks = operations_tasks.filter(priority=priority_filter)
+
+        for date in list(all_task_occurrences.keys()):
+            filtered_occurrences = []
+            for occ in all_task_occurrences[date]:
+                if occ['type'] == 'regular_task' and occ['task'].priority == priority_filter:
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'cultural_task' and occ['task'].priority == priority_filter:
+                    filtered_occurrences.append(occ)
+            if filtered_occurrences:
+                all_task_occurrences[date] = filtered_occurrences
+            else:
+                del all_task_occurrences[date]
 
     # ========== APPLY COMMITTEE FILTER TO ALL EVENT TYPES ==========
     if committee_filter:
@@ -371,6 +470,18 @@ def schedule_calendar(request, program_id=None):
         family_competitions = family_competitions.filter(committee_id=committee_filter)
         sports_tasks = sports_tasks.filter(committee_id=committee_filter)
         matches = matches.filter(committee_id=committee_filter)
+
+        for date in list(all_task_occurrences.keys()):
+            filtered_occurrences = []
+            for occ in all_task_occurrences[date]:
+                if occ['type'] == 'regular_task' and occ['task'].committee_id == int(committee_filter):
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'cultural_task' and occ['task'].committee_id == int(committee_filter):
+                    filtered_occurrences.append(occ)
+            if filtered_occurrences:
+                all_task_occurrences[date] = filtered_occurrences
+            else:
+                del all_task_occurrences[date]
 
     if event_type_filter:
         if event_type_filter == 'schedule_event':
@@ -550,9 +661,9 @@ def schedule_calendar(request, program_id=None):
         for i in range(7):
             day_date = week_start + timedelta(days=i)
             day_events = events.filter(start_date=day_date)
-            day_task_occurrences = task_occurrences.get(day_date, [])
+            day_task_occurrences = all_task_occurrences.get(day_date, [])
             day_activities = activities.filter(date=day_date)
-            day_cultural_tasks = cultural_tasks.filter(due_date=day_date)
+            day_cultural_tasks = cultural_tasks_non_recurring.filter(due_date=day_date)
             day_task_sessions = task_sessions.filter(date=day_date)
             day_operations_tasks = operations_tasks.filter(due_date=day_date)
             day_scientific_tasks = scientific_tasks.filter(due_date=day_date)
@@ -739,11 +850,11 @@ def schedule_calendar(request, program_id=None):
 
             day_events = events.filter(start_date=date)
 
-            day_task_occurrences = task_occurrences.get(date, [])
+            day_task_occurrences = all_task_occurrences.get(date, [])
 
             day_activities = activities.filter(date=date)
 
-            day_cultural_tasks = cultural_tasks.filter(due_date=date)
+            day_cultural_tasks = cultural_tasks_non_recurring.filter(due_date=date)
 
             day_task_sessions = task_sessions.filter(date=date)
 
@@ -968,6 +1079,10 @@ def day_events(request, program_id, year, month, day):
     # Get ALL tasks (including recurring ones)
     all_tasks = Task.objects.filter(program=program).select_related('committee')
 
+    all_cultural_tasks = CulturalTask.objects.filter(
+        committee__program=program
+    ).select_related('committee')
+
     # Filter tasks that occur on this date
     tasks_for_day = []
     for task in all_tasks:
@@ -975,24 +1090,39 @@ def day_events(request, program_id, year, month, day):
             # Check if this date is in the task's occurrence dates
             occurrences = task.get_occurrence_dates(date, date)
             if date in occurrences:
-                tasks_for_day.append(task)
+                tasks_for_day.append({
+                    'task': task,
+                    'type': 'regular_task'
+                })
         else:
             # Regular task - check if due_date matches
             if task.due_date == date:
-                tasks_for_day.append(task)
+                tasks_for_day.append({
+                    'task': task,
+                    'type': 'regular_task'
+                })
+
+        # Filter cultural tasks that occur on this date
+    cultural_tasks_for_day = []
+    for cultural_task in all_cultural_tasks:
+        if cultural_task.is_recurring:
+            # Check if this date is in the task's occurrence dates
+            occurrences = cultural_task.get_occurrence_dates(date, date)
+            if date in occurrences:
+                cultural_tasks_for_day.append(cultural_task)
+        else:
+            # Non-recurring cultural task - check if due_date matches
+            if cultural_task.due_date == date:
+                cultural_tasks_for_day.append(cultural_task)
 
     # Convert to queryset-like behavior for template
-    tasks = tasks_for_day
+    tasks = [item['task'] for item in tasks_for_day if item['type'] == 'regular_task']
+    cultural_tasks = cultural_tasks_for_day
 
     activities = Activity.objects.filter(
         program=program,
         date=date
     ).select_related('committee', 'created_by')
-
-    cultural_tasks = CulturalTask.objects.filter(
-        committee__program=program,
-        due_date=date
-    ).select_related('committee')
 
     task_sessions = TaskSession.objects.filter(
         task__committee__program=program,
@@ -1042,7 +1172,7 @@ def day_events(request, program_id, year, month, day):
             events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
             tasks = [t for t in tasks if t.committee == committee or t.committee is None]
             activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
-            cultural_tasks = cultural_tasks.filter(committee=committee)
+            cultural_tasks = [ct for ct in cultural_tasks if ct.committee == committee]
             task_sessions = task_sessions.filter(task__committee=committee)
             operations_tasks = operations_tasks.filter(committee=committee)
             scientific_tasks = scientific_tasks.filter(committee=committee)

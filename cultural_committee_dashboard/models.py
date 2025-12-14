@@ -3,6 +3,8 @@ from accounts.models import User
 from director_dashboard.models import Program, Committee
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
+from datetime import timedelta
+
 
 class CulturalTask(models.Model):
     """Model representing a cultural committee task"""
@@ -22,6 +24,18 @@ class CulturalTask(models.Model):
         ('in_progress', 'قيد التنفيذ'),
         ('completed', 'مكتملة'),
         ('cancelled', 'ملغاة'),
+    ]
+
+    PRIORITY_CHOICES = [
+        ('low', 'منخفضة'),
+        ('medium', 'متوسطة'),
+        ('high', 'عالية'),
+    ]
+
+    RECURRENCE_PATTERNS = [
+        ('daily', 'يومي'),
+        ('weekly', 'أسبوعي'),
+        ('custom', 'مخصص'),
     ]
 
     committee = models.ForeignKey(
@@ -53,6 +67,13 @@ class CulturalTask(models.Model):
         verbose_name=_('الحالة')
     )
 
+    priority = models.CharField(
+        max_length=20,
+        choices=PRIORITY_CHOICES,
+        default='medium',
+        verbose_name=_('الأولوية')
+    )
+
     assigned_to_name = models.CharField(
         max_length=200,
         blank=True,
@@ -62,6 +83,38 @@ class CulturalTask(models.Model):
 
     due_date = models.DateField(
         verbose_name=_('تاريخ الاستحقاق')
+    )
+
+    start_date = models.DateField(
+        verbose_name=_('تاريخ البداية'),
+        null=True,
+        blank=True
+    )
+
+    # Recurrence fields
+    is_recurring = models.BooleanField(
+        default=False,
+        verbose_name=_('مهمة متكررة')
+    )
+
+    recurrence_pattern = models.CharField(
+        max_length=20,
+        choices=RECURRENCE_PATTERNS,
+        null=True,
+        blank=True,
+        verbose_name=_('نمط التكرار')
+    )
+
+    recurrence_days = models.JSONField(
+        null=True,
+        blank=True,
+        verbose_name=_('أيام التكرار')
+    )  # [0,1,2] for Sun, Mon, Tue in Arabic calendar display
+
+    recurrence_end_date = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name=_('تاريخ انتهاء التكرار')
     )
 
     completion_percentage = models.IntegerField(
@@ -86,24 +139,119 @@ class CulturalTask(models.Model):
         verbose_name=_('تاريخ التحديث')
     )
 
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='created_cultural_tasks',
+        verbose_name=_('تم الإنشاء بواسطة')
+    )
+
     class Meta:
         verbose_name = _('مهمة ثقافية')
         verbose_name_plural = _('المهام الثقافية')
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.title} - {self.get_task_type_display()}"
+        recurrence = " (متكررة)" if self.is_recurring else ""
+        return f"{self.title} - {self.get_task_type_display()}{recurrence}"
 
     @property
     def is_overdue(self):
         """Check if task is overdue"""
         from django.utils import timezone
-        return self.due_date < timezone.now().date() and self.status != 'completed'
+        return self.due_date < timezone.now().date() and self.status not in ['completed', 'cancelled']
 
     @property
     def sessions_count(self):
         """Get the number of sessions associated with this task"""
         return self.sessions.count()
+
+    def get_occurrence_dates(self, start_date=None, end_date=None):
+        """
+        Get all dates when this task occurs within the given range.
+        Returns a list of date objects.
+        """
+        if not self.is_recurring:
+            return [self.start_date or self.due_date]
+
+        dates = []
+        current_date = start_date or self.start_date or self.due_date
+        end = end_date or self.recurrence_end_date or self.due_date
+
+        # Don't go before start_date
+        task_start = self.start_date or self.due_date
+        if current_date < task_start:
+            current_date = task_start
+
+        # Don't go past recurrence_end_date if set
+        if self.recurrence_end_date and end > self.recurrence_end_date:
+            end = self.recurrence_end_date
+
+        if self.recurrence_pattern == 'daily':
+            # Add every day from start to end
+            while current_date <= end:
+                dates.append(current_date)
+                current_date += timedelta(days=1)
+
+        elif self.recurrence_pattern == 'weekly':
+            # Add every 7 days
+            while current_date <= end:
+                dates.append(current_date)
+                current_date += timedelta(days=7)
+
+        elif self.recurrence_pattern == 'custom' and self.recurrence_days:
+            # Convert calendar weekdays to Python weekdays
+            # Calendar: Sunday=0, Monday=1, ..., Saturday=6
+            # Python: Monday=0, Tuesday=1, ..., Sunday=6
+            calendar_to_python = {
+                0: 6,  # Sunday
+                1: 0,  # Monday
+                2: 1,  # Tuesday
+                3: 2,  # Wednesday
+                4: 3,  # Thursday
+                5: 4,  # Friday
+                6: 5,  # Saturday
+            }
+
+            python_weekdays = [calendar_to_python[day] for day in self.recurrence_days if day in calendar_to_python]
+
+            # Add specific weekdays
+            while current_date <= end:
+                if current_date.weekday() in python_weekdays:
+                    dates.append(current_date)
+                current_date += timedelta(days=1)
+
+        return dates
+
+    def get_consecutive_day_groups(self, start_date=None, end_date=None):
+        """
+        Group consecutive days together for display as single badge.
+        Returns list of tuples: [(start_date, end_date), ...]
+        """
+        dates = self.get_occurrence_dates(start_date, end_date)
+        if not dates:
+            return []
+
+        dates = sorted(dates)
+        groups = []
+        group_start = dates[0]
+        group_end = dates[0]
+
+        for i in range(1, len(dates)):
+            if dates[i] == group_end + timedelta(days=1):
+                # Consecutive day, extend current group
+                group_end = dates[i]
+            else:
+                # Gap found, save current group and start new one
+                groups.append((group_start, group_end))
+                group_start = dates[i]
+                group_end = dates[i]
+
+        # Add the last group
+        groups.append((group_start, group_end))
+
+        return groups
 
 from django.utils import timezone
 from datetime import datetime

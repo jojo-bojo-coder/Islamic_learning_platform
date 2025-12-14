@@ -101,16 +101,16 @@
         resize: vertical;
     }
 
-    /* Session Management Section */
-    .session-section {
-        margin-top: 2.5rem;
+    /* Form Sections */
+    .form-section {
+        margin-bottom: 2.5rem;
         padding: 2rem;
         background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
         border-radius: 15px;
-        border: 2px dashed rgba(0, 132, 171, 0.3);
+        border: 1px solid rgba(0, 132, 171, 0.2);
     }
 
-    .session-section-header {
+    .form-section-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -119,7 +119,7 @@
         border-bottom: 2px solid rgba(0, 132, 171, 0.2);
     }
 
-    .session-section-title {
+    .form-section-title {
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--blue-dark);
@@ -129,12 +129,12 @@
         gap: 0.5rem;
     }
 
-    .session-section-title i {
+    .form-section-title i {
         color: var(--blue-primary);
     }
 
-    /* Toggle Switch */
-    .session-toggle {
+    /* Recurrence Section Styling */
+    .recurrence-toggle {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -190,6 +190,83 @@
 
     input:checked + .slider:before {
         transform: translateX(26px);
+    }
+
+    .recurrence-options {
+        display: none;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        margin-top: 1rem;
+        border: 2px dashed rgba(0, 132, 171, 0.3);
+    }
+
+    .recurrence-options.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .day-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .day-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .day-checkbox-wrapper:hover {
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .day-checkbox-wrapper input:checked + label {
+        color: var(--blue-primary);
+        font-weight: 700;
+    }
+
+    .day-checkbox-label {
+        margin: 0 0 0 0.5rem;
+        cursor: pointer;
+    }
+
+    /* Session Management Section */
+    .session-section {
+        margin-top: 2.5rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(0, 132, 171, 0.05), rgba(97, 188, 215, 0.05));
+        border-radius: 15px;
+        border: 2px dashed rgba(0, 132, 171, 0.3);
+    }
+
+    /* Session toggle styling */
+    .session-toggle {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     /* Session Count Selection */
@@ -392,6 +469,28 @@
         border-top: 1px solid var(--border-light);
     }
 
+    /* Form Check Styling */
+    .form-check {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+        margin-top: 0.125em;
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        font-weight: 600;
+        color: var(--blue-dark);
+        cursor: pointer;
+        margin-right: 0.5rem;
+    }
+
     /* Animation */
     .fade-in-up {
         opacity: 0;
@@ -427,6 +526,10 @@
             font-size: 1.5rem;
         }
 
+        .form-section {
+            padding: 1.5rem;
+        }
+
         .form-actions {
             flex-direction: column-reverse;
         }
@@ -445,8 +548,8 @@
             padding: 0.75rem;
         }
 
-        .session-section {
-            padding: 1.5rem;
+        .day-checkboxes {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
 
         .session-item-header {
@@ -476,74 +579,166 @@
                 <form method="post" id="taskForm">
                     {% csrf_token %}
 
-                    <!-- Basic Task Information -->
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label">{{ form.task_type.label }}</label>
-                            {{ form.task_type }}
-                            {% if form.task_type.errors %}
-                                <div class="text-danger">{{ form.task_type.errors }}</div>
+                    <!-- Basic Task Information Section -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <div class="form-section-title">
+                                <i class="fas fa-info-circle"></i>
+                                المعلومات الأساسية
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.task_type.label }} <span class="text-danger">*</span></label>
+                                {{ form.task_type }}
+                                {% if form.task_type.errors %}
+                                    <div class="text-danger">{{ form.task_type.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.title.label }} <span class="text-danger">*</span></label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="text-danger">{{ form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.description.label }} <span class="text-danger">*</span></label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
                             {% endif %}
                         </div>
 
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label">{{ form.status.label }}</label>
-                            {{ form.status }}
-                            {% if form.status.errors %}
-                                <div class="text-danger">{{ form.status.errors }}</div>
-                            {% endif %}
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.status.label }} <span class="text-danger">*</span></label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                    <div class="text-danger">{{ form.status.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.priority.label }} <span class="text-danger">*</span></label>
+                                {{ form.priority }}
+                                {% if form.priority.errors %}
+                                    <div class="text-danger">{{ form.priority.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.assigned_to_name.label }}</label>
+                                {{ form.assigned_to_name }}
+                                {% if form.assigned_to_name.errors %}
+                                    <div class="text-danger">{{ form.assigned_to_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.completion_percentage.label }} <span class="text-danger">*</span></label>
+                                {{ form.completion_percentage }}
+                                {% if form.completion_percentage.errors %}
+                                    <div class="text-danger">{{ form.completion_percentage.errors }}</div>
+                                {% endif %}
+                                {% if form.completion_percentage.help_text %}
+                                    <div class="form-text text-muted">{{ form.completion_percentage.help_text }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">{{ form.title.label }}</label>
-                        {{ form.title }}
-                        {% if form.title.errors %}
-                            <div class="text-danger">{{ form.title.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label">{{ form.description.label }}</label>
-                        {{ form.description }}
-                        {% if form.description.errors %}
-                            <div class="text-danger">{{ form.description.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label">{{ form.assigned_to_name.label }}</label>
-                            {{ form.assigned_to_name }}
-                            {% if form.assigned_to_name.errors %}
-                                <div class="text-danger">{{ form.assigned_to_name.errors }}</div>
-                            {% endif %}
+                    <!-- Dates Section -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <div class="form-section-title">
+                                <i class="fas fa-calendar"></i>
+                                التواريخ
+                            </div>
                         </div>
 
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label">{{ form.due_date.label }}</label>
-                            {{ form.due_date }}
-                            {% if form.due_date.errors %}
-                                <div class="text-danger">{{ form.due_date.errors }}</div>
-                            {% endif %}
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.start_date.label }}</label>
+                                {{ form.start_date }}
+                                <small class="form-text text-muted">يُستخدم كتاريخ بداية للمهام المتكررة</small>
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger">{{ form.start_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">{{ form.due_date.label }} <span class="text-danger">*</span></label>
+                                {{ form.due_date }}
+                                {% if form.due_date.errors %}
+                                    <div class="text-danger">{{ form.due_date.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="form-label">{{ form.completion_percentage.label }}</label>
-                        {{ form.completion_percentage }}
-                        {% if form.completion_percentage.errors %}
-                            <div class="text-danger">{{ form.completion_percentage.errors }}</div>
-                        {% endif %}
-                        {% if form.completion_percentage.help_text %}
-                            <div class="form-text text-muted">{{ form.completion_percentage.help_text }}</div>
-                        {% endif %}
+                    <!-- Recurrence Section -->
+                    <div class="form-section">
+                        <div class="form-section-header">
+                            <div class="form-section-title">
+                                <i class="fas fa-calendar-alt"></i>
+                                إعدادات التكرار
+                            </div>
+                        </div>
+
+                        <div class="recurrence-toggle">
+                            <span class="toggle-label">مهمة متكررة</span>
+                            <label class="switch">
+                                <input type="checkbox" id="isRecurringToggle" name="is_recurring"
+                                       {% if form.is_recurring.value %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div id="recurrenceOptions" class="recurrence-options">
+                            <div class="mb-4">
+                                <label class="form-label">{{ form.recurrence_pattern.label }}</label>
+                                {{ form.recurrence_pattern }}
+                                {% if form.recurrence_pattern.errors %}
+                                    <div class="text-danger">{{ form.recurrence_pattern.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div id="customDaysSection" style="display: none;">
+                                <label class="form-label">{{ form.recurrence_days.label }}</label>
+                                <div class="day-checkboxes">
+                                    {% for value, label in form.recurrence_days.field.choices %}
+                                    <div class="day-checkbox-wrapper">
+                                        <input type="checkbox" name="recurrence_days" value="{{ value }}"
+                                               id="day_{{ value }}" class="form-check-input day-checkbox"
+                                               {% if value|stringformat:"s" in form.recurrence_days.value %}checked{% endif %}>
+                                        <label for="day_{{ value }}" class="day-checkbox-label">{{ label }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">{{ form.recurrence_end_date.label }}</label>
+                                {{ form.recurrence_end_date }}
+                                <small class="form-text text-muted">اترك فارغاً للتكرار بدون نهاية</small>
+                                {% if form.recurrence_end_date.errors %}
+                                    <div class="text-danger">{{ form.recurrence_end_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Session Management Section -->
                     <div class="session-section">
-                        <div class="session-section-header">
-                            <div class="session-section-title">
+                        <div class="form-section-header">
+                            <div class="form-section-title">
                                 <i class="fas fa-calendar-plus"></i>
                                 إدارة الجلسات
                             </div>
@@ -611,7 +806,66 @@
 </div>
 
 <script>
-    // Session management functionality
+    // Recurrence functionality
+    const isRecurringToggle = document.getElementById('isRecurringToggle');
+    const recurrenceOptions = document.getElementById('recurrenceOptions');
+    const recurrencePattern = document.getElementById('id_recurrence_pattern');
+    const customDaysSection = document.getElementById('customDaysSection');
+
+    // Toggle recurrence options
+    if (isRecurringToggle) {
+        isRecurringToggle.addEventListener('change', function() {
+            if (this.checked) {
+                recurrenceOptions.classList.add('active');
+            } else {
+                recurrenceOptions.classList.remove('active');
+            }
+        });
+
+        // Initialize on page load
+        if (isRecurringToggle.checked) {
+            recurrenceOptions.classList.add('active');
+        }
+    }
+
+    // Show/hide custom days section
+    if (recurrencePattern) {
+        recurrencePattern.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customDaysSection.style.display = 'block';
+            } else {
+                customDaysSection.style.display = 'none';
+            }
+        });
+
+        // Initialize on page load
+        if (recurrencePattern.value === 'custom') {
+            customDaysSection.style.display = 'block';
+        }
+    }
+
+    // Set minimum date for start_date to today
+    const startDateInput = document.getElementById('id_start_date');
+    const dueDateInput = document.getElementById('id_due_date');
+    const recurrenceEndDateInput = document.getElementById('id_recurrence_end_date');
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (startDateInput && !startDateInput.value) {
+        startDateInput.setAttribute('min', today);
+    }
+
+    // Update due_date min when start_date changes
+    if (startDateInput && dueDateInput) {
+        startDateInput.addEventListener('change', function() {
+            dueDateInput.setAttribute('min', this.value);
+            if (recurrenceEndDateInput) {
+                recurrenceEndDateInput.setAttribute('min', this.value);
+            }
+        });
+    }
+
+    // Session management functionality (keep existing session management code)
     let sessionCount = 0;
     let sessions = [];
 

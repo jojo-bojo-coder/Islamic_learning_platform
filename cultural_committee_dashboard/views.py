@@ -628,64 +628,63 @@ def toggle_session_completion(request, session_id):
     return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
 
 from datetime import datetime
+from django.db import transaction
+
 @login_required
 def add_task(request):
-    """View for adding a new cultural task with optional sessions"""
-
-    # Get the user's committee (adjust this based on your user-committee relationship)
     committee = get_object_or_404(Committee, supervisor=request.user)
 
     if request.method == 'POST':
         form = CulturalTaskForm(request.POST)
 
         if form.is_valid():
-            # Create the task
-            task = form.save(commit=False)
-            task.committee = committee
-
-            # Check if sessions are included
-            sessions_data = request.POST.get('sessions_data', '[]')
-
             try:
-                sessions = json.loads(sessions_data)
-                task.has_sessions = len(sessions) > 0
-                task.save()
+                with transaction.atomic():
 
-                # Create sessions if provided
-                if sessions:
-                    for session_data in sessions:
-                        TaskSession.objects.create(
-                            task=task,
-                            name=session_data.get('name', ''),
-                            date=datetime.strptime(session_data.get('date'), '%Y-%m-%d').date(),
-                            time=datetime.strptime(session_data.get('time'), '%H:%M').time(),
-                            session_order=session_data.get('id', 1)
-                        )
+                    task = form.save(commit=False)
+                    task.committee = committee
+                    task.created_by = request.user
 
-                    messages.success(
-                        request,
-                        f'تم إضافة المهمة "{task.title}" بنجاح مع {len(sessions)} جلسة/جلسات!'
-                    )
-                else:
-                    messages.success(request, f'تم إضافة المهمة "{task.title}" بنجاح!')
+                    sessions_data = request.POST.get('sessions_data')
 
+                    if sessions_data:
+                        sessions = json.loads(sessions_data)
+                    else:
+                        sessions = []
+
+                    task.has_sessions = len(sessions) > 0
+                    task.save()
+
+                    if sessions:
+                        for session_data in sessions:
+                            TaskSession.objects.create(
+                                task=task,
+                                name=session_data.get('name', ''),
+                                date=datetime.strptime(session_data['date'], '%Y-%m-%d').date(),
+                                time=datetime.strptime(session_data['time'], '%H:%M').time(),
+                                session_order=session_data.get('id', 1)
+                            )
+
+                messages.success(request, 'تم إضافة المهمة بنجاح 🎉')
                 return redirect('cultural_task_management')
 
-            except (ValueError, json.JSONDecodeError) as e:
-                messages.error(request, 'حدث خطأ في معالجة بيانات الجلسات. الرجاء المحاولة مرة أخرى.')
-                task.delete()  # Rollback task creation
+            except json.JSONDecodeError:
+                messages.error(request, 'بيانات الجلسات غير صحيحة.')
+            except Exception as e:
+                messages.error(request, 'حدث خطأ غير متوقع.')
+
         else:
-            messages.error(request, 'الرجاء تصحيح الأخطاء في النموذج.')
+            messages.error(request, 'الرجاء تصحيح أخطاء النموذج.')
+
     else:
         form = CulturalTaskForm()
 
-    context = {
+    return render(request, 'cultural_committee/task_form.html', {
         'form': form,
-        'title': 'إضافة مهمة جديدة',
         'committee': committee,
-    }
+        'title': 'إضافة مهمة جديدة'
+    })
 
-    return render(request, 'cultural_committee/task_form.html', context)
 
 
 @login_required
@@ -711,6 +710,14 @@ def edit_task(request, task_id):
             try:
                 sessions = json.loads(sessions_data)
                 task.has_sessions = len(sessions) > 0
+
+                # Convert recurrence_days to JSON if custom pattern
+                if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                    if isinstance(task.recurrence_days, list):
+                        pass
+                    else:
+                        task.recurrence_days = list(task.recurrence_days)
+
                 task.save()
 
                 # Delete existing sessions and create new ones
@@ -726,12 +733,41 @@ def edit_task(request, task_id):
                             session_order=session_data.get('id', 1)
                         )
 
-                    messages.success(
-                        request,
-                        f'تم تحديث المهمة "{task.title}" بنجاح مع {len(sessions)} جلسة/جلسات!'
+                # Create notification for task update
+                members = CommitteeMember.objects.filter(committee=task.committee, is_active=True)
+                for member in members:
+                    CulturalNotification.objects.create(
+                        user=member.user,
+                        committee=task.committee,
+                        notification_type='task_updated',
+                        title='تم تعديل المهمة',
+                        message=f'تم تعديل المهمة: {task.title}',
+                        related_task=task
                     )
+
+                UserActivity.objects.create(
+                    user=request.user,
+                    action=f'تعديل مهمة ثقافية: {task.title}',
+                    ip_address=get_client_ip(request)
+                )
+
+                if task.is_recurring:
+                    recurrence_info = f' ({task.get_recurrence_pattern_display()})'
+                    if sessions:
+                        messages.success(
+                            request,
+                            f'تم تحديث المهمة المتكررة "{task.title}" بنجاح مع {len(sessions)} جلسة/جلسات!{recurrence_info}'
+                        )
+                    else:
+                        messages.success(request, f'تم تحديث المهمة المتكررة "{task.title}" بنجاح!{recurrence_info}')
                 else:
-                    messages.success(request, f'تم تحديث المهمة "{task.title}" بنجاح!')
+                    if sessions:
+                        messages.success(
+                            request,
+                            f'تم تحديث المهمة "{task.title}" بنجاح مع {len(sessions)} جلسة/جلسات!'
+                        )
+                    else:
+                        messages.success(request, f'تم تحديث المهمة "{task.title}" بنجاح!')
 
                 return redirect('cultural_task_management')
 
@@ -740,7 +776,12 @@ def edit_task(request, task_id):
         else:
             messages.error(request, 'الرجاء تصحيح الأخطاء في النموذج.')
     else:
-        form = CulturalTaskForm(instance=task)
+        # Prepare initial data for recurrence_days
+        initial_data = {}
+        if task.recurrence_days and isinstance(task.recurrence_days, list):
+            initial_data['recurrence_days'] = [str(day) for day in task.recurrence_days]
+
+        form = CulturalTaskForm(instance=task, initial=initial_data)
 
     # Get existing sessions for pre-population
     existing_sessions = []
@@ -777,8 +818,33 @@ def delete_task(request, task_id):
 
     if request.method == 'POST':
         task_title = task.title
+        is_recurring = task.is_recurring
+        recurrence_pattern = task.get_recurrence_pattern_display() if task.is_recurring else None
+
+        # Create notification before deletion
+        members = CommitteeMember.objects.filter(committee=task.committee, is_active=True)
+        for member in members:
+            CulturalNotification.objects.create(
+                user=member.user,
+                committee=task.committee,
+                notification_type='task_updated',
+                title='تم حذف المهمة',
+                message=f'تم حذف المهمة: {task_title}'
+            )
+
         task.delete()  # This will also cascade delete all associated sessions
-        messages.success(request, f'تم حذف المهمة "{task_title}" بنجاح!')
+
+        UserActivity.objects.create(
+            user=request.user,
+            action=f'حذف مهمة ثقافية: {task_title}' + (f' ({recurrence_pattern})' if is_recurring else ''),
+            ip_address=get_client_ip(request)
+        )
+
+        if is_recurring:
+            messages.success(request, f'تم حذف المهمة المتكررة بنجاح! ({recurrence_pattern})')
+        else:
+            messages.success(request, f'تم حذف المهمة "{task_title}" بنجاح!')
+
         return redirect('cultural_task_management')
 
     context = {
@@ -786,7 +852,7 @@ def delete_task(request, task_id):
         'committee': task.committee,
     }
 
-    return render(request, 'cultural_committee/confirm_delete.html', context)
+    return render(request, 'cultural_committee/delete_task_confirm.html', context)
 
 from django.db import models
 
