@@ -19,6 +19,7 @@ def get_client_ip(request):
 
 @login_required(login_url="/accounts/login/")
 def takwin(request):
+    user = request.user
     def calc_percentage(done, total):
         return round((done / total) * 100) if total > 0 else 0
 
@@ -42,64 +43,157 @@ def takwin(request):
     num_done_takwins = num_done_tarbawiu + num_done_shareiu + num_done_mhari + num_done_medad
     progress_takwins = calc_percentage(num_done_takwins, num_takwins)
 
+    if user.role == 'director':
+        base_template = 'director_base.html'
+    elif user.role == 'program_manager':
+        base_template = 'program_manager_base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+        base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    else:
+        base_template = 'base.html'
+
     return render(request, 'takwin/takwin.html', {
         "num_takwins": num_takwins, "num_done_takwins": num_done_takwins, "progress_takwins": progress_takwins,
         "num_tarbawiu": num_tarbawiu, "num_done_tarbawiu": num_done_tarbawiu, "progress_tarbawiu": progress_tarbawiu,
         "num_shareiu": num_shareiu, "num_done_shareiu": num_done_shareiu, "progress_shareiu": progress_shareiu,
         "num_mhari": num_mhari, "num_done_mhari": num_done_mhari, "progress_mhari": progress_mhari,
-        "num_medad": num_medad, "num_done_medad": num_done_medad, "progress_medad": progress_medad,
+        "num_medad": num_medad, "num_done_medad": num_done_medad, "progress_medad": progress_medad,'base_template': base_template,
     })
 
 
 @login_required(login_url="/accounts/login/")
 def tarbawiu(request):
+    user = request.user
     takwin_list = Takwin.objects.filter(aspect='tarbawiu').order_by('-created_at')
 
     for t in takwin_list:
         user_takwin = UserTakwin.objects.filter(user=request.user, takwin=t).first()
         t.is_done = user_takwin.is_done if user_takwin else False
 
+    if user.role == 'director':
+        base_template = 'director_base.html'
+    elif user.role == 'program_manager':
+        base_template = 'program_manager_base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+        base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    else:
+        base_template = 'base.html'
+
     return render(request, 'takwin/tarbawiu.html', {
         'takwin_list': takwin_list,
+        'base_template': base_template,
     })
 
 
 @login_required(login_url="/accounts/login/")
 def shareiu(request):
+    user = request.user
     takwin_list = Takwin.objects.filter(aspect='shareiu').order_by('-created_at')
 
     for t in takwin_list:
         user_takwin = UserTakwin.objects.filter(user=request.user, takwin=t).first()
         t.is_done = user_takwin.is_done if user_takwin else False
 
+    if user.role == 'director':
+        base_template = 'director_base.html'
+    elif user.role == 'program_manager':
+        base_template = 'program_manager_base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+        base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    else:
+        base_template = 'base.html'
+
     return render(request, 'takwin/shareiu.html', {
         'takwin_list': takwin_list,
+        'base_template': base_template,
     })
 
 
 @login_required(login_url="/accounts/login/")
 def mhari(request):
+    user = request.user
     takwin_list = Takwin.objects.filter(aspect='mhari').order_by('-created_at')
 
     for t in takwin_list:
         user_takwin = UserTakwin.objects.filter(user=request.user, takwin=t).first()
         t.is_done = user_takwin.is_done if user_takwin else False
 
+    if user.role == 'director':
+        base_template = 'director_base.html'
+    elif user.role == 'program_manager':
+        base_template = 'program_manager_base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+        base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    else:
+        base_template = 'base.html'
+
     return render(request, 'takwin/mhari.html', {
         'takwin_list': takwin_list,
+        'base_template': base_template,
     })
 
 
 @login_required(login_url="/accounts/login/")
 def medad(request):
+    user = request.user
     takwin_list = Takwin.objects.filter(aspect='medad').order_by('-created_at')
 
     for t in takwin_list:
         user_takwin = UserTakwin.objects.filter(user=request.user, takwin=t).first()
         t.is_done = user_takwin.is_done if user_takwin else False
 
+    if user.role == 'director':
+        base_template = 'director_base.html'
+    elif user.role == 'program_manager':
+        base_template = 'program_manager_base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'cultural':
+        base_template = 'cultural_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sports':
+        base_template = 'sports_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'sharia':
+        base_template = 'sharia_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'operations':
+        base_template = 'operations_committee/base.html'
+    elif user.role == 'committee_supervisor' and user.supervisor_type == 'scientific':
+        base_template = 'scientific_committee/base.html'
+    else:
+        base_template = 'base.html'
+
     return render(request, 'takwin/medad.html', {
         'takwin_list': takwin_list,
+        'base_template': base_template,
     })
 
 
