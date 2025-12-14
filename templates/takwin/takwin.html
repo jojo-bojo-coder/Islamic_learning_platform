@@ -3,7 +3,7 @@
 
 {% block title %}تكوين - منصة مداد{% endblock %}
 
-{% block extra_css %}
+{% block content %}
 <style>
     /* استخدام نفس المتغيرات من director_base */
     :root {
@@ -521,9 +521,6 @@
         }
     }
 </style>
-{% endblock %}
-
-{% block content %}
 <div class="dashboard">
     {% if user.role == 'program_manager' %}
     <div class="management-nav" style="animation: slideDown 0.5s ease-out;">
