@@ -689,7 +689,7 @@
             <button class="filter-btn active" data-filter="all">
                 <i class="fas fa-layer-group"></i>
                 الكل
-                <span class="filter-count">{{ events.count|add:tasks.count|add:activities.count|add:cultural_tasks.count|add:task_sessions.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks.count|add:matches.count }}</span>
+                <span class="filter-count">{{ events.count|add:tasks_count|add:activities.count|add:cultural_tasks_count|add:task_sessions.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks.count|add:family_competitions.count|add:sports_tasks_count|add:matches.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
                 <i class="fas fa-calendar-check"></i>
@@ -699,7 +699,7 @@
             <button class="filter-btn" data-filter="tasks">
                 <i class="fas fa-tasks"></i>
                 المهام
-                <span class="filter-count">{{ tasks.count }}</span>
+                <span class="filter-count">{{ tasks_count }}</span>
             </button>
             <button class="filter-btn" data-filter="activities">
                 <i class="fas fa-running"></i>
@@ -709,7 +709,7 @@
             <button class="filter-btn" data-filter="cultural_tasks">
                 <i class="fas fa-theater-masks"></i>
                 المهام الثقافية
-                <span class="filter-count">{{ cultural_tasks.count }}</span>
+                <span class="filter-count">{{ cultural_tasks_count }}</span>
             </button>
             <button class="filter-btn" data-filter="task_sessions">
                 <i class="fas fa-clock"></i>
@@ -744,7 +744,7 @@
             <button class="filter-btn" data-filter="sports_tasks">
                 <i class="fas fa-futbol"></i>
                 المهام الرياضية
-                <span class="filter-count">{{ sports_tasks.count }}</span>
+                <span class="filter-count">{{ sports_tasks_count  }}</span>
             </button>
             <button class="filter-btn" data-filter="matches">
                 <i class="fas fa-trophy"></i>
@@ -1360,13 +1360,35 @@
         </h4>
         <div class="events-grid">
             {% for sports_task in sports_tasks %}
-            <a href="{% url 'object_detail' 'sports_task' sports_task.id %}" class="event-card">
+            <a href="{% url 'object_detail' 'sports_task' sports_task.id %}" class="event-card {% if sports_task.is_recurring %}recurring-task{% endif %}">
                 <div class="event-header">
-                    <h5 class="event-title">{{ sports_task.title }}</h5>
-                    <span class="event-type type-sports_tasks">
-                        <i class="fas fa-futbol"></i>
-                        مهمة رياضية
-                    </span>
+                    <div class="event-title-container">
+                        <h5 class="event-title">{{ sports_task.title }}</h5>
+                        <div class="event-badges">
+                            <span class="event-type type-sports_tasks">
+                                <i class="fas fa-futbol"></i>
+                                مهمة رياضية
+                            </span>
+                            {% if sports_task.is_recurring %}
+                            <span class="recurrence-badge">
+                                <i class="fas fa-redo"></i>
+                                {{ sports_task.get_recurrence_pattern_display }}
+                            </span>
+                            {% endif %}
+                            {% if sports_task.priority %}
+                            <span class="priority-badge priority-{{ sports_task.priority }}">
+                                <i class="fas fa-flag"></i>
+                                {{ sports_task.get_priority_display }}
+                            </span>
+                            {% endif %}
+                            {% if sports_task.is_overdue %}
+                            <span class="overdue-indicator">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                متأخرة
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 <div class="event-details">
                     {% if sports_task.committee %}
@@ -1381,10 +1403,55 @@
                         <span>{{ sports_task.assigned_to_name }}</span>
                     </div>
                     {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>تاريخ الاستحقاق: {{ sports_task.due_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if sports_task.is_recurring %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>نشطة منذ: {{ sports_task.start_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if sports_task.recurrence_end_date %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-times"></i>
+                        <span>تنتهي في: {{ sports_task.recurrence_end_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    {% if sports_task.task_type %}
+                    <div class="event-detail">
+                        <i class="fas fa-tag"></i>
+                        <span>نوع المهمة: {{ sports_task.get_task_type_display }}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 {% if sports_task.description %}
-                <p class="event-description">{{ sports_task.description|truncatewords:20 }}</p>
+                <p class="event-description">{{ sports_task.description|truncatewords:30 }}</p>
                 {% endif %}
+                {% if sports_task.completion_percentage > 0 %}
+                <div class="completion-progress">
+                    <div class="progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ sports_task.completion_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ sports_task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="status-badge
+                    {% if sports_task.status == 'completed' %}completed
+                    {% elif sports_task.status == 'cancelled' %}cancelled
+                    {% else %}upcoming{% endif %}">
+                    {% if sports_task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif sports_task.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ sports_task.get_status_display }}
+                    {% endif %}
+                </div>
             </a>
             {% empty %}
             <div class="no-events">

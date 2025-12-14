@@ -398,10 +398,70 @@ def schedule_calendar(request, program_id=None):
     ).select_related('committee')
 
     sports_tasks = SportsTask.objects.filter(
-        committee__program=program,
-        due_date__lte=end_date,
-        due_date__gte=start_date
+        committee__program=program
     ).select_related('committee')
+
+    if committee_filter:
+        sports_tasks = sports_tasks.filter(committee_id=committee_filter)
+
+    # Process recurring sports tasks
+    sports_task_occurrences = {}  # {date: [(sports_task, is_start, is_end, group_id), ...]}
+
+    for sports_task in sports_tasks:
+        if sports_task.is_recurring:
+            # IMPORTANT: Only get occurrences within the view's date range
+            # Don't process if task hasn't started yet
+            sports_task_start = sports_task.start_date or sports_task.due_date
+            if sports_task_start > end_date:
+                continue
+
+            # Don't process if task has ended
+            if sports_task.recurrence_end_date and sports_task.recurrence_end_date < start_date:
+                continue
+
+            # Get consecutive day groups for this task within the view range
+            groups = sports_task.get_consecutive_day_groups(start_date, end_date)
+            for group_idx, (group_start, group_end) in enumerate(groups):
+                group_id = f"sports_task_{sports_task.id}_group_{group_idx}"
+
+                # Add all dates in this group
+                current = group_start
+                while current <= group_end:
+                    if start_date <= current <= end_date:
+                        if current not in sports_task_occurrences:
+                            sports_task_occurrences[current] = []
+
+                        sports_task_occurrences[current].append({
+                            'task': sports_task,
+                            'is_start': current == group_start,
+                            'is_end': current == group_end,
+                            'group_id': group_id,
+                            'group_start': group_start,
+                            'group_end': group_end,
+                            'span_days': (group_end - group_start).days + 1,
+                            'type': 'sports_task'  # Add type identifier
+                        })
+                    current += timedelta(days=1)
+        else:
+            # Non-recurring sports task
+            if start_date <= sports_task.due_date <= end_date:
+                if sports_task.due_date not in sports_task_occurrences:
+                    sports_task_occurrences[sports_task.due_date] = []
+                sports_task_occurrences[sports_task.due_date].append({
+                    'task': sports_task,
+                    'is_start': True,
+                    'is_end': True,
+                    'group_id': f"sports_task_{sports_task.id}_single",
+                    'group_start': sports_task.due_date,
+                    'group_end': sports_task.due_date,
+                    'span_days': 1,
+                    'type': 'sports_task'  # Add type identifier
+                })
+
+    for date, occurrences in sports_task_occurrences.items():
+        if date not in all_task_occurrences:
+            all_task_occurrences[date] = []
+        all_task_occurrences[date].extend(occurrences)
 
     matches = Match.objects.filter(
         committee__program=program,
@@ -431,6 +491,8 @@ def schedule_calendar(request, program_id=None):
                     filtered_occurrences.append(occ)
                 elif occ['type'] == 'cultural_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
+                elif occ['type'] == 'sports_task' and occ['task'].status == status_filter:
+                    filtered_occurrences.append(occ)
             if filtered_occurrences:
                 all_task_occurrences[date] = filtered_occurrences
             else:
@@ -450,6 +512,8 @@ def schedule_calendar(request, program_id=None):
                 if occ['type'] == 'regular_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
                 elif occ['type'] == 'cultural_task' and occ['task'].priority == priority_filter:
+                    filtered_occurrences.append(occ)
+                elif occ['type'] == 'sports_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
             if filtered_occurrences:
                 all_task_occurrences[date] = filtered_occurrences
@@ -645,7 +709,7 @@ def schedule_calendar(request, program_id=None):
     if user.role == 'committee_supervisor':
         events = events.filter(Q(committee=committee) | Q(committee__isnull=True))
         activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
-        cultural_tasks = cultural_tasks.filter(committee=committee)
+        cultural_tasks = [ct for ct in cultural_tasks if ct.committee == committee]
         task_sessions = task_sessions.filter(task__committee=committee)
         operations_tasks = operations_tasks.filter(committee=committee)
         scientific_tasks = scientific_tasks.filter(committee=committee)
@@ -874,7 +938,13 @@ def schedule_calendar(request, program_id=None):
 
             )
 
-            day_sports_tasks = sports_tasks.filter(due_date=date)
+            day_sports_tasks = SportsTask.objects.filter(
+                committee__program=program,
+                is_recurring=False,  # Only non-recurring tasks
+                due_date=date
+            )
+            if committee_filter:
+                day_sports_tasks = day_sports_tasks.filter(committee_id=committee_filter)
 
             day_matches = matches.filter(date=date)
 
@@ -1083,6 +1153,10 @@ def day_events(request, program_id, year, month, day):
         committee__program=program
     ).select_related('committee')
 
+    all_sports_tasks = SportsTask.objects.filter(
+        committee__program=program
+    ).select_related('committee')
+
     # Filter tasks that occur on this date
     tasks_for_day = []
     for task in all_tasks:
@@ -1102,7 +1176,7 @@ def day_events(request, program_id, year, month, day):
                     'type': 'regular_task'
                 })
 
-        # Filter cultural tasks that occur on this date
+    # Filter cultural tasks that occur on this date
     cultural_tasks_for_day = []
     for cultural_task in all_cultural_tasks:
         if cultural_task.is_recurring:
@@ -1115,9 +1189,23 @@ def day_events(request, program_id, year, month, day):
             if cultural_task.due_date == date:
                 cultural_tasks_for_day.append(cultural_task)
 
+    # Filter sports tasks that occur on this date
+    sports_tasks_for_day = []
+    for sports_task in all_sports_tasks:
+        if sports_task.is_recurring:
+            # Check if this date is in the task's occurrence dates
+            occurrences = sports_task.get_occurrence_dates(date, date)
+            if date in occurrences:
+                sports_tasks_for_day.append(sports_task)
+        else:
+            # Non-recurring sports task - check if due_date matches
+            if sports_task.due_date == date:
+                sports_tasks_for_day.append(sports_task)
+
     # Convert to queryset-like behavior for template
     tasks = [item['task'] for item in tasks_for_day if item['type'] == 'regular_task']
     cultural_tasks = cultural_tasks_for_day
+    sports_tasks = sports_tasks_for_day
 
     activities = Activity.objects.filter(
         program=program,
@@ -1155,11 +1243,6 @@ def day_events(request, program_id, year, month, day):
         end_date__gte=date
     ).select_related('committee')
 
-    sports_tasks = SportsTask.objects.filter(
-        committee__program=program,
-        due_date=date
-    ).select_related('committee')
-
     matches = Match.objects.filter(
         committee__program=program,
         date=date
@@ -1173,13 +1256,13 @@ def day_events(request, program_id, year, month, day):
             tasks = [t for t in tasks if t.committee == committee or t.committee is None]
             activities = activities.filter(Q(committee=committee) | Q(committee__isnull=True))
             cultural_tasks = [ct for ct in cultural_tasks if ct.committee == committee]
+            sports_tasks = [st for st in sports_tasks if st.committee == committee]
             task_sessions = task_sessions.filter(task__committee=committee)
             operations_tasks = operations_tasks.filter(committee=committee)
             scientific_tasks = scientific_tasks.filter(committee=committee)
             lectures = lectures.filter(committee=committee)
             sharia_tasks = sharia_tasks.filter(committee=committee)
             family_competitions = family_competitions.filter(committee=committee)
-            sports_tasks = sports_tasks.filter(committee=committee)
             matches = matches.filter(committee=committee)
         except Committee.DoesNotExist:
             pass
@@ -1207,15 +1290,18 @@ def day_events(request, program_id, year, month, day):
         'date': date,
         'events': events,
         'tasks': tasks,
+        'tasks_count': len(tasks),
         'activities': activities,
         'cultural_tasks': cultural_tasks,
+        'cultural_tasks_count': len(cultural_tasks),
+        'sports_tasks': sports_tasks,
+        'sports_tasks_count': len(sports_tasks),
         'task_sessions': task_sessions,
         'operations_tasks': operations_tasks,
         'scientific_tasks': scientific_tasks,
         'lectures': lectures,
         'sharia_tasks': sharia_tasks,
         'family_competitions': family_competitions,
-        'sports_tasks': sports_tasks,
         'matches': matches,
         'base_template': base_template,
     }

@@ -5,17 +5,19 @@
 
 {% block extra_css %}
 <style>
-    .form-container {
+    .form-wrapper {
         background: var(--white);
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 30px rgba(0, 132, 171, 0.15);
+        border: 1px solid rgba(97, 188, 215, 0.3);
+        max-width: 900px;
+        margin: 0 auto;
         position: relative;
         overflow: hidden;
     }
 
-    .form-container::before {
+    .form-wrapper::before {
         content: "";
         position: absolute;
         top: 0;
@@ -26,17 +28,18 @@
     }
 
     .form-header {
+        text-align: center;
         margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--blue-primary);
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-light);
     }
 
     .form-header h3 {
-        color: var(--blue-dark);
-        font-weight: 700;
-        margin: 0;
         font-family: 'Cairo', sans-serif;
-        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 0.5rem;
+        font-size: 1.8rem;
     }
 
     .form-header h3 i {
@@ -44,30 +47,30 @@
         margin-left: 10px;
     }
 
-    .form-group {
-        margin-bottom: 1.5rem;
+    .form-header p {
+        color: var(--text-gray);
+        margin: 0;
+        font-size: 1rem;
     }
 
     .form-label {
         font-weight: 600;
-        color: var(--text-dark);
+        color: var(--blue-dark);
         margin-bottom: 0.5rem;
-        display: block;
+        font-size: 1rem;
     }
 
     .form-control, .form-select, .form-textarea {
         border: 2px solid var(--border-light);
-        border-radius: 8px;
+        border-radius: 12px;
         padding: 0.75rem 1rem;
-        font-size: 1rem;
         transition: all 0.3s ease;
-        width: 100%;
         font-family: 'IBM Plex Sans Arabic', sans-serif;
     }
 
     .form-control:focus, .form-select:focus, .form-textarea:focus {
         border-color: var(--blue-primary);
-        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.25);
+        box-shadow: 0 0 0 0.2rem rgba(0, 132, 171, 0.15);
     }
 
     .form-textarea {
@@ -75,87 +78,183 @@
         resize: vertical;
     }
 
-    .form-actions {
+    .btn-group-actions {
         display: flex;
         gap: 1rem;
-        justify-content: flex-end;
         margin-top: 2rem;
-        padding-top: 1.5rem;
+        padding-top: 2rem;
         border-top: 1px solid var(--border-light);
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-
-    .priority-indicator {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-left: 0.5rem;
-    }
-
-    .priority-high { background: #dc3545; }
-    .priority-medium { background: #ffc107; }
-    .priority-low { background: #28a745; }
-
-    .help-text {
-        font-size: 0.85rem;
-        color: var(--text-gray);
-        margin-top: 0.3rem;
-    }
-
-    .btn {
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
     }
 
     .btn-primary {
         background: linear-gradient(135deg, var(--blue-primary), var(--blue-gradient));
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
         color: var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+        width: 300px;
+        height: 300px;
     }
 
     .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 132, 171, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 132, 171, 0.3);
         color: var(--white);
     }
 
-    .btn-secondary {
+    .btn-cancel {
         background: var(--light-bg);
-        color: var(--text-dark);
         border: 2px solid var(--border-light);
+        color: var(--text-dark);
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        flex: 1;
     }
 
-    .btn-secondary:hover {
+    .btn-cancel:hover {
         background: var(--border-light);
-        transform: translateY(-2px);
         color: var(--text-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
 
     .text-danger {
-        color: #dc3545 !important;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
     }
 
-    .text-danger small {
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--blue-dark);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(0, 132, 171, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-section-title i {
+        color: var(--blue-primary);
+    }
+
+    .form-check {
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+        margin-top: 0.125em;
+        cursor: pointer;
+    }
+
+    .form-check-label {
+        font-weight: 600;
+        color: var(--blue-dark);
+        cursor: pointer;
+        margin-right: 0.5rem;
+    }
+
+    .recurrence-options {
+        display: none;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        margin-top: 1rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .recurrence-options.active {
         display: block;
+        animation: slideDown 0.3s ease;
     }
 
-    /* Animation */
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .day-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+    }
+
+    .day-checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .day-checkbox-wrapper:hover {
+        border-color: var(--blue-primary);
+        background: rgba(0, 132, 171, 0.05);
+    }
+
+    .day-checkbox-wrapper input:checked + label {
+        color: var(--blue-primary);
+        font-weight: 700;
+    }
+
     .fade-in-up {
         opacity: 0;
         transform: translateY(20px);
@@ -169,135 +268,371 @@
         }
     }
 
+    #id_recurrence_pattern, #id_recurrence_end_date, #id_recurrence_days {
+        display: none;
+    }
+
+    .recurrence-options.active #id_recurrence_pattern,
+    .recurrence-options.active #id_recurrence_end_date {
+        display: block;
+    }
+
+    .recurrence-options.active #id_recurrence_days {
+        display: grid;
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
-        .form-row {
-            grid-template-columns: 1fr;
+        .form-wrapper {
+            padding: 1.5rem;
+            margin: 0 1rem;
         }
 
-        .form-actions {
+        .form-header h3 {
+            font-size: 1.5rem;
+        }
+
+        .btn-group-actions {
             flex-direction: column;
         }
 
-        .form-container {
-            padding: 1.5rem;
+        .row {
+            margin-bottom: 0;
+        }
+
+        .col-md-6, .col-md-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .day-checkboxes {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="form-container fade-in-up">
+<div class="form-wrapper fade-in-up">
     <div class="form-header">
         <h3>
             <i class="fas fa-tasks"></i>
             {{ title }}
         </h3>
+        <p>قم بملء البيانات التالية لإضافة أو تعديل المهمة الرياضية</p>
     </div>
 
     <form method="post">
         {% csrf_token %}
 
-        <div class="form-group">
-            <label class="form-label">{{ form.task_type.label }}</label>
-            {{ form.task_type }}
-            {% if form.task_type.errors %}
-            <div class="text-danger mt-1">
-                {% for error in form.task_type.errors %}
-                <small>{{ error }}</small>
-                {% endfor %}
+        <!-- Basic Information Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-info-circle"></i>
+                المعلومات الأساسية
             </div>
-            {% endif %}
+
+            <div class="mb-4">
+                <label for="{{ form.task_type.id_for_label }}" class="form-label">
+                    {{ form.task_type.label }}
+                    <span style="color: #dc3545;">*</span>
+                </label>
+                {{ form.task_type }}
+                {% if form.task_type.errors %}
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ form.task_type.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    {{ form.title.label }}
+                    <span style="color: #dc3545;">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ form.title.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.description.id_for_label }}" class="form-label">
+                    {{ form.description.label }}
+                    <span style="color: #dc3545;">*</span>
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ form.description.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">{{ form.title.label }}</label>
-            {{ form.title }}
-            {% if form.title.errors %}
-            <div class="text-danger mt-1">
-                {% for error in form.title.errors %}
-                <small>{{ error }}</small>
-                {% endfor %}
+        <!-- Details Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-cog"></i>
+                تفاصيل المهمة
             </div>
-            {% endif %}
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">{{ form.description.label }}</label>
-            {{ form.description }}
-            <div class="help-text">وصف تفصيلي للمهمة والمطلوب تنفيذه</div>
-            {% if form.description.errors %}
-            <div class="text-danger mt-1">
-                {% for error in form.description.errors %}
-                <small>{{ error }}</small>
-                {% endfor %}
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <label for="{{ form.priority.id_for_label }}" class="form-label">
+                            {{ form.priority.label }}
+                        </label>
+                        {{ form.priority }}
+                        {% if form.priority.errors %}
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.priority.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <label for="{{ form.status.id_for_label }}" class="form-label">
+                            {{ form.status.label }}
+                        </label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.status.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <label for="{{ form.completion_percentage.id_for_label }}" class="form-label">
+                            {{ form.completion_percentage.label }}
+                        </label>
+                        {{ form.completion_percentage }}
+                        {% if form.completion_percentage.errors %}
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.completion_percentage.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            {% endif %}
-        </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">{{ form.assigned_to_name.label }}</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <label for="{{ form.start_date.id_for_label }}" class="form-label">
+                            {{ form.start_date.label }}
+                            <span style="color: #dc3545;">*</span>
+                        </label>
+                        {{ form.start_date }}
+                        <small class="text-muted d-block mt-1">يُستخدم كتاريخ بداية للمهام المتكررة</small>
+                        {% if form.start_date.errors %}
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.start_date.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <label for="{{ form.due_date.id_for_label }}" class="form-label">
+                            {{ form.due_date.label }}
+                            <span style="color: #dc3545;">*</span>
+                        </label>
+                        {{ form.due_date }}
+                        <small class="text-muted d-block mt-1">تاريخ الاستحقاق النهائي للمهمة</small>
+                        {% if form.due_date.errors %}
+                            <div class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.due_date.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ form.assigned_to_name.id_for_label }}" class="form-label">
+                    {{ form.assigned_to_name.label }}
+                </label>
                 {{ form.assigned_to_name }}
-                <div class="help-text">اسم المسؤول عن تنفيذ المهمة (اختياري)</div>
                 {% if form.assigned_to_name.errors %}
-                <div class="text-danger mt-1">
-                    {% for error in form.assigned_to_name.errors %}
-                    <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">{{ form.due_date.label }}</label>
-                {{ form.due_date }}
-                {% if form.due_date.errors %}
-                <div class="text-danger mt-1">
-                    {% for error in form.due_date.errors %}
-                    <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
+                    <div class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ form.assigned_to_name.errors.0 }}
+                    </div>
                 {% endif %}
             </div>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label class="form-label">{{ form.status.label }}</label>
-                {{ form.status }}
-                {% if form.status.errors %}
-                <div class="text-danger mt-1">
-                    {% for error in form.status.errors %}
-                    <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
-                {% endif %}
+        <!-- Recurrence Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i class="fas fa-calendar-alt"></i>
+                إعدادات التكرار
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ form.completion_percentage.label }}</label>
-                {{ form.completion_percentage }}
-                <div class="help-text">نسبة إنجاز المهمة من 0% إلى 100%</div>
-                {% if form.completion_percentage.errors %}
-                <div class="text-danger mt-1">
-                    {% for error in form.completion_percentage.errors %}
-                    <small>{{ error }}</small>
-                    {% endfor %}
-                </div>
-                {% endif %}
+            <div class="form-check">
+                {{ form.is_recurring }}
+                <label class="form-check-label" for="{{ form.is_recurring.id_for_label }}">
+                    {{ form.is_recurring.label }}
+                </label>
             </div>
+
+            <div id="recurrence-options" class="recurrence-options">
+                <div class="mb-4">
+                    <label for="{{ form.recurrence_pattern.id_for_label }}" class="form-label">
+                        {{ form.recurrence_pattern.label }}
+                    </label>
+                    {{ form.recurrence_pattern }}
+                    {% if form.recurrence_pattern.errors %}
+                        <div class="text-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.recurrence_pattern.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div id="custom-days-section" style="display: none;">
+                    <label class="form-label">اختر أيام التكرار:</label>
+                    <div class="day-checkboxes">
+                        {% for value, label in form.recurrence_days.field.choices %}
+                        <div class="day-checkbox-wrapper">
+                            <input type="checkbox" name="recurrence_days" value="{{ value }}"
+                                   id="day_{{ value }}" class="form-check-input day-checkbox">
+                            <label for="day_{{ value }}" class="form-check-label" style="margin: 0 0 0 0.5rem;">{{ label }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-4 mt-3">
+                    <label for="{{ form.recurrence_end_date.id_for_label }}" class="form-label">
+                        {{ form.recurrence_end_date.label }} (اختياري)
+                    </label>
+                    {{ form.recurrence_end_date }}
+                    <small class="text-muted d-block mt-1">اترك فارغاً للتكرار بدون نهاية</small>
+                    {% if form.recurrence_end_date.errors %}
+                        <div class="text-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ form.recurrence_end_date.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if form.is_recurring.errors %}
+                <div class="text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    {{ form.is_recurring.errors.0 }}
+                </div>
+            {% endif %}
         </div>
 
-        <div class="form-actions">
-            <a href="{% url 'sports_task_management' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-right ms-2"></i>
-                رجوع
-            </a>
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="btn-group-actions">
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save ms-2"></i>
                 حفظ المهمة
             </button>
+            <a href="{% url 'sports_task_management' %}" class="btn btn-cancel">
+                <i class="fas fa-times ms-2"></i>
+                إلغاء
+            </a>
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isRecurringCheckbox = document.getElementById('{{ form.is_recurring.id_for_label }}');
+    const recurrenceOptions = document.getElementById('recurrence-options');
+    const recurrencePattern = document.getElementById('{{ form.recurrence_pattern.id_for_label }}');
+    const customDaysSection = document.getElementById('custom-days-section');
+
+    // Toggle recurrence options
+    if (isRecurringCheckbox) {
+        isRecurringCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                recurrenceOptions.classList.add('active');
+            } else {
+                recurrenceOptions.classList.remove('active');
+            }
+        });
+
+        // Initialize on page load
+        if (isRecurringCheckbox.checked) {
+            recurrenceOptions.classList.add('active');
+        }
+    }
+
+    // Show/hide custom days section
+    if (recurrencePattern) {
+        recurrencePattern.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customDaysSection.style.display = 'block';
+            } else {
+                customDaysSection.style.display = 'none';
+            }
+        });
+
+        // Initialize on page load
+        if (recurrencePattern.value === 'custom') {
+            customDaysSection.style.display = 'block';
+        }
+    }
+
+    // Set minimum date for start_date to today
+    const startDateInput = document.getElementById('id_start_date');
+    const dueDateInput = document.getElementById('id_due_date');
+    const recurrenceEndDateInput = document.getElementById('id_recurrence_end_date');
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (startDateInput && !startDateInput.value) {
+        startDateInput.setAttribute('min', today);
+    }
+
+    // Update due_date min when start_date changes
+    if (startDateInput && dueDateInput) {
+        startDateInput.addEventListener('change', function() {
+            dueDateInput.setAttribute('min', this.value);
+            if (recurrenceEndDateInput) {
+                recurrenceEndDateInput.setAttribute('min', this.value);
+            }
+        });
+    }
+
+    // Pre-check recurrence days if editing existing task
+    {% if form.instance.id and form.instance.is_recurring and form.instance.recurrence_days %}
+        const recurrenceDays = {{ form.instance.recurrence_days|safe }};
+        recurrenceDays.forEach(day => {
+            const checkbox = document.querySelector(`input[name="recurrence_days"][value="${day}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    {% endif %}
+});
+</script>
 {% endblock %}

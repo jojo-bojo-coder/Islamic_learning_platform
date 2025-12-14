@@ -692,6 +692,9 @@
         background: linear-gradient(135deg, #3498db, #2980b9);
     }
 
+    .task-badge.type-sports_task {
+        background: linear-gradient(135deg, #f39c12, #d68910) !important;
+    }
 
 </style>
 
@@ -878,7 +881,8 @@
                                 {% for task_occ in day_data.task_occurrences %}
                                 <div class="task-badge
                                             {% if task_occ.type == 'regular_task' %}type-regular_task
-                                            {% elif task_occ.type == 'cultural_task' %}type-cultural_task{% endif %}
+                                            {% elif task_occ.type == 'cultural_task' %}type-cultural_task
+                                            {% elif task_occ.type == 'sports_task' %}type-sports_task{% endif %}
                                             {% if task_occ.span_days > 1 %}multi-day{% endif %}
                                             {% if task_occ.is_start and task_occ.is_end %}task-single
                                             {% elif task_occ.is_start %}task-start
@@ -889,12 +893,16 @@
                                               location.href='{% url 'object_detail' 'task' task_occ.task.id %}'
                                               {% elif task_occ.type == 'cultural_task' %}
                                               location.href='{% url 'object_detail' 'cultural_task' task_occ.task.id %}'
+                                              {% elif task_occ.type == 'sports_task' %}
+                                              location.href='{% url 'object_detail' 'sports_task' task_occ.task.id %}'
                                               {% endif %}">
                                     <div class="event-title">
                                         {% if task_occ.type == 'regular_task' %}
                                         <i class="fas fa-tasks"></i> {{ task_occ.task.title|truncatechars:25 }}
                                         {% elif task_occ.type == 'cultural_task' %}
                                         <i class="fas fa-theater-masks"></i> {{ task_occ.task.title|truncatechars:25 }}
+                                        {% elif task_occ.type == 'sports_task' %}
+                                        <i class="fas fa-futbol"></i> {{ task_occ.task.title|truncatechars:25 }}
                                         {% endif %}
                                     </div>
                                 </div>
