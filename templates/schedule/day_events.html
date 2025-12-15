@@ -703,7 +703,7 @@
             <button class="filter-btn active" data-filter="all">
                 <i class="fas fa-layer-group"></i>
                 الكل
-                <span class="filter-count">{{ events.count|add:tasks_count|add:activities.count|add:cultural_tasks_count|add:task_sessions.count|add:operations_tasks.count|add:scientific_tasks.count|add:lectures.count|add:sharia_tasks_count|add:family_competitions.count|add:sports_tasks_count|add:matches.count }}</span>
+                <span class="filter-count">{{ events.count|add:tasks_count|add:activities.count|add:cultural_tasks_count|add:task_sessions.count|add:operations_tasks.count|add:scientific_tasks_count|add:lectures.count|add:sharia_tasks_count|add:family_competitions.count|add:sports_tasks_count|add:matches.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
                 <i class="fas fa-calendar-check"></i>
@@ -738,7 +738,7 @@
             <button class="filter-btn" data-filter="scientific_tasks">
                 <i class="fas fa-flask"></i>
                 المهام العلمية
-                <span class="filter-count">{{ scientific_tasks.count }}</span>
+                <span class="filter-count">{{ scientific_tasks_count }}</span>
             </button>
             <button class="filter-btn" data-filter="lectures">
                 <i class="fas fa-chalkboard-teacher"></i>
@@ -1188,47 +1188,114 @@
 
     <!-- Scientific Tasks -->
     <div class="events-section active" id="scientific_tasks-section">
-        <h4 class="section-title">
-            <i class="fas fa-flask"></i>
-            المهام العلمية
-        </h4>
-        <div class="events-grid">
-            {% for scientific_task in scientific_tasks %}
-            <a href="{% url 'object_detail' 'scientific_task' scientific_task.id %}" class="event-card">
-                <div class="event-header">
+    <h4 class="section-title">
+        <i class="fas fa-flask"></i>
+        المهام العلمية
+    </h4>
+    <div class="events-grid">
+        {% for scientific_task in scientific_tasks %}
+        <a href="{% url 'object_detail' 'scientific_task' scientific_task.id %}" class="event-card {% if scientific_task.is_recurring %}recurring-task{% endif %}">
+            <div class="event-header">
+                <div class="event-title-container">
                     <h5 class="event-title">{{ scientific_task.title }}</h5>
-                    <span class="event-type type-scientific_tasks">
-                        <i class="fas fa-flask"></i>
-                        مهمة علمية
-                    </span>
-                </div>
-                <div class="event-details">
-                    {% if scientific_task.committee %}
-                    <div class="event-detail">
-                        <i class="fas fa-users"></i>
-                        <span>{{ scientific_task.committee.name }}</span>
+                    <div class="event-badges">
+                        <span class="event-type type-scientific_tasks">
+                            <i class="fas fa-flask"></i>
+                            مهمة علمية
+                        </span>
+                        {% if scientific_task.is_recurring %}
+                        <span class="recurrence-badge">
+                            <i class="fas fa-redo"></i>
+                            {{ scientific_task.get_recurrence_pattern_display }}
+                        </span>
+                        {% endif %}
+                        {% if scientific_task.priority %}
+                        <span class="priority-badge priority-{{ scientific_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ scientific_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                        {% if scientific_task.is_overdue %}
+                        <span class="overdue-indicator">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            متأخرة
+                        </span>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    {% if scientific_task.assigned_to_name %}
-                    <div class="event-detail">
-                        <i class="fas fa-user"></i>
-                        <span>{{ scientific_task.assigned_to_name }}</span>
-                    </div>
-                    {% endif %}
                 </div>
-                {% if scientific_task.description %}
-                <p class="event-description">{{ scientific_task.description|truncatewords:20 }}</p>
-                {% endif %}
-            </a>
-            {% empty %}
-            <div class="no-events">
-                <i class="fas fa-flask"></i>
-                <h5>لا توجد مهام علمية</h5>
-                <p>لم يتم إضافة أي مهام علمية لهذا اليوم</p>
             </div>
-            {% endfor %}
+            <div class="event-details">
+                {% if scientific_task.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ scientific_task.committee.name }}</span>
+                </div>
+                {% endif %}
+                {% if scientific_task.assigned_to_name %}
+                <div class="event-detail">
+                    <i class="fas fa-user"></i>
+                    <span>{{ scientific_task.assigned_to_name }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>تاريخ الاستحقاق: {{ scientific_task.due_date|date:"Y/m/d" }}</span>
+                </div>
+                {% if scientific_task.is_recurring %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>نشطة منذ: {{ scientific_task.start_date|date:"Y/m/d" }}</span>
+                </div>
+                {% if scientific_task.recurrence_end_date %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-times"></i>
+                    <span>تنتهي في: {{ scientific_task.recurrence_end_date|date:"Y/m/d" }}</span>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% if scientific_task.task_type %}
+                <div class="event-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>نوع المهمة: {{ scientific_task.get_task_type_display }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if scientific_task.description %}
+            <p class="event-description">{{ scientific_task.description|truncatewords:30 }}</p>
+            {% endif %}
+            {% if scientific_task.completion_percentage > 0 %}
+            <div class="completion-progress">
+                <div class="progress-label">
+                    <span>نسبة الإنجاز</span>
+                    <span>{{ scientific_task.completion_percentage }}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ scientific_task.completion_percentage }}%"></div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="status-badge
+                {% if scientific_task.status == 'completed' %}completed
+                {% elif scientific_task.status == 'cancelled' %}cancelled
+                {% else %}upcoming{% endif %}">
+                {% if scientific_task.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% elif scientific_task.status == 'cancelled' %}
+                <i class="fas fa-times-circle"></i> ملغاة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ scientific_task.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-flask"></i>
+            <h5>لا توجد مهام علمية</h5>
+            <p>لم يتم إضافة أي مهام علمية لهذا اليوم</p>
         </div>
+        {% endfor %}
     </div>
+</div>
 
     <!-- Lectures -->
     <div class="events-section active" id="lectures-section">
