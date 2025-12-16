@@ -88,6 +88,11 @@ def get_client_ip(request):
     return ip
 
 
+def is_task_of_type(occ, task_type):
+    """Safely check if occurrence is of specific type"""
+    return 'type' in occ and occ['type'] == task_type
+
+
 @login_required
 def schedule_calendar(request, program_id=None):
     """Main calendar view for all users with monthly/weekly toggle - includes all committee tasks and recurring tasks"""
@@ -174,19 +179,39 @@ def schedule_calendar(request, program_id=None):
 
     if view_type == 'weekly':
         # Weekly view logic
-        monday_of_week = datetime.strptime(f'{year}-W{week_number:02d}-1', "%Y-W%W-%w").date()
+        try:
+            # Use ISO week calculation (Monday as first day of week)
+            week_monday = datetime.fromisocalendar(year, week_number, 1).date()
+        except (AttributeError, ValueError):
+            # Fallback for older Python versions
+            # Find the Monday of the given week
+            jan_1 = datetime(year, 1, 1).date()
+            # Week 1 is the week that contains Jan 4 (ISO standard)
+            week_1_monday = jan_1 + timedelta(days=(3 - jan_1.weekday()))
+            week_monday = week_1_monday + timedelta(weeks=week_number - 1)
 
-        # Adjust to Saturday (go back 2 days from Monday)
-        week_start = monday_of_week - timedelta(days=2)
+        # Our calendar starts with Saturday, so go back 2 days from Monday
+        week_start = week_monday - timedelta(days=2)
         week_end = week_start + timedelta(days=6)
 
-        prev_week_start = week_start - timedelta(days=7)
-        prev_week = prev_week_start.isocalendar()[1]
-        prev_week_year = prev_week_start.year
+        # SIMPLE NAVIGATION: Just increment/decrement week_number
+        # Previous week
+        prev_week = week_number - 1
+        prev_week_year = year
 
-        next_week_start = week_start + timedelta(days=7)
-        next_week = next_week_start.isocalendar()[1]
-        next_week_year = next_week_start.year
+        # Handle crossing to previous year
+        if prev_week < 1:
+            prev_week = 52  # or calculate actual weeks in previous year
+            prev_week_year = year - 1
+
+        # Next week
+        next_week = week_number + 1
+        next_week_year = year
+
+        # Handle crossing to next year
+        if next_week > 52:  # or calculate actual weeks in current year
+            next_week = 1
+            next_week_year = year + 1
 
         start_date = week_start
         end_date = week_end
@@ -686,17 +711,20 @@ def schedule_calendar(request, program_id=None):
         for date in list(all_task_occurrences.keys()):
             filtered_occurrences = []
             for occ in all_task_occurrences[date]:
-                if occ['type'] == 'regular_task' and occ['task'].status == status_filter:
+                # FIX: Add safety check for 'type' key
+                task_type = occ.get('type', '')
+
+                if task_type == 'regular_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'cultural_task' and occ['task'].status == status_filter:
+                elif task_type == 'cultural_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'scientific_task' and occ['task'].status == status_filter:
+                elif task_type == 'scientific_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'sharia_task' and occ['task'].status == status_filter:
+                elif task_type == 'sharia_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'sports_task' and occ['task'].status == status_filter:
+                elif task_type == 'sports_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'operations_task' and occ['task'].status == status_filter:
+                elif task_type == 'operations_task' and occ['task'].status == status_filter:
                     filtered_occurrences.append(occ)
             if filtered_occurrences:
                 all_task_occurrences[date] = filtered_occurrences
@@ -715,17 +743,20 @@ def schedule_calendar(request, program_id=None):
         for date in list(all_task_occurrences.keys()):
             filtered_occurrences = []
             for occ in all_task_occurrences[date]:
-                if occ['type'] == 'regular_task' and occ['task'].priority == priority_filter:
+                # FIX: Use .get() method for safe access
+                task_type = occ.get('type', '')
+
+                if task_type == 'regular_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'cultural_task' and occ['task'].priority == priority_filter:
+                elif task_type == 'cultural_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'sharia_task' and occ['task'].priority == priority_filter:
+                elif task_type == 'sharia_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'scientific_task' and occ['task'].priority == priority_filter:
+                elif task_type == 'scientific_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'sports_task' and occ['task'].priority == priority_filter:
+                elif task_type == 'sports_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'operations_task' and occ['task'].priority == priority_filter:
+                elif task_type == 'operations_task' and occ['task'].priority == priority_filter:
                     filtered_occurrences.append(occ)
             if filtered_occurrences:
                 all_task_occurrences[date] = filtered_occurrences
@@ -750,17 +781,20 @@ def schedule_calendar(request, program_id=None):
         for date in list(all_task_occurrences.keys()):
             filtered_occurrences = []
             for occ in all_task_occurrences[date]:
-                if occ['type'] == 'regular_task' and occ['task'].committee_id == int(committee_filter):
+                # FIX: Use .get() method for safe access
+                task_type = occ.get('type', '')
+
+                if task_type == 'regular_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'cultural_task' and occ['task'].committee_id == int(committee_filter):
+                elif task_type == 'cultural_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'sharia_task' and occ['task'].committee_id == int(committee_filter):
+                elif task_type == 'sharia_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'scientific_task' and occ['task'].committee_id == int(committee_filter):
+                elif task_type == 'scientific_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'sports_task' and occ['task'].committee_id == int(committee_filter):
+                elif task_type == 'sports_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
-                elif occ['type'] == 'operations_task' and occ['task'].committee_id == int(committee_filter):
+                elif task_type == 'operations_task' and occ['task'].committee_id == int(committee_filter):
                     filtered_occurrences.append(occ)
             if filtered_occurrences:
                 all_task_occurrences[date] = filtered_occurrences
@@ -794,6 +828,16 @@ def schedule_calendar(request, program_id=None):
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
+            for date in list(all_task_occurrences.keys()):
+                filtered_occurrences = []
+                for occ in all_task_occurrences[date]:
+                    # FIX: Use is_task_of_type function
+                    if is_task_of_type(occ, 'regular_task'):
+                        filtered_occurrences.append(occ)
+                if filtered_occurrences:
+                    all_task_occurrences[date] = filtered_occurrences
+                else:
+                    del all_task_occurrences[date]
         elif event_type_filter == 'activity':
             # Keep only Activities
             events = events.none()
@@ -819,7 +863,15 @@ def schedule_calendar(request, program_id=None):
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
-            task_occurrences = {}
+            for date in list(all_task_occurrences.keys()):
+                filtered_occurrences = []
+                for occ in all_task_occurrences[date]:
+                    if is_task_of_type(occ, 'cultural_task'):
+                        filtered_occurrences.append(occ)
+                if filtered_occurrences:
+                    all_task_occurrences[date] = filtered_occurrences
+                else:
+                    del all_task_occurrences[date]
         elif event_type_filter == 'task_session':
             # Keep only Task Sessions
             events = events.none()
@@ -849,7 +901,7 @@ def schedule_calendar(request, program_id=None):
             for date in list(all_task_occurrences.keys()):
                 filtered_occurrences = []
                 for occ in all_task_occurrences[date]:
-                    if occ['type'] == 'operations_task':
+                    if is_task_of_type(occ, 'operations_task'):
                         filtered_occurrences.append(occ)
                 if filtered_occurrences:
                     all_task_occurrences[date] = filtered_occurrences
@@ -867,12 +919,10 @@ def schedule_calendar(request, program_id=None):
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
-
-            # Filter all_task_occurrences to only include scientific tasks
             for date in list(all_task_occurrences.keys()):
                 filtered_occurrences = []
                 for occ in all_task_occurrences[date]:
-                    if occ['type'] == 'scientific_task':
+                    if is_task_of_type(occ, 'scientific_task'):
                         filtered_occurrences.append(occ)
                 if filtered_occurrences:
                     all_task_occurrences[date] = filtered_occurrences
@@ -903,7 +953,15 @@ def schedule_calendar(request, program_id=None):
             family_competitions = family_competitions.none()
             sports_tasks = sports_tasks.none()
             matches = matches.none()
-            task_occurrences = {}
+            for date in list(all_task_occurrences.keys()):
+                filtered_occurrences = []
+                for occ in all_task_occurrences[date]:
+                    if is_task_of_type(occ, 'sharia_task'):
+                        filtered_occurrences.append(occ)
+                if filtered_occurrences:
+                    all_task_occurrences[date] = filtered_occurrences
+                else:
+                    del all_task_occurrences[date]
         elif event_type_filter == 'family_competition':
             # Keep only Family Competitions
             events = events.none()
@@ -929,7 +987,15 @@ def schedule_calendar(request, program_id=None):
             sharia_tasks_all = sharia_tasks_all.none()
             family_competitions = family_competitions.none()
             matches = matches.none()
-            task_occurrences = {}
+            for date in list(all_task_occurrences.keys()):
+                filtered_occurrences = []
+                for occ in all_task_occurrences[date]:
+                    if is_task_of_type(occ, 'sports_task'):
+                        filtered_occurrences.append(occ)
+                if filtered_occurrences:
+                    all_task_occurrences[date] = filtered_occurrences
+                else:
+                    del all_task_occurrences[date]
         elif event_type_filter == 'match':
             # Keep only Matches
             events = events.none()
@@ -957,6 +1023,29 @@ def schedule_calendar(request, program_id=None):
         family_competitions = family_competitions.filter(committee=committee)
         sports_tasks = sports_tasks.filter(committee=committee)
         matches = matches.filter(committee=committee)
+
+        # FIX: Also filter all_task_occurrences by committee
+        for date in list(all_task_occurrences.keys()):
+            filtered_occurrences = []
+            for occ in all_task_occurrences[date]:
+                # Use .get() for safe access
+                task_type = occ.get('type', '')
+
+                # Check if this task belongs to the supervisor's committee
+                task_committee = occ.get('task', {}).committee
+                if task_committee == committee:
+                    filtered_occurrences.append(occ)
+                # For tasks without type field, check based on task attributes
+                elif not task_type and 'task' in occ:
+                    task_obj = occ['task']
+                    # Check committee based on task type
+                    if hasattr(task_obj, 'committee') and task_obj.committee == committee:
+                        filtered_occurrences.append(occ)
+
+            if filtered_occurrences:
+                all_task_occurrences[date] = filtered_occurrences
+            else:
+                del all_task_occurrences[date]
 
     if view_type == 'weekly':
         # Build week days
