@@ -11,7 +11,12 @@ aptPkgs = [
     "pkg-config",
     "gcc",
     "g++",
-    "make"
+    "make",
+    "libxcb1-dev",           # Add this for XCB headers
+    "libxcb-render0-dev",    # Add this for XCB render support
+    "libxcb-shm0-dev",       # Add this for XCB shared memory support
+    "libx11-dev",            # Also add X11 development libraries
+    "libxext-dev"            # X11 miscellaneous extensions
 ]
 
 [phases.install]
