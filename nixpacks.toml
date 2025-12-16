@@ -1,4 +1,17 @@
 [phases.setup]
+nixPkgs = [
+    "pkg-config",
+    "cairo.dev",
+    "pango.dev",
+    "glib.dev",
+    "gdk-pixbuf",
+    "libffi.dev",
+    "gcc",
+    "gfortran",
+    "python310",
+    "postgresql_16.dev"
+]
+
 aptPkgs = [
     "libcairo2-dev",
     "libpango-1.0-0",
@@ -12,19 +25,47 @@ aptPkgs = [
     "gcc",
     "g++",
     "make",
-    "libxcb1-dev",           # Add this for XCB headers
-    "libxcb-render0-dev",    # Add this for XCB render support
-    "libxcb-shm0-dev",       # Add this for XCB shared memory support
-    "libx11-dev",            # Also add X11 development libraries
-    "libxext-dev"            # X11 miscellaneous extensions
+    # XCB development packages
+    "libxcb1-dev",
+    "libxcb-render0-dev",
+    "libxcb-shm0-dev",
+    "libxcb-xfixes0-dev",
+    "libxcb-composite0-dev",
+    "libxcb-xkb-dev",
+    "libxcb-util-dev",
+    "libxcb-icccm4-dev",
+    "libxcb-image0-dev",
+    "libxcb-keysyms1-dev",
+    "libxcb-randr0-dev",
+    # X11 development libraries
+    "libx11-dev",
+    "libx11-xcb-dev",
+    "libxext-dev",
+    "libxrender-dev",
+    "libxfixes-dev",
+    "libxdamage-dev",
+    # Additional cairo dependencies
+    "libpng-dev",
+    "libpixman-1-dev",
+    "libfontconfig1-dev",
+    "libfreetype6-dev"
 ]
 
 [phases.install]
-# Try to install pycairo first with system dependencies
 cmds = [
     "python -m venv /opt/venv",
-    ". /opt/venv/bin/activate && pip install --upgrade pip",
-    # Try to install pycairo with system deps first
+    ". /opt/venv/bin/activate && pip install --upgrade pip setuptools wheel",
+    # Install meson and ninja for building pycairo
+    ". /opt/venv/bin/activate && pip install meson ninja",
+    # Try installing pycairo with explicit build dependencies
     ". /opt/venv/bin/activate && pip install pycairo==1.29.0 || true",
+    # Install the rest of requirements
     ". /opt/venv/bin/activate && pip install -r requirements.txt"
+]
+
+[phases.start]
+cmds = [
+    "python manage.py migrate",
+    "python manage.py collectstatic --noinput",
+    "gunicorn islamic_learning.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 --access-logfile - --error-logfile -"
 ]
