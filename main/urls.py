@@ -23,7 +23,6 @@ urlpatterns = [
 
     path('schedule/export/ics/', views.export_calendar_ics, name='export_calendar_ics'),
     path('schedule/export/excel/', views.export_calendar_excel, name='export_calendar_excel'),
-    path('schedule/export/pdf/', views.export_calendar_pdf, name='export_calendar_pdf'),
 
     path('list/', views.calendar_list_view, name='calendar_list'),
 
