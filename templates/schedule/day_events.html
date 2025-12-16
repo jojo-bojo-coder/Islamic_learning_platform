@@ -703,7 +703,7 @@
             <button class="filter-btn active" data-filter="all">
                 <i class="fas fa-layer-group"></i>
                 الكل
-                <span class="filter-count">{{ events.count|add:tasks_count|add:activities.count|add:cultural_tasks_count|add:task_sessions.count|add:operations_tasks.count|add:scientific_tasks_count|add:lectures.count|add:sharia_tasks_count|add:family_competitions.count|add:sports_tasks_count|add:matches.count }}</span>
+                <span class="filter-count">{{ events.count|add:tasks_count|add:activities.count|add:cultural_tasks_count|add:task_sessions.count|add:operations_tasks_count|add:scientific_tasks_count|add:lectures.count|add:sharia_tasks_count|add:family_competitions.count|add:sports_tasks_count|add:matches.count }}</span>
             </button>
             <button class="filter-btn" data-filter="events">
                 <i class="fas fa-calendar-check"></i>
@@ -733,7 +733,7 @@
             <button class="filter-btn" data-filter="operations_tasks">
                 <i class="fas fa-cogs"></i>
                 المهام التشغيلية
-                <span class="filter-count">{{ operations_tasks.count }}</span>
+                <span class="filter-count">{{ operations_tasks_count }}</span>
             </button>
             <button class="filter-btn" data-filter="scientific_tasks">
                 <i class="fas fa-flask"></i>
@@ -1144,47 +1144,114 @@
 
     <!-- Operations Tasks -->
     <div class="events-section active" id="operations_tasks-section">
-        <h4 class="section-title">
-            <i class="fas fa-cogs"></i>
-            المهام التشغيلية
-        </h4>
-        <div class="events-grid">
-            {% for operations_task in operations_tasks %}
-            <a href="{% url 'object_detail' 'operations_task' operations_task.id %}" class="event-card">
-                <div class="event-header">
+    <h4 class="section-title">
+        <i class="fas fa-cogs"></i>
+        المهام التشغيلية
+    </h4>
+    <div class="events-grid">
+        {% for operations_task in operations_tasks %}
+        <a href="{% url 'object_detail' 'operations_task' operations_task.id %}" class="event-card {% if operations_task.is_recurring %}recurring-task{% endif %}">
+            <div class="event-header">
+                <div class="event-title-container">
                     <h5 class="event-title">{{ operations_task.title }}</h5>
-                    <span class="event-type type-operations_tasks">
-                        <i class="fas fa-cogs"></i>
-                        مهمة تشغيلية
-                    </span>
-                </div>
-                <div class="event-details">
-                    {% if operations_task.committee %}
-                    <div class="event-detail">
-                        <i class="fas fa-users"></i>
-                        <span>{{ operations_task.committee.name }}</span>
+                    <div class="event-badges">
+                        <span class="event-type type-operations_tasks">
+                            <i class="fas fa-cogs"></i>
+                            مهمة تشغيلية
+                        </span>
+                        {% if operations_task.is_recurring %}
+                        <span class="recurrence-badge">
+                            <i class="fas fa-redo"></i>
+                            {{ operations_task.get_recurrence_pattern_display }}
+                        </span>
+                        {% endif %}
+                        {% if operations_task.priority %}
+                        <span class="priority-badge priority-{{ operations_task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ operations_task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                        {% if operations_task.is_overdue %}
+                        <span class="overdue-indicator">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            متأخرة
+                        </span>
+                        {% endif %}
                     </div>
-                    {% endif %}
-                    {% if operations_task.assigned_to_name %}
-                    <div class="event-detail">
-                        <i class="fas fa-user"></i>
-                        <span>{{ operations_task.assigned_to_name }}</span>
-                    </div>
-                    {% endif %}
                 </div>
-                {% if operations_task.description %}
-                <p class="event-description">{{ operations_task.description|truncatewords:20 }}</p>
-                {% endif %}
-            </a>
-            {% empty %}
-            <div class="no-events">
-                <i class="fas fa-cogs"></i>
-                <h5>لا توجد مهام تشغيلية</h5>
-                <p>لم يتم إضافة أي مهام تشغيلية لهذا اليوم</p>
             </div>
-            {% endfor %}
+            <div class="event-details">
+                {% if operations_task.committee %}
+                <div class="event-detail">
+                    <i class="fas fa-users"></i>
+                    <span>{{ operations_task.committee.name }}</span>
+                </div>
+                {% endif %}
+                {% if operations_task.assigned_to_name %}
+                <div class="event-detail">
+                    <i class="fas fa-user"></i>
+                    <span>{{ operations_task.assigned_to_name }}</span>
+                </div>
+                {% endif %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>تاريخ الاستحقاق: {{ operations_task.due_date|date:"Y/m/d" }}</span>
+                </div>
+                {% if operations_task.is_recurring %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>نشطة منذ: {{ operations_task.start_date|date:"Y/m/d" }}</span>
+                </div>
+                {% if operations_task.recurrence_end_date %}
+                <div class="event-detail">
+                    <i class="fas fa-calendar-times"></i>
+                    <span>تنتهي في: {{ operations_task.recurrence_end_date|date:"Y/m/d" }}</span>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% if operations_task.task_type %}
+                <div class="event-detail">
+                    <i class="fas fa-tag"></i>
+                    <span>نوع المهمة: {{ operations_task.get_task_type_display }}</span>
+                </div>
+                {% endif %}
+            </div>
+            {% if operations_task.description %}
+            <p class="event-description">{{ operations_task.description|truncatewords:30 }}</p>
+            {% endif %}
+            {% if operations_task.completion_percentage > 0 %}
+            <div class="completion-progress">
+                <div class="progress-label">
+                    <span>نسبة الإنجاز</span>
+                    <span>{{ operations_task.completion_percentage }}%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: {{ operations_task.completion_percentage }}%"></div>
+                </div>
+            </div>
+            {% endif %}
+            <div class="status-badge
+                {% if operations_task.status == 'completed' %}completed
+                {% elif operations_task.status == 'overdue' %}past
+                {% else %}upcoming{% endif %}">
+                {% if operations_task.status == 'completed' %}
+                <i class="fas fa-check-circle"></i> مكتملة
+                {% elif operations_task.status == 'overdue' %}
+                <i class="fas fa-exclamation-circle"></i> متأخرة
+                {% else %}
+                <i class="fas fa-clock"></i> {{ operations_task.get_status_display }}
+                {% endif %}
+            </div>
+        </a>
+        {% empty %}
+        <div class="no-events">
+            <i class="fas fa-cogs"></i>
+            <h5>لا توجد مهام تشغيلية</h5>
+            <p>لم يتم إضافة أي مهام تشغيلية لهذا اليوم</p>
         </div>
+        {% endfor %}
     </div>
+</div>
 
     <!-- Scientific Tasks -->
     <div class="events-section active" id="scientific_tasks-section">

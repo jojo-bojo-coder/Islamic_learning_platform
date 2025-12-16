@@ -189,6 +189,16 @@ def add_task(request):
             task = form.save(commit=False)
             task.committee = committee
             task.created_by = request.user
+
+            # Convert recurrence_days to JSON format if it's a list
+            if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                if isinstance(task.recurrence_days, list):
+                    # Already a list, good to go
+                    pass
+                else:
+                    # Convert to list if needed
+                    task.recurrence_days = list(task.recurrence_days)
+
             task.save()
 
             # Create notification
@@ -200,17 +210,23 @@ def add_task(request):
                     notification_type='task_added',
                     title='مهمة جديدة',
                     message=f'تم إضافة مهمة جديدة: {task.title}' + (
-                        f' للمسؤول: {task.assigned_to_name}' if task.assigned_to_name else ''),
+                        f' للمسؤول: {task.assigned_to_name}' if task.assigned_to_name else '') +
+                            (f' ({task.get_recurrence_pattern_display()})' if task.is_recurring else ''),
                     related_task=task
                 )
 
             UserActivity.objects.create(
                 user=request.user,
-                action=f'إضافة مهمة تشغيلية: {task.title}',
+                action=f'إضافة مهمة تشغيلية: {task.title}' +
+                       (f' ({task.get_recurrence_pattern_display()})' if task.is_recurring else ''),
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم إضافة المهمة بنجاح!')
+            if task.is_recurring:
+                messages.success(request,
+                                 f'تم إضافة المهمة المتكررة بنجاح! ({task.get_recurrence_pattern_display()})')
+            else:
+                messages.success(request, 'تم إضافة المهمة بنجاح!')
             return redirect('operations_task_management')
     else:
         form = OperationsTaskForm(committee=committee)
@@ -240,7 +256,16 @@ def edit_task(request, task_id):
     if request.method == 'POST':
         form = OperationsTaskForm(request.POST, instance=task, committee=committee)
         if form.is_valid():
-            task = form.save()
+            task = form.save(commit=False)
+
+            # Convert recurrence_days to JSON format if it's a list
+            if task.is_recurring and task.recurrence_pattern == 'custom' and task.recurrence_days:
+                if isinstance(task.recurrence_days, list):
+                    pass
+                else:
+                    task.recurrence_days = list(task.recurrence_days)
+
+            task.save()
 
             members = OperationsTeamMember.objects.filter(committee=committee, is_active=True)
             for member in members:
@@ -250,20 +275,31 @@ def edit_task(request, task_id):
                     notification_type='task_updated',
                     title='تعديل مهمة',
                     message=f'تم تعديل المهمة: {task.title}' + (
-                        f' للمسؤول: {task.assigned_to_name}' if task.assigned_to_name else ''),
+                        f' للمسؤول: {task.assigned_to_name}' if task.assigned_to_name else '') +
+                            (f' ({task.get_recurrence_pattern_display()})' if task.is_recurring else ''),
                     related_task=task
                 )
 
             UserActivity.objects.create(
                 user=request.user,
-                action=f'تعديل مهمة تشغيلية: {task.title}',
+                action=f'تعديل مهمة تشغيلية: {task.title}' +
+                       (f' ({task.get_recurrence_pattern_display()})' if task.is_recurring else ''),
                 ip_address=get_client_ip(request)
             )
 
-            messages.success(request, 'تم تعديل المهمة بنجاح!')
+            if task.is_recurring:
+                messages.success(request,
+                                 f'تم تعديل المهمة المتكررة بنجاح! ({task.get_recurrence_pattern_display()})')
+            else:
+                messages.success(request, 'تم تعديل المهمة بنجاح!')
             return redirect('operations_task_management')
     else:
-        form = OperationsTaskForm(instance=task, committee=committee)
+        # Pre-populate form with existing data
+        initial_data = {}
+        if task.recurrence_days and isinstance(task.recurrence_days, list):
+            initial_data['recurrence_days'] = [str(day) for day in task.recurrence_days]
+
+        form = OperationsTaskForm(instance=task, committee=committee, initial=initial_data)
 
     context = {
         'committee': committee,
@@ -290,21 +326,29 @@ def delete_task(request, task_id):
 
     if request.method == 'POST':
         task_title = task.title
+        is_recurring = task.is_recurring
+        recurrence_pattern = task.get_recurrence_pattern_display() if task.is_recurring else None
+
         task.delete()
 
         UserActivity.objects.create(
             user=request.user,
-            action=f'حذف مهمة تشغيلية: {task_title}',
+            action=f'حذف مهمة تشغيلية: {task_title}' +
+                   (f' ({recurrence_pattern})' if is_recurring else ''),
             ip_address=get_client_ip(request)
         )
 
-        messages.success(request, 'تم حذف المهمة بنجاح!')
+        if is_recurring:
+            messages.success(request, f'تم حذف المهمة المتكررة بنجاح! ({recurrence_pattern})')
+        else:
+            messages.success(request, 'تم حذف المهمة بنجاح!')
         return redirect('operations_task_management')
 
     context = {
         'committee': committee,
         'object': task,
-        'type': 'مهمة'
+        'type': 'مهمة' + (' متكررة' if task.is_recurring else ''),
+        'extra_info': f'نمط التكرار: {task.get_recurrence_pattern_display()}' if task.is_recurring else None
     }
     return render(request, 'operations_committee/confirm_delete.html', context)
 

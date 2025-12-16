@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import User
 from director_dashboard.models import Program, Committee
-
+from datetime import timedelta
 
 class OperationsTask(models.Model):
     """Main operational tasks for the committee"""
@@ -11,6 +11,7 @@ class OperationsTask(models.Model):
         ('individuals_families_followup', 'متابعة الأفراد والأسر'),
         ('public_program', 'البرنامج الجماهيري'),
         ('visits_coordination', 'معاون تنسيق الزيارات'),
+        ('other', 'أخرى'),
     ]
 
     STATUS_CHOICES = [
@@ -26,6 +27,12 @@ class OperationsTask(models.Model):
         ('high', 'عالية'),
     ]
 
+    RECURRENCE_PATTERNS = [
+        ('daily', 'يومي'),
+        ('weekly', 'أسبوعي'),
+        ('custom', 'مخصص'),
+    ]
+
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE, related_name='operations_tasks')
     task_type = models.CharField(max_length=50, choices=TASK_TYPES, verbose_name='نوع المهمة')
     title = models.CharField(max_length=255, verbose_name='العنوان')
@@ -33,7 +40,18 @@ class OperationsTask(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started', verbose_name='الحالة')
     priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium', verbose_name='الأولوية')
     assigned_to_name = models.CharField(max_length=255, blank=True, verbose_name='اسم المسؤول')
+
+    # Date fields
     due_date = models.DateField(verbose_name='الموعد النهائي')
+    start_date = models.DateField(verbose_name='تاريخ البداية', null=True, blank=True)
+
+    # Recurrence fields
+    is_recurring = models.BooleanField(default=False, verbose_name='مهمة متكررة')
+    recurrence_pattern = models.CharField(max_length=20, choices=RECURRENCE_PATTERNS, null=True, blank=True,
+                                          verbose_name='نمط التكرار')
+    recurrence_days = models.JSONField(null=True, blank=True, verbose_name='أيام التكرار')
+    recurrence_end_date = models.DateField(null=True, blank=True, verbose_name='تاريخ انتهاء التكرار')
+
     completion_percentage = models.IntegerField(default=0, verbose_name='نسبة الإنجاز')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -54,6 +72,92 @@ class OperationsTask(models.Model):
         if self.status != 'completed' and self.due_date < timezone.now().date():
             return True
         return False
+
+    def get_occurrence_dates(self, start_date=None, end_date=None):
+        """
+        Get all dates when this task occurs within the given range.
+        Returns a list of date objects.
+        """
+        if not self.is_recurring:
+            return [self.start_date or self.due_date]
+
+        dates = []
+        current_date = start_date or self.start_date or self.due_date
+        end = end_date or self.recurrence_end_date or self.due_date
+
+        # Don't go before start_date
+        task_start = self.start_date or self.due_date
+        if current_date < task_start:
+            current_date = task_start
+
+        # Don't go past recurrence_end_date if set
+        if self.recurrence_end_date and end > self.recurrence_end_date:
+            end = self.recurrence_end_date
+
+        if self.recurrence_pattern == 'daily':
+            # Add every day from start to end
+            while current_date <= end:
+                dates.append(current_date)
+                current_date += timedelta(days=1)
+
+        elif self.recurrence_pattern == 'weekly':
+            # Add every 7 days
+            while current_date <= end:
+                dates.append(current_date)
+                current_date += timedelta(days=7)
+
+        elif self.recurrence_pattern == 'custom' and self.recurrence_days:
+            # Convert calendar weekdays to Python weekdays
+            # Calendar: Sunday=0, Monday=1, ..., Saturday=6
+            # Python: Monday=0, Tuesday=1, ..., Sunday=6
+            calendar_to_python = {
+                0: 6,  # Sunday
+                1: 0,  # Monday
+                2: 1,  # Tuesday
+                3: 2,  # Wednesday
+                4: 3,  # Thursday
+                5: 4,  # Friday
+                6: 5,  # Saturday
+            }
+
+            python_weekdays = [calendar_to_python[day] for day in self.recurrence_days if day in calendar_to_python]
+
+            # Add specific weekdays
+            while current_date <= end:
+                if current_date.weekday() in python_weekdays:
+                    dates.append(current_date)
+                current_date += timedelta(days=1)
+
+        return dates
+
+    def get_consecutive_day_groups(self, start_date=None, end_date=None):
+        """
+        Group consecutive days together for display as single badge.
+        Returns list of tuples: [(start_date, end_date), ...]
+        """
+        dates = self.get_occurrence_dates(start_date, end_date)
+        if not dates:
+            return []
+
+        dates = sorted(dates)
+        groups = []
+        group_start = dates[0]
+        group_end = dates[0]
+
+        for i in range(1, len(dates)):
+            if dates[i] == group_end + timedelta(days=1):
+                # Consecutive day, extend current group
+                group_end = dates[i]
+            else:
+                # Gap found, save current group and start new one
+                groups.append((group_start, group_end))
+                group_start = dates[i]
+                group_end = dates[i]
+
+        # Add the last group
+        groups.append((group_start, group_end))
+
+        return groups
 
 
 class OperationsTeamMember(models.Model):
