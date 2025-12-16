@@ -2388,63 +2388,73 @@ def export_calendar_excel(request):
     return response
 
 
+from django.http import HttpResponse
+from datetime import datetime, timedelta
+import csv
+from io import BytesIO
+
+try:
+    from xhtml2pdf import pisa
+    from django.template.loader import render_to_string
+    XHTML2PDF_AVAILABLE = True
+except ImportError:
+    XHTML2PDF_AVAILABLE = False
+
+try:
+    import openpyxl
+    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+
+    OPENPYXL_AVAILABLE = True
+except ImportError:
+    OPENPYXL_AVAILABLE = False
+
+
+try:
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+    ARABIC_SUPPORT = True
+except ImportError:
+    ARABIC_SUPPORT = False
+
+import base64
+import os
+from django.conf import settings
+
+
+def get_font_base64(font_filename):
+    """
+    Convert font file to base64 string for PDF generation
+    """
+    font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', font_filename)
+
+    try:
+        with open(font_path, 'rb') as font_file:
+            font_data = font_file.read()
+            return base64.b64encode(font_data).decode('utf-8')
+    except FileNotFoundError:
+        print(f"Font file not found: {font_path}")
+        return None
+    except Exception as e:
+        print(f"Error reading font file: {e}")
+        return None
+
 @login_required
 def export_calendar_pdf(request):
     """Export calendar as PDF file with Arabic support - includes all event types"""
-    try:
-        from reportlab.lib import colors
-        from reportlab.lib.pagesizes import A4
-        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.units import cm
-        from reportlab.pdfbase import pdfmetrics
-        from reportlab.pdfbase.ttfonts import TTFont
-        from reportlab.lib.enums import TA_CENTER, TA_RIGHT
-        from io import BytesIO
-        import os
-        from django.conf import settings
-
-        REPORTLAB_AVAILABLE = True
-    except ImportError as e:
-        print(f"❌ ReportLab import error: {e}")
-        messages.error(request, 'مكتبة PDF غير متوفرة. الرجاء تثبيت reportlab')
+    if not XHTML2PDF_AVAILABLE:
+        messages.error(request, 'مكتبة PDF غير متوفرة. الرجاء تثبيت xhtml2pdf')
         return redirect('schedule_calendar')
 
-    try:
-        import arabic_reshaper
-        from bidi.algorithm import get_display
-        ARABIC_TEXT_SUPPORT = True
-    except ImportError:
-        ARABIC_TEXT_SUPPORT = False
-        print("⚠ Arabic text support libraries not found")
-
-    def process_arabic_text(text):
-        """Process Arabic text for proper RTL display"""
-        if not text or not isinstance(text, str):
-            return text or ''
-
-        if not ARABIC_TEXT_SUPPORT:
+    def process_arabic(text):
+        """Process Arabic text for proper display in PDF"""
+        if not text or not ARABIC_SUPPORT:
             return text
-
         try:
-            reshaper = arabic_reshaper.ArabicReshaper()
-            reshaped_text = reshaper.reshape(text)
+            reshaped_text = arabic_reshaper.reshape(text)
             bidi_text = get_display(reshaped_text)
             return bidi_text
-        except Exception as e:
-            print(f"⚠ Arabic text processing error: {e}")
+        except:
             return text
-
-    def hex_to_rgb(hex_color):
-        """Convert hex color to RGB tuple (0-1 scale)"""
-        hex_color = hex_color.lstrip('#')
-        if len(hex_color) == 3:
-            hex_color = ''.join([c * 2 for c in hex_color])
-
-        r = int(hex_color[0:2], 16) / 255.0
-        g = int(hex_color[2:4], 16) / 255.0
-        b = int(hex_color[4:6], 16) / 255.0
-        return (r, g, b)
 
     # Get parameters
     program_id = request.GET.get('program_id')
@@ -2482,10 +2492,10 @@ def export_calendar_pdf(request):
     for event in events:
         all_items.append({
             'date': event.start_date,
-            'type': 'حدث',
-            'title': event.title,
-            'description': event.description,
-            'committee': event.committee.name if event.committee else '',
+            'type': process_arabic('حدث'),
+            'title': process_arabic(event.title),
+            'description': process_arabic(event.description),
+            'committee': process_arabic(event.committee.name if event.committee else ''),
             'item_type': 'event',
             'event_obj': event
         })
@@ -2500,10 +2510,10 @@ def export_calendar_pdf(request):
     for task in tasks:
         all_items.append({
             'date': task.due_date,
-            'type': 'مهمة',
-            'title': task.title,
-            'description': task.description,
-            'committee': task.committee.name if task.committee else '',
+            'type': process_arabic('مهمة'),
+            'title': process_arabic(task.title),
+            'description': process_arabic(task.description),
+            'committee': process_arabic(task.committee.name if task.committee else ''),
             'item_type': 'task',
             'event_obj': task
         })
@@ -2518,10 +2528,10 @@ def export_calendar_pdf(request):
     for activity in activities:
         all_items.append({
             'date': activity.date,
-            'type': 'نشاط',
-            'title': activity.name,
-            'description': activity.description or '',
-            'committee': activity.committee.name if activity.committee else '',
+            'type': process_arabic('نشاط'),
+            'title': process_arabic(activity.name),
+            'description': process_arabic(activity.description or ''),
+            'committee': process_arabic(activity.committee.name if activity.committee else ''),
             'item_type': 'activity',
             'event_obj': activity
         })
@@ -2536,10 +2546,10 @@ def export_calendar_pdf(request):
     for task in cultural_tasks:
         all_items.append({
             'date': task.due_date,
-            'type': 'مهمة ثقافية',
-            'title': task.title,
-            'description': task.description or '',
-            'committee': task.committee.name if task.committee else '',
+            'type': process_arabic('مهمة ثقافية'),
+            'title': process_arabic(task.title),
+            'description': process_arabic(task.description or ''),
+            'committee': process_arabic(task.committee.name if task.committee else ''),
             'item_type': 'cultural_task',
             'event_obj': task
         })
@@ -2554,10 +2564,10 @@ def export_calendar_pdf(request):
     for session in task_sessions:
         all_items.append({
             'date': session.date,
-            'type': 'جلسة مهمة',
-            'title': session.title or f"جلسة {session.task.title}",
-            'description': session.description or '',
-            'committee': session.task.committee.name if session.task and session.task.committee else '',
+            'type': process_arabic('جلسة مهمة'),
+            'title': process_arabic(session.title or f"جلسة {session.task.title}"),
+            'description': process_arabic(session.description or ''),
+            'committee': process_arabic(session.task.committee.name if session.task and session.task.committee else ''),
             'item_type': 'task_session',
             'event_obj': session
         })
@@ -2572,10 +2582,10 @@ def export_calendar_pdf(request):
     for task in operations_tasks:
         all_items.append({
             'date': task.due_date,
-            'type': 'مهمة تشغيلية',
-            'title': task.title,
-            'description': task.description or '',
-            'committee': task.committee.name if task.committee else '',
+            'type': process_arabic('مهمة تشغيلية'),
+            'title': process_arabic(task.title),
+            'description': process_arabic(task.description or ''),
+            'committee': process_arabic(task.committee.name if task.committee else ''),
             'item_type': 'operations_task',
             'event_obj': task
         })
@@ -2590,10 +2600,10 @@ def export_calendar_pdf(request):
     for task in scientific_tasks:
         all_items.append({
             'date': task.due_date,
-            'type': 'مهمة علمية',
-            'title': task.title,
-            'description': task.description or '',
-            'committee': task.committee.name if task.committee else '',
+            'type': process_arabic('مهمة علمية'),
+            'title': process_arabic(task.title),
+            'description': process_arabic(task.description or ''),
+            'committee': process_arabic(task.committee.name if task.committee else ''),
             'item_type': 'scientific_task',
             'event_obj': task
         })
@@ -2608,10 +2618,10 @@ def export_calendar_pdf(request):
     for lecture in lectures:
         all_items.append({
             'date': lecture.date,
-            'type': 'محاضرة',
-            'title': lecture.title,
-            'description': lecture.description or '',
-            'committee': lecture.committee.name if lecture.committee else '',
+            'type': process_arabic('محاضرة'),
+            'title': process_arabic(lecture.title),
+            'description': process_arabic(lecture.description or ''),
+            'committee': process_arabic(lecture.committee.name if lecture.committee else ''),
             'item_type': 'lecture',
             'event_obj': lecture
         })
@@ -2626,10 +2636,10 @@ def export_calendar_pdf(request):
     for task in sharia_tasks:
         all_items.append({
             'date': task.due_date,
-            'type': 'مهمة شرعية',
-            'title': task.title,
-            'description': task.description or '',
-            'committee': task.committee.name if task.committee else '',
+            'type': process_arabic('مهمة شرعية'),
+            'title': process_arabic(task.title),
+            'description': process_arabic(task.description or ''),
+            'committee': process_arabic(task.committee.name if task.committee else ''),
             'item_type': 'sharia_task',
             'event_obj': task
         })
@@ -2644,10 +2654,10 @@ def export_calendar_pdf(request):
     for comp in family_competitions:
         all_items.append({
             'date': comp.start_date,
-            'type': 'مسابقة أسرية',
-            'title': comp.title,
-            'description': comp.description or '',
-            'committee': comp.committee.name if comp.committee else '',
+            'type': process_arabic('مسابقة أسرية'),
+            'title': process_arabic(comp.title),
+            'description': process_arabic(comp.description or ''),
+            'committee': process_arabic(comp.committee.name if comp.committee else ''),
             'item_type': 'family_competition',
             'event_obj': comp
         })
@@ -2662,10 +2672,10 @@ def export_calendar_pdf(request):
     for task in sports_tasks:
         all_items.append({
             'date': task.due_date,
-            'type': 'مهمة رياضية',
-            'title': task.title,
-            'description': task.description or '',
-            'committee': task.committee.name if task.committee else '',
+            'type': process_arabic('مهمة رياضية'),
+            'title': process_arabic(task.title),
+            'description': process_arabic(task.description or ''),
+            'committee': process_arabic(task.committee.name if task.committee else ''),
             'item_type': 'sports_task',
             'event_obj': task
         })
@@ -2680,10 +2690,10 @@ def export_calendar_pdf(request):
     for match in matches:
         all_items.append({
             'date': match.date,
-            'type': 'مباراة',
-            'title': match.title,
-            'description': match.description or '',
-            'committee': match.committee.name if match.committee else '',
+            'type': process_arabic('مباراة'),
+            'title': process_arabic(match.title),
+            'description': process_arabic(match.description or ''),
+            'committee': process_arabic(match.committee.name if match.committee else ''),
             'item_type': 'match',
             'event_obj': match
         })
@@ -2694,8 +2704,11 @@ def export_calendar_pdf(request):
             committee = Committee.objects.get(supervisor=request.user)
             filtered_items = []
             for item in all_items:
-                if item['committee'] == committee.name:
-                    filtered_items.append(item)
+                # Compare original (unprocessed) committee name
+                if item.get('event_obj'):
+                    obj_committee = getattr(item['event_obj'], 'committee', None)
+                    if obj_committee and obj_committee == committee:
+                        filtered_items.append(item)
             all_items = filtered_items
         except Committee.DoesNotExist:
             all_items = []
@@ -2703,190 +2716,51 @@ def export_calendar_pdf(request):
     # Sort all items by date
     all_items.sort(key=lambda x: x['date'])
 
-    # Create PDF response
+    font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', 'IBMPlexSansArabic-Regular.ttf')
+
+    # Prepare context for template
+    context = {
+        'program': process_arabic(program.name),
+        'year': year,
+        'month': month,
+        'items': all_items,
+        'total_items': len(all_items),
+        'start_date': start_date,
+        'end_date': end_date,
+        'header_date': process_arabic('التاريخ'),
+        'header_type': process_arabic('النوع'),
+        'header_title': process_arabic('العنوان'),
+        'header_desc': process_arabic('الوصف'),
+        'header_committee': process_arabic('اللجنة'),
+        'summary_text': process_arabic(f'إجمالي العناصر: {len(all_items)}'),
+        'font_path': font_path,
+    }
+
+    # Render HTML from template
+    html_string = render_to_string('schedule/calendar_pdf_xhtml2pdf.html', context)
+
+    # Create PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="calendar_{program.name}_{year}_{month}.pdf"'
 
-    doc = SimpleDocTemplate(
-        response,
-        pagesize=A4,
-        rightMargin=1.5 * cm,
-        leftMargin=1.5 * cm,
-        topMargin=2 * cm,
-        bottomMargin=2 * cm
-    )
+    def link_callback(uri, rel):
+        """Convert HTML URIs to absolute system paths"""
+        if uri.startswith('file://'):
+            return uri[7:]  # Remove 'file://' prefix
 
-    # Try to register Arabic font
-    arabic_font = 'Helvetica'
-    try:
-        font_paths = [
-            os.path.join(settings.BASE_DIR, 'main', 'static', 'fonts', 'IBMPlexSansArabic-Regular.ttf'),
-            '/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf',
-            r'C:\Windows\Fonts\arial.ttf',
-        ]
-
-        for font_path in font_paths:
+        # Handle font files
+        if uri.endswith('.ttf') or 'fonts' in uri:
+            font_path = os.path.join(settings.BASE_DIR, 'static', 'fonts', os.path.basename(uri))
             if os.path.exists(font_path):
-                try:
-                    pdfmetrics.registerFont(TTFont('IBMPlexArabic', font_path))
-                    arabic_font = 'IBMPlexArabic'
-                    break
-                except Exception as e:
-                    continue
-    except Exception as e:
-        arabic_font = 'Helvetica'
+                return font_path
 
-    # Create styles
-    styles = getSampleStyleSheet()
+        return uri
 
-    primary_color = (0, 0.33, 0.67)
+    # Generate PDF using xhtml2pdf
+    pisa_status = pisa.CreatePDF(html_string, dest=response,link_callback=link_callback)
 
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=20,
-        textColor=primary_color,
-        spaceAfter=20,
-        alignment=TA_CENTER,
-        fontName=arabic_font,
-    )
-
-    header_style = ParagraphStyle(
-        'CustomHeader',
-        parent=styles['Normal'],
-        fontSize=11,
-        textColor=(0, 0, 0),
-        alignment=TA_CENTER,
-        fontName=arabic_font,
-        leading=14,
-    )
-
-    cell_style = ParagraphStyle(
-        'CustomCell',
-        parent=styles['Normal'],
-        fontSize=9,
-        alignment=TA_CENTER,
-        fontName=arabic_font,
-        leading=12,
-    )
-
-    legend_style = ParagraphStyle(
-        'LegendStyle',
-        parent=styles['Normal'],
-        fontSize=12,
-        alignment=TA_RIGHT,
-        fontName=arabic_font,
-        spaceAfter=5,
-    )
-
-    # Build story
-    story = []
-
-    # Title
-    title_text = process_arabic_text(f'تقويم {program.name} - {year}/{month}')
-    story.append(Paragraph(title_text, title_style))
-    story.append(Spacer(1, 0.3 * cm))
-
-
-    # Legend items as simple text
-    legend_items = [
-        ('اجتماع', '#8B5CF6'),
-        ('مبيت', '#EC4899'),
-        ('رحلة', '#10B981'),
-        ('الثقافية', '#3B82F6'),
-        ('الرياضية', '#0EA5E9'),
-        ('العلمية', '#FB923C'),
-        ('الشرعية', '#F59E0B'),
-        ('التشغيلية', '#8B5A2B'),
-        ('المهمات', '#6B7280'),
-        ('النشاطات', '#10B981'),
-        ('المباريات', '#EF4444'),
-        ('المحاضرات', '#8B5CF6'),
-        ('المسابقات', '#EC4899'),
-    ]
-
-    # Build table data with only 5 columns: التاريخ, النوع, العنوان, الوصف, اللجنة
-    table_data = []
-
-    # Header row (only 5 columns now)
-    headers = ['التاريخ', 'النوع', 'العنوان', 'الوصف', 'اللجنة']
-    table_data.append([Paragraph(process_arabic_text(header), header_style) for header in headers])
-
-    # Add all items to table
-    for item in all_items:
-        row = []
-
-        # Date
-        date_str = item['date'].strftime('%Y-%m-%d')
-        row.append(Paragraph(process_arabic_text(date_str), cell_style))
-
-        # Type
-        row.append(Paragraph(process_arabic_text(item['type']), cell_style))
-
-        # Title
-        title = item['title'][:30] + '...' if len(item['title']) > 30 else item['title']
-        row.append(Paragraph(process_arabic_text(title), cell_style))
-
-        # Description
-        desc = item['description'][:40] + '...' if len(item['description']) > 40 else item['description']
-        row.append(Paragraph(process_arabic_text(desc), cell_style))
-
-        # Committee
-        row.append(Paragraph(process_arabic_text(item['committee']), cell_style))
-
-        table_data.append(row)
-
-    # Create table with 5 columns
-    col_widths = [2.5 * cm, 2.5 * cm, 4.5 * cm, 5 * cm, 3 * cm]
-    table = Table(table_data, colWidths=col_widths, repeatRows=1)
-
-    # Style table
-    table_style = [
-        # Header row
-        ('BACKGROUND', (0, 0), (-1, 0), (0.21, 0.38, 0.57)),
-        ('TEXTCOLOR', (0, 0), (-1, 0), (1, 1, 1)),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
-        ('FONTNAME', (0, 0), (-1, 0), arabic_font),
-        ('FONTSIZE', (0, 0), (-1, 0), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-        ('TOPPADDING', (0, 0), (-1, 0), 8),
-
-        # Data rows
-        ('ALIGN', (0, 1), (-1, -1), 'CENTER'),
-        ('VALIGN', (0, 1), (-1, -1), 'TOP'),
-        ('GRID', (0, 0), (-1, -1), 0.5, (0.7, 0.7, 0.7)),
-        ('FONTNAME', (0, 1), (-1, -1), arabic_font),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
-        ('LEFTPADDING', (0, 0), (-1, -1), 4),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 4),
-        ('TOPPADDING', (0, 1), (-1, -1), 6),
-        ('BOTTOMPADDING', (0, 1), (-1, -1), 6),
-    ]
-
-    # Add alternating row colors for better readability
-    for row_idx in range(1, len(table_data)):
-        if row_idx % 2 == 0:
-            table_style.append(('BACKGROUND', (0, row_idx), (-1, row_idx), (0.95, 0.95, 0.95)))
-
-    table.setStyle(TableStyle(table_style))
-    story.append(table)
-
-    # Add summary
-    story.append(Spacer(1, 0.5 * cm))
-    summary_text = process_arabic_text(f'إجمالي العناصر: {len(all_items)}')
-    summary_style = ParagraphStyle(
-        'SummaryStyle',
-        parent=styles['Normal'],
-        fontSize=10,
-        alignment=TA_CENTER,
-        fontName=arabic_font,
-        spaceBefore=10,
-    )
-    story.append(Paragraph(summary_text, summary_style))
-
-    # Build PDF
-    doc.build(story)
+    if pisa_status.err:
+        return HttpResponse('خطأ في إنشاء ملف PDF', status=500)
 
     return response
 

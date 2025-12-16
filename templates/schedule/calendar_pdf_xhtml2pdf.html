@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+         @font-face {
+            font-family: 'Cairo';
+            /* Use file:// protocol instead of data: URI */
+            src: url('file://{{ font_path }}');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Cairo', 'DejaVu Sans', Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3561AB;
+        }
+
+        .header h1 {
+            color: #3561AB;
+            font-size: 22pt;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .header p {
+            color: #555;
+            font-size: 11pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background-color: #3561AB;
+            color: white;
+            padding: 12px 6px;
+            font-size: 11pt;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #2a4d8a;
+        }
+
+        td {
+            padding: 10px 6px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-size: 9pt;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .date-col {
+            width: 12%;
+        }
+
+        .type-col {
+            width: 15%;
+            font-weight: bold;
+            color: #3561AB;
+        }
+
+        .title-col {
+            width: 28%;
+        }
+
+        .desc-col {
+            width: 30%;
+            color: #555;
+        }
+
+        .committee-col {
+            width: 15%;
+        }
+
+        .summary {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 12pt;
+            color: #3561AB;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #f0f4f8;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            font-size: 11pt;
+        }
+
+        .arabic-text {
+            direction: rtl;
+            unicode-bidi: embed;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ program }} {{ year }}/{{ month }}</h1>
+        <p>{{ start_date|date:"Y-m-d" }} - {{ end_date|date:"Y-m-d" }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="date-col">{{ header_date }}</th>
+                <th class="type-col">{{ header_type }}</th>
+                <th class="title-col">{{ header_title }}</th>
+                <th class="desc-col">{{ header_desc }}</th>
+                <th class="committee-col">{{ header_committee }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if items %}
+                {% for item in items %}
+                <tr>
+                    <td class="date-col">{{ item.date|date:"Y-m-d" }}</td>
+                    <td class="type-col">{{ item.type }}</td>
+                    <td class="title-col">
+                        {% if item.title|length > 35 %}
+                            {{ item.title|slice:":35" }}...
+                        {% else %}
+                            {{ item.title }}
+                        {% endif %}
+                    </td>
+                    <td class="desc-col">
+                        {% if item.description|length > 45 %}
+                            {{ item.description|slice:":45" }}...
+                        {% else %}
+                            {{ item.description|default:"—" }}
+                        {% endif %}
+                    </td>
+                    <td class="committee-col">{{ item.committee|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        No items in this period
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div class="summary">
+        {{ summary_text }}
+    </div>
+</body>
+</html>
