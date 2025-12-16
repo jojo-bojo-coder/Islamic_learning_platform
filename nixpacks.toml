@@ -8,7 +8,16 @@ aptPkgs = [
     "shared-mime-info",
     "libglib2.0-0",
     "libgobject-2.0-0",
-    # Fix for pycairo XCB error
+    # Fix for pycairo XCB error - ADD THESE
     "libxcb1-dev",
-    "libxcb-xkb-dev"
+    "libxcb-xkb-dev",
+    "xcb",
+    "xcb-proto",
+    "libxcb-render0-dev",
+    "libxcb-shm0-dev",
+    # Build tools
+    "pkg-config",
+    "gcc",
+    "g++",
+    "make"
 ]
