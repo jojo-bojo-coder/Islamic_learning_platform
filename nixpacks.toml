@@ -8,16 +8,18 @@ aptPkgs = [
     "shared-mime-info",
     "libglib2.0-0",
     "libgobject-2.0-0",
-    # Fix for pycairo XCB error - ADD THESE
-    "libxcb1-dev",
-    "libxcb-xkb-dev",
-    "xcb",
-    "xcb-proto",
-    "libxcb-render0-dev",
-    "libxcb-shm0-dev",
-    # Build tools
     "pkg-config",
     "gcc",
     "g++",
     "make"
+]
+
+[phases.install]
+# Try to install pycairo first with system dependencies
+cmds = [
+    "python -m venv /opt/venv",
+    ". /opt/venv/bin/activate && pip install --upgrade pip",
+    # Try to install pycairo with system deps first
+    ". /opt/venv/bin/activate && pip install pycairo==1.29.0 || true",
+    ". /opt/venv/bin/activate && pip install -r requirements.txt"
 ]
