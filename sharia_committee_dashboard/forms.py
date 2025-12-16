@@ -59,7 +59,7 @@ class ShariaTaskForm(forms.ModelForm):
 
     class Meta:
         model = ShariaTask
-        fields = ['task_type', 'title', 'description', 'assigned_to_name',
+        fields = ['task_type', 'title', 'description', 'assigned_to_name','priority',
                   'start_date', 'due_date', 'status', 'completion_percentage',
                   'is_recurring', 'recurrence_pattern', 'recurrence_days', 'recurrence_end_date']
         widgets = {
@@ -74,6 +74,10 @@ class ShariaTaskForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'أدخل وصف المهمة',
                 'rows': 4
+            }),
+            'priority': forms.Select(attrs={
+                'class': 'form-select',
+                'id': 'id_priority'
             }),
             'assigned_to_name': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -103,6 +107,7 @@ class ShariaTaskForm(forms.ModelForm):
             'task_type': 'نوع المهمة',
             'title': 'العنوان',
             'description': 'الوصف',
+            'priority': 'الأولوية',
             'assigned_to_name': 'اسم المسؤول (اختياري)',
             'start_date': 'تاريخ البداية',
             'due_date': 'تاريخ الاستحقاق',

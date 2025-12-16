@@ -348,7 +348,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="{{ form.task_type.id_for_label }}" class="form-label">
                                 <i class="fas fa-tag me-2" style="color: var(--blue-primary);"></i>
                                 نوع المهمة
@@ -364,7 +364,7 @@
                             {% endif %}
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="{{ form.status.id_for_label }}" class="form-label">
                                 <i class="fas fa-circle me-2" style="color: var(--blue-primary);"></i>
                                 الحالة
@@ -378,6 +378,22 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="mb-4">
+                                <label for="{{ form.priority.id_for_label }}" class="form-label">
+                                    <i class="fas fa-star me-2" style="color: var(--blue-primary);"></i>
+                                    {{ form.priority.label }}
+                                </label>
+                                {{ form.priority }}
+                                {% if form.priority.errors %}
+                                    <div class="text-danger">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ form.priority.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 

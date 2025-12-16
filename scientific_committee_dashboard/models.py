@@ -21,6 +21,12 @@ class ScientificTask(models.Model):
         ('cancelled', 'ملغاة'),
     ]
 
+    PRIORITY_CHOICES = [
+        ('low', 'منخفضة'),
+        ('medium', 'متوسطة'),
+        ('high', 'عالية'),
+    ]
+
     RECURRENCE_PATTERNS = [
         ('daily', 'يومي'),
         ('weekly', 'أسبوعي'),
@@ -36,6 +42,8 @@ class ScientificTask(models.Model):
     due_date = models.DateField(verbose_name='تاريخ الاستحقاق')
     start_date = models.DateField(verbose_name='تاريخ البداية', null=True, blank=True)
     completion_percentage = models.IntegerField(default=0, verbose_name='نسبة الإنجاز')
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium',
+                                verbose_name='الأولوية')
 
     # Recurrence fields
     is_recurring = models.BooleanField(default=False, verbose_name='مهمة متكررة')

@@ -336,7 +336,7 @@
             </h5>
 
             <div class="row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="{{ form.task_type.id_for_label }}" class="form-label">
                         {{ form.task_type.label }}
                         <span class="required-star">*</span>
@@ -347,7 +347,7 @@
                     {% endif %}
                 </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="{{ form.status.id_for_label }}" class="form-label">
                         {{ form.status.label }}
                         <span class="required-star">*</span>
@@ -355,6 +355,17 @@
                     {{ form.status }}
                     {% if form.status.errors %}
                         <div class="text-danger mt-1">{{ form.status.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="{{ form.priority.id_for_label }}" class="form-label">
+                        {{ form.priority.label }}
+                        <span class="required-star">*</span>
+                    </label>
+                    {{ form.priority }}
+                    {% if form.priority.errors %}
+                        <div class="text-danger mt-1">{{ form.priority.errors }}</div>
                     {% endif %}
                 </div>
             </div>

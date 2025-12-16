@@ -27,6 +27,12 @@ class ShariaTask(models.Model):
         ('custom', 'مخصص'),
     ]
 
+    PRIORITY_CHOICES = [
+        ('low', 'منخفضة'),
+        ('medium', 'متوسطة'),
+        ('high', 'عالية'),
+    ]
+
     committee = models.ForeignKey(Committee, on_delete=models.CASCADE, related_name='sharia_tasks')
     task_type = models.CharField(max_length=50, choices=TASK_TYPES, verbose_name='نوع المهمة')
     title = models.CharField(max_length=255, verbose_name='العنوان')
@@ -36,6 +42,8 @@ class ShariaTask(models.Model):
     due_date = models.DateField(verbose_name='تاريخ الاستحقاق')
     start_date = models.DateField(verbose_name='تاريخ البداية', null=True, blank=True)
     completion_percentage = models.IntegerField(default=0, verbose_name='نسبة الإنجاز')
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium',
+                                verbose_name='الأولوية')
 
     # Recurrence fields
     is_recurring = models.BooleanField(default=False, verbose_name='مهمة متكررة')
