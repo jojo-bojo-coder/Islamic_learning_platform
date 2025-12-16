@@ -2903,6 +2903,19 @@ from sharia_committee_dashboard.models import ShariaTask
 from sports_committee_dashboard.models import SportsTask
 
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.db.models import Q, Count
+from datetime import datetime, timedelta
+from pm_dashboard.models import Task, Activity
+from cultural_committee_dashboard.models import CulturalTask
+from scientific_committee_dashboard.models import ScientificTask
+from operations_committee_dashboard.models import OperationsTask
+from sharia_committee_dashboard.models import ShariaTask
+from sports_committee_dashboard.models import SportsTask
+
+
 @login_required
 def calendar_list_view(request):
     """
@@ -3007,7 +3020,8 @@ def calendar_list_view(request):
                             'group_end': group_end,
                             'span_days': (group_end - group_start).days + 1,
                             'type': 'regular_task',
-                            'date': current  # Add date for list view
+                            'date': current,  # Add date for list view
+                            'is_recurring': True
                         })
 
                         # Add to list view items
@@ -3017,7 +3031,8 @@ def calendar_list_view(request):
                                 'date': current,
                                 'is_recurring': True,
                                 'group_start': group_start,
-                                'group_end': group_end
+                                'group_end': group_end,
+                                'type': 'regular_task'
                             })
                     current += timedelta(days=1)
         else:
@@ -3034,13 +3049,15 @@ def calendar_list_view(request):
                     'group_end': task.due_date,
                     'span_days': 1,
                     'type': 'regular_task',
-                    'date': task.due_date
+                    'date': task.due_date,
+                    'is_recurring': False
                 })
 
                 all_program_tasks.append({
                     'task': task,
                     'date': task.due_date,
-                    'is_recurring': False
+                    'is_recurring': False,
+                    'type': 'regular_task'
                 })
 
     # Get cultural tasks with recurring support
@@ -3079,7 +3096,8 @@ def calendar_list_view(request):
                             'group_end': group_end,
                             'span_days': (group_end - group_start).days + 1,
                             'type': 'cultural_task',
-                            'date': current
+                            'date': current,
+                            'is_recurring': True
                         })
 
                         if current == group_start:
@@ -3088,7 +3106,8 @@ def calendar_list_view(request):
                                 'date': current,
                                 'is_recurring': True,
                                 'group_start': group_start,
-                                'group_end': group_end
+                                'group_end': group_end,
+                                'type': 'cultural_task'
                             })
                     current += timedelta(days=1)
         else:
@@ -3105,13 +3124,15 @@ def calendar_list_view(request):
                     'group_end': cultural_task.due_date,
                     'span_days': 1,
                     'type': 'cultural_task',
-                    'date': cultural_task.due_date
+                    'date': cultural_task.due_date,
+                    'is_recurring': False
                 })
 
                 all_cultural_tasks.append({
                     'task': cultural_task,
                     'date': cultural_task.due_date,
-                    'is_recurring': False
+                    'is_recurring': False,
+                    'type': 'cultural_task'
                 })
 
     # Get sports tasks with recurring support
@@ -3150,7 +3171,8 @@ def calendar_list_view(request):
                             'group_end': group_end,
                             'span_days': (group_end - group_start).days + 1,
                             'type': 'sports_task',
-                            'date': current
+                            'date': current,
+                            'is_recurring': True
                         })
 
                         if current == group_start:
@@ -3159,7 +3181,8 @@ def calendar_list_view(request):
                                 'date': current,
                                 'is_recurring': True,
                                 'group_start': group_start,
-                                'group_end': group_end
+                                'group_end': group_end,
+                                'type': 'sports_task'
                             })
                     current += timedelta(days=1)
         else:
@@ -3176,13 +3199,15 @@ def calendar_list_view(request):
                     'group_end': sports_task.due_date,
                     'span_days': 1,
                     'type': 'sports_task',
-                    'date': sports_task.due_date
+                    'date': sports_task.due_date,
+                    'is_recurring': False
                 })
 
                 all_sports_tasks.append({
                     'task': sports_task,
                     'date': sports_task.due_date,
-                    'is_recurring': False
+                    'is_recurring': False,
+                    'type': 'sports_task'
                 })
 
     # Combine all task occurrences
@@ -3282,12 +3307,18 @@ def calendar_list_view(request):
             family_competitions = family_competitions.filter(committee=committee)
             matches = matches.filter(committee=committee)
 
-            # Filter program tasks by committee
-            all_program_tasks = [item for item in all_program_tasks if item['task'].committee == committee]
+            # Filter program tasks by committee with safety checks
+            all_program_tasks = [
+                item for item in all_program_tasks
+                if item.get('task') and item['task'].committee == committee
+            ]
 
-            # Filter based on supervisor type
+            # Filter based on supervisor type with safety checks
             if user.supervisor_type == 'cultural':
-                all_cultural_tasks = [item for item in all_cultural_tasks if item['task'].committee == committee]
+                all_cultural_tasks = [
+                    item for item in all_cultural_tasks
+                    if item.get('task') and item['task'].committee == committee
+                ]
                 all_sports_tasks = []
                 operations_tasks = OperationsTask.objects.none()
                 scientific_tasks = ScientificTask.objects.none()
@@ -3323,7 +3354,10 @@ def calendar_list_view(request):
                 lectures = Lecture.objects.none()
                 matches = Match.objects.none()
             elif user.supervisor_type == 'sports':
-                all_sports_tasks = [item for item in all_sports_tasks if item['task'].committee == committee]
+                all_sports_tasks = [
+                    item for item in all_sports_tasks
+                    if item.get('task') and item['task'].committee == committee
+                ]
                 matches = matches.filter(committee=committee)
                 all_cultural_tasks = []
                 operations_tasks = OperationsTask.objects.none()
@@ -3331,82 +3365,100 @@ def calendar_list_view(request):
                 lectures = Lecture.objects.none()
                 sharia_tasks = ShariaTask.objects.none()
                 family_competitions = FamilyCompetition.objects.none()
-        except Exception:
-            pass
+        except Exception as e:
+            # Log the error but continue
+            print(f"Error in committee supervisor filtering: {e}")
+            all_cultural_tasks = []
+            all_sports_tasks = []
+            operations_tasks = OperationsTask.objects.none()
+            scientific_tasks = ScientificTask.objects.none()
+            lectures = Lecture.objects.none()
+            sharia_tasks = ShariaTask.objects.none()
+            family_competitions = FamilyCompetition.objects.none()
+            matches = Match.objects.none()
 
-    # Calculate statistics
+    # Calculate statistics with safety checks
     total_tasks = (
-            len(all_program_tasks) +
-            len(all_cultural_tasks) +
-            len(all_sports_tasks) +
-            operations_tasks.count() +
-            scientific_tasks.count() +
-            sharia_tasks.count()
+        len(all_program_tasks or []) +
+        len(all_cultural_tasks or []) +
+        len(all_sports_tasks or []) +
+        (operations_tasks.count() if operations_tasks else 0) +
+        (scientific_tasks.count() if scientific_tasks else 0) +
+        (sharia_tasks.count() if sharia_tasks else 0)
     )
 
     # Completed tasks - need to check each task in the lists
     completed_count = 0
-    for item in all_program_tasks:
-        if item['task'].status == 'completed':
+    for item in (all_program_tasks or []):
+        task = item.get('task')
+        if task and task.status == 'completed':
             completed_count += 1
-    for item in all_cultural_tasks:
-        if item['task'].status == 'completed':
+    for item in (all_cultural_tasks or []):
+        task = item.get('task')
+        if task and task.status == 'completed':
             completed_count += 1
-    for item in all_sports_tasks:
-        if item['task'].status == 'completed':
+    for item in (all_sports_tasks or []):
+        task = item.get('task')
+        if task and task.status == 'completed':
             completed_count += 1
 
     completed_tasks = (
-            completed_count +
-            operations_tasks.filter(status='completed').count() +
-            scientific_tasks.filter(status='completed').count() +
-            sharia_tasks.filter(status='completed').count()
+        completed_count +
+        (operations_tasks.filter(status='completed').count() if operations_tasks else 0) +
+        (scientific_tasks.filter(status='completed').count() if scientific_tasks else 0) +
+        (sharia_tasks.filter(status='completed').count() if sharia_tasks else 0)
     )
 
     # Pending/In Progress tasks
     pending_count = 0
-    for item in all_program_tasks:
-        if item['task'].status in ['pending', 'in_progress']:
+    for item in (all_program_tasks or []):
+        task = item.get('task')
+        if task and task.status in ['pending', 'in_progress']:
             pending_count += 1
-    for item in all_cultural_tasks:
-        if item['task'].status in ['pending', 'in_progress']:
+    for item in (all_cultural_tasks or []):
+        task = item.get('task')
+        if task and task.status in ['pending', 'in_progress']:
             pending_count += 1
-    for item in all_sports_tasks:
-        if item['task'].status in ['pending', 'in_progress']:
+    for item in (all_sports_tasks or []):
+        task = item.get('task')
+        if task and task.status in ['pending', 'in_progress']:
             pending_count += 1
 
     pending_tasks = (
-            pending_count +
-            operations_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
-            scientific_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() +
-            sharia_tasks.filter(Q(status='pending') | Q(status='in_progress')).count()
+        pending_count +
+        (operations_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() if operations_tasks else 0) +
+        (scientific_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() if scientific_tasks else 0) +
+        (sharia_tasks.filter(Q(status='pending') | Q(status='in_progress')).count() if sharia_tasks else 0)
     )
 
     # Overdue tasks
     overdue_count = 0
-    for item in all_program_tasks:
-        task = item['task']
-        task_date = item.get('group_end', task.due_date) if item['is_recurring'] else task.due_date
-        if task_date < today and task.status in ['pending', 'in_progress']:
-            overdue_count += 1
+    for item in (all_program_tasks or []):
+        task = item.get('task')
+        if task:
+            task_date = item.get('group_end', task.due_date) if item.get('is_recurring') else task.due_date
+            if task_date and task_date < today and task.status in ['pending', 'in_progress']:
+                overdue_count += 1
 
-    for item in all_cultural_tasks:
-        task = item['task']
-        task_date = item.get('group_end', task.due_date) if item['is_recurring'] else task.due_date
-        if task_date < today and task.status in ['pending', 'in_progress']:
-            overdue_count += 1
+    for item in (all_cultural_tasks or []):
+        task = item.get('task')
+        if task:
+            task_date = item.get('group_end', task.due_date) if item.get('is_recurring') else task.due_date
+            if task_date and task_date < today and task.status in ['pending', 'in_progress']:
+                overdue_count += 1
 
-    for item in all_sports_tasks:
-        task = item['task']
-        task_date = item.get('group_end', task.due_date) if item['is_recurring'] else task.due_date
-        if task_date < today and task.status in ['pending', 'in_progress']:
-            overdue_count += 1
+    for item in (all_sports_tasks or []):
+        task = item.get('task')
+        if task:
+            task_date = item.get('group_end', task.due_date) if item.get('is_recurring') else task.due_date
+            if task_date and task_date < today and task.status in ['pending', 'in_progress']:
+                overdue_count += 1
 
     overdue_tasks = (
-            overdue_count +
-            operations_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
-            scientific_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() +
-            sharia_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count()
+        overdue_count +
+        (operations_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() if operations_tasks else 0) +
+        (scientific_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() if scientific_tasks else 0) +
+        (sharia_tasks.filter(due_date__lt=today, status__in=['pending', 'in_progress']).count() if sharia_tasks else 0)
     )
 
     # Determine base template
@@ -3429,12 +3481,12 @@ def calendar_list_view(request):
 
     context = {
         # Task occurrences (for compatibility with calendar view)
-        'all_task_occurrences': all_task_occurrences,
+        'all_task_occurrences': all_task_occurrences or {},
 
         # List view items (tasks with their dates)
-        'program_tasks': all_program_tasks,
-        'cultural_tasks': all_cultural_tasks,
-        'sports_tasks': all_sports_tasks,
+        'program_tasks': all_program_tasks or [],
+        'cultural_tasks': all_cultural_tasks or [],
+        'sports_tasks': all_sports_tasks or [],
 
         # Other items
         'activities': activities,
@@ -3448,12 +3500,12 @@ def calendar_list_view(request):
         'matches': matches,
 
         # Metadata
-        'date_from': date_from.strftime('%Y-%m-%d'),
-        'date_to': date_to.strftime('%Y-%m-%d'),
-        'total_tasks': total_tasks,
-        'completed_tasks': completed_tasks,
-        'pending_tasks': pending_tasks,
-        'overdue_tasks': overdue_tasks,
+        'date_from': date_from.strftime('%Y-%m-%d') if date_from else '',
+        'date_to': date_to.strftime('%Y-%m-%d') if date_to else '',
+        'total_tasks': total_tasks or 0,
+        'completed_tasks': completed_tasks or 0,
+        'pending_tasks': pending_tasks or 0,
+        'overdue_tasks': overdue_tasks or 0,
         'base_template': base_template,
         'program': program,
     }

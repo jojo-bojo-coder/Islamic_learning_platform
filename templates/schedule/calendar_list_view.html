@@ -6,37 +6,66 @@
 {% block extra_css %}
 <style>
     :root {
-        --primary-color: #3B82F6;
-        --secondary-color: #10B981;
-        --danger-color: #EF4444;
-        --warning-color: #F59E0B;
-        --info-color: #06B6D4;
-        --success-color: #10B981;
-        --dark-color: #1F2937;
-        --light-color: #F3F4F6;
-        --border-color: #E5E7EB;
+        --primary-color: #0084AB;
+        --gradient-end: #2575fc;
+        --text-color: #333;
+        --text-light: #666;
+        --white: #ffffff;
+        --shadow-light: rgba(0, 132, 171, 0.1);
+        --shadow-medium: rgba(0, 132, 171, 0.2);
+        --shadow-strong: rgba(0, 132, 171, 0.6);
+        --border-radius: 15px;
+        --transition: all 0.3s ease;
     }
 
     .calendar-list-container {
-        padding: 2rem;
-        background-color: #F9FAFB;
-        min-height: 100vh;
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1.25rem;
+        animation: fadeInDown 0.8s ease;
+        position: relative;
+        z-index: auto;
         direction: rtl;
+        min-height: 100vh;
     }
 
+    /* Header matching calendar.html */
     .list-header {
-        background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-        border-radius: 12px;
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9fa 100%);
+        border: 1px solid var(--primary-color);
+        border-radius: var(--border-radius);
         padding: 2rem;
-        color: white;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0.25rem 0.75rem var(--shadow-light),
+                    0 0 0 1px rgba(0,132,171,0.1);
+        position: relative;
+        overflow: hidden;
+        animation: slideUpFade 0.8s ease forwards;
+    }
+
+    .list-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 0.25rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        border-radius: 0 0 0.5rem 0.5rem;
     }
 
     .list-header h1 {
+        font-size: 1.75rem;
+        color: var(--primary-color);
         margin: 0 0 0.5rem 0;
-        font-size: 2rem;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+    }
+
+    .list-header h1 i {
+        animation: iconBounce 2s ease-in-out infinite;
     }
 
     .list-header .breadcrumb {
@@ -44,36 +73,140 @@
         align-items: center;
         gap: 0.5rem;
         font-size: 0.95rem;
-        opacity: 0.95;
+        color: var(--text-light);
         flex-wrap: wrap;
     }
 
     .list-header .breadcrumb a {
-        color: white;
+        color: var(--primary-color);
         text-decoration: none;
-        transition: opacity 0.2s;
+        transition: var(--transition);
+        font-weight: 500;
     }
 
     .list-header .breadcrumb a:hover {
-        opacity: 0.8;
+        color: var(--gradient-end);
+        text-decoration: underline;
     }
 
+    /* Stats Overview matching calendar stats */
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease 0.3s both;
+    }
+
+    .stat-card {
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9fa 100%);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: 0 0.25rem 0.75rem var(--shadow-light);
+        border: 1px solid var(--primary-color);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 0.25rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-0.25rem);
+        box-shadow: 0 0.5rem 1.25rem var(--shadow-medium);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.blue {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        color: white;
+    }
+
+    .stat-icon.green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+    }
+
+    .stat-icon.yellow {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+    }
+
+    .stat-icon.red {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+
+    .stat-content h3 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--primary-color);
+    }
+
+    .stat-content p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    /* Filters Section matching calendar.html filters */
     .filters-section {
-        background: white;
-        border-radius: 12px;
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9fa 100%);
+        border: 1px solid var(--primary-color);
+        border-radius: var(--border-radius);
         padding: 1.5rem;
         margin-bottom: 2rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0.25rem 0.75rem var(--shadow-light),
+                    0 0 0 1px rgba(0,132,171,0.1);
+        position: relative;
+        overflow: hidden;
+        animation: slideUpFade 0.8s ease 0.5s both;
+    }
+
+    .filters-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 0.25rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        border-radius: 0 0 0.5rem 0.5rem;
     }
 
     .filters-title {
         font-size: 1.25rem;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: 1rem;
-        color: var(--dark-color);
+        color: var(--primary-color);
         display: flex;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    .filters-title i {
+        color: var(--primary-color);
     }
 
     .filter-buttons {
@@ -84,28 +217,31 @@
     }
 
     .filter-btn {
-        padding: 0.5rem 1.25rem;
-        border: 2px solid var(--border-color);
-        background: white;
-        border-radius: 8px;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid var(--primary-color);
+        background: linear-gradient(145deg, #f0f9fb 0%, var(--white) 100%);
+        border-radius: 10px;
         cursor: pointer;
-        font-size: 0.95rem;
-        font-weight: 500;
-        transition: all 0.2s;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        transition: var(--transition);
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        color: var(--dark-color);
+        color: var(--text-color);
+        box-shadow: 0 0.25rem 0.75rem var(--shadow-light);
     }
 
     .filter-btn:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
+        border-color: var(--gradient-end);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        color: white;
         transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(14, 165, 233, 0.3);
     }
 
     .filter-btn.active {
-        background: var(--primary-color);
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
         border-color: var(--primary-color);
         color: white;
     }
@@ -114,12 +250,13 @@
         font-size: 1rem;
     }
 
+    /* Advanced Filters matching calendar.html filter groups */
     .advanced-filters {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         padding-top: 1rem;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid rgba(0, 132, 171, 0.1);
     }
 
     .filter-group {
@@ -130,28 +267,41 @@
 
     .filter-group label {
         font-size: 0.9rem;
-        font-weight: 500;
-        color: var(--dark-color);
+        font-weight: 600;
+        color: var(--primary-color);
     }
 
     .filter-group select,
     .filter-group input {
-        padding: 0.5rem;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        font-size: 0.95rem;
-        transition: border-color 0.2s;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--primary-color);
+        border-radius: 10px;
+        font-size: 0.9375rem;
+        background: var(--white);
+        color: var(--text-color);
+        transition: var(--transition);
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .filter-group select:hover,
+    .filter-group input:hover {
+        border-color: var(--gradient-end);
+        box-shadow: 0 0 0 3px var(--shadow-light);
     }
 
     .filter-group select:focus,
     .filter-group input:focus {
         outline: none;
-        border-color: var(--primary-color);
+        border-color: var(--gradient-end);
+        box-shadow: 0 0 0 3px var(--shadow-light);
     }
 
+    /* Events Section matching calendar container */
     .events-section {
         display: none;
         margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease 0.7s both;
     }
 
     .events-section.active {
@@ -162,7 +312,7 @@
         font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
-        color: var(--dark-color);
+        color: var(--primary-color);
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -175,6 +325,7 @@
         font-size: 1.75rem;
     }
 
+    /* Events Grid matching calendar card design */
     .events-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -182,20 +333,35 @@
     }
 
     .event-card {
-        background: white;
-        border-radius: 12px;
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9fa 100%);
+        border-radius: var(--border-radius);
         padding: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
+        box-shadow: 0 0.25rem 0.75rem var(--shadow-light);
+        border: 1px solid var(--primary-color);
+        transition: var(--transition);
         text-decoration: none;
         color: inherit;
         display: block;
-        border-right: 4px solid var(--primary-color);
+        position: relative;
+        overflow: hidden;
+        animation: slideInFromTop 0.6s ease;
+    }
+
+    .event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 0.25rem;
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        border-radius: 0 0 0.5rem 0.5rem;
     }
 
     .event-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0.5rem 1.25rem var(--shadow-medium);
+        border-color: var(--gradient-end);
     }
 
     .event-header {
@@ -208,8 +374,8 @@
 
     .event-title {
         font-size: 1.15rem;
-        font-weight: 600;
-        color: var(--dark-color);
+        font-weight: 700;
+        color: var(--text-color);
         margin: 0;
         flex: 1;
         line-height: 1.4;
@@ -224,20 +390,24 @@
         display: flex;
         align-items: center;
         gap: 0.4rem;
+        background: linear-gradient(145deg, #f0f9fb 0%, var(--white) 100%);
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
     }
 
-    /* Event Type Colors - matching calendar colors */
-    .type-tasks { background: #DBEAFE; color: #1E40AF; }
-    .type-activities { background: #D1FAE5; color: #065F46; }
-    .type-cultural-tasks { background: #FCE7F3; color: #BE185D; }
-    .type-scientific-tasks { background: #FED7AA; color: #9A3412; }
-    .type-operations-tasks { background: #E0E7FF; color: #3730A3; }
-    .type-sharia-tasks { background: #FEF3C7; color: #92400E; }
-    .type-sports-tasks { background: #CFFAFE; color: #155E75; }
-    .type-matches { background: #CCFBF1; color: #134E4A; }
-    .type-lectures { background: #FFE4E6; color: #9F1239; }
-    .type-family-competitions { background: #FEF9C3; color: #854D0E; }
-    .type-calendar-tasks { background: #DDD6FE; color: #5B21B6; }
+    /* Event Type Colors - updated to match calendar gradient colors */
+    .type-tasks { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+    .type-activities { background: linear-gradient(135deg, #27ae60, #229954); color: white; }
+    .type-cultural-tasks { background: linear-gradient(135deg, #e67e22, #d35400); color: white; }
+    .type-scientific-tasks { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; }
+    .type-operations-tasks { background: linear-gradient(135deg, #16a085, #138d75); color: white; }
+    .type-sharia-tasks { background: linear-gradient(135deg, #c0392b, #922b21); color: white; }
+    .type-sports-tasks { background: linear-gradient(135deg, #f39c12, #d68910); color: white; }
+    .type-matches { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+    .type-lectures { background: linear-gradient(135deg, #8e44ad, #6c3483); color: white; }
+    .type-family-competitions { background: linear-gradient(135deg, #d35400, #ba4a00); color: white; }
+    .type-calendar-tasks { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+    .type-task-sessions { background: linear-gradient(135deg, #9C27B0, #7B1FA2); color: white; }
 
     .event-meta {
         display: flex;
@@ -252,8 +422,9 @@
         gap: 0.6rem;
         margin-bottom: 1rem;
         padding: 0.75rem;
-        background: var(--light-color);
+        background: linear-gradient(145deg, #f0f9fb 0%, var(--white) 100%);
         border-radius: 8px;
+        border: 1px solid rgba(0, 132, 171, 0.1);
     }
 
     .event-detail {
@@ -261,7 +432,7 @@
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
-        color: #6B7280;
+        color: var(--text-light);
     }
 
     .event-detail i {
@@ -272,11 +443,12 @@
 
     .event-description {
         font-size: 0.9rem;
-        color: #6B7280;
+        color: var(--text-light);
         line-height: 1.6;
         margin: 0.75rem 0;
     }
 
+    /* Badges matching calendar gradient design */
     .status-badge {
         display: inline-flex;
         align-items: center;
@@ -289,23 +461,23 @@
     }
 
     .status-badge.upcoming {
-        background: #DBEAFE;
-        color: #1E40AF;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
     }
 
     .status-badge.in-progress {
-        background: #FEF3C7;
-        color: #92400E;
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
     }
 
     .status-badge.completed {
-        background: #D1FAE5;
-        color: #065F46;
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
     }
 
     .status-badge.cancelled {
-        background: #FEE2E2;
-        color: #991B1B;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
     }
 
     .priority-badge {
@@ -319,157 +491,18 @@
     }
 
     .priority-badge.high {
-        background: #FEE2E2;
-        color: #991B1B;
-    }
-
-    .priority-badge.medium {
-        background: #FEF3C7;
-        color: #92400E;
-    }
-
-    .priority-badge.low {
-        background: #DBEAFE;
-        color: #1E40AF;
-    }
-
-    .completion-progress {
-        margin-top: 1rem;
-    }
-
-    .progress-label {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        margin-bottom: 0.5rem;
-        color: var(--dark-color);
-        font-weight: 500;
-    }
-
-    .progress-bar-container {
-        height: 8px;
-        background: var(--border-color);
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        border-radius: 4px;
-        transition: width 0.3s;
-    }
-
-    .no-events {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 3rem;
-        background: white;
-        border-radius: 12px;
-        color: #9CA3AF;
-    }
-
-    .no-events i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-    }
-
-    .no-events h5 {
-        font-size: 1.25rem;
-        margin: 0.5rem 0;
-        color: #6B7280;
-    }
-
-    .no-events p {
-        margin: 0;
-        font-size: 0.95rem;
-    }
-
-    .stats-overview {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-
-    .stat-icon.blue { background: #DBEAFE; color: #1E40AF; }
-    .stat-icon.green { background: #D1FAE5; color: #065F46; }
-    .stat-icon.yellow { background: #FEF3C7; color: #92400E; }
-    .stat-icon.red { background: #FEE2E2; color: #991B1B; }
-
-    .stat-content h3 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin: 0;
-        color: var(--dark-color);
-    }
-
-    .stat-content p {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #6B7280;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 0.75rem;
-        margin-top: 1rem;
-    }
-
-    .btn {
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-    }
-
-    .btn-primary {
-        background: var(--primary-color);
+        background: linear-gradient(135deg, #ef4444, #dc2626);
         color: white;
     }
 
-    .btn-primary:hover {
-        background: #2563EB;
-        transform: translateY(-2px);
+    .priority-badge.medium {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
     }
 
-    .btn-secondary {
-        background: white;
-        color: var(--dark-color);
-        border: 1px solid var(--border-color);
-    }
-
-    .btn-secondary:hover {
-        border-color: var(--primary-color);
-        color: var(--primary-color);
+    .priority-badge.low {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
     }
 
     .overdue-indicator {
@@ -477,8 +510,8 @@
         align-items: center;
         gap: 0.3rem;
         padding: 0.25rem 0.6rem;
-        background: #FEE2E2;
-        color: #991B1B;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
         border-radius: 4px;
         font-size: 0.8rem;
         font-weight: 600;
@@ -489,16 +522,189 @@
         align-items: center;
         gap: 0.3rem;
         padding: 0.25rem 0.6rem;
-        background: #E0E7FF;
-        color: #3730A3;
+        background: linear-gradient(135deg, #8e44ad, #6c3483);
+        color: white;
         border-radius: 4px;
         font-size: 0.8rem;
         font-weight: 600;
     }
 
+    /* Progress bar matching calendar design */
+    .completion-progress {
+        margin-top: 1rem;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 600;
+    }
+
+    .progress-bar-container {
+        height: 8px;
+        background: linear-gradient(145deg, #f0f9fb 0%, var(--white) 100%);
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 132, 171, 0.1);
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(135deg, var(--primary-color), var(--gradient-end));
+        border-radius: 4px;
+        transition: width 0.3s;
+    }
+
+    /* No events matching calendar design */
+    .no-events {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        background: linear-gradient(145deg, var(--white) 0%, #f8f9fa 100%);
+        border-radius: var(--border-radius);
+        color: var(--text-light);
+        border: 1px solid rgba(0, 132, 171, 0.1);
+    }
+
+    .no-events i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        opacity: 0.5;
+    }
+
+    .no-events h5 {
+        font-size: 1.25rem;
+        margin: 0.5rem 0;
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
+    .no-events p {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    /* Action buttons matching calendar buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 0.9375rem;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0.25rem 0.75rem var(--shadow-light);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem var(--shadow-medium);
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(145deg, #f0f9fb 0%, var(--white) 100%);
+        color: var(--text-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--gradient-end) 100%);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Animations from calendar.html */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-1.25rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInFromTop {
+        from {
+            opacity: 0;
+            transform: translateY(-1.875rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(-1.875rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(1.875rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideUpFade {
+        from {
+            opacity: 0;
+            transform: translateY(1.25rem);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes iconBounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-0.3125rem);
+        }
+    }
+
+    /* Responsive design from calendar.html */
     @media (max-width: 768px) {
         .calendar-list-container {
-            padding: 1rem;
+            padding: 0 0.75rem;
+            margin: 1rem auto;
         }
 
         .events-grid {
@@ -509,6 +715,11 @@
             flex-direction: column;
         }
 
+        .filter-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
         .advanced-filters {
             grid-template-columns: 1fr;
         }
@@ -516,15 +727,49 @@
         .stats-overview {
             grid-template-columns: 1fr;
         }
+
+        .event-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .event-meta {
+            width: 100%;
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .list-header h1 {
+            font-size: 1.25rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .filter-btn {
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="calendar-list-container">
-    <!-- Header -->
+    <!-- Header matching calendar.html header -->
     <div class="list-header">
-        <h1>قائمة المهام والفعاليات</h1>
+        <h1>
+            <i class="fas fa-list"></i>
+            قائمة المهام والفعاليات
+        </h1>
         <div class="breadcrumb">
             <a href="{% url 'home' %}"><i class="fas fa-home"></i> الرئيسية</a>
             <span>/</span>
@@ -532,7 +777,7 @@
         </div>
     </div>
 
-    <!-- Statistics Overview -->
+    <!-- Statistics Overview matching calendar stats -->
     <div class="stats-overview">
         <div class="stat-card">
             <div class="stat-icon blue">
@@ -572,7 +817,7 @@
         </div>
     </div>
 
-    <!-- Filters Section -->
+    <!-- Filters Section matching calendar filters -->
     <div class="filters-section">
         <div class="filters-title">
             <i class="fas fa-filter"></i>
@@ -633,7 +878,7 @@
             </button>
         </div>
 
-        <!-- Advanced Filters -->
+        <!-- Advanced Filters matching calendar filter groups -->
         <div class="advanced-filters">
             <div class="filter-group">
                 <label>الحالة</label>
@@ -755,99 +1000,99 @@
     </div>
 
     <!-- Program Tasks Section -->
-    <<div class="events-section" id="program-tasks-section">
-    <h4 class="section-title">
-        <i class="fas fa-tasks"></i>
-        مهام البرامج
-    </h4>
-    <div class="events-grid">
-        {% for item in program_tasks %}
-        <a href="{% url 'object_detail' 'task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
-            <div class="event-header">
-                <h5 class="event-title">{{ item.task.title }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-tasks">
-                        <i class="fas fa-tasks"></i>
-                        مهمة
-                    </span>
-                    {% if item.task.priority %}
-                    <span class="priority-badge {{ item.task.priority }}">
-                        <i class="fas fa-flag"></i>
-                        {{ item.task.get_priority_display }}
-                    </span>
+    <div class="events-section" id="program-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-tasks"></i>
+            مهام البرامج
+        </h4>
+        <div class="events-grid">
+            {% for item in program_tasks %}
+            <a href="{% url 'object_detail' 'task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ item.task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-tasks">
+                            <i class="fas fa-tasks"></i>
+                            مهمة
+                        </span>
+                        {% if item.task.priority %}
+                        <span class="priority-badge {{ item.task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ item.task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                        {% if item.is_recurring %}
+                        <span class="recurring-indicator">
+                            <i class="fas fa-redo"></i>
+                            متكررة
+                        </span>
+                        {% endif %}
+                        {% if item.task.is_overdue %}
+                        <span class="overdue-indicator">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            متأخرة
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if item.task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ item.task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if item.task.assigned_to_name %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>{{ item.task.assigned_to_name }}</span>
+                    </div>
                     {% endif %}
                     {% if item.is_recurring %}
-                    <span class="recurring-indicator">
-                        <i class="fas fa-redo"></i>
-                        متكررة
-                    </span>
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                    </div>
+                    {% else %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>تاريخ الاستحقاق: {{ item.task.due_date|date:"Y/m/d" }}</span>
+                    </div>
                     {% endif %}
-                    {% if item.task.is_overdue %}
-                    <span class="overdue-indicator">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        متأخرة
-                    </span>
+                </div>
+                {% if item.task.description %}
+                <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
+                {% endif %}
+                {% if item.task.completion_percentage > 0 %}
+                <div class="completion-progress">
+                    <div class="progress-label">
+                        <span>نسبة الإنجاز</span>
+                        <span>{{ item.task.completion_percentage }}%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: {{ item.task.completion_percentage }}%"></div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="status-badge {{ item.task.status }}">
+                    {% if item.task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif item.task.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
                     {% endif %}
                 </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-tasks"></i>
+                <h5>لا توجد مهام برامج</h5>
+                <p>لم يتم إضافة أي مهام برامج بعد</p>
             </div>
-            <div class="event-details">
-                {% if item.task.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ item.task.committee.name }}</span>
-                </div>
-                {% endif %}
-                {% if item.task.assigned_to_name %}
-                <div class="event-detail">
-                    <i class="fas fa-user"></i>
-                    <span>{{ item.task.assigned_to_name }}</span>
-                </div>
-                {% endif %}
-                {% if item.is_recurring %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
-                </div>
-                {% else %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>تاريخ الاستحقاق: {{ item.task.due_date|date:"Y/m/d" }}</span>
-                </div>
-                {% endif %}
-            </div>
-            {% if item.task.description %}
-            <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
-            {% endif %}
-            {% if item.task.completion_percentage > 0 %}
-            <div class="completion-progress">
-                <div class="progress-label">
-                    <span>نسبة الإنجاز</span>
-                    <span>{{ item.task.completion_percentage }}%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: {{ item.task.completion_percentage }}%"></div>
-                </div>
-            </div>
-            {% endif %}
-            <div class="status-badge {{ item.task.status }}">
-                {% if item.task.status == 'completed' %}
-                <i class="fas fa-check-circle"></i> مكتملة
-                {% elif item.task.status == 'cancelled' %}
-                <i class="fas fa-times-circle"></i> ملغاة
-                {% else %}
-                <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
-            <i class="fas fa-tasks"></i>
-            <h5>لا توجد مهام برامج</h5>
-            <p>لم يتم إضافة أي مهام برامج بعد</p>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 
     <!-- Activities Section -->
     <div class="events-section" id="activities-section">
@@ -902,73 +1147,73 @@
 
     <!-- Cultural Tasks Section -->
     <div class="events-section" id="cultural-tasks-section">
-    <h4 class="section-title">
-        <i class="fas fa-book"></i>
-        المهام الثقافية
-    </h4>
-    <div class="events-grid">
-        {% for item in cultural_tasks %}
-        <a href="{% url 'object_detail' 'cultural_task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
-            <div class="event-header">
-                <h5 class="event-title">{{ item.task.title }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-cultural-tasks">
-                        <i class="fas fa-book"></i>
-                        مهمة ثقافية
-                    </span>
-                    {% if item.task.priority %}
-                    <span class="priority-badge {{ item.task.priority }}">
-                        <i class="fas fa-flag"></i>
-                        {{ item.task.get_priority_display }}
-                    </span>
+        <h4 class="section-title">
+            <i class="fas fa-book"></i>
+            المهام الثقافية
+        </h4>
+        <div class="events-grid">
+            {% for item in cultural_tasks %}
+            <a href="{% url 'object_detail' 'cultural_task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ item.task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-cultural-tasks">
+                            <i class="fas fa-book"></i>
+                            مهمة ثقافية
+                        </span>
+                        {% if item.task.priority %}
+                        <span class="priority-badge {{ item.task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ item.task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                        {% if item.is_recurring %}
+                        <span class="recurring-indicator">
+                            <i class="fas fa-redo"></i>
+                            متكررة
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if item.task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ item.task.committee.name }}</span>
+                    </div>
                     {% endif %}
                     {% if item.is_recurring %}
-                    <span class="recurring-indicator">
-                        <i class="fas fa-redo"></i>
-                        متكررة
-                    </span>
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                    </div>
+                    {% else %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ item.task.due_date|date:"Y/m/d" }}</span>
+                    </div>
                     {% endif %}
                 </div>
-            </div>
-            <div class="event-details">
-                {% if item.task.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ item.task.committee.name }}</span>
-                </div>
+                {% if item.task.description %}
+                <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
                 {% endif %}
-                {% if item.is_recurring %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                <div class="status-badge {{ item.task.status }}">
+                    {% if item.task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>{{ item.task.due_date|date:"Y/m/d" }}</span>
-                </div>
-                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-book"></i>
+                <h5>لا توجد مهام ثقافية</h5>
+                <p>لم يتم إضافة أي مهام ثقافية بعد</p>
             </div>
-            {% if item.task.description %}
-            <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
-            {% endif %}
-            <div class="status-badge {{ item.task.status }}">
-                {% if item.task.status == 'completed' %}
-                <i class="fas fa-check-circle"></i> مكتملة
-                {% else %}
-                <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
-            <i class="fas fa-book"></i>
-            <h5>لا توجد مهام ثقافية</h5>
-            <p>لم يتم إضافة أي مهام ثقافية بعد</p>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 
     <!-- Scientific Tasks Section -->
     <div class="events-section" id="scientific-tasks-section">
@@ -1142,371 +1387,371 @@
     </div>
 
     <!-- Sports Tasks Section -->
-   <div class="events-section" id="sports-tasks-section">
-    <h4 class="section-title">
-        <i class="fas fa-futbol"></i>
-        المهام الرياضية
-    </h4>
-    <div class="events-grid">
-        {% for item in sports_tasks %}
-        <a href="{% url 'object_detail' 'sports_task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
-            <div class="event-header">
-                <h5 class="event-title">{{ item.task.title }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-sports-tasks">
-                        <i class="fas fa-futbol"></i>
-                        مهمة رياضية
-                    </span>
-                    {% if item.task.priority %}
-                    <span class="priority-badge {{ item.task.priority }}">
-                        <i class="fas fa-flag"></i>
-                        {{ item.task.get_priority_display }}
-                    </span>
+    <div class="events-section" id="sports-tasks-section">
+        <h4 class="section-title">
+            <i class="fas fa-futbol"></i>
+            المهام الرياضية
+        </h4>
+        <div class="events-grid">
+            {% for item in sports_tasks %}
+            <a href="{% url 'object_detail' 'sports_task' item.task.id %}" class="event-card" data-status="{{ item.task.status }}" data-priority="{{ item.task.priority }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ item.task.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-sports-tasks">
+                            <i class="fas fa-futbol"></i>
+                            مهمة رياضية
+                        </span>
+                        {% if item.task.priority %}
+                        <span class="priority-badge {{ item.task.priority }}">
+                            <i class="fas fa-flag"></i>
+                            {{ item.task.get_priority_display }}
+                        </span>
+                        {% endif %}
+                        {% if item.is_recurring %}
+                        <span class="recurring-indicator">
+                            <i class="fas fa-redo"></i>
+                            متكررة
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if item.task.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ item.task.committee.name }}</span>
+                    </div>
                     {% endif %}
                     {% if item.is_recurring %}
-                    <span class="recurring-indicator">
-                        <i class="fas fa-redo"></i>
-                        متكررة
-                    </span>
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                    </div>
+                    {% else %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ item.task.due_date|date:"Y/m/d" }}</span>
+                    </div>
                     {% endif %}
                 </div>
-            </div>
-            <div class="event-details">
-                {% if item.task.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ item.task.committee.name }}</span>
-                </div>
+                {% if item.task.description %}
+                <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
                 {% endif %}
-                {% if item.is_recurring %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>من {{ item.group_start|date:"Y/m/d" }} إلى {{ item.group_end|date:"Y/m/d" }}</span>
+                <div class="status-badge {{ item.task.status }}">
+                    {% if item.task.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>{{ item.task.due_date|date:"Y/m/d" }}</span>
-                </div>
-                {% endif %}
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-futbol"></i>
+                <h5>لا توجد مهام رياضية</h5>
+                <p>لم يتم إضافة أي مهام رياضية بعد</p>
             </div>
-            {% if item.task.description %}
-            <p class="event-description">{{ item.task.description|truncatewords:30 }}</p>
-            {% endif %}
-            <div class="status-badge {{ item.task.status }}">
-                {% if item.task.status == 'completed' %}
-                <i class="fas fa-check-circle"></i> مكتملة
-                {% else %}
-                <i class="fas fa-clock"></i> {{ item.task.get_status_display }}
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
-            <i class="fas fa-futbol"></i>
-            <h5>لا توجد مهام رياضية</h5>
-            <p>لم يتم إضافة أي مهام رياضية بعد</p>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 
     <!-- Task Sessions Section -->
-<div class="events-section" id="task-sessions-section">
-    <h4 class="section-title">
-        <i class="fas fa-chalkboard-teacher"></i>
-        جلسات المهام
-    </h4>
-    <div class="events-grid">
-        {% for session in task_sessions %}
-        <a href="{% url 'object_detail' 'task_session' session.id %}" class="event-card">
-            <div class="event-header">
-                <h5 class="event-title">{{ session.task.title }} - جلسة {{ session.session_number }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-cultural-tasks">
-                        <i class="fas fa-chalkboard-teacher"></i>
-                        جلسة
-                    </span>
-                </div>
-            </div>
-            <div class="event-details">
-                {% if session.task.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ session.task.committee.name }}</span>
-                </div>
-                {% endif %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>{{ session.date|date:"Y/m/d" }}</span>
-                </div>
-                {% if session.time %}
-                <div class="event-detail">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ session.time|time:"H:i" }}</span>
-                </div>
-                {% endif %}
-                {% if session.location %}
-                <div class="event-detail">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ session.location }}</span>
-                </div>
-                {% endif %}
-                {% if session.speaker %}
-                <div class="event-detail">
-                    <i class="fas fa-user"></i>
-                    <span>المحاضر: {{ session.speaker }}</span>
-                </div>
-                {% endif %}
-            </div>
-            {% if session.description %}
-            <p class="event-description">{{ session.description|truncatewords:30 }}</p>
-            {% endif %}
-            <div class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
-                {% if session.is_completed %}
-                <i class="fas fa-check-circle"></i> مكتملة
-                {% else %}
-                <i class="fas fa-clock"></i> قادمة
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
+    <div class="events-section" id="task-sessions-section">
+        <h4 class="section-title">
             <i class="fas fa-chalkboard-teacher"></i>
-            <h5>لا توجد جلسات مهام</h5>
-            <p>لم يتم إضافة أي جلسات مهام لهذه الفترة</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Lectures Section -->
-<div class="events-section" id="lectures-section">
-    <h4 class="section-title">
-        <i class="fas fa-graduation-cap"></i>
-        المحاضرات
-    </h4>
-    <div class="events-grid">
-        {% for lecture in lectures %}
-        <a href="{% url 'object_detail' 'lecture' lecture.id %}" class="event-card" data-status="{{ lecture.status }}">
-            <div class="event-header">
-                <h5 class="event-title">{{ lecture.title }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-scientific-tasks">
-                        <i class="fas fa-graduation-cap"></i>
-                        محاضرة
-                    </span>
+            جلسات المهام
+        </h4>
+        <div class="events-grid">
+            {% for session in task_sessions %}
+            <a href="{% url 'object_detail' 'task_session' session.id %}" class="event-card">
+                <div class="event-header">
+                    <h5 class="event-title">{{ session.task.title }} - جلسة {{ session.session_number }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-task-sessions">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            جلسة
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="event-details">
-                {% if lecture.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ lecture.committee.name }}</span>
-                </div>
-                {% endif %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>{{ lecture.date|date:"Y/m/d" }}</span>
-                </div>
-                {% if lecture.time %}
-                <div class="event-detail">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ lecture.time|time:"H:i" }}</span>
-                </div>
-                {% endif %}
-                {% if lecture.location %}
-                <div class="event-detail">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ lecture.location }}</span>
-                </div>
-                {% endif %}
-                {% if lecture.speaker %}
-                <div class="event-detail">
-                    <i class="fas fa-user"></i>
-                    <span>المحاضر: {{ lecture.speaker }}</span>
-                </div>
-                {% endif %}
-                {% if lecture.target_audience %}
-                <div class="event-detail">
-                    <i class="fas fa-bullseye"></i>
-                    <span>{{ lecture.get_target_audience_display }}</span>
-                </div>
-                {% endif %}
-            </div>
-            {% if lecture.description %}
-            <p class="event-description">{{ lecture.description|truncatewords:30 }}</p>
-            {% endif %}
-            <div class="status-badge {{ lecture.status }}">
-                {% if lecture.status == 'completed' %}
-                <i class="fas fa-check-circle"></i> مكتملة
-                {% elif lecture.status == 'cancelled' %}
-                <i class="fas fa-times-circle"></i> ملغاة
-                {% else %}
-                <i class="fas fa-clock"></i> {{ lecture.get_status_display }}
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
-            <i class="fas fa-graduation-cap"></i>
-            <h5>لا توجد محاضرات</h5>
-            <p>لم يتم إضافة أي محاضرات لهذه الفترة</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Matches Section -->
-<div class="events-section" id="matches-section">
-    <h4 class="section-title">
-        <i class="fas fa-trophy"></i>
-        المباريات
-    </h4>
-    <div class="events-grid">
-        {% for match in matches %}
-        <a href="{% url 'object_detail' 'match' match.id %}" class="event-card" data-status="{{ match.status }}">
-            <div class="event-header">
-                <h5 class="event-title">{{ match.title }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-matches">
-                        <i class="fas fa-trophy"></i>
-                        مباراة
-                    </span>
-                </div>
-            </div>
-            <div class="event-details">
-                {% if match.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ match.committee.name }}</span>
-                </div>
-                {% endif %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>{{ match.date|date:"Y/m/d" }}</span>
-                </div>
-                {% if match.time %}
-                <div class="event-detail">
-                    <i class="fas fa-clock"></i>
-                    <span>{{ match.time|time:"H:i" }}</span>
-                </div>
-                {% endif %}
-                {% if match.location %}
-                <div class="event-detail">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ match.location }}</span>
-                </div>
-                {% endif %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ match.team1 }} vs {{ match.team2 }}</span>
-                </div>
-                {% if match.sport_type %}
-                <div class="event-detail">
-                    <i class="fas fa-futbol"></i>
-                    <span>{{ match.get_sport_type_display }}</span>
-                </div>
-                {% endif %}
-            </div>
-            {% if match.result %}
-            <div class="event-detail" style="margin-top: 0.5rem; padding: 0.5rem; background: #F3F4F6; border-radius: 6px;">
-                <i class="fas fa-flag-checkered"></i>
-                <span><strong>النتيجة:</strong> {{ match.result }}</span>
-            </div>
-            {% endif %}
-            <div class="status-badge {{ match.status }}">
-                {% if match.status == 'completed' %}
-                <i class="fas fa-check-circle"></i> انتهت
-                {% elif match.status == 'cancelled' %}
-                <i class="fas fa-times-circle"></i> ملغاة
-                {% else %}
-                <i class="fas fa-clock"></i> {{ match.get_status_display }}
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
-            <i class="fas fa-trophy"></i>
-            <h5>لا توجد مباريات</h5>
-            <p>لم يتم إضافة أي مباريات لهذه الفترة</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Family Competitions Section -->
-<div class="events-section" id="family-competitions-section">
-    <h4 class="section-title">
-        <i class="fas fa-users"></i>
-        مسابقات العائلات
-    </h4>
-    <div class="events-grid">
-        {% for competition in family_competitions %}
-        <a href="{% url 'object_detail' 'family_competition' competition.id %}" class="event-card" data-status="{{ competition.status }}">
-            <div class="event-header">
-                <h5 class="event-title">{{ competition.title }}</h5>
-                <div class="event-meta">
-                    <span class="event-type type-family-competitions">
+                <div class="event-details">
+                    {% if session.task.committee %}
+                    <div class="event-detail">
                         <i class="fas fa-users"></i>
-                        مسابقة
-                    </span>
+                        <span>{{ session.task.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ session.date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if session.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ session.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if session.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ session.location }}</span>
+                    </div>
+                    {% endif %}
+                    {% if session.speaker %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>المحاضر: {{ session.speaker }}</span>
+                    </div>
+                    {% endif %}
                 </div>
+                {% if session.description %}
+                <p class="event-description">{{ session.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {% if session.is_completed %}completed{% else %}upcoming{% endif %}">
+                    {% if session.is_completed %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% else %}
+                    <i class="fas fa-clock"></i> قادمة
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <h5>لا توجد جلسات مهام</h5>
+                <p>لم يتم إضافة أي جلسات مهام لهذه الفترة</p>
             </div>
-            <div class="event-details">
-                {% if competition.committee %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>{{ competition.committee.name }}</span>
-                </div>
-                {% endif %}
-                <div class="event-detail">
-                    <i class="fas fa-calendar-day"></i>
-                    <span>من {{ competition.start_date|date:"Y/m/d" }} إلى {{ competition.end_date|date:"Y/m/d" }}</span>
-                </div>
-                {% if competition.location %}
-                <div class="event-detail">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>{{ competition.location }}</span>
-                </div>
-                {% endif %}
-                {% if competition.competition_type %}
-                <div class="event-detail">
-                    <i class="fas fa-tag"></i>
-                    <span>{{ competition.get_competition_type_display }}</span>
-                </div>
-                {% endif %}
-                {% if competition.max_teams %}
-                <div class="event-detail">
-                    <i class="fas fa-users"></i>
-                    <span>عدد الفرق: {{ competition.max_teams }}</span>
-                </div>
-                {% endif %}
-            </div>
-            {% if competition.description %}
-            <p class="event-description">{{ competition.description|truncatewords:30 }}</p>
-            {% endif %}
-            <div class="status-badge {{ competition.status }}">
-                {% if competition.status == 'completed' %}
-                <i class="fas fa-check-circle"></i> انتهت
-                {% elif competition.status == 'cancelled' %}
-                <i class="fas fa-times-circle"></i> ملغاة
-                {% elif competition.status == 'in_progress' %}
-                <i class="fas fa-spinner"></i> جارية
-                {% else %}
-                <i class="fas fa-clock"></i> قادمة
-                {% endif %}
-            </div>
-        </a>
-        {% empty %}
-        <div class="no-events">
-            <i class="fas fa-users"></i>
-            <h5>لا توجد مسابقات عائلات</h5>
-            <p>لم يتم إضافة أي مسابقات عائلات لهذه الفترة</p>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
+
+    <!-- Lectures Section -->
+    <div class="events-section" id="lectures-section">
+        <h4 class="section-title">
+            <i class="fas fa-graduation-cap"></i>
+            المحاضرات
+        </h4>
+        <div class="events-grid">
+            {% for lecture in lectures %}
+            <a href="{% url 'object_detail' 'lecture' lecture.id %}" class="event-card" data-status="{{ lecture.status }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ lecture.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-lectures">
+                            <i class="fas fa-graduation-cap"></i>
+                            محاضرة
+                        </span>
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if lecture.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ lecture.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ lecture.date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if lecture.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ lecture.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if lecture.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ lecture.location }}</span>
+                    </div>
+                    {% endif %}
+                    {% if lecture.speaker %}
+                    <div class="event-detail">
+                        <i class="fas fa-user"></i>
+                        <span>المحاضر: {{ lecture.speaker }}</span>
+                    </div>
+                    {% endif %}
+                    {% if lecture.target_audience %}
+                    <div class="event-detail">
+                        <i class="fas fa-bullseye"></i>
+                        <span>{{ lecture.get_target_audience_display }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if lecture.description %}
+                <p class="event-description">{{ lecture.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ lecture.status }}">
+                    {% if lecture.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> مكتملة
+                    {% elif lecture.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ lecture.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-graduation-cap"></i>
+                <h5>لا توجد محاضرات</h5>
+                <p>لم يتم إضافة أي محاضرات لهذه الفترة</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Matches Section -->
+    <div class="events-section" id="matches-section">
+        <h4 class="section-title">
+            <i class="fas fa-trophy"></i>
+            المباريات
+        </h4>
+        <div class="events-grid">
+            {% for match in matches %}
+            <a href="{% url 'object_detail' 'match' match.id %}" class="event-card" data-status="{{ match.status }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ match.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-matches">
+                            <i class="fas fa-trophy"></i>
+                            مباراة
+                        </span>
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if match.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ match.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>{{ match.date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if match.time %}
+                    <div class="event-detail">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ match.time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+                    {% if match.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ match.location }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ match.team1 }} vs {{ match.team2 }}</span>
+                    </div>
+                    {% if match.sport_type %}
+                    <div class="event-detail">
+                        <i class="fas fa-futbol"></i>
+                        <span>{{ match.get_sport_type_display }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if match.result %}
+                <div class="event-detail" style="margin-top: 0.5rem; padding: 0.5rem; background: linear-gradient(145deg, #f0f9fb 0%, var(--white) 100%); border-radius: 6px; border: 1px solid rgba(0, 132, 171, 0.1);">
+                    <i class="fas fa-flag-checkered"></i>
+                    <span><strong>النتيجة:</strong> {{ match.result }}</span>
+                </div>
+                {% endif %}
+                <div class="status-badge {{ match.status }}">
+                    {% if match.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> انتهت
+                    {% elif match.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% else %}
+                    <i class="fas fa-clock"></i> {{ match.get_status_display }}
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-trophy"></i>
+                <h5>لا توجد مباريات</h5>
+                <p>لم يتم إضافة أي مباريات لهذه الفترة</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Family Competitions Section -->
+    <div class="events-section" id="family-competitions-section">
+        <h4 class="section-title">
+            <i class="fas fa-users"></i>
+            مسابقات العائلات
+        </h4>
+        <div class="events-grid">
+            {% for competition in family_competitions %}
+            <a href="{% url 'object_detail' 'family_competition' competition.id %}" class="event-card" data-status="{{ competition.status }}">
+                <div class="event-header">
+                    <h5 class="event-title">{{ competition.title }}</h5>
+                    <div class="event-meta">
+                        <span class="event-type type-family-competitions">
+                            <i class="fas fa-users"></i>
+                            مسابقة
+                        </span>
+                    </div>
+                </div>
+                <div class="event-details">
+                    {% if competition.committee %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>{{ competition.committee.name }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="event-detail">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>من {{ competition.start_date|date:"Y/m/d" }} إلى {{ competition.end_date|date:"Y/m/d" }}</span>
+                    </div>
+                    {% if competition.location %}
+                    <div class="event-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ competition.location }}</span>
+                    </div>
+                    {% endif %}
+                    {% if competition.competition_type %}
+                    <div class="event-detail">
+                        <i class="fas fa-tag"></i>
+                        <span>{{ competition.get_competition_type_display }}</span>
+                    </div>
+                    {% endif %}
+                    {% if competition.max_teams %}
+                    <div class="event-detail">
+                        <i class="fas fa-users"></i>
+                        <span>عدد الفرق: {{ competition.max_teams }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if competition.description %}
+                <p class="event-description">{{ competition.description|truncatewords:30 }}</p>
+                {% endif %}
+                <div class="status-badge {{ competition.status }}">
+                    {% if competition.status == 'completed' %}
+                    <i class="fas fa-check-circle"></i> انتهت
+                    {% elif competition.status == 'cancelled' %}
+                    <i class="fas fa-times-circle"></i> ملغاة
+                    {% elif competition.status == 'in_progress' %}
+                    <i class="fas fa-spinner"></i> جارية
+                    {% else %}
+                    <i class="fas fa-clock"></i> قادمة
+                    {% endif %}
+                </div>
+            </a>
+            {% empty %}
+            <div class="no-events">
+                <i class="fas fa-users"></i>
+                <h5>لا توجد مسابقات عائلات</h5>
+                <p>لم يتم إضافة أي مسابقات عائلات لهذه الفترة</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 <script>
@@ -1519,28 +1764,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateFromFilter = document.getElementById('date-from-filter');
     const dateToFilter = document.getElementById('date-to-filter');
 
+    // Function to apply filters
+    function applyFilter(filterType) {
+        // Show/hide sections based on filter
+        eventSections.forEach(section => {
+            if (filterType === 'all') {
+                section.classList.add('active');
+            } else {
+                if (section.id === `${filterType}-section`) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            }
+        });
+
+        // Apply advanced filters as well
+        applyAdvancedFilters();
+    }
+
+    // Function to update active button
+    function setActiveButton(filterType) {
+        filterButtons.forEach(btn => {
+            if (btn.getAttribute('data-filter') === filterType) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    // Apply initial filter on page load
+    const initialFilter = document.querySelector('.filter-btn.active')?.getAttribute('data-filter') || 'all';
+    applyFilter(initialFilter);
+
+    // Add event listeners to filter buttons
     filterButtons.forEach(button => {
         button.addEventListener('click', function() {
             const filter = this.getAttribute('data-filter');
 
             // Update active button
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
+            setActiveButton(filter);
 
-            // Show/hide sections based on filter
-            eventSections.forEach(section => {
-                if (filter === 'all') {
-                    section.classList.add('active');
-                } else {
-                    if (section.id === `${filter}-section`) {
-                        section.classList.add('active');
-                    } else {
-                        section.classList.remove('active');
-                    }
-                }
-            });
-
-            applyAdvancedFilters();
+            // Apply filter
+            applyFilter(filter);
         });
     });
 
@@ -1548,7 +1815,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyAdvancedFilters() {
         const statusValue = statusFilter.value;
         const priorityValue = priorityFilter.value;
-        const cards = document.querySelectorAll('.event-card');
+
+        // Get currently active section
+        const activeSection = document.querySelector('.events-section.active');
+        if (!activeSection) return;
+
+        const cards = activeSection.querySelectorAll('.event-card');
 
         cards.forEach(card => {
             let show = true;
@@ -1563,6 +1835,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
             card.style.display = show ? 'block' : 'none';
         });
+
+        // Check if there are visible cards in the active section
+        const visibleCards = activeSection.querySelectorAll('.event-card[style="display: block"], .event-card:not([style])');
+
+        // Show/hide "no events" message
+        const noEventsDiv = activeSection.querySelector('.no-events');
+        if (noEventsDiv) {
+            if (visibleCards.length > 0) {
+                noEventsDiv.style.display = 'none';
+            } else {
+                noEventsDiv.style.display = 'grid';
+            }
+        }
     }
 
     statusFilter.addEventListener('change', applyAdvancedFilters);
@@ -1572,21 +1857,27 @@ document.addEventListener('DOMContentLoaded', function() {
     dateFromFilter.addEventListener('change', function() {
         console.log('Date from changed:', this.value);
         // Implement date filtering logic
+        applyAdvancedFilters();
     });
 
     dateToFilter.addEventListener('change', function() {
         console.log('Date to changed:', this.value);
         // Implement date filtering logic
+        applyAdvancedFilters();
     });
 
     // Add hover effect to event cards
     const eventCards = document.querySelectorAll('.event-card');
     eventCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-3px)';
+            if (this.style.display !== 'none') {
+                this.style.transform = 'translateY(-5px)';
+            }
         });
         card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
+            if (this.style.display !== 'none') {
+                this.style.transform = 'translateY(0)';
+            }
         });
     });
 });
