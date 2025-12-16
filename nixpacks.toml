@@ -6,8 +6,7 @@ nixPkgs = [
     "glib.dev",
     "gdk-pixbuf",
     "libffi.dev",
-    "gcc",
-    "gfortran",
+    "gcc",  # 只保留 gcc，它会包含基本的链接器
     "python310",
     "postgresql_16.dev"
 ]
